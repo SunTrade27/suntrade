@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - SunTrade</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☀️</text></svg>">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="login-page" class="login-page" style="display:none;">
+  <div class="login-card">
+    <div class="logo">Sun<span>Trade</span></div>
+    <p data-i18n="admin_login">Admin Login</p>
+    <form onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label data-i18n="admin_email">Email</label>
+        <input type="email" id="login-email" required>
+      </div>
+      <div class="form-group">
+        <label data-i18n="admin_password">Password</label>
+        <input type="password" id="login-password" required>
+      </div>
+      <button type="submit" class="btn-pay" data-i18n="admin_login_btn">Login</button>
+      <p id="login-error" style="color:var(--danger);margin-top:1rem;display:none;"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel" class="admin-layout" style="display:none;">
+  <!-- Sidebar -->
+  <aside class="admin-sidebar" id="admin-sidebar">
+    <div class="logo">Sun<span style="color:var(--primary);">Trade</span></div>
+    <nav class="admin-nav">
+      <a href="#" class="active" onclick="showSection('dashboard')" data-i18n="admin_dashboard">Dashboard</a>
+      <a href="#" onclick="showSection('products')" data-i18n="admin_products">Products</a>
+      <a href="#" onclick="showSection('orders')" data-i18n="admin_orders">Orders</a>
+      <a href="/" style="margin-top:2rem;" data-i18n="nav_home">View Site</a>
+      <a href="#" onclick="handleLogout()" data-i18n="admin_logout">Logout</a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="admin-main">
+    <div class="admin-header">
+      <button class="mobile-menu-btn" onclick="document.getElementById('admin-sidebar').classList.toggle('open')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <h1 id="admin-page-title" data-i18n="admin_dashboard">Dashboard</h1>
+      <div class="lang-wrapper">
+        <button id="lang-toggle">🌐 EN</button>
+        <div id="lang-dropdown"></div>
+      </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="section-dashboard">
+      <div class="admin-stats">
+        <div class="stat-card">
+          <div class="stat-icon">📦</div>
+          <div class="stat-value" id="stat-products">0</div>
+          <div class="stat-label" data-i18n="admin_total_products">Total Products</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🛒</div>
+          <div class="stat-value" id="stat-orders">0</div>
+          <div class="stat-label" data-i18n="admin_total_orders">Total Orders</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-value" id="stat-revenue">€0</div>
+          <div class="stat-label" data-i18n="admin_total_revenue">Total Revenue</div>
+        </div>
+      </div>
+      <h3 data-i18n="admin_recent_orders" style="margin-bottom:1rem;">Recent Orders</h3>
+      <div id="recent-orders"></div>
+    </div>
+
+    <!-- Products -->
+    <div id="section-products" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+        <h2 data-i18n="admin_products">Products</h2>
+        <button class="btn-sm btn-primary" onclick="openProductModal()" data-i18n="admin_add_product">+ Add Product</button>
+      </div>
+      <div id="products-table"></div>
+    </div>
+
+    <!-- Orders -->
+    <div id="section-orders" style="display:none;">
+      <h2 data-i18n="admin_orders" style="margin-bottom:1.5rem;">Orders</h2>
+      <div id="orders-table"></div>
+    </div>
+  </main>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div id="product-modal" class="modal-overlay" style="display:none;">
+  <div class="modal">
+    <h2 id="modal-title" data-i18n="admin_add_product">Add Product</h2>
+    <form id="product-form" onsubmit="saveProduct(event)">
+      <input type="hidden" id="product-id">
+
+      <div style="display:flex;gap:0.5rem;overflow-x:auto;margin-bottom:1rem;padding-bottom:0.5rem;">
+        <button type="button" class="btn-sm btn-outline lang-tab active" onclick="switchLangTab('en')">EN</button>
+        <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('kz')">KZ</button>
+        <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('ru')">RU</button>
+        <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('de')">DE</button>
+        <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('fr')">FR</button>
+        <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('es')">ES</button>
+        <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('it')">IT</button>
+        <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('tr')">TR</button>
+        <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('pt')">PT</button>
+        <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('nl')">NL</button>
+        <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('pl')">PL</button>
+        <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('ar')">AR</button>
+      </div>
+
+      <!-- Language fields -->
+      <div id="lang-fields">
+        <div class="form-group">
+          <label data-i18n="admin_product_name">Product Name</label>
+          <input type="text" id="pname-en" required>
+        </div>
+        <div class="form-group">
+          <label data-i18n="admin_product_desc">Description</label>
+          <textarea id="pdesc-en" rows="3" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:var(--radius-sm);resize:vertical;"></textarea>
+        </div>
+      </div>
+
+      <!-- Hidden lang inputs -->
+      <div style="display:none;">
+        <input type="text" id="pname-kz"><input type="text" id="pname-ru"><input type="text" id="pname-de">
+        <input type="text" id="pname-fr"><input type="text" id="pname-es"><input type="text" id="pname-it">
+        <input type="text" id="pname-tr"><input type="text" id="pname-pt"><input type="text" id="pname-nl">
+        <input type="text" id="pname-pl"><input type="text" id="pname-ar">
+        <textarea id="pdesc-kz"></textarea><textarea id="pdesc-ru"></textarea><textarea id="pdesc-de"></textarea>
+        <textarea id="pdesc-fr"></textarea><textarea id="pdesc-es"></textarea><textarea id="pdesc-it"></textarea>
+        <textarea id="pdesc-tr"></textarea><textarea id="pdesc-pt"></textarea><textarea id="pdesc-nl"></textarea>
+        <textarea id="pdesc-pl"></textarea><textarea id="pdesc-ar"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label data-i18n="admin_product_price">Price (EUR)</label>
+          <input type="number" id="pprice" step="0.01" min="0" required>
+        </div>
+        <div class="form-group">
+          <label data-i18n="admin_product_stock">Stock</label>
+          <input type="number" id="pstock" min="0" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label data-i18n="admin_product_category">Category</label>
+        <select id="pcategory"></select>
+      </div>
+      <div class="form-group">
+        <label data-i18n="admin_product_images">Images (URLs, one per line)</label>
+        <textarea id="pimages" rows="3" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:var(--radius-sm);resize:vertical;" placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"></textarea>
+      </div>
+      <div class="form-group">
+        <label><input type="checkbox" id="pactive" checked> Active</label>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-sm btn-outline" onclick="closeProductModal()" data-i18n="admin_product_cancel">Cancel</button>
+        <button type="submit" class="btn-sm btn-primary" data-i18n="admin_product_save">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/supabase-client.js"></script>
+<script>
+  let currentLangTab = 'en';
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    setTimeout(async () => {
+      if (!supabase) return;
+      const session = await getAdminSession();
+      if (session) {
+        showAdminPanel();
+      } else {
+        document.getElementById('login-page').style.display = 'flex';
+      }
+    }, 500);
+  });
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    try {
+      await adminLogin(
+        document.getElementById('login-email').value,
+        document.getElementById('login-password').value
+      );
+      showAdminPanel();
+    } catch (err) {
+      const errEl = document.getElementById('login-error');
+      errEl.textContent = err.message;
+      errEl.style.display = 'block';
+    }
+  }
+
+  async function handleLogout() {
+    await adminLogout();
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('login-page').style.display = 'flex';
+  }
+
+  async function showAdminPanel() {
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'grid';
+    loadDashboard();
+  }
+
+  function showSection(name) {
+    ['dashboard', 'products', 'orders'].forEach(s => {
+      document.getElementById('section-' + s).style.display = s === name ? 'block' : 'none';
+    });
+    document.querySelectorAll('.admin-nav a').forEach(a => a.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('admin-page-title').textContent = t('admin_' + (name === 'dashboard' ? 'dashboard' : name));
+    if (name === 'products') loadProducts();
+    if (name === 'orders') loadOrders();
+  }
+
+  async function loadDashboard() {
+    const products = await adminGetProducts();
+    const orders = await adminGetOrders();
+    const paidOrders = orders.filter(o => o.status === 'paid' || o.status === 'shipped' || o.status === 'delivered');
+    const revenue = paidOrders.reduce((sum, o) => sum + (parseFloat(o.amount) || 0), 0);
+
+    document.getElementById('stat-products').textContent = products.length;
+    document.getElementById('stat-orders').textContent = orders.length;
+    document.getElementById('stat-revenue').textContent = '€' + revenue.toFixed(2);
+
+    const recentDiv = document.getElementById('recent-orders');
+    if (orders.length === 0) {
+      recentDiv.innerHTML = '<p style="color:var(--text-light);">No orders yet.</p>';
+      return;
+    }
+    recentDiv.innerHTML = `
+      <table class="admin-table">
+        <thead><tr><th>ID</th><th>Email</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>${orders.slice(0, 10).map(o => `
+          <tr>
+            <td>${o.id.substring(0, 8)}...</td>
+            <td>${o.customer_email || 'N/A'}</td>
+            <td>€${parseFloat(o.amount || 0).toFixed(2)}</td>
+            <td><span class="status-badge status-${o.status}">${t('admin_status_' + o.status) || o.status}</span></td>
+            <td>${new Date(o.created_at).toLocaleDateString()}</td>
+          </tr>
+        `).join('')}</tbody>
+      </table>
+    `;
+  }
+
+  async function loadProducts() {
+    const products = await adminGetProducts();
+    const container = document.getElementById('products-table');
+    if (products.length === 0) {
+      container.innerHTML = '<p style="color:var(--text-light);">No products. Click "Add Product" to create one.</p>';
+      return;
+    }
+    container.innerHTML = `
+      <table class="admin-table">
+        <thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Stock</th><th>Active</th><th>Actions</th></tr></thead>
+        <tbody>${products.map(p => `
+          <tr>
+            <td><img src="${(p.images && p.images[0]) || '/images/placeholder.jpg'}" style="width:50px;height:50px;object-fit:cover;border-radius:8px;"></td>
+            <td>${p.name_en || 'Unnamed'}</td>
+            <td>€${parseFloat(p.price).toFixed(2)}</td>
+            <td>${p.stock}</td>
+            <td>${p.active ? '✅' : '❌'}</td>
+            <td>
+              <button class="btn-sm btn-outline" onclick="editProduct('${p.id}')">Edit</button>
+              <button class="btn-sm btn-danger" onclick="deleteProduct('${p.id}')">Delete</button>
+            </td>
+          </tr>
+        `).join('')}</tbody>
+      </table>
+    `;
+  }
+
+  async function loadOrders() {
+    const orders = await adminGetOrders();
+    const container = document.getElementById('orders-table');
+    if (orders.length === 0) {
+      container.innerHTML = '<p style="color:var(--text-light);">No orders yet.</p>';
+      return;
+    }
+    container.innerHTML = `
+      <table class="admin-table">
+        <thead><tr><th>ID</th><th>Product</th><th>Email</th><th>Amount</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+        <tbody>${orders.map(o => `
+          <tr>
+            <td>${o.id.substring(0, 8)}...</td>
+            <td>${(o.products && o.products['name_' + currentLang]) || (o.products && o.products.name_en) || 'N/A'}</td>
+            <td>${o.customer_email || 'N/A'}</td>
+            <td>€${parseFloat(o.amount || 0).toFixed(2)}</td>
+            <td>
+              <select onchange="updateOrderStatus('${o.id}', this.value)" style="padding:4px 8px;border-radius:4px;border:1px solid var(--border);">
+                <option value="pending" ${o.status==='pending'?'selected':''}>Pending</option>
+                <option value="paid" ${o.status==='paid'?'selected':''}>Paid</option>
+                <option value="shipped" ${o.status==='shipped'?'selected':''}>Shipped</option>
+                <option value="delivered" ${o.status==='delivered'?'selected':''}>Delivered</option>
+              </select>
+            </td>
+            <td>${new Date(o.created_at).toLocaleDateString()}</td>
+            <td></td>
+          </tr>
+        `).join('')}</tbody>
+      </table>
+    `;
+  }
+
+  async function updateOrderStatus(orderId, status) {
+    try {
+      await adminUpdateOrderStatus(orderId, status);
+      showNotification('Status updated');
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  }
+
+  function switchLangTab(lang) {
+    currentLangTab = lang;
+    document.querySelectorAll('.lang-tab').forEach(b => b.classList.toggle('active', b.textContent.trim().toLowerCase() === lang));
+    // Update visible fields
+    const nameInput = document.getElementById('pname-' + lang);
+    const descInput = document.getElementById('pdesc-' + lang);
+    const fieldsDiv = document.getElementById('lang-fields');
+    fieldsDiv.innerHTML = `
+      <div class="form-group">
+        <label>Product Name (${lang.toUpperCase()})</label>
+        <input type="text" id="pname-${lang}" value="${nameInput ? nameInput.value : ''}">
+      </div>
+      <div class="form-group">
+        <label>Description (${lang.toUpperCase()})</label>
+        <textarea id="pdesc-${lang}" rows="3" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:var(--radius-sm);resize:vertical;">${descInput ? descInput.value : ''}</textarea>
+      </div>
+    `;
+  }
+
+  async function openProductModal(product) {
+    const modal = document.getElementById('product-modal');
+    modal.style.display = 'flex';
+
+    // Load categories
+    const categories = await getCategories();
+    const catSelect = document.getElementById('pcategory');
+    catSelect.innerHTML = '<option value="">Select category</option>' +
+      categories.map(c => `<option value="${c.id}" ${product && product.category_id == c.id ? 'selected' : ''}>${c['name_' + currentLang] || c.name_en}</option>`).join('');
+
+    if (product) {
+      document.getElementById('modal-title').textContent = t('admin_edit_product');
+      document.getElementById('product-id').value = product.id;
+      document.getElementById('pprice').value = product.price;
+      document.getElementById('pstock').value = product.stock;
+      document.getElementById('pactive').checked = product.active;
+      document.getElementById('pimages').value = (product.images || []).join('\n');
+      // Fill all lang fields
+      ['en','kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'].forEach(lang => {
+        const nameEl = document.getElementById('pname-' + lang);
+        const descEl = document.getElementById('pdesc-' + lang);
+        if (nameEl) nameEl.value = product['name_' + lang] || '';
+        if (descEl) descEl.value = product['desc_' + lang] || '';
+      });
+    } else {
+      document.getElementById('modal-title').textContent = t('admin_add_product');
+      document.getElementById('product-form').reset();
+      document.getElementById('product-id').value = '';
+      document.getElementById('pactive').checked = true;
+    }
+    switchLangTab('en');
+  }
+
+  function closeProductModal() {
+    document.getElementById('product-modal').style.display = 'none';
+  }
+
+  async function editProduct(id) {
+    const products = await adminGetProducts();
+    const product = products.find(p => p.id === id);
+    if (product) openProductModal(product);
+  }
+
+  async function deleteProduct(id) {
+    if (!confirm(t('confirm_delete'))) return;
+    try {
+      await adminDeleteProduct(id);
+      loadProducts();
+      showNotification('Product deleted');
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  }
+
+  async function saveProduct(e) {
+    e.preventDefault();
+    // Collect current tab value first
+    const currentName = document.getElementById('pname-' + currentLangTab);
+    const currentDesc = document.getElementById('pdesc-' + currentLangTab);
+    if (currentName) {
+      const hiddenName = document.querySelector(`#pname-${currentLangTab}[type="hidden"]`) || document.getElementById('pname-' + currentLangTab);
+    }
+
+    const product = {
+      price: parseFloat(document.getElementById('pprice').value),
+      stock: parseInt(document.getElementById('pstock').value),
+      category_id: document.getElementById('pcategory').value || null,
+      active: document.getElementById('pactive').checked,
+      images: document.getElementById('pimages').value.split('\n').filter(u => u.trim())
+    };
+
+    // Collect all lang fields
+    ['en','kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'].forEach(lang => {
+      const nameEl = document.getElementById('pname-' + lang);
+      const descEl = document.getElementById('pdesc-' + lang);
+      product['name_' + lang] = nameEl ? nameEl.value : '';
+      product['desc_' + lang] = descEl ? descEl.value : '';
+    });
+
+    const idField = document.getElementById('product-id').value;
+    if (idField) product.id = idField;
+
+    try {
+      await adminSaveProduct(product);
+      closeProductModal();
+      loadProducts();
+      showNotification('Product saved!');
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  }
+</script>
+</body>
+</html>

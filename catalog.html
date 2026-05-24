@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="nav_catalog">Catalog - SunTrade</title>
+  <meta name="description" content="" data-i18n="meta_description">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☀️</text></svg>">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="logo">Sun<span>Trade</span></a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/" data-i18n="nav_home">Home</a></li>
+      <li><a href="/catalog.html" class="active" data-i18n="nav_catalog">Catalog</a></li>
+      <li><a href="/cart.html" data-i18n="nav_cart">Cart</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-wrapper">
+        <button id="lang-toggle">🌐 EN</button>
+        <div id="lang-dropdown"></div>
+      </div>
+      <a href="/cart.html" class="cart-link">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+        <span id="cart-badge">0</span>
+      </a>
+      <button class="mobile-menu-btn" onclick="document.getElementById('nav-links').classList.toggle('show')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="catalog-page">
+  <h1 data-i18n="nav_catalog">Catalog</h1>
+
+  <!-- Search -->
+  <div class="search-bar">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="search-input" data-i18n="search_placeholder" placeholder="Search products..." oninput="debounceSearch()">
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-bar">
+    <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+      <select id="category-filter" onchange="loadCatalogProducts()">
+        <option value="" data-i18n="all_categories">All Categories</option>
+      </select>
+      <select id="sort-filter" onchange="loadCatalogProducts()">
+        <option value="newest" data-i18n="sort_newest">Newest</option>
+        <option value="price_asc" data-i18n="sort_price_low">Price: Low to High</option>
+        <option value="price_desc" data-i18n="sort_price_high">Price: High to Low</option>
+      </select>
+    </div>
+    <span id="product-count" style="color:var(--text-light);font-size:0.9rem;"></span>
+  </div>
+
+  <!-- Products -->
+  <div class="catalog-grid" id="catalog-grid">
+    <div class="loading-spinner"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo">Sun<span style="color:var(--primary);">Trade</span></div>
+      <p data-i18n="footer_about_text">SunTrade is your trusted global marketplace.</p>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer_contact">Contact</h4>
+      <a href="https://wa.me/YOUR_NUMBER" data-i18n="footer_whatsapp">WhatsApp</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 SunTrade. <span data-i18n="footer_rights">All rights reserved.</span></p>
+  </div>
+</footer>
+
+<a href="https://wa.me/YOUR_NUMBER" class="whatsapp-btn" target="_blank">
+  <svg viewBox="0 0 24 24" width="30" height="30"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/supabase-client.js"></script>
+<script>
+  let searchTimeout;
+
+  function debounceSearch() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(loadCatalogProducts, 400);
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Check URL params
+    const params = new URLSearchParams(window.location.search);
+    const catId = params.get('category');
+
+    setTimeout(async () => {
+      if (!supabase) return;
+
+      // Load categories for filter
+      const categories = await getCategories();
+      const catSelect = document.getElementById('category-filter');
+      categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat.id;
+        opt.textContent = cat['name_' + currentLang] || cat.name_en || 'Category';
+        if (catId && cat.id == catId) opt.selected = true;
+        catSelect.appendChild(opt);
+      });
+
+      loadCatalogProducts();
+    }, 500);
+  });
+
+  async function loadCatalogProducts() {
+    const grid = document.getElementById('catalog-grid');
+    grid.innerHTML = '<div class="loading-spinner"><div class="spinner"></div></div>';
+
+    const categoryId = document.getElementById('category-filter').value || null;
+    const sort = document.getElementById('sort-filter').value;
+    const search = document.getElementById('search-input').value || null;
+
+    const products = await getProducts({ categoryId, sort, search });
+    const countEl = document.getElementById('product-count');
+
+    if (products.length === 0) {
+      grid.innerHTML = '<div style="text-align:center;padding:3rem;grid-column:1/-1;"><p style="font-size:1.2rem;color:var(--text-light);" data-i18n="search_no_results">No products found</p></div>';
+      if (countEl) countEl.textContent = '0 products';
+      return;
+    }
+
+    if (countEl) countEl.textContent = products.length + ' products';
+
+    grid.innerHTML = products.map(p => {
+      const name = p['name_' + currentLang] || p.name_en || 'Product';
+      const img = (p.images && p.images[0]) || '/images/placeholder.jpg';
+      return `
+        <a href="/product.html?id=${p.id}" class="product-card">
+          <img src="${img}" alt="${name}" class="product-card-img" loading="lazy">
+          <div class="product-card-body">
+            <h3 class="product-card-name">${name}</h3>
+            <p class="product-card-price">&euro;${parseFloat(p.price).toFixed(2)}</p>
+            <button class="product-card-btn" onclick="event.preventDefault(); addToCart('${p.id}', '${name.replace(/'/g, "\\'")}', ${p.price}, '${img}')">
+              <span data-i18n="product_add_cart">Add to Cart</span>
+            </button>
+          </div>
+        </a>
+      `;
+    }).join('');
+  }
+</script>
+</body>
+</html>

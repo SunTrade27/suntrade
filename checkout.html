@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="checkout_title">Checkout - SunTrade</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☀️</text></svg>">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="logo">Sun<span>Trade</span></a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/" data-i18n="nav_home">Home</a></li>
+      <li><a href="/catalog.html" data-i18n="nav_catalog">Catalog</a></li>
+      <li><a href="/cart.html" data-i18n="nav_cart">Cart</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-wrapper">
+        <button id="lang-toggle">🌐 EN</button>
+        <div id="lang-dropdown"></div>
+      </div>
+      <a href="/cart.html" class="cart-link">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+        <span id="cart-badge">0</span>
+      </a>
+      <button class="mobile-menu-btn" onclick="document.getElementById('nav-links').classList.toggle('show')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="checkout-page">
+  <h1 data-i18n="checkout_title">Checkout</h1>
+
+  <!-- Order Summary -->
+  <div class="cart-summary" style="margin-bottom: 2rem;">
+    <h3 style="margin-bottom: 1rem;">Order Summary</h3>
+    <div id="checkout-items"></div>
+    <div class="cart-summary-row cart-summary-total">
+      <span data-i18n="cart_total">Total</span>
+      <span id="checkout-total">€0.00</span>
+    </div>
+  </div>
+
+  <!-- Checkout Form -->
+  <form id="checkout-form" onsubmit="handleCheckout(event)">
+    <div class="form-group">
+      <label data-i18n="checkout_email">Email</label>
+      <input type="email" id="checkout-email" required placeholder="your@email.com">
+    </div>
+    <div class="form-group">
+      <label data-i18n="checkout_name">Full Name</label>
+      <input type="text" id="checkout-name" required>
+    </div>
+    <div class="form-group">
+      <label data-i18n="checkout_phone">Phone Number</label>
+      <input type="tel" id="checkout-phone" required>
+    </div>
+    <div class="form-group">
+      <label data-i18n="checkout_address">Shipping Address</label>
+      <input type="text" id="checkout-address" required>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label data-i18n="checkout_city">City</label>
+        <input type="text" id="checkout-city" required>
+      </div>
+      <div class="form-group">
+        <label data-i18n="checkout_zip">ZIP Code</label>
+        <input type="text" id="checkout-zip" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <label data-i18n="checkout_country">Country</label>
+      <select id="checkout-country" required>
+        <option value="">Select country</option>
+        <option value="DE">Germany</option>
+        <option value="FR">France</option>
+        <option value="ES">Spain</option>
+        <option value="IT">Italy</option>
+        <option value="NL">Netherlands</option>
+        <option value="PL">Poland</option>
+        <option value="PT">Portugal</option>
+        <option value="TR">Turkey</option>
+        <option value="KZ">Kazakhstan</option>
+        <option value="RU">Russia</option>
+        <option value="GB">United Kingdom</option>
+        <option value="US">United States</option>
+        <option value="AT">Austria</option>
+        <option value="BE">Belgium</option>
+        <option value="CH">Switzerland</option>
+        <option value="SE">Sweden</option>
+        <option value="NO">Norway</option>
+        <option value="DK">Denmark</option>
+        <option value="FI">Finland</option>
+        <option value="CZ">Czech Republic</option>
+        <option value="RO">Romania</option>
+        <option value="HU">Hungary</option>
+        <option value="GR">Greece</option>
+        <option value="BG">Bulgaria</option>
+        <option value="HR">Croatia</option>
+        <option value="SK">Slovakia</option>
+        <option value="SI">Slovenia</option>
+        <option value="LT">Lithuania</option>
+        <option value="LV">Latvia</option>
+        <option value="EE">Estonia</option>
+        <option value="IE">Ireland</option>
+        <option value="LU">Luxembourg</option>
+        <option value="MT">Malta</option>
+        <option value="CY">Cyprus</option>
+        <option value="AE">UAE</option>
+        <option value="SA">Saudi Arabia</option>
+        <option value="JP">Japan</option>
+        <option value="KR">South Korea</option>
+        <option value="AU">Australia</option>
+        <option value="CA">Canada</option>
+        <option value="BR">Brazil</option>
+        <option value="MX">Mexico</option>
+        <option value="AR">Argentina</option>
+        <option value="CL">Chile</option>
+        <option value="CO">Colombia</option>
+        <option value="ZA">South Africa</option>
+        <option value="NG">Nigeria</option>
+        <option value="EG">Egypt</option>
+        <option value="MA">Morocco</option>
+        <option value="KE">Kenya</option>
+        <option value="GH">Ghana</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn-pay" id="pay-btn">
+      <span data-i18n="checkout_pay">Pay with Stripe</span> - <span id="pay-amount">€0.00</span>
+    </button>
+  </form>
+
+  <!-- Success -->
+  <div id="payment-success" class="payment-success" style="display: none;">
+    <div class="payment-success-icon">✅</div>
+    <h2 data-i18n="checkout_success">Payment Successful!</h2>
+    <p style="color: var(--text-light); margin: 1rem 0;">Thank you for your order.</p>
+    <p><strong data-i18n="checkout_order_id">Order ID:</strong> <span id="order-id"></span></p>
+    <a href="/" class="hero-cta" style="margin-top: 2rem; display: inline-block;" data-i18n="nav_home">Back to Home</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-bottom">
+    <p>&copy; 2026 SunTrade. <span data-i18n="footer_rights">All rights reserved.</span></p>
+  </div>
+</footer>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/supabase-client.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    renderCheckoutItems();
+  });
+
+  function renderCheckoutItems() {
+    const items = JSON.parse(localStorage.getItem('suntrade_cart') || '[]');
+    const container = document.getElementById('checkout-items');
+    const totalEl = document.getElementById('checkout-total');
+    const payAmount = document.getElementById('pay-amount');
+
+    if (items.length === 0) {
+      window.location.href = '/cart.html';
+      return;
+    }
+
+    container.innerHTML = items.map(item => `
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+        <span>${item.name} x${item.qty}</span>
+        <span style="font-weight:600;">€${(item.price * item.qty).toFixed(2)}</span>
+      </div>
+    `).join('');
+
+    const total = items.reduce((sum, item) => sum + item.price * item.qty, 0);
+    totalEl.textContent = '€' + total.toFixed(2);
+    payAmount.textContent = '€' + total.toFixed(2);
+  }
+
+  async function handleCheckout(e) {
+    e.preventDefault();
+    const btn = document.getElementById('pay-btn');
+    btn.disabled = true;
+    btn.innerHTML = t('checkout_processing');
+
+    const cartItems = JSON.parse(localStorage.getItem('suntrade_cart') || '[]');
+    const customerData = {
+      email: document.getElementById('checkout-email').value,
+      name: document.getElementById('checkout-name').value,
+      phone: document.getElementById('checkout-phone').value,
+      address: document.getElementById('checkout-address').value,
+      city: document.getElementById('checkout-city').value,
+      zip: document.getElementById('checkout-zip').value,
+      country: document.getElementById('checkout-country').value
+    };
+
+    try {
+      const response = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: cartItems, customer: customerData })
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else if (data.error) {
+        throw new Error(data.error);
+      }
+    } catch (err) {
+      alert('Payment error: ' + err.message);
+      btn.disabled = false;
+      btn.innerHTML = '<span data-i18n="checkout_pay">Pay with Stripe</span>';
+    }
+  }
+
+  // Check for success return
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('success') === 'true') {
+    document.getElementById('checkout-form').style.display = 'none';
+    document.querySelector('.cart-summary').style.display = 'none';
+    document.getElementById('payment-success').style.display = 'block';
+    document.getElementById('order-id').textContent = params.get('order_id') || 'N/A';
+    clearCart();
+  }
+</script>
+</body>
+</html>

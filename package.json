@@ -1,0 +1,14 @@
+{
+  "name": "suntrade",
+  "version": "1.0.0",
+  "description": "SunTrade - Global Marketplace",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve . -p 3000",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "stripe": "^14.0.0",
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
