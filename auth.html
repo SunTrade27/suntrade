@@ -43,8 +43,8 @@
 
     <!-- Tabs -->
     <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchAuthTab('signin')" data-i18n="auth_signin">Sign In</button>
-      <button class="auth-tab" onclick="switchAuthTab('signup')" data-i18n="auth_signup">Sign Up</button>
+      <button class="auth-tab active" data-tab="signin" onclick="switchAuthTab('signin')" data-i18n="auth_signin">Sign In</button>
+      <button class="auth-tab" data-tab="signup" onclick="switchAuthTab('signup')" data-i18n="auth_signup">Sign Up</button>
     </div>
 
     <!-- Sign In Form -->
@@ -97,13 +97,20 @@
       const user = await getCurrentUser();
       if (user) window.location.href = '/account.html';
     }, 500);
+
+    // If ?mode=signup, switch to sign up tab
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('mode') === 'signup') {
+      switchAuthTab('signup');
+    }
   });
 
   function switchAuthTab(tab) {
     document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
     document.getElementById('signin-form').style.display = tab === 'signin' ? 'block' : 'none';
     document.getElementById('signup-form').style.display = tab === 'signup' ? 'block' : 'none';
-    event.target.classList.add('active');
+    const activeTab = document.querySelector(`.auth-tab[data-tab="${tab}"]`);
+    if (activeTab) activeTab.classList.add('active');
     document.getElementById('signin-error').style.display = 'none';
     document.getElementById('signup-error').style.display = 'none';
     document.getElementById('signup-success').style.display = 'none';

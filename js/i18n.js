@@ -47,24 +47,28 @@ function applyTranslations() {
       }
     }
   });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    if (translations[key]) el.innerHTML = translations[key];
+  });
   document.querySelectorAll('[data-i18n-title]').forEach(el => {
     const key = el.getAttribute('data-i18n-title');
     if (translations[key]) el.title = translations[key];
   });
   // Update meta tags
   const titleEl = document.querySelector('title[data-i18n]');
-  if (titleEl) titleEl.textContent = t('meta_title');
+  if (titleEl) titleEl.textContent = t(titleEl.getAttribute('data-i18n'));
   const metaDesc = document.querySelector('meta[name="description"][data-i18n]');
-  if (metaDesc) metaDesc.content = t('meta_description');
+  if (metaDesc) metaDesc.content = t(metaDesc.getAttribute('data-i18n'));
 }
 
 function updateLangSwitcher() {
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.lang === currentLang);
   });
-  const currentBtn = document.getElementById('current-lang');
-  if (currentBtn) {
-    currentBtn.textContent = LANG_FLAGS[currentLang] + ' ' + currentLang.toUpperCase();
+  const toggle = document.getElementById('lang-toggle');
+  if (toggle) {
+    toggle.innerHTML = '<svg class="icon icon-md" style="vertical-align:middle"><use href="#icon-globe"/></svg> ' + currentLang.toUpperCase();
   }
 }
 

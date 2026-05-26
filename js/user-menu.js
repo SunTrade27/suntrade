@@ -28,12 +28,8 @@ async function initUserMenu() {
     `;
   } else {
     container.innerHTML = `
-      <a href="/auth.html" class="user-menu-btn" title="${t('auth_signin') || 'Sign In'}">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
-      </a>
+      <a href="/auth.html" class="nav-auth-link" data-i18n="auth_signin">${t('auth_signin') || 'Sign In'}</a>
+      <a href="/auth.html?mode=signup" class="nav-auth-link nav-auth-signup" data-i18n="auth_signup">${t('auth_signup') || 'Register'}</a>
     `;
   }
 

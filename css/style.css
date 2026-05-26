@@ -1632,6 +1632,31 @@ input, textarea, select { font-family: inherit; }
 #user-menu-container {
   position: relative;
 }
+.nav-auth-link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  color: var(--text);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  white-space: nowrap;
+}
+.nav-auth-link:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.nav-auth-signup {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+.nav-auth-signup:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  color: white;
+}
 .user-menu-btn {
   width: 36px;
   height: 36px;
