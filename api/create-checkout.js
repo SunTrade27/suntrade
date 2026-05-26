@@ -51,8 +51,8 @@ module.exports = async (req, res) => {
         customer_zip: customer?.zip || '',
         customer_country: customer?.country || '',
       },
-      success_url: `${req.headers.origin || 'https://your-domain.vercel.app'}/checkout.html?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.origin || 'https://your-domain.vercel.app'}/cart.html`,
+      success_url: `${req.headers.origin || 'https://www.suntrade.store'}/checkout.html?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.origin || 'https://www.suntrade.store'}/cart.html`,
     });
 
     return res.status(200).json({ url: session.url, session_id: session.id });
