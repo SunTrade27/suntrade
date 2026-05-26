@@ -91,6 +91,8 @@
 <script src="/js/supabase-client.js"></script>
 <script src="/js/user-menu.js"></script>
 <script>
+  initSupabase();
+
   document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(async () => {
       if (!supabase) return;
