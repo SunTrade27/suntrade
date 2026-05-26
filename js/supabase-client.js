@@ -77,7 +77,7 @@ async function adminUpdateOrderStatus(orderId, status) {
   if (error) throw error;
 }
 
-// Auth
+// Auth - Admin (legacy, kept for admin.html compatibility)
 async function adminLogin(email, password) {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) throw error;
@@ -93,6 +93,72 @@ async function getAdminSession() {
   return session;
 }
 
+// Auth - User
+async function userSignUp(email, password, fullName) {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { full_name: fullName } }
+  });
+  if (error) throw error;
+  return data;
+}
+
+async function userSignIn(email, password) {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) throw error;
+  return data;
+}
+
+async function userSignOut() {
+  await supabase.auth.signOut();
+}
+
+async function getCurrentUser() {
+  const { data: { user } } = await supabase.auth.getUser();
+  return user;
+}
+
+async function getUserProfile() {
+  const user = await getCurrentUser();
+  if (!user) return null;
+  const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+  if (error) console.error('getUserProfile error:', error);
+  return data;
+}
+
+async function updateUserProfile(updates) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error('Not logged in');
+  updates.updated_at = new Date().toISOString();
+  const { data, error } = await supabase.from('profiles').update(updates).eq('id', user.id).select().single();
+  if (error) throw error;
+  return data;
+}
+
+async function isUserAdmin() {
+  const profile = await getUserProfile();
+  return profile && profile.is_admin === true;
+}
+
+function onAuthStateChange(callback) {
+  return supabase.auth.onAuthStateChange((event, session) => {
+    callback(event, session);
+  });
+}
+
+// User orders
+async function getUserOrders() {
+  const user = await getCurrentUser();
+  if (!user) return [];
+  const { data, error } = await supabase.from('orders')
+    .select('*, products(*)')
+    .eq('customer_email', user.email)
+    .order('created_at', { ascending: false });
+  if (error) console.error('getUserOrders error:', error);
+  return data || [];
+}
+
 // Upload image to Supabase Storage
 async function uploadImage(file) {
   const fileName = `${Date.now()}_${file.name}`;
@@ -100,6 +166,70 @@ async function uploadImage(file) {
   if (error) throw error;
   const { data: { publicUrl } } = supabase.storage.from('product-images').getPublicUrl(fileName);
   return publicUrl;
+}
+
+// Reviews
+async function getReviews(productId) {
+  const { data, error } = await supabase.from('reviews')
+    .select('*')
+    .eq('product_id', productId)
+    .eq('approved', true)
+    .order('created_at', { ascending: false });
+  if (error) console.error('getReviews error:', error);
+  return data || [];
+}
+
+async function getApprovedReviews(limit = 10) {
+  let query = supabase.from('reviews')
+    .select('*, products(name_en, name_kz, name_ru, images)')
+    .eq('approved', true)
+    .order('created_at', { ascending: false });
+  if (limit) query = query.limit(limit);
+  const { data, error } = await query;
+  if (error) console.error('getApprovedReviews error:', error);
+  return data || [];
+}
+
+async function submitReview(review) {
+  const { data, error } = await supabase.from('reviews').insert(review).select().single();
+  if (error) throw error;
+  return data;
+}
+
+async function uploadReviewImage(file) {
+  const fileName = `review_${Date.now()}_${file.name}`;
+  const { data, error } = await supabase.storage.from('review-images').upload(fileName, file);
+  if (error) throw error;
+  const { data: { publicUrl } } = supabase.storage.from('review-images').getPublicUrl(fileName);
+  return publicUrl;
+}
+
+// Admin - Reviews
+async function adminGetReviews() {
+  const { data, error } = await supabase.from('reviews')
+    .select('*, products(name_en)')
+    .order('created_at', { ascending: false });
+  return data || [];
+}
+
+async function adminApproveReview(id) {
+  const { error } = await supabase.from('reviews').update({ approved: true }).eq('id', id);
+  if (error) throw error;
+}
+
+async function adminDeleteReview(id) {
+  const { error } = await supabase.from('reviews').delete().eq('id', id);
+  if (error) throw error;
+}
+
+async function getProductRating(productId) {
+  const { data, error } = await supabase.from('reviews')
+    .select('rating')
+    .eq('product_id', productId)
+    .eq('approved', true);
+  if (error || !data.length) return { avg: 0, count: 0 };
+  const avg = data.reduce((s, r) => s + r.rating, 0) / data.length;
+  return { avg: Math.round(avg * 10) / 10, count: data.length };
 }
 
 document.addEventListener('DOMContentLoaded', initSupabase);

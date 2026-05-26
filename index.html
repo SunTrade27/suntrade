@@ -6,8 +6,9 @@
   <title data-i18n="meta_title">SunTrade - Global Marketplace</title>
   <meta name="description" content="" data-i18n="meta_description">
   <link rel="stylesheet" href="/css/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☀️</text></svg>">
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/icons.js"></script>
 </head>
 <body>
 
@@ -22,13 +23,14 @@
     </ul>
     <div class="nav-right">
       <div class="lang-wrapper">
-        <button id="lang-toggle">🌐 EN</button>
+        <button id="lang-toggle"><svg class="icon icon-md" style="vertical-align:middle"><use href="#icon-globe"/></svg> EN</button>
         <div id="lang-dropdown"></div>
       </div>
       <a href="/cart.html" class="cart-link">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
         <span id="cart-badge">0</span>
       </a>
+      <div id="user-menu-container"></div>
       <button class="mobile-menu-btn" onclick="document.getElementById('nav-links').classList.toggle('show')">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
@@ -69,19 +71,8 @@
 <!-- TESTIMONIALS -->
 <section class="section">
   <h2 class="section-title" data-i18n="testimonials_title">What Our Customers Say</h2>
-  <div class="products-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
-    <div style="background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;">
-      <p style="color: var(--text-light); margin-bottom: 1rem; font-style: italic;">"Amazing quality and fast delivery! Will definitely order again."</p>
-      <p style="font-weight: 600;">— Maria K., Germany</p>
-    </div>
-    <div style="background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;">
-      <p style="color: var(--text-light); margin-bottom: 1rem; font-style: italic;">"Best prices I've found online. Customer service is excellent."</p>
-      <p style="font-weight: 600;">— Pierre L., France</p>
-    </div>
-    <div style="background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;">
-      <p style="color: var(--text-light); margin-bottom: 1rem; font-style: italic;">"Very reliable marketplace. Products match the description perfectly."</p>
-      <p style="font-weight: 600;">— Ahmet Y., Turkey</p>
-    </div>
+  <div id="homepage-reviews" class="products-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+    <!-- Loaded dynamically from Supabase -->
   </div>
 </section>
 
@@ -100,7 +91,12 @@
     <div class="footer-col">
       <h4 data-i18n="footer_contact">Contact</h4>
       <a href="https://wa.me/YOUR_NUMBER" data-i18n="footer_whatsapp">WhatsApp</a>
-      <a href="mailto:info@suntrade.com" data-i18n="footer_email">Email</a>
+      <a href="mailto:info@suntrade.store" data-i18n="footer_email">Email</a>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="account_title">My Account</h4>
+      <a href="/auth.html" data-i18n="auth_signin">Sign In</a>
+      <a href="/account.html" data-i18n="account_profile">Profile</a>
     </div>
     <div class="footer-col">
       <h4 data-i18n="footer_follow">Follow Us</h4>
@@ -112,8 +108,8 @@
   <div class="footer-bottom">
     <p>&copy; 2026 SunTrade. <span data-i18n="footer_rights">All rights reserved.</span></p>
     <div style="display: flex; gap: 1rem;">
-      <a href="#" data-i18n="footer_privacy">Privacy Policy</a>
-      <a href="#" data-i18n="footer_terms">Terms of Service</a>
+      <a href="/privacy-policy.html" data-i18n="footer_privacy">Privacy Policy</a>
+      <a href="/terms.html" data-i18n="footer_terms">Terms of Service</a>
     </div>
   </div>
 </footer>
@@ -127,6 +123,11 @@
 <script src="/js/cart.js"></script>
 <script src="/js/supabase-client.js"></script>
 <script>
+  function escHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
   // Load featured products and categories on homepage
   document.addEventListener('DOMContentLoaded', async () => {
     // Wait for supabase to init
@@ -139,7 +140,7 @@
       if (catGrid && categories.length) {
         catGrid.innerHTML = categories.map(cat => `
           <a href="/catalog.html?category=${cat.id}" class="category-card">
-            <div class="category-icon">${cat.icon || '📦'}</div>
+            <div class="category-icon">${cat.icon ? (cat.icon.length <= 4 ? cat.icon : `<svg class="icon icon-xl"><use href="#icon-${cat.icon}"/></svg>`) : '<svg class="icon icon-xl"><use href="#icon-package"/></svg>'}</div>
             <div class="category-name" data-field="name_${currentLang}">${cat['name_' + currentLang] || cat.name_en || 'Category'}</div>
           </a>
         `).join('');
@@ -150,6 +151,47 @@
       const prodGrid = document.getElementById('featured-products');
       if (prodGrid && products.length) {
         prodGrid.innerHTML = products.map(p => renderProductCard(p)).join('');
+      }
+
+      // Homepage reviews
+      const reviews = await getApprovedReviews(6);
+      const reviewsGrid = document.getElementById('homepage-reviews');
+      if (reviewsGrid && reviews.length) {
+        reviewsGrid.innerHTML = reviews.map(r => {
+          const safeName = escHtml(r.customer_name);
+          const productName = r.products ? escHtml(r.products['name_' + currentLang] || r.products.name_en || '') : '';
+          const productImg = r.products && r.products.images && r.products.images[0] ? escHtml(r.products.images[0]) : '';
+          return `
+            <div style="background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;">
+              <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
+                <div style="width:48px;height:48px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.2rem;flex-shrink:0;">${safeName.charAt(0).toUpperCase()}</div>
+                <div>
+                  <strong>${safeName}</strong>
+                  ${r.verified ? '<span style="background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:50px;font-size:0.7rem;font-weight:600;margin-left:6px;">✓ Verified</span>' : ''}
+                  <div style="color:var(--primary);font-size:0.9rem;">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+                </div>
+              </div>
+              ${productName ? `<p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem;">${productImg ? `<img src="${productImg}" style="width:30px;height:30px;object-fit:cover;border-radius:4px;vertical-align:middle;margin-right:6px;">` : ''}${productName}</p>` : ''}
+              <p style="color: var(--text-light); margin-bottom: 1rem; font-style: italic;">"${escHtml(r.comment) || 'Great product!'}"</p>
+              ${r.images && r.images.length ? `<div style="display:flex;gap:0.5rem;margin-bottom:1rem;">${r.images.slice(0,3).map(img => `<img src="${escHtml(img)}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;">`).join('')}</div>` : ''}
+            </div>
+          `;
+        }).join('');
+      } else if (reviewsGrid) {
+        reviewsGrid.innerHTML = `
+          <div style="background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;">
+            <p style="color: var(--text-light); margin-bottom: 1rem; font-style: italic;">"Amazing quality and fast delivery! Will definitely order again."</p>
+            <p style="font-weight: 600;">— Maria K., Germany</p>
+          </div>
+          <div style="background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;">
+            <p style="color: var(--text-light); margin-bottom: 1rem; font-style: italic;">"Best prices I've found online. Customer service is excellent."</p>
+            <p style="font-weight: 600;">— Pierre L., France</p>
+          </div>
+          <div style="background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;">
+            <p style="color: var(--text-light); margin-bottom: 1rem; font-style: italic;">"Very reliable marketplace. Products match the description perfectly."</p>
+            <p style="font-weight: 600;">— Ahmet Y., Turkey</p>
+          </div>
+        `;
       }
     }, 500);
   });
@@ -171,5 +213,7 @@
     `;
   }
 </script>
+<script src="/js/chat-widget.js"></script>
+<script src="/js/user-menu.js"></script>
 </body>
 </html>

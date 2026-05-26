@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="auth_title">Sign In - SunTrade</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/icons.js"></script>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="logo">Sun<span>Trade</span></a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/" data-i18n="nav_home">Home</a></li>
+      <li><a href="/catalog.html" data-i18n="nav_catalog">Catalog</a></li>
+      <li><a href="/cart.html" data-i18n="nav_cart">Cart</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-wrapper">
+        <button id="lang-toggle"><svg class="icon icon-md" style="vertical-align:middle"><use href="#icon-globe"/></svg> EN</button>
+        <div id="lang-dropdown"></div>
+      </div>
+      <a href="/cart.html" class="cart-link">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+        <span id="cart-badge">0</span>
+      </a>
+      <div id="user-menu-container"></div>
+      <button class="mobile-menu-btn" onclick="document.getElementById('nav-links').classList.toggle('show')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">Sun<span>Trade</span></div>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('signin')" data-i18n="auth_signin">Sign In</button>
+      <button class="auth-tab" onclick="switchAuthTab('signup')" data-i18n="auth_signup">Sign Up</button>
+    </div>
+
+    <!-- Sign In Form -->
+    <form id="signin-form" onsubmit="handleSignIn(event)">
+      <div class="form-group">
+        <label data-i18n="auth_email">Email</label>
+        <input type="email" id="signin-email" required>
+      </div>
+      <div class="form-group">
+        <label data-i18n="auth_password">Password</label>
+        <input type="password" id="signin-password" required minlength="6">
+      </div>
+      <p id="signin-error" class="auth-error"></p>
+      <button type="submit" class="btn-pay" data-i18n="auth_signin_btn">Sign In</button>
+    </form>
+
+    <!-- Sign Up Form -->
+    <form id="signup-form" style="display:none;" onsubmit="handleSignUp(event)">
+      <div class="form-group">
+        <label data-i18n="auth_full_name">Full Name</label>
+        <input type="text" id="signup-name" required>
+      </div>
+      <div class="form-group">
+        <label data-i18n="auth_email">Email</label>
+        <input type="email" id="signup-email" required>
+      </div>
+      <div class="form-group">
+        <label data-i18n="auth_password">Password</label>
+        <input type="password" id="signup-password" required minlength="6">
+      </div>
+      <div class="form-group">
+        <label data-i18n="auth_confirm_password">Confirm Password</label>
+        <input type="password" id="signup-confirm" required minlength="6">
+      </div>
+      <p id="signup-error" class="auth-error"></p>
+      <p id="signup-success" class="auth-success"></p>
+      <button type="submit" class="btn-pay" data-i18n="auth_signup_btn">Sign Up</button>
+    </form>
+  </div>
+</div>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/supabase-client.js"></script>
+<script src="/js/user-menu.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    setTimeout(async () => {
+      if (!supabase) return;
+      const user = await getCurrentUser();
+      if (user) window.location.href = '/account.html';
+    }, 500);
+  });
+
+  function switchAuthTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('signin-form').style.display = tab === 'signin' ? 'block' : 'none';
+    document.getElementById('signup-form').style.display = tab === 'signup' ? 'block' : 'none';
+    event.target.classList.add('active');
+    document.getElementById('signin-error').style.display = 'none';
+    document.getElementById('signup-error').style.display = 'none';
+    document.getElementById('signup-success').style.display = 'none';
+  }
+
+  async function handleSignIn(e) {
+    e.preventDefault();
+    const errEl = document.getElementById('signin-error');
+    errEl.style.display = 'none';
+    try {
+      await userSignIn(
+        document.getElementById('signin-email').value,
+        document.getElementById('signin-password').value
+      );
+      window.location.href = '/account.html';
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.style.display = 'block';
+    }
+  }
+
+  async function handleSignUp(e) {
+    e.preventDefault();
+    const errEl = document.getElementById('signup-error');
+    const succEl = document.getElementById('signup-success');
+    errEl.style.display = 'none';
+    succEl.style.display = 'none';
+
+    const password = document.getElementById('signup-password').value;
+    const confirm = document.getElementById('signup-confirm').value;
+    if (password !== confirm) {
+      errEl.textContent = t('auth_password_mismatch');
+      errEl.style.display = 'block';
+      return;
+    }
+
+    try {
+      await userSignUp(
+        document.getElementById('signup-email').value,
+        password,
+        document.getElementById('signup-name').value
+      );
+      succEl.textContent = t('auth_check_email');
+      succEl.style.display = 'block';
+      document.getElementById('signup-form').reset();
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.style.display = 'block';
+    }
+  }
+</script>
+</body>
+</html>

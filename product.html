@@ -6,8 +6,9 @@
   <title data-i18n="meta_title">SunTrade - Product</title>
   <meta name="description" content="" data-i18n="meta_description">
   <link rel="stylesheet" href="/css/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☀️</text></svg>">
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/icons.js"></script>
 </head>
 <body>
 
@@ -22,13 +23,14 @@
     </ul>
     <div class="nav-right">
       <div class="lang-wrapper">
-        <button id="lang-toggle">🌐 EN</button>
+        <button id="lang-toggle"><svg class="icon icon-md" style="vertical-align:middle"><use href="#icon-globe"/></svg> EN</button>
         <div id="lang-dropdown"></div>
       </div>
       <a href="/cart.html" class="cart-link">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
         <span id="cart-badge">0</span>
       </a>
+      <div id="user-menu-container"></div>
       <button class="mobile-menu-btn" onclick="document.getElementById('nav-links').classList.toggle('show')">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
@@ -41,30 +43,88 @@
   <div class="loading-spinner"><div class="spinner"></div></div>
 </div>
 
+<!-- REVIEWS SECTION -->
+<section class="section" id="reviews-section" style="display:none; max-width: 900px;">
+  <h2 class="section-title" data-i18n="product_reviews">Customer Reviews</h2>
+
+  <!-- Rating Summary -->
+  <div id="rating-summary" style="text-align:center;margin-bottom:2rem;"></div>
+
+  <!-- Review Form -->
+  <div id="review-form-container" style="background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin-bottom:2rem;">
+    <h3 style="margin-bottom:1rem;font-size:1.1rem;">Write a Review</h3>
+    <form id="review-form" onsubmit="submitProductReview(event)">
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="review-name" required placeholder="Your name">
+      </div>
+      <div class="form-group">
+        <label>Your Email</label>
+        <input type="email" id="review-email" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label>Rating</label>
+        <div id="star-rating" style="display:flex;gap:4px;font-size:2rem;cursor:pointer;">
+          <span onclick="setRating(1)" data-star="1">☆</span>
+          <span onclick="setRating(2)" data-star="2">☆</span>
+          <span onclick="setRating(3)" data-star="3">☆</span>
+          <span onclick="setRating(4)" data-star="4">☆</span>
+          <span onclick="setRating(5)" data-star="5">☆</span>
+        </div>
+        <input type="hidden" id="review-rating" value="0">
+      </div>
+      <div class="form-group">
+        <label>Your Review</label>
+        <textarea id="review-comment" rows="4" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:var(--radius-sm);resize:vertical;" placeholder="Share your experience with this product..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Add Photos (optional)</label>
+        <input type="file" id="review-images-input" accept="image/*" multiple style="padding:8px;">
+        <div id="review-images-preview" style="display:flex;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap;"></div>
+      </div>
+      <button type="submit" class="btn-pay" style="max-width:200px;" data-i18n="review_submit">Submit Review</button>
+    </form>
+  </div>
+
+  <!-- Reviews List -->
+  <div id="reviews-list"></div>
+</section>
+
 <!-- FOOTER -->
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-brand">
       <div class="logo">Sun<span style="color: var(--primary);">Trade</span></div>
-      <p data-i18n="footer_about_text">SunTrade is your trusted global marketplace.</p>
+      <p data-i18n="footer_about_text">SunTrade is your trusted global marketplace for quality products from China.</p>
     </div>
     <div class="footer-col">
       <h4 data-i18n="nav_catalog">Catalog</h4>
       <a href="/catalog.html" data-i18n="all_categories">All Categories</a>
+      <a href="/catalog.html" data-i18n="featured_title">Featured Products</a>
     </div>
     <div class="footer-col">
       <h4 data-i18n="footer_contact">Contact</h4>
       <a href="https://wa.me/YOUR_NUMBER" data-i18n="footer_whatsapp">WhatsApp</a>
-      <a href="mailto:info@suntrade.com" data-i18n="footer_email">Email</a>
+      <a href="mailto:info@suntrade.store" data-i18n="footer_email">Email</a>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="account_title">My Account</h4>
+      <a href="/auth.html" data-i18n="auth_signin">Sign In</a>
+      <a href="/account.html" data-i18n="account_profile">Profile</a>
     </div>
     <div class="footer-col">
       <h4 data-i18n="footer_follow">Follow Us</h4>
       <a href="#">Instagram</a>
       <a href="#">Facebook</a>
+      <a href="#">TikTok</a>
     </div>
   </div>
   <div class="footer-bottom">
     <p>&copy; 2026 SunTrade. <span data-i18n="footer_rights">All rights reserved.</span></p>
+    <div style="display: flex; gap: 1rem;">
+      <a href="/privacy-policy.html" data-i18n="footer_privacy">Privacy Policy</a>
+      <a href="/terms.html" data-i18n="footer_terms">Terms of Service</a>
+    </div>
   </div>
 </footer>
 
@@ -162,6 +222,10 @@
       </div>
     `;
 
+    // Load reviews for this product
+    loadProductReviews(p.id);
+    loadProductRating(p.id);
+
     // Setup gallery zoom
     const mainImg = document.getElementById('main-image');
     if (mainImg) {
@@ -212,6 +276,143 @@
       showNotification('Link copied!');
     }
   }
+
+  // Reviews
+  let reviewImageUrls = [];
+  let selectedRating = 0;
+
+  function escHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function setRating(stars) {
+    selectedRating = stars;
+    document.getElementById('review-rating').value = stars;
+    const starsEl = document.getElementById('star-rating');
+    starsEl.querySelectorAll('span').forEach(s => {
+      const val = parseInt(s.dataset.star);
+      s.textContent = val <= stars ? '★' : '☆';
+      s.style.color = val <= stars ? 'var(--primary)' : 'var(--text-muted)';
+    });
+  }
+
+  async function loadProductRating(productId) {
+    const ratingData = await getProductRating(productId);
+    const summaryEl = document.getElementById('rating-summary');
+    if (ratingData.count === 0) {
+      summaryEl.innerHTML = '<p style="color:var(--text-light);">No reviews yet. Be the first to review!</p>';
+      return;
+    }
+    const fullStars = Math.floor(ratingData.avg);
+    const stars = '★'.repeat(fullStars) + '☆'.repeat(5 - fullStars);
+    summaryEl.innerHTML = `
+      <div style="font-size:3rem;font-weight:800;color:var(--primary);">${ratingData.avg}</div>
+      <div style="font-size:2rem;color:var(--primary);margin:0.5rem 0;">${stars}</div>
+      <p style="color:var(--text-light);">Based on ${ratingData.count} review${ratingData.count > 1 ? 's' : ''}</p>
+    `;
+  }
+
+  async function loadProductReviews(productId) {
+    const reviews = await getReviews(productId);
+    const section = document.getElementById('reviews-section');
+    section.style.display = 'block';
+
+    const listEl = document.getElementById('reviews-list');
+    if (reviews.length === 0) {
+      listEl.innerHTML = '<p style="color:var(--text-light);text-align:center;">No reviews yet.</p>';
+      return;
+    }
+
+    listEl.innerHTML = reviews.map(r => `
+      <div style="background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+          <div>
+            <strong>${escHtml(r.customer_name)}</strong>
+            ${r.verified ? '<span style="background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:50px;font-size:0.75rem;font-weight:600;margin-left:8px;">Verified Purchase</span>' : ''}
+          </div>
+          <div style="color:var(--primary);font-size:1.1rem;">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+        </div>
+        <p style="color:var(--text-light);line-height:1.7;margin-bottom:0.75rem;">${escHtml(r.comment)}</p>
+        ${r.images && r.images.length ? `
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            ${r.images.map(img => `<img src="${escHtml(img)}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;cursor:pointer;">`).join('')}
+          </div>
+        ` : ''}
+        <div style="color:var(--text-muted);font-size:0.8rem;margin-top:0.75rem;">${new Date(r.created_at).toLocaleDateString()}</div>
+      </div>
+    `).join('');
+  }
+
+  // Review image upload
+  document.getElementById('review-images-input')?.addEventListener('change', async (e) => {
+    for (const file of e.target.files) {
+      if (!file.type.startsWith('image/')) continue;
+      try {
+        const url = await uploadReviewImage(file);
+        reviewImageUrls.push(url);
+        updateReviewImagePreview();
+      } catch (err) {
+        console.error('Review image upload error:', err);
+      }
+    }
+  });
+
+  function updateReviewImagePreview() {
+    const preview = document.getElementById('review-images-preview');
+    preview.innerHTML = reviewImageUrls.map((url, i) => `
+      <div style="position:relative;width:60px;height:60px;">
+        <img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">
+        <button onclick="reviewImageUrls.splice(${i},1);updateReviewImagePreview();" style="position:absolute;top:-6px;right:-6px;background:var(--danger);color:white;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;">x</button>
+      </div>
+    `).join('');
+  }
+
+  async function submitProductReview(e) {
+    e.preventDefault();
+    if (selectedRating === 0) {
+      alert('Please select a rating');
+      return;
+    }
+
+    const review = {
+      product_id: currentProduct.id,
+      customer_name: document.getElementById('review-name').value,
+      customer_email: document.getElementById('review-email').value || null,
+      rating: selectedRating,
+      comment: document.getElementById('review-comment').value || null,
+      images: reviewImageUrls,
+      approved: false,
+      verified: false
+    };
+
+    // Check if review is from a verified buyer (email matches order)
+    try {
+      const { data: orders } = await supabase.from('orders')
+        .select('id')
+        .eq('customer_email', review.customer_email)
+        .eq('product_id', currentProduct.id)
+        .eq('status', 'delivered')
+        .limit(1);
+      if (orders && orders.length > 0) {
+        review.verified = true;
+        review.order_id = orders[0].id;
+      }
+    } catch (err) { /* ignore */ }
+
+    try {
+      await submitReview(review);
+      document.getElementById('review-form').reset();
+      setRating(0);
+      reviewImageUrls = [];
+      updateReviewImagePreview();
+      showNotification('Review submitted! It will appear after approval.');
+    } catch (err) {
+      alert('Error submitting review: ' + err.message);
+    }
+  }
 </script>
+<script src="/js/chat-widget.js"></script>
+<script src="/js/user-menu.js"></script>
 </body>
 </html>
