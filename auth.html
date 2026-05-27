@@ -72,6 +72,24 @@
         <input type="email" id="signup-email" required>
       </div>
       <div class="form-group">
+        <label>🌍 <span data-i18n="auth_country">Country / Ел / Страна</span></label>
+        <select id="signup-country" required>
+          <option value="">--</option>
+          <option value="kz">🇰🇿 Қазақстан</option>
+          <option value="ru">🇷🇺 Россия</option>
+          <option value="en">🇬🇧 United Kingdom</option>
+          <option value="de">🇩🇪 Deutschland</option>
+          <option value="fr">🇫🇷 France</option>
+          <option value="es">🇪🇸 España</option>
+          <option value="it">🇮🇹 Italia</option>
+          <option value="tr">🇹🇷 Türkiye</option>
+          <option value="pt">🇵🇹 Portugal</option>
+          <option value="nl">🇳🇱 Nederland</option>
+          <option value="pl">🇵🇱 Polska</option>
+          <option value="ar">🇸🇦 العربية</option>
+        </select>
+      </div>
+      <div class="form-group">
         <label data-i18n="auth_password">Password</label>
         <input type="password" id="signup-password" required minlength="6">
       </div>
@@ -149,11 +167,12 @@
     }
 
     try {
+      const selectedLang = document.getElementById('signup-country').value || currentLang;
       await userSignUp(
         document.getElementById('signup-email').value,
         password,
         document.getElementById('signup-name').value,
-        currentLang
+        selectedLang
       );
       succEl.textContent = t('auth_check_email');
       succEl.style.display = 'block';
