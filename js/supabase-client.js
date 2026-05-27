@@ -232,4 +232,8 @@ async function getProductRating(productId) {
   return { avg: Math.round(avg * 10) / 10, count: data.length };
 }
 
-document.addEventListener('DOMContentLoaded', initSupabase);
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initSupabase);
+} else {
+  initSupabase();
+}
