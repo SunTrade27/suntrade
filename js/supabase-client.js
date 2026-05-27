@@ -93,11 +93,11 @@ async function getAdminSession() {
 }
 
 // Auth - User
-async function userSignUp(email, password, fullName) {
+async function userSignUp(email, password, fullName, language) {
   const { data, error } = await sb.auth.signUp({
     email,
     password,
-    options: { data: { full_name: fullName } }
+    options: { data: { full_name: fullName, language: language || 'en' } }
   });
   if (error) throw error;
   return data;

@@ -152,7 +152,8 @@
       await userSignUp(
         document.getElementById('signup-email').value,
         password,
-        document.getElementById('signup-name').value
+        document.getElementById('signup-name').value,
+        currentLang
       );
       succEl.textContent = t('auth_check_email');
       succEl.style.display = 'block';
