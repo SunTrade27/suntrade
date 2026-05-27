@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function initUserMenu() {
   const container = document.getElementById('user-menu-container');
-  if (!container || !supabase) return;
+  if (!container || !sb) return;
 
   const user = await getCurrentUser();
 

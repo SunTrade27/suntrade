@@ -132,7 +132,7 @@
   document.addEventListener('DOMContentLoaded', async () => {
     // Wait for supabase to init
     setTimeout(async () => {
-      if (!supabase) return;
+      if (!sb) return;
 
       // Categories
       const categories = await getCategories();

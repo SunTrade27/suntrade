@@ -240,11 +240,11 @@
     let attempts = 0;
     async function tryInit() {
       attempts++;
-      if (!supabase && attempts < 10) {
+      if (!sb && attempts < 10) {
         setTimeout(tryInit, 300);
         return;
       }
-      if (!supabase) {
+      if (!sb) {
         document.getElementById('loading-screen').style.display = 'none';
         document.getElementById('login-page').style.display = 'flex';
         const errEl = document.getElementById('login-error');

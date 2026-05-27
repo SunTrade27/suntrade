@@ -196,7 +196,7 @@
     renderCheckoutItems();
     // Pre-fill user data if logged in
     setTimeout(async () => {
-      if (!supabase) return;
+      if (!sb) return;
       try {
         const profile = await getUserProfile();
         if (profile) {

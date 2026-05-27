@@ -1,20 +1,19 @@
 // Supabase client configuration
-// Replace with your actual Supabase URL and anon key
 const SUPABASE_URL = 'https://wmznfdngucpsmjbxiwzn.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtem5mZG5ndWNwc21qYnhpd3puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1Nzk1NDAsImV4cCI6MjA5NTE1NTU0MH0.DaYcIF7uaU0FSWbB9Mlq4YVVYm2EleOSz6ACtwyHjsI';
 
-let supabase;
+let sb = null;
 
 function initSupabase() {
-  if (typeof window.supabase !== 'undefined') {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  if (window.supabase && window.supabase.createClient) {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   }
-  return supabase;
+  return sb;
 }
 
 // Products
 async function getProducts(options = {}) {
-  let query = supabase.from('products').select('*, categories(*)').eq('active', true);
+  let query = sb.from('products').select('*, categories(*)').eq('active', true);
   if (options.categoryId) query = query.eq('category_id', options.categoryId);
   if (options.search) query = query.or(`name_en.ilike.%${options.search}%,name_ru.ilike.%${options.search}%,name_kz.ilike.%${options.search}%`);
   if (options.sort === 'price_asc') query = query.order('price', { ascending: true });
@@ -27,20 +26,20 @@ async function getProducts(options = {}) {
 }
 
 async function getProduct(id) {
-  const { data, error } = await supabase.from('products').select('*, categories(*)').eq('id', id).single();
+  const { data, error } = await sb.from('products').select('*, categories(*)').eq('id', id).single();
   if (error) console.error('getProduct error:', error);
   return data;
 }
 
 async function getCategories() {
-  const { data, error } = await supabase.from('categories').select('*').order('name_en');
+  const { data, error } = await sb.from('categories').select('*').order('name_en');
   if (error) console.error('getCategories error:', error);
   return data || [];
 }
 
 // Admin - Products
 async function adminGetProducts() {
-  const { data, error } = await supabase.from('products').select('*, categories(*)').order('created_at', { ascending: false });
+  const { data, error } = await sb.from('products').select('*, categories(*)').order('created_at', { ascending: false });
   return data || [];
 }
 
@@ -51,51 +50,51 @@ async function adminSaveProduct(product) {
   const row = {};
   fields.forEach(f => { if (product[f] !== undefined) row[f] = product[f]; });
   if (product.id) {
-    const { data, error } = await supabase.from('products').update(row).eq('id', product.id).select().single();
+    const { data, error } = await sb.from('products').update(row).eq('id', product.id).select().single();
     if (error) throw error;
     return data;
   } else {
-    const { data, error } = await supabase.from('products').insert(row).select().single();
+    const { data, error } = await sb.from('products').insert(row).select().single();
     if (error) throw error;
     return data;
   }
 }
 
 async function adminDeleteProduct(id) {
-  const { error } = await supabase.from('products').delete().eq('id', id);
+  const { error } = await sb.from('products').delete().eq('id', id);
   if (error) throw error;
 }
 
 // Admin - Orders
 async function adminGetOrders() {
-  const { data, error } = await supabase.from('orders').select('*, products(*)').order('created_at', { ascending: false });
+  const { data, error } = await sb.from('orders').select('*, products(*)').order('created_at', { ascending: false });
   return data || [];
 }
 
 async function adminUpdateOrderStatus(orderId, status) {
-  const { error } = await supabase.from('orders').update({ status }).eq('id', orderId);
+  const { error } = await sb.from('orders').update({ status }).eq('id', orderId);
   if (error) throw error;
 }
 
 // Auth - Admin (legacy, kept for admin.html compatibility)
 async function adminLogin(email, password) {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
   if (error) throw error;
   return data;
 }
 
 async function adminLogout() {
-  await supabase.auth.signOut();
+  await sb.auth.signOut();
 }
 
 async function getAdminSession() {
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await sb.auth.getSession();
   return session;
 }
 
 // Auth - User
 async function userSignUp(email, password, fullName) {
-  const { data, error } = await supabase.auth.signUp({
+  const { data, error } = await sb.auth.signUp({
     email,
     password,
     options: { data: { full_name: fullName } }
@@ -105,24 +104,24 @@ async function userSignUp(email, password, fullName) {
 }
 
 async function userSignIn(email, password) {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
   if (error) throw error;
   return data;
 }
 
 async function userSignOut() {
-  await supabase.auth.signOut();
+  await sb.auth.signOut();
 }
 
 async function getCurrentUser() {
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await sb.auth.getUser();
   return user;
 }
 
 async function getUserProfile() {
   const user = await getCurrentUser();
   if (!user) return null;
-  const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+  const { data, error } = await sb.from('profiles').select('*').eq('id', user.id).single();
   if (error) console.error('getUserProfile error:', error);
   return data;
 }
@@ -131,7 +130,7 @@ async function updateUserProfile(updates) {
   const user = await getCurrentUser();
   if (!user) throw new Error('Not logged in');
   updates.updated_at = new Date().toISOString();
-  const { data, error } = await supabase.from('profiles').update(updates).eq('id', user.id).select().single();
+  const { data, error } = await sb.from('profiles').update(updates).eq('id', user.id).select().single();
   if (error) throw error;
   return data;
 }
@@ -142,7 +141,7 @@ async function isUserAdmin() {
 }
 
 function onAuthStateChange(callback) {
-  return supabase.auth.onAuthStateChange((event, session) => {
+  return sb.auth.onAuthStateChange((event, session) => {
     callback(event, session);
   });
 }
@@ -151,7 +150,7 @@ function onAuthStateChange(callback) {
 async function getUserOrders() {
   const user = await getCurrentUser();
   if (!user) return [];
-  const { data, error } = await supabase.from('orders')
+  const { data, error } = await sb.from('orders')
     .select('*, products(*)')
     .eq('customer_email', user.email)
     .order('created_at', { ascending: false });
@@ -162,15 +161,15 @@ async function getUserOrders() {
 // Upload image to Supabase Storage
 async function uploadImage(file) {
   const fileName = `${Date.now()}_${file.name}`;
-  const { data, error } = await supabase.storage.from('product-images').upload(fileName, file);
+  const { data, error } = await sb.storage.from('product-images').upload(fileName, file);
   if (error) throw error;
-  const { data: { publicUrl } } = supabase.storage.from('product-images').getPublicUrl(fileName);
+  const { data: { publicUrl } } = sb.storage.from('product-images').getPublicUrl(fileName);
   return publicUrl;
 }
 
 // Reviews
 async function getReviews(productId) {
-  const { data, error } = await supabase.from('reviews')
+  const { data, error } = await sb.from('reviews')
     .select('*')
     .eq('product_id', productId)
     .eq('approved', true)
@@ -180,7 +179,7 @@ async function getReviews(productId) {
 }
 
 async function getApprovedReviews(limit = 10) {
-  let query = supabase.from('reviews')
+  let query = sb.from('reviews')
     .select('*, products(name_en, name_kz, name_ru, images)')
     .eq('approved', true)
     .order('created_at', { ascending: false });
@@ -191,39 +190,39 @@ async function getApprovedReviews(limit = 10) {
 }
 
 async function submitReview(review) {
-  const { data, error } = await supabase.from('reviews').insert(review).select().single();
+  const { data, error } = await sb.from('reviews').insert(review).select().single();
   if (error) throw error;
   return data;
 }
 
 async function uploadReviewImage(file) {
   const fileName = `review_${Date.now()}_${file.name}`;
-  const { data, error } = await supabase.storage.from('review-images').upload(fileName, file);
+  const { data, error } = await sb.storage.from('review-images').upload(fileName, file);
   if (error) throw error;
-  const { data: { publicUrl } } = supabase.storage.from('review-images').getPublicUrl(fileName);
+  const { data: { publicUrl } } = sb.storage.from('review-images').getPublicUrl(fileName);
   return publicUrl;
 }
 
 // Admin - Reviews
 async function adminGetReviews() {
-  const { data, error } = await supabase.from('reviews')
+  const { data, error } = await sb.from('reviews')
     .select('*, products(name_en)')
     .order('created_at', { ascending: false });
   return data || [];
 }
 
 async function adminApproveReview(id) {
-  const { error } = await supabase.from('reviews').update({ approved: true }).eq('id', id);
+  const { error } = await sb.from('reviews').update({ approved: true }).eq('id', id);
   if (error) throw error;
 }
 
 async function adminDeleteReview(id) {
-  const { error } = await supabase.from('reviews').delete().eq('id', id);
+  const { error } = await sb.from('reviews').delete().eq('id', id);
   if (error) throw error;
 }
 
 async function getProductRating(productId) {
-  const { data, error } = await supabase.from('reviews')
+  const { data, error } = await sb.from('reviews')
     .select('rating')
     .eq('product_id', productId)
     .eq('approved', true);

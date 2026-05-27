@@ -145,7 +145,7 @@
     if (!productId) { window.location.href = '/catalog.html'; return; }
 
     setTimeout(async () => {
-      if (!supabase) return;
+      if (!sb) return;
       currentProduct = await getProduct(productId);
       if (!currentProduct) {
         document.getElementById('product-detail').innerHTML = '<div style="text-align:center;padding:4rem;"><h2>Product not found</h2><a href="/catalog.html" style="color:var(--primary);">Back to catalog</a></div>';
@@ -388,7 +388,7 @@
 
     // Check if review is from a verified buyer (email matches order)
     try {
-      const { data: orders } = await supabase.from('orders')
+      const { data: orders } = await sb.from('orders')
         .select('id')
         .eq('customer_email', review.customer_email)
         .eq('product_id', currentProduct.id)

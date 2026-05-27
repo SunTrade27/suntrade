@@ -94,7 +94,7 @@
   document.addEventListener('DOMContentLoaded', async () => {
     initSupabase();
     setTimeout(async () => {
-      if (!supabase) return;
+      if (!sb) return;
       const user = await getCurrentUser();
       if (user) window.location.href = '/account.html';
     }, 500);
