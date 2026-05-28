@@ -43,7 +43,12 @@
   <div class="hero-content">
     <h1 data-i18n="hero_title">Discover Amazing Products</h1>
     <p data-i18n="hero_subtitle">Quality products from China at the best prices. Worldwide shipping!</p>
-    <a href="/catalog.html" class="hero-cta" data-i18n="hero_cta">Shop Now</a>
+    <div class="hero-search">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="hero-search-input" data-i18n="search_placeholder" placeholder="Search products..." oninput="debounceHeroSearch()">
+      <button onclick="doHeroSearch()" class="hero-search-btn" data-i18n="hero_cta">Shop Now</button>
+    </div>
+    <div id="hero-search-results" class="hero-search-results" style="display:none;"></div>
   </div>
 </section>
 
@@ -121,6 +126,42 @@
   function escHtml(str) {
     if (!str) return '';
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // Hero search
+  let heroSearchTimeout;
+  function debounceHeroSearch() {
+    clearTimeout(heroSearchTimeout);
+    heroSearchTimeout = setTimeout(doHeroSearch, 400);
+  }
+
+  async function doHeroSearch() {
+    const input = document.getElementById('hero-search-input');
+    const resultsEl = document.getElementById('hero-search-results');
+    if (!input || !resultsEl) return;
+    const query = input.value.trim();
+    if (query.length < 2) {
+      resultsEl.style.display = 'none';
+      return;
+    }
+    try {
+      const products = await getProducts({ search: query, limit: 8 });
+      if (products.length === 0) {
+        resultsEl.innerHTML = '<div style="padding:1rem;text-align:center;color:var(--text-light);">Нәтиже табылмады</div>';
+      } else {
+        resultsEl.innerHTML = products.map(p => {
+          const name = p['name_' + currentLang] || p.name_en || 'Product';
+          const img = (p.images && p.images[0]) || '/images/placeholder.jpg';
+          return `<a href="/product.html?id=${p.id}" class="hero-search-item">
+            <img src="${img}" alt="${name}">
+            <div><strong>${escHtml(name)}</strong><br><span style="color:var(--primary);">&euro;${parseFloat(p.price).toFixed(2)}</span></div>
+          </a>`;
+        }).join('');
+      }
+      resultsEl.style.display = 'block';
+    } catch (e) {
+      resultsEl.style.display = 'none';
+    }
   }
 
   // Category icon mapping

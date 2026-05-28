@@ -68,7 +68,6 @@
       <a href="#" class="active" onclick="showAccountSection('profile')" data-i18n="account_profile">Profile</a>
       <a href="#" onclick="showAccountSection('orders')" data-i18n="account_orders">My Orders</a>
       <a href="#" onclick="showAccountSection('settings')" data-i18n="account_settings">Settings</a>
-      <a href="#" id="account-admin-link" style="display:none;" onclick="showAccountSection('admin')" data-i18n="nav_admin">Admin Panel</a>
       <a href="#" onclick="handleAccountLogout()" data-i18n="auth_logout">Logout</a>
     </nav>
   </aside>
@@ -153,66 +152,6 @@
     </div>
 
     <!-- Admin Section -->
-    <div id="section-admin" style="display:none;">
-      <h2 data-i18n="nav_admin">Admin Panel</h2>
-      <div style="margin-top:1.5rem;">
-        <!-- Add Product Form -->
-        <div style="background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem;">
-          <h3 data-i18n="admin_add_product" style="margin-bottom:1rem;">Add New Product</h3>
-          <form id="admin-product-form" onsubmit="handleAddProduct(event)">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Product Name (EN) *</label>
-                <input type="text" id="prod-name-en" required>
-              </div>
-              <div class="form-group">
-                <label>Product Name (KZ)</label>
-                <input type="text" id="prod-name-kz">
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Product Name (RU)</label>
-                <input type="text" id="prod-name-ru">
-              </div>
-              <div class="form-group">
-                <label data-i18n="admin_price">Price (€) *</label>
-                <input type="number" id="prod-price" step="0.01" min="0" required>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label data-i18n="admin_stock">Stock</label>
-                <input type="number" id="prod-stock" min="0" value="0">
-              </div>
-              <div class="form-group">
-                <label data-i18n="admin_category">Category</label>
-                <select id="prod-category"></select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Description (EN)</label>
-              <textarea id="prod-desc-en" rows="3"></textarea>
-            </div>
-            <div class="form-group">
-              <label>Product Images * (first image = main)</label>
-              <div id="prod-images-preview" style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem;"></div>
-              <input type="file" id="prod-images-input" accept="image/*" multiple onchange="handleProductImagesSelect(event)">
-              <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.25rem;">Background will be automatically removed using AI</p>
-            </div>
-            <p id="admin-product-error" class="auth-error"></p>
-            <p id="admin-product-success" class="auth-success"></p>
-            <button type="submit" class="btn-pay" style="max-width:200px;" data-i18n="admin_add_btn">Add Product</button>
-          </form>
-        </div>
-
-        <!-- Products List -->
-        <div style="background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;">
-          <h3 style="margin-bottom:1rem;">Products</h3>
-          <div id="admin-products-list"></div>
-        </div>
-      </div>
-    </div>
   </main>
 </div>
 
@@ -267,24 +206,40 @@
         document.getElementById('profile-city').value = userProfile.city || '';
         document.getElementById('profile-country').value = userProfile.country || '';
         document.getElementById('profile-zip').value = userProfile.zip || '';
-
-        // Show admin link if admin
-        if (userProfile.is_admin) {
-          document.getElementById('account-admin-link').style.display = 'block';
-        }
       }
     }, 500);
   });
 
   function showAccountSection(name) {
-    ['profile', 'orders', 'settings', 'admin'].forEach(s => {
+    ['profile', 'orders', 'settings'].forEach(s => {
       const el = document.getElementById('section-' + s);
       if (el) el.style.display = s === name ? 'block' : 'none';
     });
     document.querySelectorAll('.account-nav a').forEach(a => a.classList.remove('active'));
     event.target.classList.add('active');
     if (name === 'orders') loadUserOrders();
-    if (name === 'admin') loadAdminPanel();
+  }
+
+  function getOrderStatusLabel(status) {
+    const labels = {
+      'pending': 'Тапсырыс берілді',
+      'accepted': 'Сатушы қабылдады',
+      'packing': 'Жиналуда',
+      'shipped': 'Жолға шықты',
+      'delivered': 'Жеткізілді'
+    };
+    return labels[status] || status;
+  }
+
+  function getOrderStatusIcon(status) {
+    const icons = {
+      'pending': '📋',
+      'accepted': '✅',
+      'packing': '📦',
+      'shipped': '🚚',
+      'delivered': '🎉'
+    };
+    return icons[status] || '📋';
   }
 
   async function loadUserOrders() {
@@ -294,20 +249,30 @@
       container.innerHTML = '<p style="color:var(--text-light);">' + (t('account_no_orders') || 'No orders yet.') + '</p>';
       return;
     }
-    container.innerHTML = `
-      <table class="admin-table">
-        <thead><tr><th>ID</th><th>Product</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
-        <tbody>${orders.map(o => `
-          <tr>
-            <td>${o.id.substring(0, 8)}...</td>
-            <td>${(o.products && o.products['name_' + currentLang]) || (o.products && o.products.name_en) || 'N/A'}</td>
-            <td>&euro;${parseFloat(o.amount || 0).toFixed(2)}</td>
-            <td><span class="status-badge status-${o.status}">${t('admin_status_' + o.status) || o.status}</span></td>
-            <td>${new Date(o.created_at).toLocaleDateString()}</td>
-          </tr>
-        `).join('')}</tbody>
-      </table>
-    `;
+    container.innerHTML = orders.map(o => {
+      const statusSteps = ['pending', 'accepted', 'packing', 'shipped', 'delivered'];
+      const currentStep = statusSteps.indexOf(o.status);
+      return `
+        <div style="background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+            <div>
+              <strong>${(o.products && o.products['name_' + currentLang]) || (o.products && o.products.name_en) || 'N/A'}</strong>
+              <p style="font-size:0.85rem;color:var(--text-light);">ID: ${o.id.substring(0, 8)}... | ${new Date(o.created_at).toLocaleDateString()}</p>
+            </div>
+            <span style="font-weight:700;color:var(--primary);">&euro;${parseFloat(o.amount || 0).toFixed(2)}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+            ${statusSteps.map((step, i) => `
+              <div style="display:flex;align-items:center;gap:4px;">
+                <div style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;${i <= currentStep ? 'background:var(--primary);color:white;' : 'background:var(--border);color:var(--text-muted);'}">${i < currentStep ? '✓' : i === currentStep ? getOrderStatusIcon(step) : (i + 1)}</div>
+                <span style="font-size:0.75rem;${i === currentStep ? 'font-weight:700;color:var(--primary);' : 'color:var(--text-muted);'}">${getOrderStatusLabel(step)}</span>
+                ${i < statusSteps.length - 1 ? '<div style="width:20px;height:2px;background:' + (i < currentStep ? 'var(--primary)' : 'var(--border)') + ';"></div>' : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   async function handleSaveProfile(e) {
@@ -401,128 +366,6 @@
       if (userProfile) userProfile.avatar_url = url;
       // Reload user menu in navbar
       initUserMenu();
-    } catch (err) {
-      alert('Error: ' + err.message);
-    }
-  }
-
-  // Admin Panel Functions
-  let adminSelectedImages = [];
-
-  async function loadAdminPanel() {
-    if (!userProfile || !userProfile.is_admin) return;
-    // Load categories
-    const categories = await getCategories();
-    const catSelect = document.getElementById('prod-category');
-    if (catSelect) {
-      catSelect.innerHTML = '<option value="">-- Select --</option>' +
-        categories.map(c => `<option value="${c.id}">${c['name_' + currentLang] || c.name_en || 'Category'}</option>`).join('');
-    }
-    // Load products list
-    loadAdminProducts();
-  }
-
-  async function loadAdminProducts() {
-    const container = document.getElementById('admin-products-list');
-    if (!container) return;
-    const products = await adminGetProducts();
-    if (products.length === 0) {
-      container.innerHTML = '<p style="color:var(--text-light);">No products yet.</p>';
-      return;
-    }
-    container.innerHTML = `
-      <table class="admin-table" style="width:100%;">
-        <thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
-        <tbody>${products.map(p => {
-          const img = p.images && p.images[0] ? p.images[0] : '/images/placeholder.jpg';
-          const name = p['name_' + currentLang] || p.name_en || 'Product';
-          return `<tr>
-            <td><img src="${img}" style="width:50px;height:50px;object-fit:cover;border-radius:6px;"></td>
-            <td>${escHtml(name)}</td>
-            <td>€${parseFloat(p.price).toFixed(2)}</td>
-            <td>${p.stock}</td>
-            <td>
-              <button class="btn-sm btn-outline" onclick="editProduct('${p.id}')">Edit</button>
-              <button class="btn-sm btn-danger" onclick="deleteProduct('${p.id}')">Delete</button>
-            </td>
-          </tr>`;
-        }).join('')}</tbody>
-      </table>
-    `;
-  }
-
-  function handleProductImagesSelect(e) {
-    const files = Array.from(e.target.files);
-    adminSelectedImages = files;
-    const preview = document.getElementById('prod-images-preview');
-    preview.innerHTML = '';
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        preview.innerHTML += `<img src="${ev.target.result}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;">`;
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  async function handleAddProduct(e) {
-    e.preventDefault();
-    const errEl = document.getElementById('admin-product-error');
-    const succEl = document.getElementById('admin-product-success');
-    errEl.style.display = 'none';
-    succEl.style.display = 'none';
-
-    if (adminSelectedImages.length === 0) {
-      errEl.textContent = 'Please select at least one image';
-      errEl.style.display = 'block';
-      return;
-    }
-
-    try {
-      // Upload images with background removal
-      const imageUrls = [];
-      for (const file of adminSelectedImages) {
-        // Upload original first
-        const originalUrl = await uploadImage(file);
-        // Try to remove background using AI
-        try {
-          const cleanUrl = await removeBackground(originalUrl);
-          imageUrls.push(cleanUrl);
-        } catch (bgErr) {
-          console.warn('Background removal failed, using original:', bgErr);
-          imageUrls.push(originalUrl);
-        }
-      }
-
-      // Create product
-      await adminAddProduct({
-        name_en: document.getElementById('prod-name-en').value,
-        name_kz: document.getElementById('prod-name-kz').value,
-        name_ru: document.getElementById('prod-name-ru').value,
-        desc_en: document.getElementById('prod-desc-en').value,
-        price: parseFloat(document.getElementById('prod-price').value),
-        stock: parseInt(document.getElementById('prod-stock').value) || 0,
-        category_id: document.getElementById('prod-category').value || null,
-        images: imageUrls
-      });
-
-      succEl.textContent = 'Product added successfully!';
-      succEl.style.display = 'block';
-      document.getElementById('admin-product-form').reset();
-      document.getElementById('prod-images-preview').innerHTML = '';
-      adminSelectedImages = [];
-      loadAdminProducts();
-    } catch (err) {
-      errEl.textContent = err.message;
-      errEl.style.display = 'block';
-    }
-  }
-
-  async function deleteProduct(id) {
-    if (!confirm('Delete this product?')) return;
-    try {
-      await sb.from('products').delete().eq('id', id);
-      loadAdminProducts();
     } catch (err) {
       alert('Error: ' + err.message);
     }

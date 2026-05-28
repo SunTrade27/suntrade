@@ -44,10 +44,9 @@
     <div class="logo">Sun<span style="color:var(--primary);">Trade</span></div>
     <nav class="admin-nav">
       <a href="#" class="active" onclick="showSection('dashboard')" data-i18n="admin_dashboard">Dashboard</a>
-      <a href="#" onclick="showSection('products')" data-i18n="admin_products">Products</a>
+      <a href="#" onclick="showSection('products')" data-i18n="admin_add_product">Тауар қосу</a>
       <a href="#" onclick="showSection('orders')" data-i18n="admin_orders">Orders</a>
       <a href="#" onclick="showSection('reviews')" data-i18n="admin_reviews">Reviews</a>
-      <a href="#" onclick="showSection('whatsapp')" id="nav-whatsapp"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:6px;"><use href="#icon-chat"/></svg>WhatsApp</a>
       <a href="/" style="margin-top:2rem;" data-i18n="nav_home">View Site</a>
       <a href="#" onclick="handleLogout()" data-i18n="admin_logout">Logout</a>
     </nav>
@@ -110,26 +109,6 @@
       <div id="reviews-table"></div>
     </div>
 
-    <!-- WhatsApp Chat -->
-    <div id="section-whatsapp" style="display:none;">
-      <div class="wa-chat-layout">
-        <!-- Conversations List -->
-        <div class="wa-conv-list" id="wa-conv-list">
-          <div class="wa-conv-header">
-            <h3><svg class="icon icon-md" style="vertical-align:middle;margin-right:6px;"><use href="#icon-chat"/></svg>WhatsApp</h3>
-            <button class="btn-sm btn-outline" onclick="loadConversations()">↻</button>
-          </div>
-          <div id="wa-conv-items"></div>
-        </div>
-        <!-- Chat Area -->
-        <div class="wa-chat-area" id="wa-chat-area">
-          <div class="wa-chat-placeholder">
-            <svg class="icon icon-xxl" style="color:var(--text-muted)"><use href="#icon-mail"/></svg>
-            <p>Чатты таңдаңыз</p>
-          </div>
-        </div>
-      </div>
-    </div>
   </main>
 </div>
 
@@ -413,6 +392,22 @@
     document.getElementById('login-page').style.display = 'none';
     document.getElementById('admin-panel').style.display = 'grid';
     loadDashboard();
+    // Check for new orders every 30 seconds
+    setInterval(checkNewOrders, 30000);
+  }
+
+  let lastOrderCount = 0;
+  async function checkNewOrders() {
+    try {
+      const orders = await adminGetOrders();
+      if (lastOrderCount > 0 && orders.length > lastOrderCount) {
+        const newCount = orders.length - lastOrderCount;
+        showNotification(`🆕 ${newCount} жаңа тапсырыс!`);
+        // Play sound
+        try { new Audio('data:audio/wav;base64,UklGRl9vT19teleXBBDAQABABEAIlYAAESsAAABAAgA').play(); } catch(e) {}
+      }
+      lastOrderCount = orders.length;
+    } catch (e) {}
   }
 
   function showSection(name) {
@@ -421,11 +416,10 @@
     });
     document.querySelectorAll('.admin-nav a').forEach(a => a.classList.remove('active'));
     event.target.classList.add('active');
-    document.getElementById('admin-page-title').textContent = name === 'whatsapp' ? 'WhatsApp' : t('admin_' + (name === 'dashboard' ? 'dashboard' : name));
+    document.getElementById('admin-page-title').textContent = t('admin_' + (name === 'dashboard' ? 'dashboard' : name));
     if (name === 'products') loadProducts();
     if (name === 'orders') loadOrders();
     if (name === 'reviews') loadReviews();
-    if (name === 'whatsapp') { loadConversations(); startWaRefresh(); }
   }
 
   async function loadDashboard() {
@@ -451,12 +445,23 @@
             <td>${o.id.substring(0, 8)}...</td>
             <td>${o.customer_email || 'N/A'}</td>
             <td>€${parseFloat(o.amount || 0).toFixed(2)}</td>
-            <td><span class="status-badge status-${o.status}">${t('admin_status_' + o.status) || o.status}</span></td>
+            <td><span class="status-badge status-${o.status}">${getStatusLabel(o.status)}</span></td>
             <td>${new Date(o.created_at).toLocaleDateString()}</td>
           </tr>
         `).join('')}</tbody>
       </table>
     `;
+  }
+
+  function getStatusLabel(status) {
+    const labels = {
+      'pending': 'Тапсырыс берілді',
+      'accepted': 'Сатушы қабылдады',
+      'packing': 'Жиналуда',
+      'shipped': 'Жолға шықты',
+      'delivered': 'Жеткізілді'
+    };
+    return labels[status] || status;
   }
 
   async function loadProducts() {
@@ -503,16 +508,17 @@
             <td>${o.customer_email || 'N/A'}</td>
             <td>€${parseFloat(o.amount || 0).toFixed(2)}</td>
             <td>
-              <select onchange="updateOrderStatus('${o.id}', this.value)" style="padding:4px 8px;border-radius:4px;border:1px solid var(--border);">
-                <option value="pending" ${o.status==='pending'?'selected':''}>Pending</option>
-                <option value="paid" ${o.status==='paid'?'selected':''}>Paid</option>
-                <option value="shipped" ${o.status==='shipped'?'selected':''}>Shipped</option>
-                <option value="delivered" ${o.status==='delivered'?'selected':''}>Delivered</option>
+              <select onchange="updateOrderStatus('${o.id}', this.value)" style="padding:4px 8px;border-radius:4px;border:1px solid var(--border);font-size:0.85rem;">
+                <option value="pending" ${o.status==='pending'?'selected':''}>Тапсырыс берілді</option>
+                <option value="accepted" ${o.status==='accepted'?'selected':''}>Сатушы қабылдады</option>
+                <option value="packing" ${o.status==='packing'?'selected':''}>Жиналуда</option>
+                <option value="shipped" ${o.status==='shipped'?'selected':''}>Жолға шықты</option>
+                <option value="delivered" ${o.status==='delivered'?'selected':''}>Жеткізілді</option>
               </select>
             </td>
             <td>${new Date(o.created_at).toLocaleDateString()}</td>
             <td>
-              ${o.status === 'delivered' ? `<button class="btn-sm btn-outline" onclick="sendReviewRequest('${o.id}')" style="font-size:0.75rem;"><svg class="icon icon-sm" style="margin-right:4px"><use href="#icon-mail"/></svg>Review Request</button>` : ''}
+              <button class="btn-sm btn-outline" onclick="sendReviewRequest('${o.id}')" style="font-size:0.75rem;"><svg class="icon icon-sm" style="margin-right:4px"><use href="#icon-mail"/></svg>Review</button>
             </td>
           </tr>
         `).join('')}</tbody>
@@ -551,183 +557,9 @@
     }
   }
 
-  // ===== WhatsApp Chat =====
-  let waConversations = [];
-  let waCurrentConvId = null;
-
-  async function loadConversations() {
-    try {
-      const resp = await fetch('/api/chat-list');
-      waConversations = await resp.json();
-      renderConversations();
-      // Update nav badge
-      const totalUnread = waConversations.reduce((s, c) => s + (c.unread || 0), 0);
-      const nav = document.getElementById('nav-whatsapp');
-      if (totalUnread > 0) {
-        nav.innerHTML = `<svg class="icon icon-sm" style="vertical-align:middle;margin-right:6px;"><use href="#icon-chat"/></svg>WhatsApp <span style="background:var(--danger);color:white;border-radius:50%;padding:2px 6px;font-size:0.7rem;margin-left:4px;">${totalUnread}</span>`;
-      } else {
-        nav.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:6px;"><use href="#icon-chat"/></svg>WhatsApp';
-      }
-    } catch (err) {
-      console.error('Load conversations error:', err);
-    }
-  }
-
-  function renderConversations() {
-    const container = document.getElementById('wa-conv-items');
-    if (!waConversations.length) {
-      container.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;">Әзірше чаттар жоқ</p>';
-      return;
-    }
-    container.innerHTML = waConversations.map(c => {
-      const displayName = c.customer_name || c.customer_id?.substring(0, 12) || '?';
-      const initial = displayName[0].toUpperCase();
-      const time = c.last_message_at ? new Date(c.last_message_at).toLocaleTimeString('kk-KZ', { hour: '2-digit', minute: '2-digit' }) : '';
-      const preview = c.last_message ? (c.last_message.length > 40 ? c.last_message.substring(0, 40) + '...' : c.last_message) : '';
-      return `
-        <div class="wa-conv-item ${waCurrentConvId === c.id ? 'active' : ''}" onclick="openConversation('${c.id}')">
-          <div class="wa-conv-avatar">${initial}</div>
-          <div class="wa-conv-info">
-            <div class="wa-conv-name">
-              ${displayName}
-              <span class="wa-status-dot ${c.status}"></span>
-            </div>
-            <div class="wa-conv-phone">${c.customer_id || ''}</div>
-            <div class="wa-conv-preview">${c.last_message_sender === 'customer' ? '' : '✓ '}${preview}</div>
-          </div>
-          ${c.unread > 0 ? `<span class="wa-unread-badge">${c.unread}</span>` : ''}
-        </div>
-      `;
-    }).join('');
-  }
-
-  async function openConversation(convId) {
-    waCurrentConvId = convId;
-    renderConversations();
-
-    try {
-      const resp = await fetch(`/api/chat-messages?conversationId=${convId}`);
-      const data = await resp.json();
-      renderChat(data.conversation, data.messages);
-    } catch (err) {
-      console.error('Open conversation error:', err);
-    }
-
-    // Mobile: show chat area, hide list
-    if (window.innerWidth <= 768) {
-      document.querySelector('.wa-conv-list').classList.add('hidden');
-      document.querySelector('.wa-chat-area').classList.remove('hidden');
-    }
-  }
-
-  function renderChat(conv, messages) {
-    const area = document.getElementById('wa-chat-area');
-    const langName = { en: 'English', ru: 'Русский', de: 'Deutsch', fr: 'Français', es: 'Español', it: 'Italiano', tr: 'Türkçe', pt: 'Português', nl: 'Nederlands', pl: 'Polski', ar: 'العربية', kz: 'Қазақша', zh: '中文', ja: '日本語', ko: '한국어' };
-
-    area.innerHTML = `
-      <div class="wa-chat-header">
-        <div style="display:flex;align-items:center;gap:0.75rem;">
-          <button class="btn-sm btn-outline btn-back" onclick="backToConvList()" style="display:none;">←</button>
-          <div class="wa-chat-header-info">
-            <h4>${conv.customer_name || 'Клиент'}</h4>
-            <small>${langName[conv.customer_lang] || conv.customer_lang} · <span class="wa-status-dot ${conv.status}"></span> ${conv.status === 'ai' ? 'AI' : conv.status === 'human' ? 'Оператор' : 'Жабық'}</small>
-          </div>
-        </div>
-        <div class="wa-chat-header-actions">
-          ${conv.status === 'ai' ? `<button class="btn-sm btn-primary" onclick="toggleConvStatus('${conv.id}','human')"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-user"/></svg>Оператор</button>` : ''}
-          ${conv.status === 'human' ? `<button class="btn-sm btn-outline" onclick="toggleConvStatus('${conv.id}','ai')"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-sparkle"/></svg>AI</button>` : ''}
-          ${conv.status !== 'closed' ? `<button class="btn-sm btn-danger" onclick="toggleConvStatus('${conv.id}','closed')">✕ Жабу</button>` : `<button class="btn-sm btn-outline" onclick="toggleConvStatus('${conv.id}','ai')">Ашу</button>`}
-        </div>
-      </div>
-      <div class="wa-chat-messages" id="wa-chat-messages">
-        ${messages.map(m => `
-          <div class="wa-msg ${m.sender}">
-            <div>${escapeHtml(m.sender === 'admin' ? m.original_text : (m.direction === 'in' ? m.original_text : m.translated_text || m.original_text))}</div>
-            ${m.translated_text && m.translated_text !== m.original_text && m.sender === 'admin' ? `<div class="wa-msg-translation">→ ${escapeHtml(m.translated_text)}</div>` : ''}
-            ${m.translated_text && m.translated_text !== m.original_text && m.sender === 'customer' ? `<div class="wa-msg-translation">→ ${escapeHtml(m.translated_text)}</div>` : ''}
-            <div class="wa-msg-meta">
-              <span>${m.sender === 'customer' ? '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-user"/></svg>' : m.sender === 'ai' ? '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-sparkle"/></svg>' : '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-user"/></svg>'} ${m.sender === 'admin' ? 'Сіз' : m.sender === 'ai' ? 'AI' : conv.customer_name || 'Клиент'}</span>
-              <span>${new Date(m.created_at).toLocaleTimeString('kk-KZ', { hour: '2-digit', minute: '2-digit' })}</span>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-      ${conv.status !== 'closed' ? `
-      <div class="wa-chat-input">
-        <textarea id="wa-reply-input" placeholder="Қазақша жазыңыз..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendReply();}"></textarea>
-        <button onclick="sendReply()">➤</button>
-      </div>` : '<div style="padding:1rem;text-align:center;color:var(--text-muted);">Чат жабылған</div>'}
-    `;
-
-    // Scroll to bottom
-    const msgs = document.getElementById('wa-chat-messages');
-    if (msgs) msgs.scrollTop = msgs.scrollHeight;
-  }
-
   function escapeHtml(text) {
     if (!text) return '';
     return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
-  }
-
-  async function sendReply() {
-    const input = document.getElementById('wa-reply-input');
-    if (!input) return;
-    const message = input.value.trim();
-    if (!message || !waCurrentConvId) return;
-
-    input.value = '';
-    input.disabled = true;
-
-    try {
-      const resp = await fetch('/api/chat-send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ conversationId: waCurrentConvId, message })
-      });
-      const result = await resp.json();
-      if (result.success) {
-        openConversation(waCurrentConvId);
-        loadConversations();
-      } else {
-        alert('Қате: ' + (result.error || 'Жіберу мүмкін болмады'));
-      }
-    } catch (err) {
-      alert('Қате: ' + err.message);
-    } finally {
-      input.disabled = false;
-      input.focus();
-    }
-  }
-
-  async function toggleConvStatus(convId, status) {
-    try {
-      await fetch('/api/chat-toggle', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ conversationId: convId, status })
-      });
-      openConversation(convId);
-      loadConversations();
-    } catch (err) {
-      alert('Қате: ' + err.message);
-    }
-  }
-
-  function backToConvList() {
-    document.querySelector('.wa-conv-list').classList.remove('hidden');
-    document.querySelector('.wa-chat-area').classList.add('hidden');
-  }
-
-  // Auto-refresh conversations every 15 seconds
-  let waRefreshInterval;
-  function startWaRefresh() {
-    if (waRefreshInterval) clearInterval(waRefreshInterval);
-    waRefreshInterval = setInterval(() => {
-      if (document.getElementById('section-whatsapp').style.display !== 'none') {
-        loadConversations();
-        if (waCurrentConvId) openConversation(waCurrentConvId);
-      }
-    }, 15000);
   }
 
   function switchLangTab(lang) {
