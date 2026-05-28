@@ -27,6 +27,8 @@ async function loadTranslations(lang) {
     }
     applyTranslations();
     updateLangSwitcher();
+    // Dispatch custom event for language change
+    window.dispatchEvent(new CustomEvent('langChanged', { detail: { lang } }));
   } catch (e) {
     console.error('Failed to load translations:', lang, e);
   }

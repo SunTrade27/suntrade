@@ -11,6 +11,48 @@ function initSupabase() {
   return sb;
 }
 
+// Fuzzy search helper - Levenshtein distance
+function levenshtein(a, b) {
+  const matrix = [];
+  for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+  for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
+      }
+    }
+  }
+  return matrix[b.length][a.length];
+}
+
+function fuzzyMatch(query, text) {
+  if (!text || !query) return false;
+  query = query.toLowerCase();
+  text = text.toLowerCase();
+  // Exact substring match
+  if (text.includes(query)) return true;
+  // Word-level fuzzy match
+  const words = text.split(/\s+/);
+  const queryWords = query.split(/\s+/);
+  for (const qw of queryWords) {
+    for (const tw of words) {
+      // Allow 2 character difference for words 5+, 1 for shorter
+      const maxDist = qw.length >= 5 ? 2 : 1;
+      if (levenshtein(qw, tw) <= maxDist) return true;
+      // Also check if query word is prefix of text word
+      if (tw.startsWith(qw) || qw.startsWith(tw)) return true;
+    }
+  }
+  return false;
+}
+
 // Products
 async function getProducts(options = {}) {
   let query = sb.from('products').select('*, categories(*)').eq('active', true);
@@ -22,7 +64,38 @@ async function getProducts(options = {}) {
   if (options.limit) query = query.limit(options.limit);
   const { data, error } = await query;
   if (error) console.error('getProducts error:', error);
-  return data || [];
+  let results = data || [];
+
+  // If search query and few results, try fuzzy matching on all products
+  if (options.search && results.length < 3 && !options.limit) {
+    try {
+      let allQuery = sb.from('products').select('*, categories(*)').eq('active', true);
+      if (options.categoryId) allQuery = allQuery.eq('category_id', options.categoryId);
+      const { data: allProducts } = await allQuery;
+      if (allProducts) {
+        const searchLower = options.search.toLowerCase();
+        const fuzzyResults = allProducts.filter(p => {
+          return fuzzyMatch(searchLower, p.name_en) ||
+                 fuzzyMatch(searchLower, p.name_ru) ||
+                 fuzzyMatch(searchLower, p.name_kz) ||
+                 fuzzyMatch(searchLower, p.desc_en) ||
+                 fuzzyMatch(searchLower, p.desc_ru);
+        });
+        // Merge: exact matches first, then fuzzy
+        const exactIds = new Set(results.map(r => r.id));
+        const newFuzzy = fuzzyResults.filter(p => !exactIds.has(p.id));
+        results = [...results, ...newFuzzy];
+      }
+    } catch (e) {
+      console.error('Fuzzy search error:', e);
+    }
+  }
+
+  // Apply sorting
+  if (options.sort === 'price_asc') results.sort((a, b) => a.price - b.price);
+  else if (options.sort === 'price_desc') results.sort((a, b) => b.price - a.price);
+
+  return results;
 }
 
 async function getProduct(id) {
@@ -139,11 +212,14 @@ async function getUserProfile() {
   if (error) {
     console.error('getUserProfile error:', error);
     // Fallback: use auth metadata when profile row doesn't exist
+    // Also check if email is in admin list
+    const adminEmails = ['serjanyelemesov@gmail.com', 'sundetofficial@gmail.com'];
     return {
       id: user.id,
       full_name: user.user_metadata?.full_name || '',
       email: user.email || '',
-      avatar_url: user.user_metadata?.avatar_url || ''
+      avatar_url: user.user_metadata?.avatar_url || '',
+      is_admin: adminEmails.includes(user.email)
     };
   }
   return data;
@@ -160,7 +236,12 @@ async function updateUserProfile(updates) {
 
 async function isUserAdmin() {
   const profile = await getUserProfile();
-  return profile && profile.is_admin === true;
+  if (!profile) return false;
+  if (profile.is_admin === true) return true;
+  // Fallback: check email directly
+  const user = await getCurrentUser();
+  const adminEmails = ['serjanyelemesov@gmail.com', 'sundetofficial@gmail.com'];
+  return user && adminEmails.includes(user.email);
 }
 
 function onAuthStateChange(callback) {
