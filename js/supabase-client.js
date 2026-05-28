@@ -206,6 +206,45 @@ async function uploadAvatar(file) {
   return publicUrl;
 }
 
+// Remove background using AI (remove.bg API via serverless function)
+async function removeBackground(imageUrl) {
+  const response = await fetch('/api/remove-bg', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ imageUrl })
+  });
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.error || 'Background removal failed');
+  }
+  const result = await response.json();
+  if (!result.success) throw new Error('Background removal failed');
+  // Convert data URL to blob and upload to storage
+  const blob = await fetch(result.imageUrl).then(r => r.blob());
+  const fileName = `product_${Date.now()}.png`;
+  const { data, error } = await sb.storage.from('product-images').upload(fileName, blob, { contentType: 'image/png' });
+  if (error) throw error;
+  const { data: { publicUrl } } = sb.storage.from('product-images').getPublicUrl(fileName);
+  return publicUrl;
+}
+
+// Admin - Add product
+async function adminAddProduct(productData) {
+  const { data, error } = await sb.from('products').insert([{
+    name_en: productData.name_en,
+    name_kz: productData.name_kz || '',
+    name_ru: productData.name_ru || '',
+    desc_en: productData.desc_en || '',
+    price: productData.price,
+    stock: productData.stock || 0,
+    category_id: productData.category_id || null,
+    images: productData.images || [],
+    active: true
+  }]).select();
+  if (error) throw error;
+  return data[0];
+}
+
 // Reviews
 async function getReviews(productId) {
   const { data, error } = await sb.from('reviews')
