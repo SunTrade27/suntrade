@@ -73,11 +73,11 @@
           <div class="cw-welcome">
             <div class="cw-avatar-lg">S</div>
             <h3>SunTrade</h3>
-            <p id="cw-welcome-text">Сәлеметсіз бе! 👋 Сізге қалай көмектесе аламын?</p>
+            <p id="cw-welcome-text">Сәлеметсіз бе! Сізге қалай көмектесе аламын?</p>
             <div class="cw-quick-actions">
-              <button onclick="ChatWidget.quickMsg('Сіздерде қандай тауарлар бар?')">🛍️ Тауарлар</button>
-              <button onclick="ChatWidget.quickMsg('Жеткізу қанша тұрады?')">🚚 Жеткізу</button>
-              <button onclick="ChatWidget.quickMsg('Қайтару мүмкін бе?')">↩️ Қайтару</button>
+              <button onclick="ChatWidget.quickMsg('Сіздерде қандай тауарлар бар?')"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-cart"/></svg>Тауарлар</button>
+              <button onclick="ChatWidget.quickMsg('Жеткізу қанша тұрады?')"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-truck"/></svg>Жеткізу</button>
+              <button onclick="ChatWidget.quickMsg('Қайтару мүмкін бе?')"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-arrow-right"/></svg>Қайтару</button>
             </div>
           </div>
         </div>
@@ -106,21 +106,21 @@
 
   // Welcome text in different languages
   const welcomeTexts = {
-    kz: 'Сәлеметсіз бе! 👋 Сізге қалай көмектесе аламын?',
-    ru: 'Здравствуйте! 👋 Чем могу помочь?',
-    en: 'Hello! 👋 How can I help you?',
-    de: 'Hallo! 👋 Wie kann ich Ihnen helfen?',
-    fr: 'Bonjour! 👋 Comment puis-je vous aider?',
-    es: '¡Hola! 👋 ¿En qué puedo ayudarte?',
-    tr: 'Merhaba! 👋 Size nasıl yardımcı olabilirim?',
-    zh: '你好！👋 我能帮您什么？',
-    ar: '!مرحبا 👋 كيف يمكنني مساعدتك؟',
-    it: 'Ciao! 👋 Come posso aiutarti?',
-    pt: 'Olá! 👋 Como posso ajudar?',
-    nl: 'Hallo! 👋 Hoe kan ik u helpen?',
-    pl: 'Cześć! 👋 Jak mogę pomóc?',
-    ja: 'こんにちは！👋 どのようにお手伝いできますか？',
-    ko: '안녕하세요! 👋 무엇을 도와드릴까요?'
+    kz: 'Сәлеметсіз бе! Сізге қалай көмектесе аламын?',
+    ru: 'Здравствуйте! Чем могу помочь?',
+    en: 'Hello! How can I help you?',
+    de: 'Hallo! Wie kann ich Ihnen helfen?',
+    fr: 'Bonjour! Comment puis-je vous aider?',
+    es: '¡Hola! ¿En qué puedo ayudarte?',
+    tr: 'Merhaba! Size nasıl yardımcı olabilirim?',
+    zh: '你好！我能帮您什么？',
+    ar: '!مرحبا كيف يمكنني مساعدتك؟',
+    it: 'Ciao! Come posso aiutarti?',
+    pt: 'Olá! Como posso ajudar?',
+    nl: 'Hallo! Hoe kan ik u helpen?',
+    pl: 'Cześć! Jak mogę pomóc?',
+    ja: 'こんにちは！どのようにお手伝いできますか？',
+    ko: '안녕하세요! 무엇을 도와드릴까요?'
   };
 
   function updateWelcomeText(lang) {
@@ -189,7 +189,7 @@
   function createMessageHTML(m) {
     const time = new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const isCustomer = m.direction === 'in';
-    const senderLabel = m.sender === 'ai' ? '🤖 AI' : m.sender === 'admin' ? '👨‍💼 Manager' : '';
+    const senderLabel = m.sender === 'ai' ? '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-sparkle"/></svg>AI' : m.sender === 'admin' ? '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-user"/></svg>Manager' : '';
     return `
       <div class="cw-msg ${isCustomer ? 'cw-msg-out' : 'cw-msg-in'}">
         ${!isCustomer && senderLabel ? `<div class="cw-msg-sender">${senderLabel}</div>` : ''}
@@ -239,7 +239,7 @@
       if (data.reply) {
         container.innerHTML += `
           <div class="cw-msg cw-msg-in">
-            <div class="cw-msg-sender">🤖 AI</div>
+            <div class="cw-msg-sender"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-sparkle"/></svg>AI</div>
             <div class="cw-msg-text">${escapeHtml(data.reply)}</div>
             <div class="cw-msg-time">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
           </div>

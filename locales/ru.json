@@ -124,6 +124,8 @@
   "account_danger_zone": "Опасная зона",
   "account_delete": "Удалить аккаунт",
   "account_delete_confirm": "Вы уверены? Это действие нельзя отменить.",
+  "account_avatar_change": "Изменить фото",
+  "account_avatar_too_large": "Изображение должно быть меньше 2МБ",
   "privacy_title": "Политика конфиденциальности",
   "privacy_updated": "Последнее обновление: 25 мая 2026 г.",
   "privacy_s1_title": "1. Введение",

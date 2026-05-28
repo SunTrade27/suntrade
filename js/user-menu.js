@@ -12,18 +12,22 @@ async function initUserMenu() {
   if (user) {
     const profile = await getUserProfile();
     const initial = (profile?.full_name || user.email || '?')[0].toUpperCase();
-    const displayName = profile?.full_name || user.email?.split('@')[0] || 'User';
+    const displayName = profile?.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+    const avatarUrl = profile?.avatar_url || user.user_metadata?.avatar_url || '';
+    const avatarHtml = avatarUrl
+      ? `<img src="${escMenuHtml(avatarUrl)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+      : initial;
 
     container.innerHTML = `
-      <button class="user-menu-btn" onclick="toggleUserMenu()">${initial}</button>
+      <button class="user-menu-btn" onclick="toggleUserMenu()">${avatarHtml}</button>
       <div class="user-dropdown" id="user-dropdown">
         <div class="user-dropdown-header">
           <strong>${escMenuHtml(displayName)}</strong>
           <small>${escMenuHtml(user.email)}</small>
         </div>
-        <a href="/account.html">👤 ${t('account_title') || 'My Account'}</a>
-        ${profile?.is_admin ? `<a href="/admin.html">⚙️ ${t('nav_admin') || 'Admin Panel'}</a>` : ''}
-        <a href="#" onclick="handleMenuLogout()">🚪 ${t('auth_logout') || 'Logout'}</a>
+        <a href="/account.html"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:6px;"><use href="#icon-user"/></svg>${t('account_title') || 'My Account'}</a>
+        ${profile?.is_admin ? `<a href="/admin.html"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:6px;"><use href="#icon-settings"/></svg>${t('nav_admin') || 'Admin Panel'}</a>` : ''}
+        <a href="#" onclick="handleMenuLogout()"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:6px;"><use href="#icon-logout"/></svg>${t('auth_logout') || 'Logout'}</a>
       </div>
     `;
   } else {

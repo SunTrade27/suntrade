@@ -122,7 +122,16 @@ async function getUserProfile() {
   const user = await getCurrentUser();
   if (!user) return null;
   const { data, error } = await sb.from('profiles').select('*').eq('id', user.id).single();
-  if (error) console.error('getUserProfile error:', error);
+  if (error) {
+    console.error('getUserProfile error:', error);
+    // Fallback: use auth metadata when profile row doesn't exist
+    return {
+      id: user.id,
+      full_name: user.user_metadata?.full_name || '',
+      email: user.email || '',
+      avatar_url: user.user_metadata?.avatar_url || ''
+    };
+  }
   return data;
 }
 
@@ -164,6 +173,22 @@ async function uploadImage(file) {
   const { data, error } = await sb.storage.from('product-images').upload(fileName, file);
   if (error) throw error;
   const { data: { publicUrl } } = sb.storage.from('product-images').getPublicUrl(fileName);
+  return publicUrl;
+}
+
+// Upload avatar to Supabase Storage
+async function uploadAvatar(file) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error('Not logged in');
+  const ext = file.name.split('.').pop();
+  const fileName = `avatar_${user.id}_${Date.now()}.${ext}`;
+  const { data, error } = await sb.storage.from('avatars').upload(fileName, file, { upsert: true });
+  if (error) throw error;
+  const { data: { publicUrl } } = sb.storage.from('avatars').getPublicUrl(fileName);
+  // Save avatar URL to profile
+  await sb.from('profiles').update({ avatar_url: publicUrl, updated_at: new Date().toISOString() }).eq('id', user.id);
+  // Also update auth metadata
+  await sb.auth.updateUser({ data: { avatar_url: publicUrl } });
   return publicUrl;
 }
 

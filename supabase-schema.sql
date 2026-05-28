@@ -259,3 +259,8 @@ CREATE POLICY "Allow review request creation" ON review_requests
 -- Create this manually in Supabase Dashboard > Storage > New Bucket
 -- Name: review-images
 -- Public: true
+
+-- Storage bucket for avatars
+-- Create this manually in Supabase Dashboard > Storage > New Bucket
+-- Name: avatars
+-- Public: true

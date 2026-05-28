@@ -47,7 +47,7 @@
       <a href="#" onclick="showSection('products')" data-i18n="admin_products">Products</a>
       <a href="#" onclick="showSection('orders')" data-i18n="admin_orders">Orders</a>
       <a href="#" onclick="showSection('reviews')" data-i18n="admin_reviews">Reviews</a>
-      <a href="#" onclick="showSection('whatsapp')" id="nav-whatsapp">💬 WhatsApp</a>
+      <a href="#" onclick="showSection('whatsapp')" id="nav-whatsapp"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:6px;"><use href="#icon-chat"/></svg>WhatsApp</a>
       <a href="/" style="margin-top:2rem;" data-i18n="nav_home">View Site</a>
       <a href="#" onclick="handleLogout()" data-i18n="admin_logout">Logout</a>
     </nav>
@@ -116,7 +116,7 @@
         <!-- Conversations List -->
         <div class="wa-conv-list" id="wa-conv-list">
           <div class="wa-conv-header">
-            <h3>💬 WhatsApp</h3>
+            <h3><svg class="icon icon-md" style="vertical-align:middle;margin-right:6px;"><use href="#icon-chat"/></svg>WhatsApp</h3>
             <button class="btn-sm btn-outline" onclick="loadConversations()">↻</button>
           </div>
           <div id="wa-conv-items"></div>
@@ -421,7 +421,7 @@
     });
     document.querySelectorAll('.admin-nav a').forEach(a => a.classList.remove('active'));
     event.target.classList.add('active');
-    document.getElementById('admin-page-title').textContent = name === 'whatsapp' ? '💬 WhatsApp' : t('admin_' + (name === 'dashboard' ? 'dashboard' : name));
+    document.getElementById('admin-page-title').textContent = name === 'whatsapp' ? 'WhatsApp' : t('admin_' + (name === 'dashboard' ? 'dashboard' : name));
     if (name === 'products') loadProducts();
     if (name === 'orders') loadOrders();
     if (name === 'reviews') loadReviews();
@@ -564,9 +564,9 @@
       const totalUnread = waConversations.reduce((s, c) => s + (c.unread || 0), 0);
       const nav = document.getElementById('nav-whatsapp');
       if (totalUnread > 0) {
-        nav.innerHTML = `💬 WhatsApp <span style="background:var(--danger);color:white;border-radius:50%;padding:2px 6px;font-size:0.7rem;margin-left:4px;">${totalUnread}</span>`;
+        nav.innerHTML = `<svg class="icon icon-sm" style="vertical-align:middle;margin-right:6px;"><use href="#icon-chat"/></svg>WhatsApp <span style="background:var(--danger);color:white;border-radius:50%;padding:2px 6px;font-size:0.7rem;margin-left:4px;">${totalUnread}</span>`;
       } else {
-        nav.innerHTML = '💬 WhatsApp';
+        nav.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:6px;"><use href="#icon-chat"/></svg>WhatsApp';
       }
     } catch (err) {
       console.error('Load conversations error:', err);
@@ -634,8 +634,8 @@
           </div>
         </div>
         <div class="wa-chat-header-actions">
-          ${conv.status === 'ai' ? `<button class="btn-sm btn-primary" onclick="toggleConvStatus('${conv.id}','human')">👤 Оператор</button>` : ''}
-          ${conv.status === 'human' ? `<button class="btn-sm btn-outline" onclick="toggleConvStatus('${conv.id}','ai')">🤖 AI</button>` : ''}
+          ${conv.status === 'ai' ? `<button class="btn-sm btn-primary" onclick="toggleConvStatus('${conv.id}','human')"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-user"/></svg>Оператор</button>` : ''}
+          ${conv.status === 'human' ? `<button class="btn-sm btn-outline" onclick="toggleConvStatus('${conv.id}','ai')"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-sparkle"/></svg>AI</button>` : ''}
           ${conv.status !== 'closed' ? `<button class="btn-sm btn-danger" onclick="toggleConvStatus('${conv.id}','closed')">✕ Жабу</button>` : `<button class="btn-sm btn-outline" onclick="toggleConvStatus('${conv.id}','ai')">Ашу</button>`}
         </div>
       </div>
@@ -646,7 +646,7 @@
             ${m.translated_text && m.translated_text !== m.original_text && m.sender === 'admin' ? `<div class="wa-msg-translation">→ ${escapeHtml(m.translated_text)}</div>` : ''}
             ${m.translated_text && m.translated_text !== m.original_text && m.sender === 'customer' ? `<div class="wa-msg-translation">→ ${escapeHtml(m.translated_text)}</div>` : ''}
             <div class="wa-msg-meta">
-              <span>${m.sender === 'customer' ? '👤' : m.sender === 'ai' ? '🤖' : '👨‍💼'} ${m.sender === 'admin' ? 'Сіз' : m.sender === 'ai' ? 'AI' : conv.customer_name || 'Клиент'}</span>
+              <span>${m.sender === 'customer' ? '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-user"/></svg>' : m.sender === 'ai' ? '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-sparkle"/></svg>' : '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-user"/></svg>'} ${m.sender === 'admin' ? 'Сіз' : m.sender === 'ai' ? 'AI' : conv.customer_name || 'Клиент'}</span>
               <span>${new Date(m.created_at).toLocaleTimeString('kk-KZ', { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
           </div>

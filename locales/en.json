@@ -124,6 +124,8 @@
   "account_danger_zone": "Danger Zone",
   "account_delete": "Delete Account",
   "account_delete_confirm": "Are you sure? This cannot be undone.",
+  "account_avatar_change": "Change Photo",
+  "account_avatar_too_large": "Image must be under 2MB",
   "privacy_title": "Privacy Policy",
   "privacy_updated": "Last updated: May 25, 2026",
   "privacy_s1_title": "1. Introduction",

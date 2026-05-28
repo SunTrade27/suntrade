@@ -54,7 +54,14 @@
 
   <!-- Sidebar -->
   <aside class="account-sidebar">
-    <div class="account-avatar" id="account-avatar">?</div>
+    <div class="account-avatar" id="account-avatar" style="position:relative;cursor:pointer;" onclick="document.getElementById('avatar-upload-input').click();">
+      <span id="avatar-letter">?</span>
+      <img id="avatar-img" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;position:absolute;top:0;left:0;">
+      <div class="avatar-overlay" id="avatar-overlay">
+        <svg class="icon icon-md" style="color:white;"><use href="#icon-camera"/></svg>
+      </div>
+    </div>
+    <input type="file" id="avatar-upload-input" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)">
     <h3 id="account-display-name">User</h3>
     <p id="account-display-email" style="color:var(--text-light);font-size:0.85rem;">-</p>
     <nav class="account-nav">
@@ -175,11 +182,24 @@
 
       // Fill profile data
       if (userProfile) {
-        document.getElementById('account-avatar').textContent = (userProfile.full_name || userProfile.email || '?')[0].toUpperCase();
-        document.getElementById('account-display-name').textContent = userProfile.full_name || 'User';
-        document.getElementById('account-display-email').textContent = userProfile.email || '';
+        const displayName = userProfile.full_name || 'User';
+        const displayEmail = userProfile.email || user.email || '';
+        const avatarUrl = userProfile.avatar_url || '';
+
+        // Avatar
+        if (avatarUrl) {
+          document.getElementById('avatar-letter').style.display = 'none';
+          const imgEl = document.getElementById('avatar-img');
+          imgEl.src = avatarUrl;
+          imgEl.style.display = 'block';
+        } else {
+          document.getElementById('avatar-letter').textContent = (userProfile.full_name || displayEmail || '?')[0].toUpperCase();
+        }
+
+        document.getElementById('account-display-name').textContent = displayName;
+        document.getElementById('account-display-email').textContent = displayEmail;
         document.getElementById('profile-name').value = userProfile.full_name || '';
-        document.getElementById('profile-email').value = userProfile.email || '';
+        document.getElementById('profile-email').value = displayEmail;
         document.getElementById('profile-phone').value = userProfile.phone || '';
         document.getElementById('profile-address').value = userProfile.address || '';
         document.getElementById('profile-city').value = userProfile.city || '';
@@ -244,7 +264,10 @@
         zip: document.getElementById('profile-zip').value
       });
       userProfile = updated;
-      document.getElementById('account-avatar').textContent = (updated.full_name || updated.email || '?')[0].toUpperCase();
+      const avatarImg = document.getElementById('avatar-img');
+      if (avatarImg && avatarImg.style.display === 'none') {
+        document.getElementById('avatar-letter').textContent = (updated.full_name || updated.email || '?')[0].toUpperCase();
+      }
       document.getElementById('account-display-name').textContent = updated.full_name || 'User';
       succEl.textContent = t('account_saved') || 'Profile saved!';
       succEl.style.display = 'block';
@@ -293,6 +316,28 @@
       await sb.from('profiles').delete().eq('id', userProfile.id);
       await sb.auth.signOut();
       window.location.href = '/';
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  }
+
+  async function handleAvatarUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    // Max 2MB
+    if (file.size > 2 * 1024 * 1024) {
+      alert(t('account_avatar_too_large') || 'Image must be under 2MB');
+      return;
+    }
+    try {
+      const url = await uploadAvatar(file);
+      document.getElementById('avatar-letter').style.display = 'none';
+      const imgEl = document.getElementById('avatar-img');
+      imgEl.src = url;
+      imgEl.style.display = 'block';
+      if (userProfile) userProfile.avatar_url = url;
+      // Reload user menu in navbar
+      initUserMenu();
     } catch (err) {
       alert('Error: ' + err.message);
     }
