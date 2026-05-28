@@ -123,7 +123,7 @@
       if (!sb) return;
 
       // Load categories for filter
-      const categories = await getCategories();
+      const categories = (await getCategories()).filter(c => (c.slug || '').toLowerCase() !== 'beauty');
       const catSelect = document.getElementById('category-filter');
       categories.forEach(cat => {
         const opt = document.createElement('option');

@@ -189,7 +189,6 @@ INSERT INTO categories (name_en, name_kz, name_ru, name_de, name_fr, name_es, na
   ('Home & Garden', 'Үй және бақша', 'Дом и сад', 'Haus & Garten', 'Maison & Jardin', 'Hogar y Jardín', 'Casa e Giardino', 'Ev & Bahçe', 'home-garden', 'home'),
   ('Sports', 'Спорт', 'Спорт', 'Sport', 'Sport', 'Deportes', 'Sport', 'Spor', 'sports', 'heart'),
   ('Toys', 'Ойыншықтар', 'Игрушки', 'Spielzeug', 'Jouets', 'Juguetesi', 'Giochi', 'Oyuncaklar', 'toys', 'heart'),
-  ('Beauty', 'Сұлулық', 'Красота', 'Schönheit', 'Beauté', 'Bellezza', 'Bellezza', 'Güzellik', 'beauty', 'heart'),
   ('Automotive', 'Автомобиль', 'Автомобили', 'Auto', 'Auto', 'Automóvil', 'Auto', 'Otomotiv', 'automotive', 'truck'),
   ('Tools', 'Құралдар', 'Инструменты', 'Werkzeuge', 'Outils', 'Herramientas', 'Attrezzi', 'Aletler', 'tools', 'edit');
 
