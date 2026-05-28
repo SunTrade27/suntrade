@@ -75,18 +75,18 @@
         <label><svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-globe"/></svg> <span data-i18n="auth_country">Country / Ел / Страна</span></label>
         <select id="signup-country" required>
           <option value="">--</option>
-          <option value="kz">🇰🇿 Қазақстан</option>
-          <option value="ru">🇷🇺 Россия</option>
-          <option value="en">🇬🇧 United Kingdom</option>
-          <option value="de">🇩🇪 Deutschland</option>
-          <option value="fr">🇫🇷 France</option>
-          <option value="es">🇪🇸 España</option>
-          <option value="it">🇮🇹 Italia</option>
-          <option value="tr">🇹🇷 Türkiye</option>
-          <option value="pt">🇵🇹 Portugal</option>
-          <option value="nl">🇳🇱 Nederland</option>
-          <option value="pl">🇵🇱 Polska</option>
-          <option value="ar">🇸🇦 العربية</option>
+          <option value="KZ" data-lang="kz">🇰🇿 Қазақстан</option>
+          <option value="RU" data-lang="ru">🇷🇺 Россия</option>
+          <option value="GB" data-lang="en">🇬🇧 United Kingdom</option>
+          <option value="DE" data-lang="de">🇩🇪 Deutschland</option>
+          <option value="FR" data-lang="fr">🇫🇷 France</option>
+          <option value="ES" data-lang="es">🇪🇸 España</option>
+          <option value="IT" data-lang="it">🇮🇹 Italia</option>
+          <option value="TR" data-lang="tr">🇹🇷 Türkiye</option>
+          <option value="PT" data-lang="pt">🇵🇹 Portugal</option>
+          <option value="NL" data-lang="nl">🇳🇱 Nederland</option>
+          <option value="PL" data-lang="pl">🇵🇱 Polska</option>
+          <option value="SA" data-lang="ar">🇸🇦 العربية</option>
         </select>
       </div>
       <div class="form-group">
@@ -185,7 +185,9 @@
     }
 
     try {
-      const selectedLang = document.getElementById('signup-country').value || currentLang;
+      const countrySelect = document.getElementById('signup-country');
+      const selectedOption = countrySelect.options[countrySelect.selectedIndex];
+      const selectedLang = selectedOption?.dataset?.lang || currentLang;
       await userSignUp(
         document.getElementById('signup-email').value,
         password,
