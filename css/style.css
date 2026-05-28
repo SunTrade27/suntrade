@@ -277,6 +277,54 @@ input, textarea, select { font-family: inherit; }
   .hero-search-btn { width: 100%; border-radius: 8px; }
 }
 
+/* Reviews Carousel */
+.reviews-carousel-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.reviews-carousel {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0.5rem 0;
+  flex: 1;
+}
+.reviews-carousel::-webkit-scrollbar { display: none; }
+.reviews-carousel > div {
+  min-width: 320px;
+  max-width: 320px;
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+.carousel-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.carousel-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+@media (max-width: 768px) {
+  .carousel-btn { display: none; }
+  .reviews-carousel > div { min-width: 280px; max-width: 280px; }
+}
+
 /* ===== SECTION ===== */
 .section {
   max-width: 1280px;
