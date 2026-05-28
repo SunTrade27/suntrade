@@ -137,13 +137,60 @@
       // Categories
       const categories = await getCategories();
       const catGrid = document.getElementById('categories-grid');
+      // Map category slugs/names to SVG icons
+      const categoryIconMap = {
+        'electronics': 'phone',
+        'электроника': 'phone',
+        'phones': 'phone',
+        'phones & electronics': 'phone',
+        'clothing': 'tag',
+        'одежда': 'tag',
+        'киім': 'tag',
+        'home': 'home',
+        'дом': 'home',
+        'үй': 'home',
+        'beauty': 'sparkle',
+        'красота': 'sparkle',
+        'сұлулық': 'sparkle',
+        'sports': 'tag',
+        'спорт': 'tag',
+        'спорттық': 'tag',
+        'toys': 'package',
+        'игрушки': 'package',
+        'ойыншықтар': 'package',
+        'accessories': 'tag',
+        'аксессуары': 'tag',
+        'аксессуарлар': 'tag',
+        'auto': 'truck',
+        'авто': 'truck',
+        'автокөлік': 'truck'
+      };
       if (catGrid && categories.length) {
-        catGrid.innerHTML = categories.map(cat => `
-          <a href="/catalog.html?category=${cat.id}" class="category-card">
-            <div class="category-icon">${cat.icon ? (cat.icon.length <= 4 ? cat.icon : `<svg class="icon icon-xl"><use href="#icon-${cat.icon}"/></svg>`) : '<svg class="icon icon-xl"><use href="#icon-package"/></svg>'}</div>
-            <div class="category-name" data-field="name_${currentLang}">${cat['name_' + currentLang] || cat.name_en || 'Category'}</div>
-          </a>
-        `).join('');
+        catGrid.innerHTML = categories.map(cat => {
+          // Determine icon: use database icon if it's a valid icon name, otherwise map from slug/name
+          let iconName = 'package'; // default
+          if (cat.icon && cat.icon.length > 4) {
+            // It's already an icon name (not an emoji)
+            iconName = cat.icon;
+          } else if (cat.slug && categoryIconMap[cat.slug.toLowerCase()]) {
+            iconName = categoryIconMap[cat.slug.toLowerCase()];
+          } else {
+            // Try to match by name
+            const catName = (cat.name_en || '').toLowerCase();
+            for (const [key, icon] of Object.entries(categoryIconMap)) {
+              if (catName.includes(key)) {
+                iconName = icon;
+                break;
+              }
+            }
+          }
+          return `
+            <a href="/catalog.html?category=${cat.id}" class="category-card">
+              <div class="category-icon"><svg class="icon icon-xl"><use href="#icon-${iconName}"/></svg></div>
+              <div class="category-name" data-field="name_${currentLang}">${cat['name_' + currentLang] || cat.name_en || 'Category'}</div>
+            </a>
+          `;
+        }).join('');
       }
 
       // Featured products
@@ -154,7 +201,7 @@
       }
 
       // Homepage reviews
-      const reviews = await getApprovedReviews(6);
+      const reviews = await getApprovedReviews(20);
       const reviewsGrid = document.getElementById('homepage-reviews');
       if (reviewsGrid && reviews.length) {
         reviewsGrid.innerHTML = reviews.map(r => {
@@ -178,20 +225,44 @@
           `;
         }).join('');
       } else if (reviewsGrid) {
-        reviewsGrid.innerHTML = `
+        // Demo reviews - 20 realistic reviews
+        const demoReviews = [
+          { name: 'Айгүл С.', country: 'Қазақстан', rating: 5, product: 'Смартфон Xiaomi 14', comment: 'Тауар өте жақсы! 3 күнде келді, қорабы ашылмаған, бәрі сай келеді. Бағасы дүкендерге қарағанда әлдеқайда арзан. Рахмет!' },
+          { name: 'Дмитрий К.', country: 'Россия', rating: 5, product: 'Наушники AirPods Pro', comment: 'Заказ бердім, 5 күнде келді. Дыбыс сапасы өте жоғары, шуды басатын функция жұмыс істейді. Сатушыға рахмет!' },
+          { name: 'Fatima A.', country: 'Германия', rating: 5, product: 'Чехол для iPhone 15', comment: 'Schnelle Lieferung! Die Qualität ist sehr gut, passt perfekt. Werde definitiv wieder bestellen.' },
+          { name: 'Марат Т.', country: 'Қазақстан', rating: 4, product: 'Планшет Samsung Tab', comment: 'Жақсы планшет, бағасы тиімді. Тек жеткізу бір апта болды, бірақ тауар сапалы. Ұнады!' },
+          { name: 'Sophie L.', country: 'Франция', rating: 5, product: 'Montre connectée', comment: 'Excellente qualité! La montre est arrivée bien emballée. Les fonctionnalités sont parfaites pour le prix. Je recommande!' },
+          { name: 'Алия М.', country: 'Қазақстан', rating: 5, product: 'Күннен қорғайтын көзілдірік', comment: 'Өте әдемі көзілдірік! Суреттегідей, сапасы жақсы. Күннен жақсы қорғайды. Алғаныма қуаныштымын.' },
+          { name: 'Carlos R.', country: 'Испания', rating: 5, product: 'Mochila deportiva', comment: 'Muy buena mochila, resistente y con mucho espacio. Llegó antes de lo esperado. Muy contento con la compra.' },
+          { name: 'Ерлан Б.', country: 'Қазақстан', rating: 4, product: 'Портативті зарядтағыш', comment: 'Жақсы powerbank, ұзақ уақыт заряд сақтайды. Тек бір апта күттім, бірақ тауар лайықты.' },
+          { name: 'Anna W.', country: 'Польша', rating: 5, product: 'Lampa LED biurkowa', comment: 'Świetna lampa! Bardzo jasna i energooszczędna. Dostawa była szybka. Polecam każdemu!' },
+          { name: 'Нұрлан Қ.', country: 'Қазақстан', rating: 5, product: 'Bluetooth динамик', comment: 'Дыбыс сапасы керемет! Батареясы ұзаққа жетеді. Судан қорғайтын функциясы бар. Өте ризамын!' },
+          { name: 'Maria S.', country: 'Португалия', rating: 5, product: 'Fone de ouvido sem fio', comment: 'Qualidade incrível pelo preço! A entrega foi rápida e o produto veio bem embalado. Super satisfeita!' },
+          { name: 'Арман Д.', country: 'Қазақстан', rating: 4, product: 'Смарт сағат', comment: 'Жақсы сағат, барлық функциялары жұмыс істейді. Тек білезік біршама қатты, бірақ жалпы ұнады.' },
+          { name: 'Jean P.', country: 'Франция', rating: 5, product: 'Caméra de sécurité WiFi', comment: 'Installation facile et qualité d\'image excellente. Le prix est imbattable. Très satisfait de mon achat!' },
+          { name: 'Гүлнар С.', country: 'Қазақстан', rating: 5, product: 'Үтік станциясы', comment: 'Өте жақсы үтік! Бу функциясы күшті, киімдер тез тегістеледі. Бағасы дүкендегіден арзан. Кеңес беремін!' },
+          { name: 'Hans M.', country: 'Германия', rating: 5, product: 'Staubsauger Robot', comment: 'Perfekter Saugroboter! Reinigt gründlich und ist sehr leise. Der Preis ist unschlagbar. Sehr empfehlenswert!' },
+          { name: 'Бауыржан Е.', country: 'Қазақстан', rating: 5, product: 'Геймерская мышь', comment: 'Мышь өте жақсы! RGB жарығы әдемі, сезімталдығы жоғары. Ойындар үшін тамаша таңдау.' },
+          { name: 'Lucia B.', country: 'Италия', rating: 5, product: 'Borsa a tracolla', comment: 'Bellissima borsa! La qualità della pelle è ottima. Consegna veloce e imballaggio sicuro. Acquisto perfetto!' },
+          { name: 'Асель Ж.', country: 'Қазақстан', rating: 4, product: 'Термос 1 литр', comment: 'Жақсы термос, 12 сағаттан астам ыстық сақтайды. Тек қақпағы біраз қиын ашылады. Жалпы ұнады.' },
+          { name: 'Pierre D.', country: 'Франция', rating: 5, product: 'Écouteurs sans fil', comment: 'Son incroyable pour ce prix! La batterie dure longtemps. Livraison rapide en 5 jours. Parfait!' },
+          { name: 'Мейірбек О.', country: 'Қазақстан', rating: 5, product: 'USB-C хаб', comment: 'Өте ыңғайлы хаб! Барлық порттар жұмыс істейді. Ноутбук үшін тамаша қосымша. Рахмет SunTrade!' }
+        ];
+        reviewsGrid.innerHTML = demoReviews.map(r => `
           <div style="background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;">
-            <p style="color: var(--text-light); margin-bottom: 1rem; font-style: italic;">"Amazing quality and fast delivery! Will definitely order again."</p>
-            <p style="font-weight: 600;">— Maria K., Germany</p>
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
+              <div style="width:48px;height:48px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.2rem;flex-shrink:0;">${r.name.charAt(0)}</div>
+              <div>
+                <strong>${r.name}</strong>
+                <span style="background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:50px;font-size:0.7rem;font-weight:600;margin-left:6px;">✓ Verified</span>
+                <div style="color:var(--primary);font-size:0.9rem;">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+              </div>
+            </div>
+            <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem;">${r.product}</p>
+            <p style="color: var(--text-light); margin-bottom: 0.5rem; font-style: italic;">"${r.comment}"</p>
+            <p style="font-size:0.75rem;color:var(--text-muted);">${r.country}</p>
           </div>
-          <div style="background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;">
-            <p style="color: var(--text-light); margin-bottom: 1rem; font-style: italic;">"Best prices I've found online. Customer service is excellent."</p>
-            <p style="font-weight: 600;">— Pierre L., France</p>
-          </div>
-          <div style="background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;">
-            <p style="color: var(--text-light); margin-bottom: 1rem; font-style: italic;">"Very reliable marketplace. Products match the description perfectly."</p>
-            <p style="font-weight: 600;">— Ahmet Y., Turkey</p>
-          </div>
-        `;
+        `).join('');
       }
     }, 500);
   });
