@@ -93,13 +93,27 @@ async function getAdminSession() {
 }
 
 // Auth - User
-async function userSignUp(email, password, fullName, language) {
+async function userSignUp(email, password, fullName, language, addressData) {
   const { data, error } = await sb.auth.signUp({
     email,
     password,
     options: { data: { full_name: fullName, language: language || 'en' } }
   });
   if (error) throw error;
+  // Save address fields to profiles table after signup
+  if (data.user && addressData) {
+    const profileUpdates = {};
+    if (addressData.phone) profileUpdates.phone = addressData.phone;
+    if (addressData.address) profileUpdates.address = addressData.address;
+    if (addressData.city) profileUpdates.city = addressData.city;
+    if (addressData.country) profileUpdates.country = addressData.country;
+    if (addressData.zip) profileUpdates.zip = addressData.zip;
+    if (Object.keys(profileUpdates).length > 0) {
+      profileUpdates.full_name = fullName;
+      profileUpdates.email = email;
+      await sb.from('profiles').update(profileUpdates).eq('id', data.user.id);
+    }
+  }
   return data;
 }
 

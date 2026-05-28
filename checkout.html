@@ -200,13 +200,20 @@
       try {
         const profile = await getUserProfile();
         if (profile) {
-          if (profile.email) document.getElementById('email').value = profile.email;
-          if (profile.full_name) document.getElementById('name').value = profile.full_name;
-          if (profile.phone) document.getElementById('phone').value = profile.phone;
-          if (profile.address) document.getElementById('address').value = profile.address;
-          if (profile.city) document.getElementById('city').value = profile.city;
-          if (profile.country) document.getElementById('country').value = profile.country;
-          if (profile.zip) document.getElementById('zip').value = profile.zip;
+          if (profile.email) document.getElementById('checkout-email').value = profile.email;
+          if (profile.full_name) document.getElementById('checkout-name').value = profile.full_name;
+          if (profile.phone) document.getElementById('checkout-phone').value = profile.phone;
+          if (profile.address) document.getElementById('checkout-address').value = profile.address;
+          if (profile.city) document.getElementById('checkout-city').value = profile.city;
+          if (profile.country) {
+            const countrySelect = document.getElementById('checkout-country');
+            // Try to match country code
+            const cc = profile.country.toUpperCase();
+            for (let opt of countrySelect.options) {
+              if (opt.value === cc) { countrySelect.value = cc; break; }
+            }
+          }
+          if (profile.zip) document.getElementById('checkout-zip').value = profile.zip;
         }
       } catch (e) {}
     }, 600);
