@@ -2,196 +2,127 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chat - SunTrade</title>
   <link rel="stylesheet" href="/css/style.css">
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/icons.js"></script>
   <style>
-    html, body { height: 100%; overflow: hidden; }
-    body { display: flex; flex-direction: column; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    body { display: flex; flex-direction: column; background: #ECE5DD; }
 
-    .chat-page-header {
+    /* Navbar — same as site */
+    .navbar { flex-shrink: 0; }
+
+    /* Chat header under navbar */
+    .chat-header {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      background: #075E54;
+      gap: 10px;
+      padding: 10px 16px;
+      background: var(--primary);
       color: white;
       flex-shrink: 0;
     }
-    .chat-page-header .back-btn {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.4rem;
-      padding: 4px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
+    .chat-header .chat-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--primary-dark);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1rem; flex-shrink: 0;
     }
-    .chat-page-header .chat-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 1rem;
-    }
-    .chat-page-header .chat-info h3 {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin: 0;
-    }
-    .chat-page-header .chat-info .status {
-      font-size: 0.75rem;
-      opacity: 0.85;
-    }
-    .chat-page-header .header-actions {
+    .chat-header .chat-info h3 { font-size: 0.95rem; font-weight: 600; margin: 0; }
+    .chat-header .chat-info .status { font-size: 0.75rem; opacity: 0.85; }
+    .chat-header .lang-pick {
       margin-left: auto;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      background: rgba(255,255,255,0.2); border: none; color: white;
+      padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;
     }
-    .chat-page-header .lang-pick {
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-    .chat-page-header .lang-pick option { color: #333; }
+    .chat-header .lang-pick option { color: #333; }
 
-    .chat-messages-area {
+    /* Messages area */
+    .chat-messages {
       flex: 1;
       overflow-y: auto;
-      padding: 16px;
-      background: #ECE5DD;
+      -webkit-overflow-scrolling: touch;
+      padding: 12px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
-    .chat-messages-area::-webkit-scrollbar { width: 4px; }
-    .chat-messages-area::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
 
-    .chat-bubble {
-      max-width: 82%;
+    .bubble {
+      max-width: 80%;
       padding: 8px 12px;
       border-radius: 12px;
-      font-size: 0.9rem;
-      line-height: 1.4;
-      position: relative;
+      font-size: 0.88rem;
+      line-height: 1.35;
       word-wrap: break-word;
+      position: relative;
     }
-    .chat-bubble-in {
+    .bubble-in {
       align-self: flex-start;
       background: white;
       border-bottom-left-radius: 4px;
     }
-    .chat-bubble-out {
+    .bubble-out {
       align-self: flex-end;
       background: #DCF8C6;
       border-bottom-right-radius: 4px;
     }
-    .chat-bubble .bubble-time {
-      display: block;
-      text-align: right;
-      font-size: 0.65rem;
-      color: #999;
-      margin-top: 4px;
-    }
-    .chat-bubble .bubble-sender {
-      font-size: 0.7rem;
-      font-weight: 600;
-      color: var(--primary);
-      margin-bottom: 2px;
+    .bubble .b-time {
+      display: block; text-align: right;
+      font-size: 0.6rem; color: #999; margin-top: 3px;
     }
 
-    .chat-welcome-block {
-      text-align: center;
-      padding: 2rem 1rem;
+    /* Welcome */
+    .chat-welcome {
+      text-align: center; padding: 1.5rem 1rem;
     }
-    .chat-welcome-block .welcome-avatar {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: white;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
+    .chat-welcome .w-logo {
+      font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;
     }
-    .chat-welcome-block h3 {
-      font-size: 1.1rem;
-      margin-bottom: 0.5rem;
+    .chat-welcome .w-logo span { color: var(--primary); }
+    .chat-welcome p { font-size: 0.85rem; color: #666; margin-bottom: 1rem; }
+    .quick-btns { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+    .quick-btns button {
+      background: white; border: 1px solid var(--border);
+      border-radius: 20px; padding: 8px 16px; font-size: 0.8rem;
+      color: var(--primary); font-weight: 500; cursor: pointer;
     }
-    .chat-welcome-block p {
-      font-size: 0.85rem;
-      color: #666;
-      margin-bottom: 1rem;
-    }
-    .chat-quick-btns {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      justify-content: center;
-    }
-    .chat-quick-btns button {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 8px 16px;
-      font-size: 0.8rem;
-      color: var(--primary);
-      font-weight: 500;
-      cursor: pointer;
-    }
-    .chat-quick-btns button:active { background: #f0f0f0; }
 
-    .chat-typing-indicator {
-      align-self: flex-start;
-      background: white;
-      padding: 10px 16px;
-      border-radius: 12px;
-      border-bottom-left-radius: 4px;
+    /* Typing indicator */
+    .typing-dots {
+      align-self: flex-start; background: white;
+      padding: 10px 16px; border-radius: 12px; border-bottom-left-radius: 4px;
       display: none;
     }
-    .chat-typing-indicator span {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #999;
-      margin: 0 2px;
-      animation: bounce 1.2s infinite;
+    .typing-dots span {
+      display: inline-block; width: 7px; height: 7px;
+      border-radius: 50%; background: #999; margin: 0 2px;
+      animation: dotBounce 1.2s infinite;
     }
-    .chat-typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-    .chat-typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes bounce {
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotBounce {
       0%, 60%, 100% { transform: translateY(0); }
-      30% { transform: translateY(-6px); }
+      30% { transform: translateY(-5px); }
     }
 
+    /* Input bar */
     .chat-input-bar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
-      background: #F0F0F0;
+      display: flex; align-items: flex-end; gap: 8px;
+      padding: 8px 12px; background: #F0F0F0;
       flex-shrink: 0;
+      border-top: 1px solid #ddd;
     }
     .chat-input-bar textarea {
       flex: 1;
-      border: none;
+      border: 1px solid #ddd;
       border-radius: 20px;
       padding: 10px 16px;
       font-size: 0.9rem;
@@ -200,86 +131,86 @@
       max-height: 100px;
       outline: none;
       background: white;
+      -webkit-appearance: none;
     }
-    .chat-send-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: #075E54;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
+    .chat-input-bar textarea:focus { border-color: var(--primary); }
+    .send-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--primary); border: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0;
     }
-    .chat-send-btn:active { background: #064D44; }
-    .chat-send-btn svg { fill: white; }
+    .send-btn:active { background: var(--primary-dark); }
+    .send-btn svg { fill: white; }
   </style>
 </head>
 <body>
 
-<!-- Header -->
-<div class="chat-page-header">
-  <a href="/" class="back-btn">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-  </a>
+<!-- Site Navbar (same as other pages) -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="logo">Sun<span>Trade</span></a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/" data-i18n="nav_home">Home</a></li>
+      <li><a href="/catalog.html" data-i18n="nav_catalog">Catalog</a></li>
+      <li><a href="/cart.html" data-i18n="nav_cart">Cart</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="/cart.html" class="cart-link">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+      </a>
+      <button class="mobile-menu-btn" onclick="document.getElementById('nav-links').classList.toggle('show')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Chat header -->
+<div class="chat-header">
   <div class="chat-avatar">S</div>
   <div class="chat-info">
-    <h3>SunTrade</h3>
+    <h3>SunTrade AI</h3>
     <div class="status" id="chat-status">Online</div>
   </div>
-  <div class="header-actions">
-    <select id="chat-lang" class="lang-pick">
-      <option value="en">EN</option>
-      <option value="ru">RU</option>
-      <option value="kz">KZ</option>
-      <option value="de">DE</option>
-      <option value="fr">FR</option>
-      <option value="es">ES</option>
-      <option value="tr">TR</option>
-      <option value="zh">ZH</option>
-      <option value="ar">AR</option>
-      <option value="it">IT</option>
-      <option value="pt">PT</option>
-      <option value="nl">NL</option>
-      <option value="pl">PL</option>
-      <option value="ja">JA</option>
-      <option value="ko">KO</option>
-    </select>
-  </div>
+  <select id="chat-lang" class="lang-pick">
+    <option value="kz">KZ</option>
+    <option value="ru">RU</option>
+    <option value="en">EN</option>
+    <option value="de">DE</option>
+    <option value="fr">FR</option>
+    <option value="es">ES</option>
+    <option value="tr">TR</option>
+    <option value="zh">ZH</option>
+  </select>
 </div>
 
 <!-- Messages -->
-<div class="chat-messages-area" id="chat-messages">
-  <div class="chat-welcome-block" id="chat-welcome">
-    <div class="welcome-avatar">S</div>
-    <h3>SunTrade</h3>
-    <p id="welcome-text">Сәлеметсіз бе! Сізге қалай көмектесе аламын?</p>
-    <div class="chat-quick-btns">
+<div class="chat-messages" id="chat-messages">
+  <div class="chat-welcome" id="chat-welcome">
+    <div class="w-logo">Sun<span>Trade</span></div>
+    <p id="welcome-text">Сәлеметсіз бе! Мен AI кеңесшімін. Сізге қалай көмектесе аламын?</p>
+    <div class="quick-btns">
       <button onclick="sendQuick('Сіздерде қандай тауарлар бар?')">Тауарлар</button>
       <button onclick="sendQuick('Жеткізу қанша тұрады?')">Жеткізу</button>
       <button onclick="sendQuick('Қайтару мүмкін бе?')">Қайтару</button>
     </div>
   </div>
-  <div class="chat-typing-indicator" id="typing-indicator">
-    <span></span><span></span><span></span>
-  </div>
+  <div class="typing-dots" id="typing-dots"><span></span><span></span><span></span></div>
 </div>
 
 <!-- Input -->
 <div class="chat-input-bar">
-  <textarea id="chat-input" rows="1" placeholder="Хабарлама жазыңыз..."
-    onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
-  <button class="chat-send-btn" onclick="sendMessage()">
-    <svg viewBox="0 0 24 24" width="22" height="22"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+  <textarea id="chat-input" rows="1" placeholder="Хабарлама жазыңыз..."></textarea>
+  <button class="send-btn" id="send-btn" type="button">
+    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
   </button>
 </div>
 
 <script>
+(function() {
   const STORAGE_KEY = 'suntrade_chat_id';
   const LANG_KEY = 'suntrade_chat_lang';
-  const API_BASE = '';
 
   function getCustomerId() {
     let id = localStorage.getItem(STORAGE_KEY);
@@ -293,45 +224,31 @@
   const customerId = getCustomerId();
   let lastMsgCount = 0;
 
-  // Welcome texts
   const welcomes = {
-    kz: 'Сәлеметсіз бе! Сізге қалай көмектесе аламын?',
-    ru: 'Здравствуйте! Чем могу помочь?',
-    en: 'Hello! How can I help you?',
-    de: 'Hallo! Wie kann ich Ihnen helfen?',
-    fr: 'Bonjour! Comment puis-je vous aider?',
-    es: '¡Hola! ¿En qué puedo ayudarte?',
-    tr: 'Merhaba! Size nasıl yardımcı olabilirim?',
-    zh: '你好！我能帮您什么？',
-    ar: '!مرحبا كيف يمكنني مساعدتك؟',
-    it: 'Ciao! Come posso aiutarti?',
-    pt: 'Olá! Como posso ajudar?',
-    nl: 'Hallo! Hoe kan ik u helpen?',
-    pl: 'Cześć! Jak mogę pomóc?',
-    ja: 'こんにちは！どのようにお手伝いできますか？',
-    ko: '안녕하세요! 무엇을 도와드릴까요?'
+    kz: 'Сәлеметсіз бе! Мен AI кеңесшімін. Сізге қалай көмектесе аламын?',
+    ru: 'Здравствуйте! Я AI-консультант. Чем могу помочь?',
+    en: 'Hello! I am an AI consultant. How can I help you?',
+    de: 'Hallo! Ich bin ein KI-Berater. Wie kann ich helfen?',
+    fr: 'Bonjour! Je suis un consultant IA. Comment puis-je aider?',
+    es: '¡Hola! Soy un consultor de IA. ¿En qué puedo ayudar?',
+    tr: 'Merhaba! Ben bir AI danışmanıyım. Nasıl yardımcı olabilirim?',
+    zh: '你好！我是AI顾问。我能帮您什么？'
   };
 
   const placeholders = {
     kz: 'Хабарлама жазыңыз...', ru: 'Напишите сообщение...', en: 'Type a message...',
     de: 'Nachricht schreiben...', fr: 'Écrivez un message...', es: 'Escribe un mensaje...',
-    tr: 'Mesaj yazın...', zh: '输入消息...', ar: '...اكتب رسالة', it: 'Scrivi un messaggio...',
-    pt: 'Escreva uma mensagem...', nl: 'Schrijf een bericht...', pl: 'Napisz wiadomość...',
-    ja: 'メッセージを入力...', ko: '메시지를 입력하세요...'
+    tr: 'Mesaj yazın...', zh: '输入消息...'
   };
 
-  function initLang() {
-    const lang = localStorage.getItem(LANG_KEY) || 'kz';
-    document.getElementById('chat-lang').value = lang;
-    document.getElementById('welcome-text').textContent = welcomes[lang] || welcomes.en;
-    document.getElementById('chat-input').placeholder = placeholders[lang] || placeholders.en;
-  }
-
-  document.getElementById('chat-lang').addEventListener('change', function() {
-    localStorage.setItem(LANG_KEY, this.value);
-    document.getElementById('welcome-text').textContent = welcomes[this.value] || welcomes.en;
-    document.getElementById('chat-input').placeholder = placeholders[this.value] || placeholders.en;
-  });
+  // Elements
+  const messagesEl = document.getElementById('chat-messages');
+  const inputEl = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('send-btn');
+  const welcomeEl = document.getElementById('chat-welcome');
+  const typingEl = document.getElementById('typing-dots');
+  const statusEl = document.getElementById('chat-status');
+  const langEl = document.getElementById('chat-lang');
 
   function escHtml(t) {
     if (!t) return '';
@@ -340,122 +257,153 @@
     return d.innerHTML.replace(/\n/g, '<br>');
   }
 
-  function addBubble(text, dir, sender, time) {
-    const welcome = document.getElementById('chat-welcome');
-    if (welcome) welcome.style.display = 'none';
-
-    const area = document.getElementById('chat-messages');
-    const typing = document.getElementById('typing-indicator');
-
-    const senderHtml = (dir === 'in' && sender) ?
-      `<div class="bubble-sender">${sender === 'ai' ? 'AI' : 'Manager'}</div>` : '';
-
-    const bubble = document.createElement('div');
-    bubble.className = `chat-bubble chat-bubble-${dir}`;
-    bubble.innerHTML = `${senderHtml}${escHtml(text)}<span class="bubble-time">${time}</span>`;
-
-    area.insertBefore(bubble, typing);
-    area.scrollTop = area.scrollHeight;
-  }
-
   function getTime() {
     return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
-  function showTyping(show) {
-    document.getElementById('typing-indicator').style.display = show ? 'block' : 'none';
-    const area = document.getElementById('chat-messages');
-    area.scrollTop = area.scrollHeight;
+  function addBubble(text, dir, sender, time) {
+    if (welcomeEl) welcomeEl.style.display = 'none';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble bubble-' + dir;
+    bubble.innerHTML = escHtml(text) + '<span class="b-time">' + time + '</span>';
+    messagesEl.insertBefore(bubble, typingEl);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
   }
+
+  function showTyping(show) {
+    typingEl.style.display = show ? 'block' : 'none';
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function initLang() {
+    const lang = localStorage.getItem(LANG_KEY) || 'kz';
+    langEl.value = lang;
+    if (welcomeEl) {
+      const wp = document.getElementById('welcome-text');
+      if (wp) wp.textContent = welcomes[lang] || welcomes.en;
+    }
+    inputEl.placeholder = placeholders[lang] || placeholders.en;
+  }
+
+  langEl.addEventListener('change', function() {
+    localStorage.setItem(LANG_KEY, this.value);
+    const wp = document.getElementById('welcome-text');
+    if (wp) wp.textContent = welcomes[this.value] || welcomes.en;
+    inputEl.placeholder = placeholders[this.value] || placeholders.en;
+  });
+
+  // Send message
+  async function sendMessage() {
+    const msg = inputEl.value.trim();
+    if (!msg) return;
+
+    inputEl.value = '';
+    inputEl.style.height = 'auto';
+    addBubble(msg, 'out', 'customer', getTime());
+    showTyping(true);
+
+    try {
+      const resp = await fetch('/api/chat-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customerId: customerId, message: msg })
+      });
+
+      if (!resp.ok) {
+        throw new Error('Server error: ' + resp.status);
+      }
+
+      const data = await resp.json();
+      showTyping(false);
+
+      if (data.reply) {
+        addBubble(data.reply, 'in', 'ai', getTime());
+      } else if (data.error) {
+        addBubble('Қате: ' + data.error, 'in', '', getTime());
+      }
+
+      if (data.status === 'human') {
+        statusEl.textContent = 'Operator connected';
+        statusEl.style.color = '#FFD700';
+      }
+      lastMsgCount += 2;
+    } catch (e) {
+      showTyping(false);
+      console.error('Send error:', e);
+      addBubble('Қате шықты. Қайта көріңіз.', 'in', '', getTime());
+    }
+  }
+
+  window.sendQuick = function(text) {
+    inputEl.value = text;
+    sendMessage();
+  };
+
+  // Send button click
+  sendBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    sendMessage();
+  });
+
+  // Enter key (not Shift+Enter)
+  inputEl.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // Auto-resize textarea
+  inputEl.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+  });
 
   // Load history
   async function loadHistory() {
     try {
-      const resp = await fetch(`${API_BASE}/api/chat-messages?customerId=${customerId}`);
+      const resp = await fetch('/api/chat-messages?customerId=' + encodeURIComponent(customerId));
       if (!resp.ok) return;
       const data = await resp.json();
       if (!data.messages || !data.messages.length) return;
 
-      data.messages.forEach(m => {
-        const time = new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      data.messages.forEach(function(m) {
+        var time = new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         addBubble(m.original_text, m.direction === 'in' ? 'out' : 'in', m.sender, time);
       });
       lastMsgCount = data.messages.length;
 
       if (data.conversation && data.conversation.status === 'human') {
-        document.getElementById('chat-status').textContent = 'Operator connected';
-        document.getElementById('chat-status').style.color = '#FFD700';
+        statusEl.textContent = 'Operator connected';
+        statusEl.style.color = '#FFD700';
       }
     } catch (e) {
       console.error('Load history error:', e);
     }
   }
 
-  // Send message
-  async function sendMessage() {
-    const input = document.getElementById('chat-input');
-    const msg = input.value.trim();
-    if (!msg) return;
-
-    input.value = '';
-    input.style.height = 'auto';
-    addBubble(msg, 'out', 'customer', getTime());
-    showTyping(true);
-
+  // Polling for new messages
+  setInterval(async function() {
     try {
-      const resp = await fetch(`${API_BASE}/api/chat-message`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customerId, message: msg })
-      });
-      const data = await resp.json();
-      showTyping(false);
-
-      if (data.reply) {
-        addBubble(data.reply, 'in', 'ai', getTime());
-      }
-      if (data.status === 'human') {
-        document.getElementById('chat-status').textContent = 'Operator connected';
-        document.getElementById('chat-status').style.color = '#FFD700';
-      }
-      lastMsgCount += 2;
-    } catch (e) {
-      showTyping(false);
-      addBubble('Error sending message. Please try again.', 'in', '', getTime());
-    }
-  }
-
-  function sendQuick(text) {
-    document.getElementById('chat-input').value = text;
-    sendMessage();
-  }
-
-  // Polling
-  setInterval(async () => {
-    try {
-      const resp = await fetch(`${API_BASE}/api/chat-messages?customerId=${customerId}`);
+      const resp = await fetch('/api/chat-messages?customerId=' + encodeURIComponent(customerId));
       if (!resp.ok) return;
       const data = await resp.json();
       if (data.messages && data.messages.length > lastMsgCount) {
-        const newOnes = data.messages.slice(lastMsgCount);
-        newOnes.forEach(m => {
+        var newOnes = data.messages.slice(lastMsgCount);
+        newOnes.forEach(function(m) {
           if (m.direction === 'out') {
             addBubble(m.original_text, 'in', m.sender, getTime());
           }
         });
         lastMsgCount = data.messages.length;
       }
-    } catch {}
+    } catch (e) {}
   }, 5000);
-
-  // Auto-resize textarea
-  document.getElementById('chat-input').addEventListener('input', function() {
-    this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
-  });
 
   initLang();
   loadHistory();
+})();
 </script>
 
 </body>
