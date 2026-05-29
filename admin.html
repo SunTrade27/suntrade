@@ -638,7 +638,7 @@
     document.getElementById('uploaded-images-preview').innerHTML = '';
 
     // Load categories
-    const categories = (await getCategories()).filter(c => (c.slug || '').toLowerCase() !== 'beauty');
+    const categories = await getCategories();
     const catSelect = document.getElementById('pcategory');
     catSelect.innerHTML = '<option value="">Select category</option>' +
       categories.map(c => `<option value="${c.id}" ${product && product.category_id == c.id ? 'selected' : ''}>${c['name_' + currentLang] || c.name_en}</option>`).join('');
