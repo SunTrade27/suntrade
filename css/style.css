@@ -1200,10 +1200,11 @@ input, textarea, select { font-family: inherit; }
   .products-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
   .product-card-img { height: 180px; }
 
-  .categories-grid { gap: 0.5rem; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .categories-grid { gap: 0.4rem; overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; }
   .categories-grid::-webkit-scrollbar { display: none; }
-  .category-card { padding: 0.75rem 0.5rem; min-width: 80px; }
-  .category-icon { font-size: 2rem; margin-bottom: 0.25rem; }
+  .category-card { padding: 0.5rem 0.25rem; min-width: 0; flex: 1 1 0; }
+  .category-icon { font-size: 1.6rem; margin-bottom: 0.2rem; }
+  .category-name { font-size: 0.7rem; }
   .category-name { font-size: 0.75rem; }
 
   .reviews-carousel > div { min-width: 260px; max-width: 260px; }
@@ -1245,9 +1246,10 @@ input, textarea, select { font-family: inherit; }
   .product-card-btn { padding: 8px; font-size: 0.75rem; }
   .product-card-img { height: 140px; }
 
-  .categories-grid { gap: 0.4rem; }
-  .category-card { padding: 0.5rem 0.35rem; min-width: 65px; }
-  .category-icon { font-size: 1.5rem; margin-bottom: 0.15rem; }
+  .categories-grid { gap: 0.3rem; flex-wrap: nowrap; }
+  .category-card { padding: 0.4rem 0.2rem; min-width: 0; flex: 1 1 0; }
+  .category-icon { font-size: 1.4rem; margin-bottom: 0.15rem; }
+  .category-name { font-size: 0.6rem; }
   .category-name { font-size: 0.65rem; }
 
   .reviews-carousel > div { min-width: 240px; max-width: 240px; padding: 1.25rem; }
@@ -1839,22 +1841,26 @@ input, textarea, select { font-family: inherit; }
 @media (max-width: 768px) {
   .nav-auth-desktop { display: none !important; }
   .mobile-auth-item { display: block; }
-  .mobile-auth-item a {
-    display: block;
+  .mobile-auth-item {
+    display: flex;
+    gap: 0.5rem;
     padding: 12px 0;
-    font-size: 1rem;
+    border-top: 1px solid var(--border);
+  }
+  .mobile-auth-item a {
+    flex: 1;
+    display: block;
+    padding: 10px 0;
+    font-size: 0.9rem;
     font-weight: 600;
     color: var(--primary);
-    border-top: 1px solid var(--border);
     text-align: center;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--primary);
   }
   .mobile-auth-item .mobile-register-link {
     background: var(--primary);
     color: white;
-    border-radius: var(--radius-sm);
-    margin-top: 0.5rem;
-    border-top: none;
-    padding: 10px 0;
   }
 }
 .user-menu-btn {
