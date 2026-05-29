@@ -1200,12 +1200,11 @@ input, textarea, select { font-family: inherit; }
   .products-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
   .product-card-img { height: 180px; }
 
-  .categories-grid { gap: 0.4rem; overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; }
+  .categories-grid { gap: 0.5rem; overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; }
   .categories-grid::-webkit-scrollbar { display: none; }
-  .category-card { padding: 0.5rem 0.25rem; min-width: 0; flex: 1 1 0; }
-  .category-icon { font-size: 1.6rem; margin-bottom: 0.2rem; }
-  .category-name { font-size: 0.7rem; }
-  .category-name { font-size: 0.75rem; }
+  .category-card { padding: 0.6rem 0.4rem; min-width: 70px; flex: 0 0 auto; }
+  .category-icon { font-size: 1.8rem; margin-bottom: 0.25rem; }
+  .category-name { font-size: 0.7rem; white-space: nowrap; }
 
   .reviews-carousel > div { min-width: 260px; max-width: 260px; }
 
@@ -1246,11 +1245,11 @@ input, textarea, select { font-family: inherit; }
   .product-card-btn { padding: 8px; font-size: 0.75rem; }
   .product-card-img { height: 140px; }
 
-  .categories-grid { gap: 0.3rem; flex-wrap: nowrap; }
-  .category-card { padding: 0.4rem 0.2rem; min-width: 0; flex: 1 1 0; }
-  .category-icon { font-size: 1.4rem; margin-bottom: 0.15rem; }
-  .category-name { font-size: 0.6rem; }
-  .category-name { font-size: 0.65rem; }
+  .categories-grid { gap: 0.5rem; flex-wrap: nowrap; overflow-x: auto; }
+  .categories-grid::-webkit-scrollbar { display: none; }
+  .category-card { padding: 0.5rem 0.35rem; min-width: 55px; flex: 0 0 auto; }
+  .category-icon { font-size: 1.5rem; margin-bottom: 0.2rem; }
+  .category-name { font-size: 0.6rem; white-space: nowrap; }
 
   .reviews-carousel > div { min-width: 240px; max-width: 240px; padding: 1.25rem; }
 
@@ -1840,23 +1839,24 @@ input, textarea, select { font-family: inherit; }
 
 @media (max-width: 768px) {
   .nav-auth-desktop { display: none !important; }
-  .mobile-auth-item { display: block; }
   .mobile-auth-item {
     display: flex;
     gap: 0.5rem;
-    padding: 12px 0;
+    padding: 10px 0;
     border-top: 1px solid var(--border);
+    align-items: center;
   }
   .mobile-auth-item a {
     flex: 1;
     display: block;
-    padding: 10px 0;
-    font-size: 0.9rem;
+    padding: 8px 0;
+    font-size: 0.85rem;
     font-weight: 600;
     color: var(--primary);
     text-align: center;
     border-radius: var(--radius-sm);
     border: 2px solid var(--primary);
+    line-height: 1.2;
   }
   .mobile-auth-item .mobile-register-link {
     background: var(--primary);
