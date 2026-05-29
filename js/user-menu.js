@@ -32,9 +32,17 @@ async function initUserMenu() {
     `;
   } else {
     container.innerHTML = `
-      <a href="/auth.html" class="nav-auth-link" data-i18n="auth_signin">${t('auth_signin') || 'Sign In'}</a>
-      <a href="/auth.html?mode=signup" class="nav-auth-link nav-auth-signup" data-i18n="auth_signup">${t('auth_signup') || 'Register'}</a>
+      <a href="/auth.html" class="nav-auth-link nav-auth-desktop" data-i18n="auth_signin">${t('auth_signin') || 'Sign In'}</a>
+      <a href="/auth.html?mode=signup" class="nav-auth-link nav-auth-signup nav-auth-desktop" data-i18n="auth_signup">${t('auth_signup') || 'Register'}</a>
     `;
+    // Add mobile auth link inside hamburger menu
+    const navLinks = document.getElementById('nav-links');
+    if (navLinks && !navLinks.querySelector('.mobile-auth-item')) {
+      const mobileLi = document.createElement('li');
+      mobileLi.className = 'mobile-auth-item';
+      mobileLi.innerHTML = `<a href="/auth.html" data-i18n="auth_signin">${t('auth_signin') || 'Sign In'}</a>`;
+      navLinks.appendChild(mobileLi);
+    }
   }
 
   // Close dropdown when clicking outside

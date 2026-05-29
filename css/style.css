@@ -1829,9 +1829,20 @@ input, textarea, select { font-family: inherit; }
   color: white;
 }
 
+.mobile-auth-item { display: none; }
+
 @media (max-width: 768px) {
-  .nav-auth-signup { display: none; }
-  .nav-auth-link { font-size: 0.8rem; padding: 5px 10px; }
+  .nav-auth-desktop { display: none !important; }
+  .mobile-auth-item { display: block; }
+  .mobile-auth-item a {
+    display: block;
+    padding: 12px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary);
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
 }
 .user-menu-btn {
   width: 36px;
