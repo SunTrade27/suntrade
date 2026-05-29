@@ -82,7 +82,48 @@ ON CONFLICT (slug) DO UPDATE SET
   icon = 'sparkle';
 
 
--- ===== FIX 3: Backfill profiles for existing users =====
+-- ===== FIX 3: Chat tables for AI consultant =====
+CREATE TABLE IF NOT EXISTS wa_conversations (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  customer_id TEXT NOT NULL UNIQUE,
+  status TEXT DEFAULT 'ai' CHECK (status IN ('ai', 'human', 'closed')),
+  customer_lang TEXT DEFAULT 'en',
+  last_message_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS wa_messages (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  conversation_id UUID REFERENCES wa_conversations(id) ON DELETE CASCADE,
+  direction TEXT NOT NULL CHECK (direction IN ('in', 'out')),
+  sender TEXT DEFAULT 'customer' CHECK (sender IN ('customer', 'ai', 'admin')),
+  original_text TEXT NOT NULL,
+  translated_text TEXT,
+  original_lang TEXT DEFAULT 'en',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_wa_messages_conv ON wa_messages(conversation_id);
+CREATE INDEX IF NOT EXISTS idx_wa_conversations_customer ON wa_conversations(customer_id);
+
+-- RLS (API uses service key, so these are permissive)
+ALTER TABLE wa_conversations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE wa_messages ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Service can manage wa_conversations' AND tablename = 'wa_conversations') THEN
+    CREATE POLICY "Service can manage wa_conversations" ON wa_conversations FOR ALL USING (true) WITH CHECK (true);
+  END IF;
+END $$;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Service can manage wa_messages' AND tablename = 'wa_messages') THEN
+    CREATE POLICY "Service can manage wa_messages" ON wa_messages FOR ALL USING (true) WITH CHECK (true);
+  END IF;
+END $$;
+
+
+-- ===== FIX 4: Backfill profiles for existing users =====
 INSERT INTO public.profiles (id, email, is_admin)
 SELECT
   au.id,
