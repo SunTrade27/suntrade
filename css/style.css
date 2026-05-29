@@ -1828,6 +1828,11 @@ input, textarea, select { font-family: inherit; }
   border-color: var(--primary-dark);
   color: white;
 }
+
+@media (max-width: 768px) {
+  .nav-auth-signup { display: none; }
+  .nav-auth-link { font-size: 0.8rem; padding: 5px 10px; }
+}
 .user-menu-btn {
   width: 36px;
   height: 36px;

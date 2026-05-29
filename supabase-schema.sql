@@ -190,7 +190,8 @@ INSERT INTO categories (name_en, name_kz, name_ru, name_de, name_fr, name_es, na
   ('Sports', 'Спорт', 'Спорт', 'Sport', 'Sport', 'Deportes', 'Sport', 'Spor', 'sports', 'heart'),
   ('Toys', 'Ойыншықтар', 'Игрушки', 'Spielzeug', 'Jouets', 'Juguetesi', 'Giochi', 'Oyuncaklar', 'toys', 'heart'),
   ('Automotive', 'Автомобиль', 'Автомобили', 'Auto', 'Auto', 'Automóvil', 'Auto', 'Otomotiv', 'automotive', 'truck'),
-  ('Tools', 'Құралдар', 'Инструменты', 'Werkzeuge', 'Outils', 'Herramientas', 'Attrezzi', 'Aletler', 'tools', 'edit');
+  ('Tools', 'Құралдар', 'Инструменты', 'Werkzeuge', 'Outils', 'Herramientas', 'Attrezzi', 'Aletler', 'tools', 'edit'),
+  ('Beauty', 'Сұлулық', 'Красота', 'Schönheit', 'Beauté', 'Bellezza', 'Güzellik', 'Güzellik', 'beauty', 'heart');
 
 -- Reviews table
 CREATE TABLE IF NOT EXISTS reviews (
