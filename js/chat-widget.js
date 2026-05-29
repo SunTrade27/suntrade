@@ -348,8 +348,22 @@
     }
   }
 
+  // Check if mobile
+  function isMobile() {
+    return window.innerWidth <= 768;
+  }
+
   // Initialize
   function init() {
+    // On mobile, hide floating widget and redirect WhatsApp button to chat page
+    if (isMobile()) {
+      const waBtn = document.querySelector('.whatsapp-btn');
+      if (waBtn) {
+        waBtn.href = '/chat.html';
+        waBtn.removeAttribute('onclick');
+      }
+      return; // Don't create floating widget on mobile
+    }
     createWidget();
     setupInput();
   }
