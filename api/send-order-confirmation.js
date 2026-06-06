@@ -1,21 +1,12 @@
 // Vercel Serverless Function: Send order confirmation emails
 // - Multilingual email to customer (based on session locale / profile language)
-// - Notification email to admin (info@suntrade.store)
-//
-// Env vars required: RESEND_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY
-// Optional: ADMIN_EMAIL (default: info@suntrade.store)
+// - Notification email to admin
+// Uses Gmail SMTP via api/lib/email.js
 
 const { createClient } = require('@supabase/supabase-js');
+const { sendMail, isConfigured, ADMIN_EMAIL } = require('./lib/email');
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SITE_URL = process.env.SITE_URL || 'https://www.suntrade.store';
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'sundetofficial@gmail.com';
-const FROM_ADDRESS = 'SunTrade <noreply@suntrade.store>';
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
 
 // ============================================================
 // КӨП ТІЛДЕГІ ШАБЛОНДАР (12 тіл)
@@ -252,13 +243,23 @@ function esc(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+);
+
 module.exports = async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  if (!RESEND_API_KEY) {
-    console.log('RESEND_API_KEY not configured, skipping email');
+  if (!isConfigured()) {
+    console.log('SMTP not configured, skipping email');
     return res.status(200).json({ success: true, message: 'Email service not configured' });
   }
 
@@ -301,7 +302,6 @@ module.exports = async function handler(req, res) {
         }
       } catch (e) { /* ignore */ }
     } else if (order.customer_email) {
-      // Email-ден тілді болжау: домен (.kz → kz, .ru → ru) немесе жай en
       const email = order.customer_email.toLowerCase();
       if (email.endsWith('.kz')) language = 'kz';
       else if (email.endsWith('.ru')) language = 'ru';
@@ -465,66 +465,23 @@ module.exports = async function handler(req, res) {
 
     // 7) Клиентке email жіберу
     if (order.customer_email) {
-      try {
-        const resp = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${RESEND_API_KEY}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            from: FROM_ADDRESS,
-            to: [order.customer_email],
-            subject: `${t.subject} — #${orderIdShort}`,
-            html: customerEmailHtml
-          })
-        });
-        if (!resp.ok) {
-          const errText = await resp.text();
-          console.error('Resend customer email error:', errText);
-          results.customer = { ok: false, error: errText };
-        } else {
-          const data = await resp.json();
-          results.customer = { ok: true, id: data.id };
-          console.log('Customer email sent for order', orderIdShort, 'lang:', language);
-        }
-      } catch (e) {
-        console.error('Customer email send error:', e);
-        results.customer = { ok: false, error: e.message };
-      }
+      results.customer = await sendMail({
+        to: order.customer_email,
+        subject: `${t.subject} — #${orderIdShort}`,
+        html: customerEmailHtml,
+        replyTo: ADMIN_EMAIL
+      });
     } else {
       results.customer = { ok: false, error: t.noEmail };
     }
 
     // 8) Админге email жіберу
-    try {
-      const resp = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${RESEND_API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          from: FROM_ADDRESS,
-          to: [ADMIN_EMAIL],
-          subject: `🆕 New order #${orderIdShort} — €${amount} — ${esc(order.customer_name || order.shipping_name || 'Customer')}`,
-          html: adminEmailHtml,
-          reply_to: order.customer_email || undefined
-        })
-      });
-      if (!resp.ok) {
-        const errText = await resp.text();
-        console.error('Resend admin email error:', errText);
-        results.admin = { ok: false, error: errText };
-      } else {
-        const data = await resp.json();
-        results.admin = { ok: true, id: data.id };
-        console.log('Admin email sent for order', orderIdShort);
-      }
-    } catch (e) {
-      console.error('Admin email send error:', e);
-      results.admin = { ok: false, error: e.message };
-    }
+    results.admin = await sendMail({
+      to: ADMIN_EMAIL,
+      subject: `🆕 New order #${orderIdShort} — €${amount} — ${esc(order.customer_name || order.shipping_name || 'Customer')}`,
+      html: adminEmailHtml,
+      replyTo: order.customer_email || undefined
+    });
 
     return res.status(200).json({
       success: true,

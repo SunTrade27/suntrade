@@ -1,20 +1,12 @@
 // Vercel Serverless Function: Send order status update emails
 // - Customer email (multilingual) on order status change
 // - Admin notification on new orders
-//
-// Env vars: RESEND_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY, ADMIN_EMAIL
+// Uses Gmail SMTP via api/lib/email.js
 
 const { createClient } = require('@supabase/supabase-js');
+const { sendMail, isConfigured, ADMIN_EMAIL } = require('./lib/email');
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SITE_URL = process.env.SITE_URL || 'https://www.suntrade.store';
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'sundetofficial@gmail.com';
-const FROM_ADDRESS = 'SunTrade <noreply@suntrade.store>';
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
 
 // ============================================================
 // КӨП ТІЛДЕГІ ХАБАРЛАМАЛАР
@@ -118,7 +110,7 @@ const TRANSLATIONS = {
 };
 
 // ============================================================
-// EMAIL ШАБЛОНЫ (HTML)
+// EMAIL ШАБЛОНДАРЫ (HTML)
 // ============================================================
 function buildCustomerEmail(order, status, language) {
   const t = TRANSLATIONS[language] || TRANSLATIONS.en;
@@ -219,6 +211,11 @@ function buildAdminEmail(order, status) {
 // ============================================================
 // MAIN HANDLER
 // ============================================================
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+);
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -227,8 +224,8 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  if (!RESEND_API_KEY) {
-    console.error('❌ RESEND_API_KEY missing');
+  if (!isConfigured()) {
+    console.error('❌ SMTP not configured (SMTP_USER / SMTP_PASS missing in Vercel env vars)');
     return res.status(500).json({ error: 'Email service not configured' });
   }
 
@@ -257,50 +254,22 @@ module.exports = async (req, res) => {
     // 2) Клиентке email жіберу (статус өзгергенде)
     if (order.customer_email) {
       const email = buildCustomerEmail(order, status, lang);
-      try {
-        const resp = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${RESEND_API_KEY}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            from: FROM_ADDRESS,
-            to: order.customer_email,
-            subject: email.subject,
-            html: email.html
-          })
-        });
-        results.customer = await resp.json();
-        console.log(`[status-email] ✅ Customer email sent to ${order.customer_email}: status=${status}`);
-      } catch (e) {
-        console.error('[status-email] ❌ Customer email failed:', e.message);
-        results.customer = { error: e.message };
-      }
+      results.customer = await sendMail({
+        to: order.customer_email,
+        subject: email.subject,
+        html: email.html,
+        replyTo: ADMIN_EMAIL
+      });
     }
 
     // 3) Админге email жіберу
-    try {
-      const email = buildAdminEmail(order, status);
-      const resp = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${RESEND_API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          from: FROM_ADDRESS,
-          to: ADMIN_EMAIL,
-          subject: email.subject,
-          html: email.html
-        })
-      });
-      results.admin = await resp.json();
-      console.log(`[status-email] ✅ Admin email sent to ${ADMIN_EMAIL}: status=${status}`);
-    } catch (e) {
-      console.error('[status-email] ❌ Admin email failed:', e.message);
-      results.admin = { error: e.message };
-    }
+    const adminEmail = buildAdminEmail(order, status);
+    results.admin = await sendMail({
+      to: ADMIN_EMAIL,
+      subject: adminEmail.subject,
+      html: adminEmail.html,
+      replyTo: order.customer_email || undefined
+    });
 
     return res.status(200).json({ success: true, results });
   } catch (err) {

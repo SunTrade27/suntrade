@@ -1,10 +1,9 @@
-// Vercel Serverless Function: Send review request email via Resend
-// Requires RESEND_API_KEY and SITE_URL environment variables
-// Uses Resend (resend.com) - free tier: 100 emails/day
+// Vercel Serverless Function: Send review request email
+// Uses Gmail SMTP (see api/lib/email.js for env vars)
 
 const { createClient } = require('@supabase/supabase-js');
+const { sendMail, isConfigured, SMTP_FROM } = require('./lib/email');
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SITE_URL = process.env.SITE_URL || 'https://www.suntrade.store';
 
 const supabase = createClient(
@@ -13,12 +12,19 @@ const supabase = createClient(
 );
 
 module.exports = async function handler(req, res) {
+  // CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  if (!RESEND_API_KEY) {
-    return res.status(500).json({ error: 'RESEND_API_KEY not configured' });
+  if (!isConfigured()) {
+    console.error('❌ SMTP not configured (SMTP_USER / SMTP_PASS missing in Vercel env vars)');
+    return res.status(500).json({ error: 'Email service not configured' });
   }
 
   try {
@@ -64,57 +70,47 @@ module.exports = async function handler(req, res) {
       ? `${SITE_URL}/product.html?id=${order.product_id}`
       : `${SITE_URL}`;
 
-    // Send email via Resend
-    const emailResponse = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        from: 'SunTrade <noreply@suntrade.store>',
-        to: [order.customer_email],
-        subject: `How was your ${productName}? Leave a review!`,
-        html: `
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          </head>
-          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #FAFAFA; margin: 0; padding: 2rem;">
-            <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-              <div style="background: linear-gradient(135deg, #FF6B00, #E05E00); padding: 2rem; text-align: center;">
-                <h1 style="color: white; margin: 0; font-size: 1.5rem;">SunTrade</h1>
-              </div>
-              <div style="padding: 2rem;">
-                <h2 style="color: #1A1A2E; margin-bottom: 1rem;">How was your order?</h2>
-                <p style="color: #6B7280; line-height: 1.6;">
-                  Hi ${order.customer_name || 'there'},<br><br>
-                  Your order of <strong>${productName}</strong> has been delivered! We hope you love it.
-                </p>
-                ${productImage ? `<div style="text-align: center; margin: 1.5rem 0;"><img src="${productImage}" style="width: 200px; height: 200px; object-fit: cover; border-radius: 12px;"></div>` : ''}
-                <p style="color: #6B7280; line-height: 1.6; margin-bottom: 1.5rem;">
-                  Would you mind taking a moment to share your experience? Your feedback helps other customers and helps us improve!
-                </p>
-                <div style="text-align: center; margin: 2rem 0;">
-                  <a href="${reviewUrl}" style="display: inline-block; background: #FF6B00; color: white; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 1rem;">Leave a Review</a>
-                </div>
-                <p style="color: #9CA3AF; font-size: 0.85rem; text-align: center; margin-top: 2rem;">
-                  Thank you for shopping with SunTrade!
-                </p>
-              </div>
+    // Send email via Gmail SMTP (nodemailer)
+    const result = await sendMail({
+      to: order.customer_email,
+      subject: `How was your ${productName}? Leave a review!`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #FAFAFA; margin: 0; padding: 2rem;">
+          <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <div style="background: linear-gradient(135deg, #FF6B00, #E05E00); padding: 2rem; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 1.5rem;">SunTrade</h1>
             </div>
-          </body>
-          </html>
-        `
-      })
+            <div style="padding: 2rem;">
+              <h2 style="color: #1A1A2E; margin-bottom: 1rem;">How was your order?</h2>
+              <p style="color: #6B7280; line-height: 1.6;">
+                Hi ${order.customer_name || 'there'},<br><br>
+                Your order of <strong>${productName}</strong> has been delivered! We hope you love it.
+              </p>
+              ${productImage ? `<div style="text-align: center; margin: 1.5rem 0;"><img src="${productImage}" style="width: 200px; height: 200px; object-fit: cover; border-radius: 12px;"></div>` : ''}
+              <p style="color: #6B7280; line-height: 1.6; margin-bottom: 1.5rem;">
+                Would you mind taking a moment to share your experience? Your feedback helps other customers and helps us improve!
+              </p>
+              <div style="text-align: center; margin: 2rem 0;">
+                <a href="${reviewUrl}" style="display: inline-block; background: #FF6B00; color: white; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 1rem;">Leave a Review</a>
+              </div>
+              <p style="color: #9CA3AF; font-size: 0.85rem; text-align: center; margin-top: 2rem;">
+                Thank you for shopping with SunTrade!
+              </p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
     });
 
-    if (!emailResponse.ok) {
-      const errText = await emailResponse.text();
-      console.error('Resend email error:', errText);
-      return res.status(500).json({ error: 'Failed to send email: ' + errText });
+    if (!result.ok) {
+      return res.status(500).json({ error: 'Failed to send email: ' + result.error });
     }
 
     // Record the review request
