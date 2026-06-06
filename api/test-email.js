@@ -1,31 +1,22 @@
-// Temporary debug endpoint: shows whether SMTP env vars are loaded and tries a real send.
+// Temporary debug endpoint: shows whether RESEND_API_KEY is loaded and sends a real test email.
 // Open https://www.suntrade.store/api/test-email in your browser to see status.
-// This is read-only for env vars (no secrets revealed), but it WILL try to authenticate with Gmail.
-
-const nodemailer = require('nodemailer');
+//
+// After confirming email works, delete this file.
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  // Basic security: only allow GET; don't echo back secrets.
-  const user = process.env.SMTP_USER || null;
-  const pass = process.env.SMTP_PASS || null;
-  const host = process.env.SMTP_HOST || null;
-  const port = process.env.SMTP_PORT || null;
+  const apiKey = process.env.RESEND_API_KEY || null;
   const from = process.env.SMTP_FROM || null;
   const admin = process.env.ADMIN_EMAIL || null;
 
   const status = {
-    smtp_env_loaded: {
-      SMTP_HOST: host || '❌ NOT SET',
-      SMTP_PORT: port || '❌ NOT SET',
-      SMTP_USER: user ? `${user.substring(0, 4)}...@${user.split('@')[1] || '?'}` : '❌ NOT SET',
-      SMTP_PASS_set: !!pass,
-      SMTP_PASS_length: pass ? pass.length : 0,
-      SMTP_PASS_expected_length: 19, // 16 chars + 3 spaces
-      SMTP_PASS_format_ok: pass ? /^[a-z]{4} [a-z]{4} [a-z]{4} [a-z]{4}$/i.test(pass.trim()) : false,
+    env_loaded: {
+      RESEND_API_KEY_set: !!apiKey,
+      RESEND_API_KEY_length: apiKey ? apiKey.length : 0,
+      RESEND_API_KEY_starts_with_re: apiKey ? apiKey.startsWith('re_') : false,
       SMTP_FROM: from || '❌ NOT SET',
       ADMIN_EMAIL: admin || '❌ NOT SET'
     },
@@ -33,73 +24,68 @@ module.exports = async (req, res) => {
     timestamp: new Date().toISOString()
   };
 
-  if (!user || !pass) {
+  if (!apiKey) {
     status.send_test = {
       ok: false,
-      error: 'SMTP_USER or SMTP_PASS not set in Vercel env vars. Add them in Settings → Environment Variables, then redeploy.'
+      error: 'RESEND_API_KEY not set in Vercel env vars. Add it in Settings → Environment Variables, then redeploy.'
     };
     return res.status(200).json(status);
   }
 
-  if (status.smtp_env_loaded.SMTP_PASS_length !== 19 && status.smtp_env_loaded.SMTP_PASS_length !== 16) {
-    status.send_test = {
-      ok: false,
-      error: `SMTP_PASS length is ${status.smtp_env_loaded.SMTP_PASS_length}, expected 19 (e.g. "abcd efgh ijkl mnop"). Check for extra spaces or missing characters.`,
-      hint: 'App Password format: 4 letters, space, 4 letters, space, 4 letters, space, 4 letters (e.g. "abcd efgh ijkl mnop" = 19 chars total).'
-    };
-    return res.status(200).json(status);
-  }
-
-  // Try to actually connect and verify
-  const transport = nodemailer.createTransport({
-    host: host || 'smtp.gmail.com',
-    port: parseInt(port || '465', 10),
-    secure: parseInt(port || '465', 10) === 465,
-    auth: { user, pass: pass.trim() },
-    tls: { rejectUnauthorized: false },
-    connectionTimeout: 10000
-  });
-
+  // Try to send a real test email
   try {
-    await transport.verify();
-    status.send_test = { ok: true, message: 'SMTP connection & auth verified ✓' };
-
-    // Also send a tiny test email to the admin
-    const info = await transport.sendMail({
-      from: from || `SunTrade <${user}>`,
-      to: admin || user,
-      subject: '🧪 SunTrade SMTP test',
-      text: 'If you see this, SMTP is working. — sent from /api/test-email'
+    const resp = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: from || 'SunTrade <onboarding@resend.dev>',
+        to: [admin || 'sundetofficial@gmail.com'],
+        subject: '🧪 SunTrade SMTP test',
+        html: '<p>If you see this in your inbox, email is working! 🎉</p><p>— sent from /api/test-email</p>',
+        text: 'If you see this in your inbox, email is working! — sent from /api/test-email'
+      })
     });
-    status.send_test.test_message_id = info.messageId;
-    status.send_test.sent_to = admin || user;
+
+    const data = await resp.json().catch(() => ({}));
+
+    if (!resp.ok) {
+      status.send_test = {
+        ok: false,
+        error: data?.message || data?.error || `HTTP ${resp.status}`,
+        hint: getHint(data)
+      };
+      return res.status(200).json(status);
+    }
+
+    status.send_test = {
+      ok: true,
+      message: 'Email sent successfully ✓',
+      sent_to: admin || 'sundetofficial@gmail.com',
+      email_id: data.id
+    };
   } catch (err) {
     status.send_test = {
       ok: false,
-      error: err.message,
-      code: err.code,
-      hint: getGmailHint(err.message, err.code)
+      error: err.message
     };
   }
 
   return res.status(200).json(status);
 };
 
-function getGmailHint(msg, code) {
-  if (!msg && !code) return null;
-  const text = (msg || '') + ' ' + (code || '');
-  if (text.includes('535') || text.includes('BadCredentials') || text.includes('Username and Password not accepted')) {
-    return 'Wrong App Password, OR 2FA not enabled, OR password was created for a different Gmail account. Re-create the App Password at https://myaccount.google.com/apppasswords and copy-paste it carefully (no extra spaces/newlines). Make sure the App Password was created for the SAME Gmail account as SMTP_USER.';
+function getHint(data) {
+  const msg = (data?.message || data?.error || '').toLowerCase();
+  if (msg.includes('api key') || msg.includes('unauthorized') || msg.includes('invalid')) {
+    return 'API key is invalid. Re-check that you copied the full key from Resend → API Keys, and that it starts with "re_".';
   }
-  if (text.includes('ETIMEDOUT') || text.includes('ECONNREFUSED') || text.includes('ENOTFOUND')) {
-    return 'Vercel server cannot reach smtp.gmail.com. Try changing SMTP_PORT to 587 (with secure=false), or contact Vercel support about SMTP blocking.';
+  if (msg.includes('domain') || msg.includes('from')) {
+    return 'The "from" address is not allowed. Use "SunTrade <onboarding@resend.dev>" for now (sandbox), or verify your own domain in Resend → Domains.';
   }
-  if (text.includes('Invalid envelope') || text.includes('Sender address rejected')) {
-    return 'The FROM address (SMTP_FROM) is not authorized for this Gmail account. Set SMTP_FROM to "SunTrade <sundetofficial@gmail.com>" (must be the same as SMTP_USER).';
-  }
-  if (text.includes('EAUTH')) {
-    return 'Authentication failed. Verify that 2-Step Verification is enabled on the Gmail account, and that you are using an App Password (not your regular Gmail password).';
+  if (msg.includes('rate')) {
+    return 'Resend rate limit hit. Free tier is 100 emails/day, 2 requests/second.';
   }
   return null;
 }
-
