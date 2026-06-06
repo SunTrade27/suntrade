@@ -108,11 +108,32 @@
 <script src="/js/supabase-client.js"></script>
 <script>
   let searchTimeout;
+  let cachedCategories = [];
 
   function debounceSearch() {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(loadCatalogProducts, 400);
   }
+
+  function renderCategoryOptions() {
+    const catSelect = document.getElementById('category-filter');
+    if (!catSelect) return;
+    const currentValue = catSelect.value;
+    catSelect.innerHTML = '<option value="">' + (typeof t === 'function' ? t('all_categories') : 'All Categories') + '</option>';
+    cachedCategories.forEach(cat => {
+      const opt = document.createElement('option');
+      opt.value = cat.id;
+      opt.textContent = cat['name_' + currentLang] || cat.name_en || 'Category';
+      if (currentValue && cat.id == currentValue) opt.selected = true;
+      catSelect.appendChild(opt);
+    });
+  }
+
+  // Listen for language changes
+  window.addEventListener('langChanged', () => {
+    renderCategoryOptions();
+    loadCatalogProducts();
+  });
 
   document.addEventListener('DOMContentLoaded', async () => {
     // Check URL params
@@ -123,15 +144,11 @@
       if (!sb) return;
 
       // Load categories for filter
-      const categories = await getCategories();
-      const catSelect = document.getElementById('category-filter');
-      categories.forEach(cat => {
-        const opt = document.createElement('option');
-        opt.value = cat.id;
-        opt.textContent = cat['name_' + currentLang] || cat.name_en || 'Category';
-        if (catId && cat.id == catId) opt.selected = true;
-        catSelect.appendChild(opt);
-      });
+      cachedCategories = await getCategories();
+      renderCategoryOptions();
+      if (catId) {
+        document.getElementById('category-filter').value = catId;
+      }
 
       loadCatalogProducts();
     }, 500);

@@ -134,6 +134,11 @@
   let currentProduct = null;
   let currentImageIndex = 0;
 
+  // Listen for language changes
+  window.addEventListener('langChanged', () => {
+    if (currentProduct) renderProduct();
+  });
+
   document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
     const productId = params.get('id');
@@ -251,15 +256,37 @@
   }
 
   function addProductToCart() {
-    const name = currentProduct['name_' + currentLang] || currentProduct.name_en;
+    const name = currentProduct['name_' + currentLang] || currentProduct.name_en || 'Product';
     const img = (currentProduct.images && currentProduct.images[0]) || '/images/placeholder.jpg';
-    const qty = parseInt(document.getElementById('qty-input').value);
-    addToCart(currentProduct.id, name, currentProduct.price, img, qty);
+    const qty = parseInt(document.getElementById('qty-input').value) || 1;
+
+    // Check if product is already in cart
+    const existing = cart.find(item => item.id === currentProduct.id);
+    if (existing) {
+      // Already in cart - just notify and don't add again
+      showNotification((typeof t === 'function' ? t('already_in_cart') : 'Already in cart') + ' ✓');
+      return false;
+    }
+    return addToCart(currentProduct.id, name, currentProduct.price, img, qty);
   }
 
   function buyNow() {
-    addProductToCart();
-    window.location.href = '/cart.html';
+    const name = currentProduct['name_' + currentLang] || currentProduct.name_en || 'Product';
+    const img = (currentProduct.images && currentProduct.images[0]) || '/images/placeholder.jpg';
+    const qty = parseInt(document.getElementById('qty-input').value) || 1;
+
+    // For Buy Now, we need a single-item cart
+    // Clear cart and add this product, then go directly to checkout
+    const existing = cart.find(item => item.id === currentProduct.id);
+    if (existing) {
+      // Already in cart - just go to checkout
+      window.location.href = '/checkout.html';
+      return;
+    }
+    // Clear cart, add only this product, then go to checkout
+    cart = [];
+    addToCart(currentProduct.id, name, currentProduct.price, img, qty);
+    window.location.href = '/checkout.html';
   }
 
   function shareProduct() {

@@ -1,20 +1,57 @@
 // Cart management
 let cart = JSON.parse(localStorage.getItem('suntrade_cart') || '[]');
 
+// Auto-clean invalid items on load
+function cleanCart() {
+  cart = cart.filter(item => {
+    if (!item) return false;
+    if (!item.id) return false;
+    if (!item.name || String(item.name).trim() === '') return false;
+    const price = parseFloat(item.price);
+    if (isNaN(price) || price <= 0) return false;
+    const qty = parseInt(item.qty);
+    if (isNaN(qty) || qty <= 0) return false;
+    // Normalize types
+    item.price = price;
+    item.qty = qty;
+    return true;
+  });
+  localStorage.setItem('suntrade_cart', JSON.stringify(cart));
+}
+cleanCart();
+
 function saveCart() {
   localStorage.setItem('suntrade_cart', JSON.stringify(cart));
   updateCartBadge();
 }
 
 function addToCart(productId, name, price, image, qty = 1) {
+  // Guard: reject items with empty/missing name
+  if (!name || String(name).trim() === '') {
+    console.error('Cannot add product without a name:', productId);
+    showNotification(typeof t === 'function' ? t('no_name_alert') : 'Cannot add product without a name');
+    return false;
+  }
+  // Ensure price is a number
+  const numPrice = parseFloat(price);
+  if (isNaN(numPrice) || numPrice <= 0) {
+    console.error('Invalid price:', price);
+    return false;
+  }
+  const numQty = parseInt(qty) || 1;
+  if (numQty <= 0) return false;
+
   const existing = cart.find(item => item.id === productId);
   if (existing) {
-    existing.qty += qty;
+    // Already in cart - don't add again, just notify
+    showNotification((typeof t === 'function' ? t('already_in_cart') : 'Already in cart') + ' ✓');
+    return false;
   } else {
-    cart.push({ id: productId, name, price, image, qty });
+    cart.push({ id: productId, name: String(name), price: numPrice, image: image || '', qty: numQty });
   }
   saveCart();
-  showNotification(t('product_add_cart') + ' ✓');
+  showNotification((typeof t === 'function' ? t('product_add_cart') : 'Add to Cart') + ' ✓');
+  return true;
 }
 
 function removeFromCart(productId) {

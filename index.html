@@ -209,6 +209,8 @@
   };
 
   let cachedCategories = [];
+  let cachedFeatured = [];
+  let cachedReviews = [];
 
   function renderCategories() {
     const catGrid = document.getElementById('categories-grid');
@@ -234,9 +236,46 @@
     }).join('');
   }
 
+  function renderFeaturedProducts() {
+    const prodGrid = document.getElementById('featured-products');
+    if (prodGrid && cachedFeatured.length) {
+      prodGrid.innerHTML = cachedFeatured.map(p => renderProductCard(p)).join('');
+    }
+  }
+
+  function renderHomepageReviews() {
+    const reviewsGrid = document.getElementById('homepage-reviews');
+    if (reviewsGrid && cachedReviews.length) {
+      reviewsGrid.innerHTML = cachedReviews.map(r => {
+        const safeName = escHtml(r.customer_name);
+        const productName = r.products ? escHtml(r.products['name_' + currentLang] || r.products.name_en || '') : '';
+        const productImg = r.products && r.products.images && r.products.images[0] ? escHtml(r.products.images[0]) : '';
+        return `
+          <div style="background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;">
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
+              <div style="width:48px;height:48px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.2rem;flex-shrink:0;">${safeName.charAt(0).toUpperCase()}</div>
+              <div>
+                <strong>${safeName}</strong>
+                ${r.verified ? '<span style="background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:50px;font-size:0.7rem;font-weight:600;margin-left:6px;">' + (typeof t === 'function' ? t('verified_badge') : '✓ Verified') + '</span>' : ''}
+                <div style="color:var(--primary);font-size:0.9rem;">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+              </div>
+            </div>
+            ${productName ? `<p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem;">${productImg ? `<img src="${productImg}" style="width:30px;height:30px;object-fit:cover;border-radius:4px;vertical-align:middle;margin-right:6px;">` : ''}${productName}</p>` : ''}
+            <p style="color: var(--text-light); margin-bottom: 1rem; font-style: italic;">"${escHtml(r.comment) || (typeof t === 'function' ? t('great_product') : 'Great product!')}"</p>
+            ${r.images && r.images.length ? `<div style="display:flex;gap:0.5rem;margin-bottom:1rem;">${r.images.slice(0,3).map(img => `<img src="${escHtml(img)}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;">`).join('')}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
   // Listen for language changes
   window.addEventListener('langChanged', () => {
     renderCategories();
+    renderFeaturedProducts();
+    renderHomepageReviews();
+    const input = document.getElementById('hero-search-input');
+    if (input && input.value.trim().length >= 2 && typeof doHeroSearch === 'function') doHeroSearch();
   });
 
   // Load featured products and categories on homepage
@@ -251,6 +290,7 @@
 
       // Featured products
       const products = await getProducts({ limit: 8 });
+      cachedFeatured = products;
       const prodGrid = document.getElementById('featured-products');
       if (prodGrid && products.length) {
         prodGrid.innerHTML = products.map(p => renderProductCard(p)).join('');
@@ -258,29 +298,8 @@
 
       // Homepage reviews
       const reviews = await getApprovedReviews(20);
-      const reviewsGrid = document.getElementById('homepage-reviews');
-      if (reviewsGrid && reviews.length) {
-        reviewsGrid.innerHTML = reviews.map(r => {
-          const safeName = escHtml(r.customer_name);
-          const productName = r.products ? escHtml(r.products['name_' + currentLang] || r.products.name_en || '') : '';
-          const productImg = r.products && r.products.images && r.products.images[0] ? escHtml(r.products.images[0]) : '';
-          return `
-            <div style="background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;">
-              <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
-                <div style="width:48px;height:48px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.2rem;flex-shrink:0;">${safeName.charAt(0).toUpperCase()}</div>
-                <div>
-                  <strong>${safeName}</strong>
-                  ${r.verified ? '<span style="background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:50px;font-size:0.7rem;font-weight:600;margin-left:6px;">✓ Verified</span>' : ''}
-                  <div style="color:var(--primary);font-size:0.9rem;">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
-                </div>
-              </div>
-              ${productName ? `<p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem;">${productImg ? `<img src="${productImg}" style="width:30px;height:30px;object-fit:cover;border-radius:4px;vertical-align:middle;margin-right:6px;">` : ''}${productName}</p>` : ''}
-              <p style="color: var(--text-light); margin-bottom: 1rem; font-style: italic;">"${escHtml(r.comment) || 'Great product!'}"</p>
-              ${r.images && r.images.length ? `<div style="display:flex;gap:0.5rem;margin-bottom:1rem;">${r.images.slice(0,3).map(img => `<img src="${escHtml(img)}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;">`).join('')}</div>` : ''}
-            </div>
-          `;
-        }).join('');
-      }
+      cachedReviews = reviews;
+      renderHomepageReviews();
     }, 500);
   });
 

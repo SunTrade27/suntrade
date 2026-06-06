@@ -140,7 +140,10 @@ async function adminDeleteProduct(id) {
 
 // Admin - Orders
 async function adminGetOrders() {
-  const { data, error } = await sb.from('orders').select('*, products(*)').order('created_at', { ascending: false });
+  const { data, error } = await sb.from('orders')
+    .select('*, order_items(*)')
+    .order('created_at', { ascending: false });
+  if (error) console.error('adminGetOrders error:', error);
   return data || [];
 }
 
@@ -250,13 +253,14 @@ function onAuthStateChange(callback) {
   });
 }
 
-// User orders
+// User orders — user_id НЕМЕСЕ customer_email бойынша іздеу
+// (user_id сенімдірек, себебі email checkout кезінде басқаша болуы мүмкін)
 async function getUserOrders() {
   const user = await getCurrentUser();
   if (!user) return [];
   const { data, error } = await sb.from('orders')
-    .select('*, products(*)')
-    .eq('customer_email', user.email)
+    .select('*, order_items(*)')
+    .or(`user_id.eq.${user.id},customer_email.eq.${user.email}`)
     .order('created_at', { ascending: false });
   if (error) console.error('getUserOrders error:', error);
   return data || [];

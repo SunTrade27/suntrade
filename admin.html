@@ -14,7 +14,7 @@
 <!-- LOADING -->
 <div id="loading-screen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:1rem;">
   <div class="logo">Sun<span>Trade</span></div>
-  <p style="color:var(--text-light);">Loading...</p>
+  <p style="color:var(--text-light);" data-i18n="loading_text">Loading...</p>
 </div>
 
 <!-- LOGIN PAGE -->
@@ -227,7 +227,7 @@
         document.getElementById('loading-screen').style.display = 'none';
         document.getElementById('login-page').style.display = 'flex';
         const errEl = document.getElementById('login-error');
-        errEl.textContent = 'Connection error. Please refresh the page.';
+        errEl.textContent = t('connection_error');
         errEl.style.display = 'block';
         return;
       }
@@ -241,7 +241,7 @@
           } else {
             document.getElementById('login-page').style.display = 'flex';
             const errEl = document.getElementById('login-error');
-            errEl.textContent = 'Access denied. Admin only.';
+            errEl.textContent = t('admin_access_denied');
             errEl.style.display = 'block';
           }
         } else {
@@ -372,7 +372,7 @@
       } else {
         await adminLogout();
         const errEl = document.getElementById('login-error');
-        errEl.textContent = 'Access denied. Admin only.';
+        errEl.textContent = t('admin_access_denied');
         errEl.style.display = 'block';
       }
     } catch (err) {
@@ -402,7 +402,8 @@
       const orders = await adminGetOrders();
       if (lastOrderCount > 0 && orders.length > lastOrderCount) {
         const newCount = orders.length - lastOrderCount;
-        showNotification(`🆕 ${newCount} жаңа тапсырыс!`);
+        const msg = (typeof t === 'function' ? t('new_orders_notification') : '🆕 new order(s)!').replace('{count}', newCount);
+        showNotification(msg);
         // Play sound
         try { new Audio('data:audio/wav;base64,UklGRl9vT19teleXBBDAQABABEAIlYAAESsAAABAAgA').play(); } catch(e) {}
       }
@@ -422,6 +423,21 @@
     if (name === 'reviews') loadReviews();
   }
 
+  // Re-render current section when language changes
+  window.addEventListener('langChanged', () => {
+    const sections = ['dashboard', 'products', 'orders', 'reviews'];
+    for (const s of sections) {
+      const el = document.getElementById('section-' + s);
+      if (el && el.style.display === 'block') {
+        if (s === 'dashboard') loadDashboard();
+        else if (s === 'products') loadProducts();
+        else if (s === 'orders') loadOrders();
+        else if (s === 'reviews') loadReviews();
+        break;
+      }
+    }
+  });
+
   async function loadDashboard() {
     const products = await adminGetProducts();
     const orders = await adminGetOrders();
@@ -434,17 +450,18 @@
 
     const recentDiv = document.getElementById('recent-orders');
     if (orders.length === 0) {
-      recentDiv.innerHTML = '<p style="color:var(--text-light);">No orders yet.</p>';
+      recentDiv.innerHTML = '<p style="color:var(--text-light);">' + t('no_orders_admin') + '</p>';
       return;
     }
     recentDiv.innerHTML = `
       <table class="admin-table">
-        <thead><tr><th>ID</th><th>Email</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+        <thead><tr><th>ID</th><th>Email</th><th>Amount</th><th>Ship To</th><th>Status</th><th>Date</th></tr></thead>
         <tbody>${orders.slice(0, 10).map(o => `
           <tr>
             <td>${o.id.substring(0, 8)}...</td>
             <td>${o.customer_email || 'N/A'}</td>
             <td>€${parseFloat(o.amount || 0).toFixed(2)}</td>
+            <td style="font-size:0.8rem;line-height:1.4;">${o.shipping_city ? `${escapeHtml(o.shipping_city)}, ${escapeHtml(o.shipping_country || '')}` : '<span style="color:var(--text-light)">—</span>'}</td>
             <td><span class="status-badge status-${o.status}">${getStatusLabel(o.status)}</span></td>
             <td>${new Date(o.created_at).toLocaleDateString()}</td>
           </tr>
@@ -454,21 +471,18 @@
   }
 
   function getStatusLabel(status) {
-    const labels = {
-      'pending': 'Тапсырыс берілді',
-      'accepted': 'Сатушы қабылдады',
-      'packing': 'Жиналуда',
-      'shipped': 'Жолға шықты',
-      'delivered': 'Жеткізілді'
-    };
-    return labels[status] || status;
+    const key = 'order_status_' + status;
+    if (typeof t === 'function' && translations && translations[key]) {
+      return translations[key];
+    }
+    return status;
   }
 
   async function loadProducts() {
     const products = await adminGetProducts();
     const container = document.getElementById('products-table');
     if (products.length === 0) {
-      container.innerHTML = '<p style="color:var(--text-light);">No products. Click "Add Product" to create one.</p>';
+      container.innerHTML = '<p style="color:var(--text-light);">' + t('no_products_admin') + '</p>';
       return;
     }
     container.innerHTML = `
@@ -482,8 +496,8 @@
             <td>${p.stock}</td>
             <td>${p.active ? '<svg class="icon icon-md" style="color:#22C55E"><use href="#icon-check"/></svg>' : '<svg class="icon icon-md" style="color:var(--danger)"><use href="#icon-x"/></svg>'}</td>
             <td>
-              <button class="btn-sm btn-outline" onclick="editProduct('${p.id}')">Edit</button>
-              <button class="btn-sm btn-danger" onclick="deleteProduct('${p.id}')">Delete</button>
+              <button class="btn-sm btn-outline" onclick="editProduct('${p.id}')">${t('edit_btn')}</button>
+              <button class="btn-sm btn-danger" onclick="deleteProduct('${p.id}')">${t('delete_btn')}</button>
             </td>
           </tr>
         `).join('')}</tbody>
@@ -495,25 +509,47 @@
     const orders = await adminGetOrders();
     const container = document.getElementById('orders-table');
     if (orders.length === 0) {
-      container.innerHTML = '<p style="color:var(--text-light);">No orders yet.</p>';
+      container.innerHTML = '<p style="color:var(--text-light);">' + t('no_orders_admin') + '</p>';
       return;
     }
     container.innerHTML = `
       <table class="admin-table">
-        <thead><tr><th>ID</th><th>Product</th><th>Email</th><th>Amount</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
-        <tbody>${orders.map(o => `
+        <thead><tr><th>ID</th><th>Product</th><th>Customer</th><th>Amount</th><th>Shipping Address</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+        <tbody>${orders.map(o => {
+          const addr = o.shipping_address_line1 ? `
+            <strong>${escapeHtml(o.shipping_name || o.customer_name || '')}</strong><br>
+            <small>${escapeHtml(o.shipping_address_line1)}</small>
+            ${o.shipping_address_line2 ? `<br><small>${escapeHtml(o.shipping_address_line2)}</small>` : ''}
+            <br><small>${escapeHtml(o.shipping_city || '')}${o.shipping_postal_code ? ', ' + escapeHtml(o.shipping_postal_code) : ''}</small>
+            <br><small>${escapeHtml(o.shipping_country || '')}</small>
+            ${o.customer_phone ? `<br><small style="color:var(--primary)">📞 ${escapeHtml(o.customer_phone)}</small>` : ''}
+          ` : '<span style="color:var(--text-light)">' + t('no_address') + '</span>';
+
+          // Show products from order_items
+          let productList = 'N/A';
+          if (o.order_items && o.order_items.length > 0) {
+            productList = o.order_items.map(i => {
+              const name = i.product_name || 'Product';
+              return escapeHtml(name) + ' × ' + (i.quantity || 1);
+            }).join('<br>');
+          } else if (o.products && o.products.name_en) {
+            productList = escapeHtml(o.products['name_' + currentLang] || o.products.name_en);
+          }
+
+          return `
           <tr>
             <td>${o.id.substring(0, 8)}...</td>
-            <td>${(o.products && o.products['name_' + currentLang]) || (o.products && o.products.name_en) || 'N/A'}</td>
+            <td style="font-size:0.85rem;line-height:1.4;">${productList}</td>
             <td>${o.customer_email || 'N/A'}</td>
             <td>€${parseFloat(o.amount || 0).toFixed(2)}</td>
+            <td style="font-size:0.85rem;line-height:1.4;max-width:280px;">${addr}</td>
             <td>
               <select onchange="updateOrderStatus('${o.id}', this.value)" style="padding:4px 8px;border-radius:4px;border:1px solid var(--border);font-size:0.85rem;">
-                <option value="pending" ${o.status==='pending'?'selected':''}>Тапсырыс берілді</option>
-                <option value="accepted" ${o.status==='accepted'?'selected':''}>Сатушы қабылдады</option>
-                <option value="packing" ${o.status==='packing'?'selected':''}>Жиналуда</option>
-                <option value="shipped" ${o.status==='shipped'?'selected':''}>Жолға шықты</option>
-                <option value="delivered" ${o.status==='delivered'?'selected':''}>Жеткізілді</option>
+                <option value="pending" ${o.status==='pending'?'selected':''}>${t('order_status_pending')}</option>
+                <option value="accepted" ${o.status==='accepted'?'selected':''}>${t('order_status_accepted')}</option>
+                <option value="packing" ${o.status==='packing'?'selected':''}>${t('order_status_packing')}</option>
+                <option value="shipped" ${o.status==='shipped'?'selected':''}>${t('order_status_shipped')}</option>
+                <option value="delivered" ${o.status==='delivered'?'selected':''}>${t('order_status_delivered')}</option>
               </select>
             </td>
             <td>${new Date(o.created_at).toLocaleDateString()}</td>
@@ -521,7 +557,7 @@
               <button class="btn-sm btn-outline" onclick="sendReviewRequest('${o.id}')" style="font-size:0.75rem;"><svg class="icon icon-sm" style="margin-right:4px"><use href="#icon-mail"/></svg>Review</button>
             </td>
           </tr>
-        `).join('')}</tbody>
+        `}).join('')}</tbody>
       </table>
     `;
   }
@@ -529,12 +565,25 @@
   async function updateOrderStatus(orderId, status) {
     try {
       await adminUpdateOrderStatus(orderId, status);
-      showNotification('Status updated');
+      showNotification(t('status_updated'));
+
+      // 1) Клиентке + админге email жіберу (статус өзгергенде)
+      try {
+        await fetch('/api/send-order-status-update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId, status, language: currentLang })
+        });
+      } catch (emailErr) {
+        console.error('Status email error:', emailErr);
+      }
+
+      // 2) Жеткізілгенде — review сұрау жіберу
       if (status === 'delivered') {
         sendReviewRequest(orderId);
       }
     } catch (err) {
-      alert('Error: ' + err.message);
+      alert(t('error') + ': ' + err.message);
     }
   }
 
@@ -547,13 +596,13 @@
       });
       const result = await resp.json();
       if (result.success) {
-        showNotification('Review request email sent!');
+        showNotification(t('review_email_sent'));
       } else {
-        showNotification(result.error || 'Failed to send review request');
+        showNotification(result.error || t('review_email_failed'));
       }
     } catch (err) {
       console.error('Send review request error:', err);
-      showNotification('Error sending review request');
+      showNotification(t('error_sending'));
     }
   }
 
@@ -585,7 +634,7 @@
     const reviews = await adminGetReviews();
     const container = document.getElementById('reviews-table');
     if (reviews.length === 0) {
-      container.innerHTML = '<p style="color:var(--text-light);">No reviews yet.</p>';
+      container.innerHTML = '<p style="color:var(--text-light);">' + t('no_reviews_admin') + '</p>';
       return;
     }
     container.innerHTML = `
@@ -598,11 +647,11 @@
             <td>${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</td>
             <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.comment || '-'}</td>
             <td>${(r.images || []).length ? r.images.map(u => `<img src="${u}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;margin-right:4px;">`).join('') : '-'}</td>
-            <td>${r.approved ? '<span class="status-badge status-paid">Approved</span>' : '<span class="status-badge status-pending">Pending</span>'}</td>
+            <td>${r.approved ? '<span class="status-badge status-paid">' + t('review_approved') + '</span>' : '<span class="status-badge status-pending">' + t('review_pending') + '</span>'}</td>
             <td>${new Date(r.created_at).toLocaleDateString()}</td>
             <td>
-              ${!r.approved ? `<button class="btn-sm btn-primary" onclick="approveReview('${r.id}')">Approve</button>` : ''}
-              <button class="btn-sm btn-danger" onclick="deleteReview('${r.id}')">Delete</button>
+              ${!r.approved ? `<button class="btn-sm btn-primary" onclick="approveReview('${r.id}')">${t('approve_btn')}</button>` : ''}
+              <button class="btn-sm btn-danger" onclick="deleteReview('${r.id}')">${t('delete_btn')}</button>
             </td>
           </tr>
         `).join('')}</tbody>
@@ -614,20 +663,20 @@
     try {
       await adminApproveReview(id);
       loadReviews();
-      showNotification('Review approved!');
+      showNotification(t('review_approved_msg'));
     } catch (err) {
-      alert('Error: ' + err.message);
+      alert(t('error') + ': ' + err.message);
     }
   }
 
   async function deleteReview(id) {
-    if (!confirm('Delete this review?')) return;
+    if (!confirm(t('delete_review_confirm'))) return;
     try {
       await adminDeleteReview(id);
       loadReviews();
-      showNotification('Review deleted');
+      showNotification(t('review_deleted_msg'));
     } catch (err) {
-      alert('Error: ' + err.message);
+      alert(t('error') + ': ' + err.message);
     }
   }
 
@@ -679,13 +728,13 @@
   }
 
   async function deleteProduct(id) {
-    if (!confirm(t('confirm_delete'))) return;
+    if (!confirm(t('delete_product_confirm'))) return;
     try {
       await adminDeleteProduct(id);
       loadProducts();
-      showNotification('Product deleted');
+      showNotification(t('product_deleted'));
     } catch (err) {
-      alert('Error: ' + err.message);
+      alert(t('error') + ': ' + err.message);
     }
   }
 
@@ -721,9 +770,9 @@
       await adminSaveProduct(product);
       closeProductModal();
       loadProducts();
-      showNotification('Product saved!');
+      showNotification(t('product_saved'));
     } catch (err) {
-      alert('Error: ' + err.message);
+      alert(t('error') + ': ' + err.message);
     }
   }
 </script>

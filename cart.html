@@ -54,8 +54,9 @@
       <span id="cart-total-amount" style="font-weight: 700; font-size: 1.2rem;">€0.00</span>
     </div>
     <a href="/checkout.html" class="btn-checkout" id="checkout-btn" data-i18n="cart_checkout">Proceed to Checkout</a>
-    <div style="text-align: center; margin-top: 1rem;">
+    <div style="text-align: center; margin-top: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
       <a href="/catalog.html" data-i18n="cart_continue" style="color: var(--primary); font-weight: 500;">Continue Shopping</a>
+      <button onclick="clearCartAndRerender()" id="clear-cart-btn" style="background: transparent; border: 1px solid var(--danger, #EF4444); color: var(--danger, #EF4444); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;" data-i18n="cart_clear">Clear Cart</button>
     </div>
   </div>
 </div>
@@ -108,6 +109,15 @@
       summary.style.display = cart.length > 0 ? 'block' : 'none';
     }
   });
+
+  function clearCartAndRerender() {
+    if (confirm(t('cart_clear_confirm') || 'Clear all items from cart?')) {
+      clearCart();
+      renderCartPage();
+      const summary = document.getElementById('cart-summary');
+      if (summary) summary.style.display = 'none';
+    }
+  }
 </script>
 <script src="/js/chat-widget.js"></script>
 <script src="/js/user-menu.js"></script>

@@ -62,6 +62,16 @@ function applyTranslations() {
   if (titleEl) titleEl.textContent = t(titleEl.getAttribute('data-i18n'));
   const metaDesc = document.querySelector('meta[name="description"][data-i18n]');
   if (metaDesc) metaDesc.content = t(metaDesc.getAttribute('data-i18n'));
+
+  // Re-render dynamic content that uses t() in JS
+  if (typeof renderCheckoutItems === 'function') renderCheckoutItems();
+  if (typeof renderCartPage === 'function') renderCartPage();
+  if (typeof renderFeaturedProducts === 'function') renderFeaturedProducts();
+  if (typeof loadProducts === 'function' && document.getElementById('products-grid')) loadProducts();
+  if (typeof loadCategories === 'function') loadCategories();
+  if (typeof loadProductDetail === 'function') loadProductDetail();
+  if (typeof loadHomepageReviews === 'function') loadHomepageReviews();
+  if (typeof doHeroSearch === 'function' && document.getElementById('hero-search-input')?.value) doHeroSearch();
 }
 
 function updateLangSwitcher() {

@@ -160,7 +160,7 @@
   // Load message history
   async function loadHistory() {
     try {
-      const resp = await fetch(`${API_BASE}/api/chat-messages?customerId=${customerId}`);
+      const resp = await fetch(`${API_BASE}/api/chat?action=messages&customerId=${customerId}`);
       if (!resp.ok) return;
       const data = await resp.json();
       if (!data.messages || !data.messages.length) return;
@@ -174,10 +174,10 @@
       if (data.conversation) {
         const statusEl = document.getElementById('cw-status');
         if (data.conversation.status === 'human') {
-          statusEl.textContent = 'Operator connected';
+          statusEl.textContent = (typeof t === 'function' ? t('operator_connected') : 'Operator connected');
           statusEl.style.color = '#FF6B00';
         } else if (data.conversation.status === 'closed') {
-          statusEl.textContent = 'Chat closed';
+          statusEl.textContent = (typeof t === 'function' ? t('chat_closed') : 'Chat closed');
         }
       }
     } catch (err) {
@@ -227,7 +227,7 @@
 
     try {
       const lang = localStorage.getItem(LANG_KEY) || 'kz';
-      const resp = await fetch(`${API_BASE}/api/chat-message`, {
+      const resp = await fetch(`${API_BASE}/api/chat?action=message`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ customerId, message })
@@ -248,7 +248,7 @@
       }
 
       if (data.status === 'human') {
-        document.getElementById('cw-status').textContent = 'Operator connected';
+        document.getElementById('cw-status').textContent = (typeof t === 'function' ? t('operator_connected') : 'Operator connected');
         document.getElementById('cw-status').style.color = '#FF6B00';
       }
 
@@ -258,7 +258,7 @@
       showTyping(false);
       container.innerHTML += `
         <div class="cw-msg cw-msg-in">
-          <div class="cw-msg-text" style="color:#EF4444;">Error sending message. Please try again.</div>
+          <div class="cw-msg-text" style="color:#EF4444;">${(typeof t === 'function' ? t('error_sending_message') : 'Error sending message. Please try again.')}</div>
         </div>
       `;
     }
@@ -276,6 +276,23 @@
     localStorage.setItem(LANG_KEY, lang);
     updateWelcomeText(lang);
   }
+
+  // Sync with site language (called when langChanged event fires)
+  function syncWithSiteLang(lang) {
+    const supported = ['en', 'kz', 'ru', 'de', 'fr', 'es', 'tr', 'it', 'pt', 'nl', 'pl', 'ar'];
+    if (!supported.includes(lang)) lang = 'en';
+    localStorage.setItem(LANG_KEY, lang);
+    const select = document.getElementById('cw-lang');
+    if (select) select.value = lang;
+    updateWelcomeText(lang);
+  }
+
+  // Listen to site language changes
+  window.addEventListener('langChanged', (e) => {
+    if (e.detail && e.detail.lang) {
+      syncWithSiteLang(e.detail.lang);
+    }
+  });
 
   // Typing indicator
   function showTyping(show) {
@@ -303,7 +320,7 @@
     pollInterval = setInterval(async () => {
       if (!isOpen) return;
       try {
-        const resp = await fetch(`${API_BASE}/api/chat-messages?customerId=${customerId}`);
+        const resp = await fetch(`${API_BASE}/api/chat?action=messages&customerId=${customerId}`);
         if (!resp.ok) return;
         const data = await resp.json();
         if (data.messages && data.messages.length > lastMessageCount) {
@@ -366,6 +383,9 @@
     }
     createWidget();
     setupInput();
+    // Sync with current site language
+    const siteLang = localStorage.getItem('suntrade_lang') || 'en';
+    syncWithSiteLang(siteLang);
   }
 
   // Public API

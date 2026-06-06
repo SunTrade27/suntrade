@@ -42,7 +42,7 @@
 
   <!-- Order Summary -->
   <div class="cart-summary" style="margin-bottom: 2rem;">
-    <h3 style="margin-bottom: 1rem;">Order Summary</h3>
+    <h3 style="margin-bottom: 1rem;" data-i18n="order_summary">Order Summary</h3>
     <div id="checkout-items"></div>
     <div class="cart-summary-row cart-summary-total">
       <span data-i18n="cart_total">Total</span>
@@ -64,77 +64,10 @@
       <label data-i18n="checkout_phone">Phone Number</label>
       <input type="tel" id="checkout-phone" required>
     </div>
-    <div class="form-group">
-      <label data-i18n="checkout_address">Shipping Address</label>
-      <input type="text" id="checkout-address" required>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label data-i18n="checkout_city">City</label>
-        <input type="text" id="checkout-city" required>
-      </div>
-      <div class="form-group">
-        <label data-i18n="checkout_zip">ZIP Code</label>
-        <input type="text" id="checkout-zip" required>
-      </div>
-    </div>
-    <div class="form-group">
-      <label data-i18n="checkout_country">Country</label>
-      <select id="checkout-country" required>
-        <option value="">Select country</option>
-        <option value="DE">Germany</option>
-        <option value="FR">France</option>
-        <option value="ES">Spain</option>
-        <option value="IT">Italy</option>
-        <option value="NL">Netherlands</option>
-        <option value="PL">Poland</option>
-        <option value="PT">Portugal</option>
-        <option value="TR">Turkey</option>
-        <option value="KZ">Kazakhstan</option>
-        <option value="RU">Russia</option>
-        <option value="GB">United Kingdom</option>
-        <option value="US">United States</option>
-        <option value="AT">Austria</option>
-        <option value="BE">Belgium</option>
-        <option value="CH">Switzerland</option>
-        <option value="SE">Sweden</option>
-        <option value="NO">Norway</option>
-        <option value="DK">Denmark</option>
-        <option value="FI">Finland</option>
-        <option value="CZ">Czech Republic</option>
-        <option value="RO">Romania</option>
-        <option value="HU">Hungary</option>
-        <option value="GR">Greece</option>
-        <option value="BG">Bulgaria</option>
-        <option value="HR">Croatia</option>
-        <option value="SK">Slovakia</option>
-        <option value="SI">Slovenia</option>
-        <option value="LT">Lithuania</option>
-        <option value="LV">Latvia</option>
-        <option value="EE">Estonia</option>
-        <option value="IE">Ireland</option>
-        <option value="LU">Luxembourg</option>
-        <option value="MT">Malta</option>
-        <option value="CY">Cyprus</option>
-        <option value="AE">UAE</option>
-        <option value="SA">Saudi Arabia</option>
-        <option value="JP">Japan</option>
-        <option value="KR">South Korea</option>
-        <option value="AU">Australia</option>
-        <option value="CA">Canada</option>
-        <option value="BR">Brazil</option>
-        <option value="MX">Mexico</option>
-        <option value="AR">Argentina</option>
-        <option value="CL">Chile</option>
-        <option value="CO">Colombia</option>
-        <option value="ZA">South Africa</option>
-        <option value="NG">Nigeria</option>
-        <option value="EG">Egypt</option>
-        <option value="MA">Morocco</option>
-        <option value="KE">Kenya</option>
-        <option value="GH">Ghana</option>
-      </select>
-    </div>
+
+    <p style="color: var(--text-light); font-size: 0.9rem; margin: 0.5rem 0 1.5rem; padding: 12px; background: var(--bg-light, #F9FAFB); border-radius: 8px; border-left: 3px solid var(--primary);">
+      📦 <span data-i18n="checkout_shipping_note">Shipping address will be collected by Stripe on the next step</span>
+    </p>
 
     <button type="submit" class="btn-pay" id="pay-btn">
       <span data-i18n="checkout_pay">Pay with Stripe</span> - <span id="pay-amount">€0.00</span>
@@ -198,17 +131,6 @@
           if (profile.email) document.getElementById('checkout-email').value = profile.email;
           if (profile.full_name) document.getElementById('checkout-name').value = profile.full_name;
           if (profile.phone) document.getElementById('checkout-phone').value = profile.phone;
-          if (profile.address) document.getElementById('checkout-address').value = profile.address;
-          if (profile.city) document.getElementById('checkout-city').value = profile.city;
-          if (profile.country) {
-            const countrySelect = document.getElementById('checkout-country');
-            // Try to match country code
-            const cc = profile.country.toUpperCase();
-            for (let opt of countrySelect.options) {
-              if (opt.value === cc) { countrySelect.value = cc; break; }
-            }
-          }
-          if (profile.zip) document.getElementById('checkout-zip').value = profile.zip;
         }
       } catch (e) {}
     }, 600);
@@ -243,16 +165,44 @@
     btn.disabled = true;
     btn.innerHTML = t('checkout_processing');
 
-    const cartItems = JSON.parse(localStorage.getItem('suntrade_cart') || '[]');
+    // Clean cart before sending (removes any invalid items)
+    const cartItems = JSON.parse(localStorage.getItem('suntrade_cart') || '[]').filter(item =>
+      item && item.id && item.name && String(item.name).trim() !== '' &&
+      parseFloat(item.price) > 0 && parseInt(item.qty) > 0
+    );
+
+    if (cartItems.length === 0) {
+      // Show a better error with a "Clear Cart" option
+      const clearCart = confirm(t('cart_invalid') + '\n\nСебетті тазалау керек пе? / Clear cart?');
+      if (clearCart) {
+        localStorage.removeItem('suntrade_cart');
+        window.location.href = '/cart.html';
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = '<span data-i18n="checkout_pay">' + t('checkout_pay') + '</span> - <span id="pay-amount">€0.00</span>';
+      }
+      return;
+    }
+
+    // Update localStorage with cleaned cart
+    localStorage.setItem('suntrade_cart', JSON.stringify(cartItems));
+
     const customerData = {
       email: document.getElementById('checkout-email').value,
       name: document.getElementById('checkout-name').value,
       phone: document.getElementById('checkout-phone').value,
-      address: document.getElementById('checkout-address').value,
-      city: document.getElementById('checkout-city').value,
-      zip: document.getElementById('checkout-zip').value,
-      country: document.getElementById('checkout-country').value
+      language: (typeof currentLang !== 'undefined' ? currentLang : (localStorage.getItem('suntrade_lang') || 'en')),
+      user_id: null
+      // Shipping address is collected by Stripe on the next step
     };
+
+    // Логин болса — user_id-ді қосу
+    try {
+      if (typeof getCurrentUser === 'function') {
+        const u = await getCurrentUser();
+        if (u) customerData.user_id = u.id;
+      }
+    } catch (e) { /* guest checkout — user_id жоқ */ }
 
     try {
       const response = await fetch('/api/create-checkout', {
@@ -264,14 +214,29 @@
       const data = await response.json();
 
       if (data.url) {
+        // Save session_id as backup in localStorage (in case URL param is missing)
+        if (data.session_id) {
+          localStorage.setItem('suntrade_last_session_id', data.session_id);
+          localStorage.setItem('suntrade_last_session_email', customerData.email);
+        }
         window.location.href = data.url;
       } else if (data.error) {
         throw new Error(data.error);
       }
     } catch (err) {
-      alert('Payment error: ' + err.message);
+      // If backend says invalid items, offer to clear cart
+      if (err.message && (err.message.includes('No valid items') || err.message.includes('No items in cart'))) {
+        const clearCart = confirm(t('checkout_error_prefix') + ': ' + err.message + '\n\nСебетті тазалау керек пе? / Clear cart?');
+        if (clearCart) {
+          localStorage.removeItem('suntrade_cart');
+          window.location.href = '/cart.html';
+          return;
+        }
+      } else {
+        alert(t('checkout_error_prefix') + ': ' + err.message);
+      }
       btn.disabled = false;
-      btn.innerHTML = '<span data-i18n="checkout_pay">Pay with Stripe</span>';
+      btn.innerHTML = '<span data-i18n="checkout_pay">' + t('checkout_pay') + '</span> - <span id="pay-amount">€' + (parseFloat(cartItems.reduce((s, i) => s + i.price * i.qty, 0)) || 0).toFixed(2) + '</span>';
     }
   }
 

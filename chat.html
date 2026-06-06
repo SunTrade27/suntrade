@@ -247,7 +247,7 @@
     showTyping(true);
 
     try {
-      var resp = await fetch('/api/chat-message', {
+      var resp = await fetch('/api/chat?action=message', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({customerId: customerId, message: msg})
@@ -285,7 +285,7 @@
 
   async function loadHistory() {
     try {
-      var resp = await fetch('/api/chat-messages?customerId=' + encodeURIComponent(customerId));
+      var resp = await fetch('/api/chat?action=messages&customerId=' + encodeURIComponent(customerId));
       if (!resp.ok) return;
       var data = await resp.json();
       if (!data.messages || !data.messages.length) return;
@@ -302,7 +302,7 @@
 
   setInterval(async function() {
     try {
-      var resp = await fetch('/api/chat-messages?customerId=' + encodeURIComponent(customerId));
+      var resp = await fetch('/api/chat?action=messages&customerId=' + encodeURIComponent(customerId));
       if (!resp.ok) return;
       var data = await resp.json();
       if (data.messages && data.messages.length > lastMsgCount) {

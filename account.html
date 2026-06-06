@@ -65,9 +65,9 @@
     <h3 id="account-display-name">User</h3>
     <p id="account-display-email" style="color:var(--text-light);font-size:0.85rem;">-</p>
     <nav class="account-nav">
-      <a href="#" class="active" onclick="showAccountSection('profile')" data-i18n="account_profile">Profile</a>
-      <a href="#" onclick="showAccountSection('orders')" data-i18n="account_orders">My Orders</a>
-      <a href="#" onclick="showAccountSection('settings')" data-i18n="account_settings">Settings</a>
+      <a href="#" class="active" data-section="profile" onclick="showAccountSection('profile', event)" data-i18n="account_profile">Profile</a>
+      <a href="#" data-section="orders" onclick="showAccountSection('orders', event)" data-i18n="account_orders">My Orders</a>
+      <a href="#" data-section="settings" onclick="showAccountSection('settings', event)" data-i18n="account_settings">Settings</a>
       <a href="#" onclick="handleAccountLogout()" data-i18n="auth_logout">Logout</a>
     </nav>
   </aside>
@@ -164,16 +164,61 @@
 
   document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(async () => {
+      // ============================================================
+      // 1) Ең алдымен — Stripe-тан кейін келсек, save-order-ды МІНДЕТТІ ТҮРДЕ шақырамыз
+      //    (логин болса да, болмаса да — webhook өткізбеген жағдайда кепілдік)
+      // ============================================================
+      const params = new URLSearchParams(window.location.search);
+      let sessionId = params.get('session_id');
+      if (!sessionId) {
+        sessionId = localStorage.getItem('suntrade_last_session_id');
+      }
+      const isSuccessReturn = params.get('success') === 'true' && sessionId;
+
+      if (isSuccessReturn) {
+        // Логин күтусіз — save-order API-ға тікелей шақыру (service_key арқылы жұмыс істейді)
+        try {
+          console.log('[account] Saving order from Stripe session:', sessionId);
+          const saveResp = await fetch('/api/save-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId })
+          });
+          const saveResult = await saveResp.json();
+          console.log('[account] Save order result:', saveResult);
+          localStorage.removeItem('suntrade_last_session_id');
+          localStorage.removeItem('suntrade_last_session_email');
+          // Save result-ты sessionStorage-та сақтау — account panel ашылғанда көрсету үшін
+          sessionStorage.setItem('suntrade_last_save_result', JSON.stringify(saveResult));
+        } catch (e) {
+          console.error('[account] Save order error:', e);
+          sessionStorage.setItem('suntrade_last_save_result', JSON.stringify({ error: e.message }));
+        }
+      }
+
+      // ============================================================
+      // 2) Supabase тексеру — логин бе?
+      // ============================================================
       if (!sb) {
         document.getElementById('account-loading').style.display = 'none';
-        document.getElementById('account-not-logged').style.display = 'block';
+        if (isSuccessReturn) {
+          // Логинсіз, бірақ төлемнен кейін келдік — success хабарламасын көрсету
+          showGuestSuccessView(sessionId);
+        } else {
+          document.getElementById('account-not-logged').style.display = 'block';
+        }
         return;
       }
 
       const user = await getCurrentUser();
       if (!user) {
         document.getElementById('account-loading').style.display = 'none';
-        document.getElementById('account-not-logged').style.display = 'block';
+        if (isSuccessReturn) {
+          // Логинсіз, бірақ төлемнен кейін келдік — success хабарламасын көрсету
+          showGuestSuccessView(sessionId);
+        } else {
+          document.getElementById('account-not-logged').style.display = 'block';
+        }
         return;
       }
 
@@ -207,69 +252,186 @@
         document.getElementById('profile-country').value = userProfile.country || '';
         document.getElementById('profile-zip').value = userProfile.zip || '';
       }
+
+      // ============================================================
+      // 3) Логин болған жағдайда — orders секциясын ашу + тапсырысты жүктеу
+      // ============================================================
+      if (window.location.hash === '#orders' || isSuccessReturn) {
+        showAccountSection('orders', null);
+      }
     }, 500);
   });
 
-  function showAccountSection(name) {
+  // Логинсіз төлемнен кейін — success хабарламасын көрсету
+  function showGuestSuccessView(sessionId) {
+    const saveResult = sessionStorage.getItem('suntrade_last_save_result');
+    let resultMsg = '';
+    if (saveResult) {
+      try {
+        const r = JSON.parse(saveResult);
+        if (r.success) {
+          resultMsg = `<p style="color:#22C55E;margin:0.5rem 0;display:inline-flex;align-items:center;gap:0.4rem;"><svg class="icon icon-sm" style="color:#22C55E;"><use href="#icon-check-circle"/></svg> Тапсырыс сәтті сақталды!</p>`;
+        } else if (r.error) {
+          resultMsg = `<p style="color:#EF4444;margin:0.5rem 0;display:inline-flex;align-items:center;gap:0.4rem;"><svg class="icon icon-sm" style="color:#EF4444;"><use href="#icon-alert"/></svg> Қателік: ${escHtml(r.error)}</p>`;
+        }
+      } catch (e) {}
+    }
+    const lang = (typeof currentLang !== 'undefined' ? currentLang : 'en');
+    const messages = {
+      kz: '✅ Төлеміңіз сәтті өтті! Тапсырысыңыз қабылданды. Электрондық поштаңызға растау жіберілді.',
+      ru: '✅ Ваш платёж прошёл успешно! Заказ принят. На вашу почту отправлено подтверждение.',
+      en: '✅ Payment successful! Your order has been received. A confirmation email has been sent.',
+      de: '✅ Zahlung erfolgreich! Ihre Bestellung wurde erhalten. Eine Bestätigung wurde per E-Mail gesendet.',
+      fr: '✅ Paiement réussi ! Votre commande a été reçue. Un email de confirmation a été envoyé.',
+      es: '✅ ¡Pago exitoso! Tu pedido ha sido recibido. Se ha enviado un email de confirmación.',
+      it: '✅ Pagamento riuscito! Il tuo ordine è stato ricevuto. Una email di conferma è stata inviata.',
+      tr: '✅ Ödeme başarılı! Siparişiniz alındı. Onay e-postası gönderildi.',
+      pt: '✅ Pagamento bem-sucedido! Seu pedido foi recebido. Um e-mail de confirmação foi enviado.',
+      nl: '✅ Betaling geslaagd! Uw bestelling is ontvangen. Een bevestigingsmail is verzonden.',
+      pl: '✅ Płatność udana! Twoje zamówienie zostało przyjęte. Wysłano e-mail z potwierdzeniem.',
+      ar: '✅ تمت العملية بنجاح! تم استلام طلبك. تم إرسال بريد إلكتروني للتأكيد.'
+    };
+    const msg = messages[lang] || messages.en;
+    const signInHtml = (lang === 'kz' || lang === 'ru') ?
+      `<p style="margin-top:1.5rem;color:var(--text-light);">Тапсырысыңызды көру үшін <a href="/auth.html" style="color:var(--primary);font-weight:600;">аккаунтқа кіріңіз</a> немесе тіркеліңіз (дәл сол email-мен).</p>` :
+      `<p style="margin-top:1.5rem;color:var(--text-light);">To view your order, <a href="/auth.html" style="color:var(--primary);font-weight:600;">sign in</a> or create an account with the same email.</p>`;
+
+    document.getElementById('account-not-logged').innerHTML = `
+      <div style="max-width:520px;margin:0 auto;background:var(--bg-white);border:1px solid var(--border);border-radius:16px;padding:2rem;text-align:center;">
+        <div style="width:80px;height:80px;background:#DCFCE7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h2 style="margin:0 0 0.5rem;color:#1A1A2E;">${msg}</h2>
+        ${resultMsg}
+        <p style="margin:0.5rem 0;color:var(--text-light);font-size:0.9rem;font-family:monospace;">Session: ${escHtml(sessionId.substring(0, 24))}...</p>
+        ${signInHtml}
+        <a href="/" style="display:inline-block;margin-top:1.5rem;color:var(--text-light);text-decoration:underline;">← Басты бет / Home</a>
+      </div>
+    `;
+    document.getElementById('account-not-logged').style.display = 'block';
+  }
+
+  function showAccountSection(name, e) {
     ['profile', 'orders', 'settings'].forEach(s => {
       const el = document.getElementById('section-' + s);
       if (el) el.style.display = s === name ? 'block' : 'none';
     });
     document.querySelectorAll('.account-nav a').forEach(a => a.classList.remove('active'));
-    event.target.classList.add('active');
+    // e.target — кейде анықталмаған (программалық шақыру кезінде),
+    // сондықтан data-section арқылы да іздеп көреміз
+    let activeEl = (e && e.target) ? e.target : null;
+    if (!activeEl || !activeEl.classList) {
+      activeEl = document.querySelector('.account-nav a[data-section="' + name + '"]');
+    }
+    if (activeEl && activeEl.classList) {
+      activeEl.classList.add('active');
+    }
     if (name === 'orders') loadUserOrders();
   }
 
   function getOrderStatusLabel(status) {
-    const labels = {
-      'pending': 'Тапсырыс берілді',
-      'accepted': 'Сатушы қабылдады',
-      'packing': 'Жиналуда',
-      'shipped': 'Жолға шықты',
-      'delivered': 'Жеткізілді'
-    };
-    return labels[status] || status;
+    const key = 'order_status_' + status;
+    if (typeof t === 'function' && translations && translations[key]) {
+      return translations[key];
+    }
+    return status;
   }
 
   function getOrderStatusIcon(status) {
+    // Сайттың өз SVG иконкалары (эмодзи емес)
     const icons = {
-      'pending': '📋',
-      'accepted': '✅',
-      'packing': '📦',
-      'shipped': '🚚',
-      'delivered': '🎉'
+      'pending':   '<svg class="icon icon-sm"><use href="#icon-clock"/></svg>',
+      'accepted':  '<svg class="icon icon-sm"><use href="#icon-check"/></svg>',
+      'packing':   '<svg class="icon icon-sm"><use href="#icon-package"/></svg>',
+      'shipped':   '<svg class="icon icon-sm"><use href="#icon-truck"/></svg>',
+      'delivered': '<svg class="icon icon-sm"><use href="#icon-check-circle"/></svg>'
     };
-    return icons[status] || '📋';
+    return icons[status] || '<svg class="icon icon-sm"><use href="#icon-clock"/></svg>';
   }
 
   async function loadUserOrders() {
-    const orders = await getUserOrders();
     const container = document.getElementById('user-orders-table');
-    if (orders.length === 0) {
+    container.innerHTML = '<p style="color:var(--text-light);">Loading...</p>';
+
+    const orders = await getUserOrders();
+    if (!orders || orders.length === 0) {
       container.innerHTML = '<p style="color:var(--text-light);">' + (t('account_no_orders') || 'No orders yet.') + '</p>';
       return;
     }
+
     container.innerHTML = orders.map(o => {
       const statusSteps = ['pending', 'accepted', 'packing', 'shipped', 'delivered'];
       const currentStep = statusSteps.indexOf(o.status);
+
+      // Build product list (from order_items or fallback to products)
+      let productsHtml = '';
+      if (o.order_items && o.order_items.length > 0) {
+        productsHtml = o.order_items.map(item => `
+          <div style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--border);">
+            ${item.product_image ? `<img src="${escHtml(item.product_image)}" style="width:50px;height:50px;object-fit:cover;border-radius:6px;">` : '<div style="width:50px;height:50px;background:var(--bg-light);border-radius:6px;"></div>'}
+            <div style="flex:1;">
+              <div style="font-weight:500;">${escHtml(item.product_name || 'Product')}</div>
+              <div style="font-size:0.8rem;color:var(--text-light);">${t('qty_label') || 'Qty'}: ${item.quantity} × €${parseFloat(item.unit_price || 0).toFixed(2)}</div>
+            </div>
+            <div style="font-weight:600;">€${(parseFloat(item.unit_price || 0) * (item.quantity || 1)).toFixed(2)}</div>
+          </div>
+        `).join('');
+      } else if (o.products) {
+        // Fallback: single product
+        const productName = o.products['name_' + currentLang] || o.products.name_en || 'N/A';
+        const productImage = (o.products.images && o.products.images[0]) || '';
+        productsHtml = `
+          <div style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0;">
+            ${productImage ? `<img src="${escHtml(productImage)}" style="width:50px;height:50px;object-fit:cover;border-radius:6px;">` : ''}
+            <div style="flex:1;font-weight:500;">${escHtml(productName)}</div>
+          </div>
+        `;
+      } else {
+        productsHtml = '<div style="color:var(--text-light);">' + (t('product_info_unavailable') || 'Product info unavailable') + '</div>';
+      }
+
+      // Shipping address
+      const shippingHtml = o.shipping_address_line1 ? `
+        <div style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border);font-size:0.85rem;color:var(--text-light);display:flex;align-items:flex-start;gap:0.5rem;">
+          <svg class="icon icon-sm" style="color:var(--primary);flex-shrink:0;margin-top:2px;"><use href="#icon-truck"/></svg>
+          <div><strong style="color:var(--text);">Shipping to:</strong> ${escHtml(o.shipping_address_line1)}${o.shipping_address_line2 ? ', ' + escHtml(o.shipping_address_line2) : ''}, ${escHtml(o.shipping_city || '')}${o.shipping_postal_code ? ' ' + escHtml(o.shipping_postal_code) : ''}, ${escHtml(o.shipping_country || '')}</div>
+        </div>
+      ` : '';
+
       return `
         <div style="background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
             <div>
-              <strong>${(o.products && o.products['name_' + currentLang]) || (o.products && o.products.name_en) || 'N/A'}</strong>
-              <p style="font-size:0.85rem;color:var(--text-light);">ID: ${o.id.substring(0, 8)}... | ${new Date(o.created_at).toLocaleDateString()}</p>
+              <p style="font-size:0.85rem;color:var(--text-light);margin:0 0 4px;">ID: ${o.id.substring(0, 8)}... | ${new Date(o.created_at).toLocaleDateString()}</p>
             </div>
-            <span style="font-weight:700;color:var(--primary);">&euro;${parseFloat(o.amount || 0).toFixed(2)}</span>
+            <span style="font-weight:700;color:var(--primary);font-size:1.1rem;">&euro;${parseFloat(o.amount || 0).toFixed(2)}</span>
           </div>
+          <div style="margin-bottom:1rem;">${productsHtml}</div>
           <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
-            ${statusSteps.map((step, i) => `
+            ${statusSteps.map((step, i) => {
+              let circleContent, circleStyle;
+              if (i < currentStep) {
+                // Өткен қадам — check иконкасы
+                circleContent = '<svg class="icon icon-sm" style="color:white;"><use href="#icon-check"/></svg>';
+                circleStyle = 'background:var(--primary);color:white;';
+              } else if (i === currentStep) {
+                // Ағымдағы қадам — статус иконкасы
+                circleContent = getOrderStatusIcon(step).replace('<svg class="icon icon-sm">', '<svg class="icon icon-sm" style="color:white;">');
+                circleStyle = 'background:var(--primary);color:white;';
+              } else {
+                // Болашақ қадам — нөмір
+                circleContent = (i + 1);
+                circleStyle = 'background:var(--border);color:var(--text-muted);';
+              }
+              return `
               <div style="display:flex;align-items:center;gap:4px;">
-                <div style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;${i <= currentStep ? 'background:var(--primary);color:white;' : 'background:var(--border);color:var(--text-muted);'}">${i < currentStep ? '✓' : i === currentStep ? getOrderStatusIcon(step) : (i + 1)}</div>
+                <div style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;${circleStyle}">${circleContent}</div>
                 <span style="font-size:0.75rem;${i === currentStep ? 'font-weight:700;color:var(--primary);' : 'color:var(--text-muted);'}">${getOrderStatusLabel(step)}</span>
                 ${i < statusSteps.length - 1 ? '<div style="width:20px;height:2px;background:' + (i < currentStep ? 'var(--primary)' : 'var(--border)') + ';"></div>' : ''}
               </div>
-            `).join('')}
+            `;}).join('')}
           </div>
+          ${shippingHtml}
         </div>
       `;
     }).join('');
