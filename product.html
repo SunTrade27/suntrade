@@ -50,45 +50,39 @@
   <!-- Rating Summary -->
   <div id="rating-summary" style="text-align:center;margin-bottom:2rem;"></div>
 
-  <!-- Review Form -->
-  <div id="review-form-container" style="background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin-bottom:2rem;">
-    <h3 style="margin-bottom:1rem;font-size:1.1rem;">Write a Review</h3>
-    <form id="review-form" onsubmit="submitProductReview(event)">
-      <div class="form-group">
-        <label>Your Name</label>
-        <input type="text" id="review-name" required placeholder="Your name">
-      </div>
-      <div class="form-group">
-        <label>Your Email</label>
-        <input type="email" id="review-email" placeholder="your@email.com">
-      </div>
-      <div class="form-group">
-        <label>Rating</label>
-        <div id="star-rating" style="display:flex;gap:4px;font-size:2rem;cursor:pointer;">
-          <span onclick="setRating(1)" data-star="1">☆</span>
-          <span onclick="setRating(2)" data-star="2">☆</span>
-          <span onclick="setRating(3)" data-star="3">☆</span>
-          <span onclick="setRating(4)" data-star="4">☆</span>
-          <span onclick="setRating(5)" data-star="5">☆</span>
-        </div>
-        <input type="hidden" id="review-rating" value="0">
-      </div>
-      <div class="form-group">
-        <label>Your Review</label>
-        <textarea id="review-comment" rows="4" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:var(--radius-sm);resize:vertical;" placeholder="Share your experience with this product..."></textarea>
-      </div>
-      <div class="form-group">
-        <label>Add Photos (optional)</label>
-        <input type="file" id="review-images-input" accept="image/*" multiple style="padding:8px;">
-        <div id="review-images-preview" style="display:flex;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap;"></div>
-      </div>
-      <button type="submit" class="btn-pay" style="max-width:200px;" data-i18n="review_submit">Submit Review</button>
-    </form>
-  </div>
-
   <!-- Reviews List -->
   <div id="reviews-list"></div>
 </section>
+
+<!-- ADMIN REVIEW MANAGEMENT (only visible to admin) -->
+<div id="admin-review-section" style="display:none;max-width:900px;margin:0 auto;padding:0 1rem 2rem;">
+  <div style="background:linear-gradient(135deg,#1A1A2E,#16213E);border-radius:var(--radius-lg);padding:2rem;margin-bottom:2rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
+      <div>
+        <h2 style="color:white;margin:0;font-size:1.3rem;">📬 Пікір сұрау / Send Review Request</h2>
+        <p style="color:rgba(255,255,255,0.6);font-size:0.85rem;margin-top:0.5rem;">Тауарды сатып алған клиенттерге пікір сілтемесін жіберу</p>
+      </div>
+      <span style="background:#FF6B00;color:white;padding:4px 12px;border-radius:50px;font-size:0.75rem;font-weight:600;">ADMIN</span>
+    </div>
+
+    <!-- Orders for this product -->
+    <div id="admin-orders-list">
+      <div style="text-align:center;padding:1rem;">
+        <div class="spinner" style="margin:0 auto;"></div>
+        <p style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-top:0.5rem;">Loading orders...</p>
+      </div>
+    </div>
+
+    <!-- Quick copy link -->
+    <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.1);">
+      <label style="color:rgba(255,255,255,0.7);font-size:0.85rem;font-weight:600;display:block;margin-bottom:0.5rem;">📋 Пікір сілтемесін көшіру / Copy Review Link</label>
+      <div style="display:flex;gap:0.5rem;">
+        <input type="text" id="review-link-input" readonly style="flex:1;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(0,0,0,0.3);color:white;font-size:0.85rem;">
+        <button onclick="copyReviewLink()" style="padding:10px 20px;background:#FF6B00;color:white;border:none;border-radius:8px;font-weight:600;font-size:0.85rem;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#E05E00'" onmouseout="this.style.background='#FF6B00'">📋 Copy</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -226,6 +220,9 @@
     loadProductReviews(p.id);
     loadProductRating(p.id);
 
+    // Check admin and load order management
+    checkAdminAndLoadOrders();
+
     // Setup gallery zoom
     const mainImg = document.getElementById('main-image');
     if (mainImg) {
@@ -300,23 +297,9 @@
   }
 
   // Reviews
-  let reviewImageUrls = [];
-  let selectedRating = 0;
-
   function escHtml(str) {
     if (!str) return '';
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  }
-
-  function setRating(stars) {
-    selectedRating = stars;
-    document.getElementById('review-rating').value = stars;
-    const starsEl = document.getElementById('star-rating');
-    starsEl.querySelectorAll('span').forEach(s => {
-      const val = parseInt(s.dataset.star);
-      s.textContent = val <= stars ? '★' : '☆';
-      s.style.color = val <= stars ? 'var(--primary)' : 'var(--text-muted)';
-    });
   }
 
   async function loadProductRating(productId) {
@@ -366,73 +349,172 @@
     `).join('');
   }
 
-  // Review image upload
-  document.getElementById('review-images-input')?.addEventListener('change', async (e) => {
-    for (const file of e.target.files) {
-      if (!file.type.startsWith('image/')) continue;
-      try {
-        const url = await uploadReviewImage(file);
-        reviewImageUrls.push(url);
-        updateReviewImagePreview();
-      } catch (err) {
-        console.error('Review image upload error:', err);
-      }
-    }
-  });
+  // ===== ADMIN REVIEW MANAGEMENT =====
+  let currentUserId = null;
+  let currentUserIsAdmin = false;
 
-  function updateReviewImagePreview() {
-    const preview = document.getElementById('review-images-preview');
-    preview.innerHTML = reviewImageUrls.map((url, i) => `
-      <div style="position:relative;width:60px;height:60px;">
-        <img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">
-        <button onclick="reviewImageUrls.splice(${i},1);updateReviewImagePreview();" style="position:absolute;top:-6px;right:-6px;background:var(--danger);color:white;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;">x</button>
-      </div>
-    `).join('');
+  async function checkAdminAndLoadOrders() {
+    try {
+      const user = await getCurrentUser();
+      if (!user) return;
+      currentUserId = user.id;
+      const admin = await isUserAdmin();
+      if (!admin) return;
+      currentUserIsAdmin = true;
+
+      // Show admin section
+      const section = document.getElementById('admin-review-section');
+      section.style.display = 'block';
+
+      // Set the review link
+      const linkInput = document.getElementById('review-link-input');
+      if (currentProduct) {
+        linkInput.value = window.location.origin + '/review.html?product=' + currentProduct.id;
+      }
+
+      // Load orders for this product
+      loadAdminOrders(currentProduct.id);
+    } catch (err) {
+      console.error('Admin check error:', err);
+    }
   }
 
-  async function submitProductReview(e) {
-    e.preventDefault();
-    if (selectedRating === 0) {
-      alert('Please select a rating');
+  async function loadAdminOrders(productId) {
+    const container = document.getElementById('admin-orders-list');
+    if (!productId) {
+      container.innerHTML = '<p style="color:rgba(255,255,255,0.5);font-size:0.85rem;">No product selected.</p>';
       return;
     }
 
-    const review = {
-      product_id: currentProduct.id,
-      customer_name: document.getElementById('review-name').value,
-      customer_email: document.getElementById('review-email').value || null,
-      rating: selectedRating,
-      comment: document.getElementById('review-comment').value || null,
-      images: reviewImageUrls,
-      approved: false,
-      verified: false
-    };
-
-    // Check if review is from a verified buyer (email matches order)
     try {
-      const { data: orders } = await sb.from('orders')
-        .select('id')
-        .eq('customer_email', review.customer_email)
-        .eq('product_id', currentProduct.id)
-        .eq('status', 'delivered')
-        .limit(1);
-      if (orders && orders.length > 0) {
-        review.verified = true;
-        review.order_id = orders[0].id;
+      // Fetch orders that have this product
+      const { data: orderItems, error } = await sb
+        .from('order_items')
+        .select('*, orders(*)')
+        .eq('product_id', productId);
+
+      if (error) throw error;
+
+      if (!orderItems || orderItems.length === 0) {
+        container.innerHTML = '<p style="color:rgba(255,255,255,0.5);font-size:0.85rem;text-align:center;padding:1rem;">Бұл тауарға әлі ешкім тапсырыс бермеген / No orders for this product yet.</p>';
+        return;
       }
-    } catch (err) { /* ignore */ }
 
-    try {
-      await submitReview(review);
-      document.getElementById('review-form').reset();
-      setRating(0);
-      reviewImageUrls = [];
-      updateReviewImagePreview();
-      showNotification('Review submitted! It will appear after approval.');
+      container.innerHTML = `
+        <div style="display:flex;flex-direction:column;gap:0.75rem;">
+          ${orderItems.map(oi => {
+            const o = oi.orders;
+            if (!o) return '';
+            const statusColors = {
+              pending: '#F59E0B',
+              paid: '#22C55E',
+              accepted: '#3B82F6',
+              packing: '#8B5CF6',
+              shipped: '#06B6D4',
+              delivered: '#10B981'
+            };
+            const statusColor = statusColors[o.status] || '#9CA3AF';
+            const reviewUrl = window.location.origin + '/review.html?product=' + productId + '&order=' + o.id;
+
+            return `
+              <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:1rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;">
+                  <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                      <strong style="color:white;font-size:0.9rem;">${escHtml(o.customer_name || 'Unknown')}</strong>
+                      <span style="color:rgba(255,255,255,0.4);font-size:0.8rem;">${escHtml(o.customer_email || '')}</span>
+                    </div>
+                    <div style="margin-top:4px;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+                      <span style="display:inline-block;padding:2px 8px;border-radius:50px;font-size:0.7rem;font-weight:600;background:${statusColor}20;color:${statusColor};border:1px solid ${statusColor}40;">${o.status}</span>
+                      <span style="color:rgba(255,255,255,0.3);font-size:0.75rem;">€${parseFloat(o.amount || 0).toFixed(2)}</span>
+                      <span style="color:rgba(255,255,255,0.3);font-size:0.75rem;">${new Date(o.created_at).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:0.5rem;flex-shrink:0;">
+                    ${o.status === 'delivered' ? `
+                      <button onclick="sendAdminReviewRequest('${o.id}', '${escHtml(o.customer_email || '')}')" style="padding:8px 16px;background:#FF6B00;color:white;border:none;border-radius:8px;font-weight:600;font-size:0.8rem;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#E05E00'" onmouseout="this.style.background='#FF6B00'">📧 Send Review</button>
+                    ` : `
+                      <span style="padding:8px 12px;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.3);border-radius:8px;font-size:0.75rem;">⏳ ${o.status === 'paid' ? 'Ақы төленді' : o.status === 'shipped' ? 'Жолда' : 'Күтілуде'}</span>
+                    `}
+                    <button onclick="copyToClipboard('${reviewUrl}', this)" style="padding:8px 12px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.15);border-radius:8px;font-size:0.8rem;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">📋 Link</button>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
     } catch (err) {
-      alert('Error submitting review: ' + err.message);
+      console.error('Load admin orders error:', err);
+      container.innerHTML = '<p style="color:#EF4444;font-size:0.85rem;">Error loading orders: ' + escHtml(err.message) + '</p>';
     }
   }
+
+  async function sendAdminReviewRequest(orderId, customerEmail) {
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = '⏳ Sending...';
+    btn.disabled = true;
+    btn.style.opacity = '0.6';
+
+    try {
+      const resp = await fetch('/api/send-review-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId })
+      });
+      const result = await resp.json();
+      if (result.success) {
+        btn.textContent = '✅ Sent!';
+        btn.style.background = '#22C55E';
+        showNotification('📧 Review request sent to ' + (customerEmail || 'customer'));
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          btn.style.background = '#FF6B00';
+        }, 3000);
+      } else {
+        btn.textContent = '❌ Failed';
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        }, 2000);
+      }
+    } catch (err) {
+      btn.textContent = '❌ Error';
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.disabled = false;
+        btn.style.opacity = '1';
+      }, 2000);
+    }
+  }
+
+  function copyReviewLink() {
+    const input = document.getElementById('review-link-input');
+    if (!input || !input.value) return;
+    navigator.clipboard.writeText(input.value);
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✅ Copied!';
+    btn.style.background = '#22C55E';
+    showNotification('Link copied!');
+    setTimeout(() => {
+      btn.textContent = orig;
+      btn.style.background = '#FF6B00';
+    }, 2000);
+  }
+
+  function copyToClipboard(text, btn) {
+    navigator.clipboard.writeText(text);
+    const orig = btn.textContent;
+    btn.textContent = '✅ Copied!';
+    showNotification('Link copied!');
+    setTimeout(() => { btn.textContent = orig; }, 2000);
+  }
+
 </script>
 <script src="/js/chat-widget.js"></script>
 <script src="/js/user-menu.js"></script>
