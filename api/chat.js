@@ -87,11 +87,32 @@ async function callGemini(systemPrompt, userMessage, history) {
         })
       }
     );
+
+    // Rate limit / quota check
+    if (resp.status === 429 || resp.status === 503) {
+      console.error('Gemini rate limited:', resp.status);
+      return { text: '', rateLimited: true };
+    }
+
     const data = await resp.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    if (data.error) {
+      console.error('Gemini API error:', data.error);
+      const isQuota = data.error.code === 429 || data.error.status === 'RESOURCE_EXHAUSTED';
+      return { text: '', rateLimited: isQuota };
+    }
+
+    // Safety block / no candidates
+    if (!data.candidates || data.candidates.length === 0) {
+      console.error('Gemini no candidates:', data);
+      return { text: '', rateLimited: false };
+    }
+
+    const text = data.candidates[0]?.content?.parts?.[0]?.text || '';
+    return { text, rateLimited: false };
   } catch (e) {
     console.error('Gemini error:', e);
-    return '';
+    return { text: '', rateLimited: false };
   }
 }
 
@@ -102,7 +123,7 @@ async function detectLanguage(text) {
     text,
     []
   );
-  return result.trim().toLowerCase().replace(/[^a-z]/g, '').substring(0, 2) || 'en';
+  return (result.text || '').trim().toLowerCase().replace(/[^a-z]/g, '').substring(0, 2) || 'en';
 }
 
 async function getAIResponse(message, history, productContext) {
@@ -128,7 +149,8 @@ When escalating: start your message with "OPERATOR:" followed by a brief explana
 
 Delivery to Kazakhstan: 7-15 business days. Payment: Stripe (card). Returns: within 14 days.`;
 
-  return await callGemini(systemPrompt, message, history);
+  const result = await callGemini(systemPrompt, message, history);
+  return result.text;
 }
 
 // ============================================================
@@ -291,7 +313,72 @@ async function handleMessage(req, res) {
       .limit(20);
 
     const productContext = await getProductContext();
-    const aiResponse = await getAIResponse(message, history || [], productContext);
+    const aiResult = await callGemini(
+      `You are a friendly manager/consultant at SunTrade (suntrade.store) — an online store selling Chinese goods with worldwide delivery.
+
+PRODUCT CATALOG:
+${productContext}
+
+CRITICAL RULES:
+- You are a REAL PERSON, a store manager. NEVER say you are an AI, bot, or assistant.
+- NEVER mention "AI", "artificial intelligence", "machine learning" or anything like that.
+- Introduce yourself as a store manager/consultant if asked.
+- Help customers find products, answer about prices, delivery, returns.
+- Be warm, helpful, professional — like a real shop assistant.
+- Keep responses SHORT (2-3 sentences max).
+- ALWAYS respond in the SAME LANGUAGE as the customer's message.
+
+WHEN TO ESCALATE TO HUMAN OPERATOR:
+- Customer explicitly asks to talk to a human/manager/supervisor
+- Customer has a complaint or order problem you can't solve
+- Complex custom order requests
+When escalating: start your message with "OPERATOR:" followed by a brief explanation for the operator (in English), then a friendly message to the customer in their language.
+
+Delivery to Kazakhstan: 7-15 business days. Payment: Stripe (card). Returns: within 14 days.`,
+      message,
+      history || []
+    );
+
+    const aiResponse = aiResult.text;
+
+    // AI unavailable (rate limit, safety block, network) → WhatsApp fallback
+    if (!aiResponse || !aiResponse.trim()) {
+      const fallbackTexts = {
+        kz: 'Кешіріңіз, чат-бот уақытша қолжетімсіз (лимит таусылған болуы мүмкін). WhatsApp-қа жазыңыз:',
+        ru: 'Извините, чат-бот временно недоступен (возможно, лимит исчерпан). Напишите в WhatsApp:',
+        en: 'Sorry, the chat bot is temporarily unavailable (limit may be reached). Please contact via WhatsApp:',
+        de: 'Entschuldigung, der Chat-Bot ist vorübergehend nicht verfügbar (Limit möglicherweise erreicht). Bitte kontaktieren Sie uns per WhatsApp:',
+        fr: 'Désolé, le chat bot est temporairement indisponible (limite peut-être atteinte). Contactez-nous sur WhatsApp :',
+        es: 'Disculpe, el chat bot no está disponible temporalmente (límite posiblemente alcanzado). Contacte por WhatsApp:',
+        tr: 'Üzgünüz, sohbet botu şu anda kullanılamıyor (limit dolmuş olabilir). Lütfen WhatsApp ile iletişime geçin:',
+        it: 'Spiacenti, il chat bot è temporaneamente non disponibile (limite potrebbe essere raggiunto). Contattaci su WhatsApp:',
+        pt: 'Desculpe, o chat bot está temporariamente indisponível (limite possivelmente atingido). Contate via WhatsApp:',
+        nl: 'Sorry, de chatbot is tijdelijk niet beschikbaar (limiet mogelijk bereikt). Neem contact op via WhatsApp:',
+        pl: 'Przepraszamy, chatbot jest tymczasowo niedostępny (limit mógł zostać osiągnięty). Skontaktuj się przez WhatsApp:',
+        ar: 'عذرًا، روبوت الدردشة غير متاح مؤقتًا (ربما تم الوصول إلى الحد). يرجى التواصل عبر WhatsApp:',
+        zh: '抱歉，聊天机器人暂时不可用（可能已达限额）。请通过 WhatsApp 联系：',
+        ja: '申し訳ありませんが、チャットボットは一時的に利用できません（上限に達した可能性があります）。WhatsAppでお問い合わせください：',
+        ko: '죄송합니다. 챗봇을 일시적으로 사용할 수 없습니다(한도 도달 가능). WhatsApp으로 문의하세요:'
+      };
+      const fallbackText = fallbackTexts[lang] || fallbackTexts.en;
+
+      await supabase.from('wa_messages').insert({
+        conversation_id: conversation.id,
+        direction: 'out',
+        sender: 'ai',
+        original_text: fallbackText,
+        original_lang: lang
+      });
+
+      return res.status(200).json({
+        success: true,
+        status: 'fallback',
+        reply: fallbackText,
+        fallback: true,
+        whatsapp: '77021379248',
+        lang
+      });
+    }
 
     if (aiResponse.startsWith('OPERATOR:')) {
       const parts = aiResponse.split('\n');

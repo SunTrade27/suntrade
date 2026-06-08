@@ -3,6 +3,17 @@
   const API_BASE = '';  // same origin
   const STORAGE_KEY = 'suntrade_chat_id';
   const LANG_KEY = 'suntrade_chat_lang';
+  const WHATSAPP_FALLBACK_URL = 'https://wa.me/77021379248';
+  const WHATSAPP_FALLBACK_NUMBER = '+7 702 137 9248';
+
+  // Localized button labels for WhatsApp fallback
+  const whatsappBtnTexts = {
+    kz: 'WhatsApp-қа жазу', ru: 'Написать в WhatsApp', en: 'Write on WhatsApp',
+    de: 'Auf WhatsApp schreiben', fr: 'Écrire sur WhatsApp', es: 'Escribir en WhatsApp',
+    tr: 'WhatsApp\'ta yaz', it: 'Scrivi su WhatsApp', pt: 'Escrever no WhatsApp',
+    nl: 'Schrijven op WhatsApp', pl: 'Napisz na WhatsApp', ar: 'اكتب على WhatsApp',
+    zh: '在 WhatsApp 上写', ja: 'WhatsAppで書く', ko: 'WhatsApp에 쓰기'
+  };
 
   // Generate or retrieve customer ID
   function getCustomerId() {
@@ -189,11 +200,35 @@
   function createMessageHTML(m) {
     const time = new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const isCustomer = m.direction === 'in';
+
+    // If AI message is empty (e.g. rate limit), show WhatsApp fallback bubble
+    if (!isCustomer && m.sender === 'ai' && (!m.original_text || !m.original_text.trim())) {
+      return createFallbackBubbleHTML(time, m.original_text || '');
+    }
+
     const senderLabel = m.sender === 'ai' ? '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-sparkle"/></svg>AI' : m.sender === 'admin' ? '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-user"/></svg>Manager' : '';
     return `
       <div class="cw-msg ${isCustomer ? 'cw-msg-out' : 'cw-msg-in'}">
         ${!isCustomer && senderLabel ? `<div class="cw-msg-sender">${senderLabel}</div>` : ''}
         <div class="cw-msg-text">${escapeHtml(m.original_text)}</div>
+        <div class="cw-msg-time">${time}</div>
+      </div>
+    `;
+  }
+
+  // Render a fallback bubble with WhatsApp button
+  function createFallbackBubbleHTML(time, text) {
+    const lang = localStorage.getItem(LANG_KEY) || 'en';
+    const btnLabel = whatsappBtnTexts[lang] || whatsappBtnTexts.en;
+    return `
+      <div class="cw-msg cw-msg-in cw-msg-fallback">
+        <div class="cw-msg-text">${escapeHtml(text)}</div>
+        <a href="${WHATSAPP_FALLBACK_URL}" target="_blank" rel="noopener" class="cw-msg-wa-btn">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="vertical-align:middle;margin-right:6px;">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          ${btnLabel}: ${WHATSAPP_FALLBACK_NUMBER}
+        </a>
         <div class="cw-msg-time">${time}</div>
       </div>
     `;
@@ -235,6 +270,15 @@
 
       const data = await resp.json();
       showTyping(false);
+
+      if (data.fallback) {
+        // AI unavailable — show WhatsApp fallback bubble
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        container.innerHTML += createFallbackBubbleHTML(time, data.reply || '');
+        scrollToBottom();
+        lastMessageCount += 2;
+        return;
+      }
 
       if (data.reply) {
         container.innerHTML += `

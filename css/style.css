@@ -1726,6 +1726,27 @@ input, textarea, select { font-family: inherit; }
   margin-top: 4px;
 }
 
+/* WhatsApp fallback bubble (AI unavailable) */
+.cw-msg-fallback {
+  background: #FFF8E1 !important;
+  border-left: 3px solid #FFA000;
+}
+.cw-msg-wa-btn {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #25D366;
+  color: white !important;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: background 0.2s;
+}
+.cw-msg-wa-btn:hover {
+  background: #1DAB55;
+}
+
 /* Typing indicator */
 .cw-typing {
   display: flex;

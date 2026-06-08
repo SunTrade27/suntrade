@@ -89,7 +89,7 @@ module.exports = async (req, res) => {
     const stripeLocale = getStripeLocale(customer?.language);
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card', 'ideal', 'bancontact'],
+      payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
       customer_email: customer?.email,
