@@ -71,6 +71,11 @@ module.exports = async function handler(req, res) {
       ? `${SITE_URL}/review.html?product=${order.product_id}&order=${orderId}`
       : `${SITE_URL}`;
 
+    // Product page link
+    const productUrl = order.product_id
+      ? `${SITE_URL}/product.html?id=${order.product_id}`
+      : `${SITE_URL}`;
+
     // Send email via Gmail SMTP (nodemailer)
     const result = await sendMail({
       to: order.customer_email,
@@ -81,27 +86,56 @@ module.exports = async function handler(req, res) {
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            @media (max-width: 480px) {
+              .email-body { padding: 1rem !important; }
+              .product-img { width: 100% !important; max-width: 280px !important; }
+              .btn { display: block !important; width: 100% !important; box-sizing: border-box !important; }
+            }
+          </style>
         </head>
         <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #FAFAFA; margin: 0; padding: 2rem;">
-          <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <div style="background: linear-gradient(135deg, #FF6B00, #E05E00); padding: 2rem; text-align: center;">
+          <div class="email-body" style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <!-- Product Image Hero -->
+            ${productImage ? `
+            <div style="text-align: center; padding: 2rem 2rem 0;">
+              <a href="${productUrl}" target="_blank">
+                <img class="product-img" src="${productImage}" alt="${productName}" style="width: 100%; max-width: 320px; height: auto; border-radius: 16px; object-fit: cover; box-shadow: 0 8px 24px rgba(0,0,0,0.1);">
+              </a>
+            </div>
+            ` : `
+            <div style="background: linear-gradient(135deg, #1A1A2E, #16213E); padding: 2rem; text-align: center;">
               <h1 style="color: white; margin: 0; font-size: 1.5rem;">SunTrade</h1>
             </div>
-            <div style="padding: 2rem;">
-              <h2 style="color: #1A1A2E; margin-bottom: 1rem;">How was your order?</h2>
-              <p style="color: #6B7280; line-height: 1.6;">
-                Hi ${order.customer_name || 'there'},<br><br>
-                Your order of <strong>${productName}</strong>${productPrice ? ` (€${productPrice})` : ''} has been delivered! We hope you love it.
-              </p>
-              ${productImage ? `<div style="text-align: center; margin: 1.5rem 0;"><img src="${productImage}" style="width: 200px; height: 200px; object-fit: cover; border-radius: 12px;"></div>` : ''}
+            `}
+
+            <!-- Product Info -->
+            <div style="padding: 1.5rem 2rem 2rem; text-align: center;">
+              <h2 style="color: #1A1A2E; margin: 0 0 0.25rem; font-size: 1.3rem;">${productName}</h2>
+              ${productPrice ? `<div style="font-size: 1.6rem; font-weight: 800; color: #FF6B00; margin-bottom: 1.5rem;">€${productPrice}</div>` : ''}
+              
               <p style="color: #6B7280; line-height: 1.6; margin-bottom: 1.5rem;">
-                Would you mind taking a moment to share your experience? Your feedback helps other customers and helps us improve!
+                Hi ${order.customer_name || 'there'},<br><br>
+                Your <strong>${productName}</strong> has been delivered! We hope you love it.<br>
+                Please take a moment to share your experience — your feedback helps other customers make better choices!
               </p>
-              <div style="text-align: center; margin: 2rem 0;">
-                <a href="${reviewUrl}" style="display: inline-block; background: #FF6B00; color: white; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 1rem;">Leave a Review</a>
+
+              <!-- Review Button -->
+              <div style="text-align: center; margin: 1.5rem 0;">
+                <a class="btn" href="${reviewUrl}" style="display: inline-block; background: #FF6B00; color: white; padding: 15px 36px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 1.05rem;">
+                  ⭐ Leave a Review
+                </a>
               </div>
-              <p style="color: #9CA3AF; font-size: 0.85rem; text-align: center; margin-top: 2rem;">
-                Thank you for shopping with SunTrade!
+
+              <!-- Product Link -->
+              <p style="margin-top: 1.5rem;">
+                <a href="${productUrl}" style="color: #FF6B00; font-size: 0.9rem; text-decoration: none;">
+                  View product details →
+                </a>
+              </p>
+
+              <p style="color: #9CA3AF; font-size: 0.85rem; margin-top: 2rem; border-top: 1px solid #F3F4F6; padding-top: 1.5rem;">
+                Thank you for shopping with <strong>SunTrade</strong>!
               </p>
             </div>
           </div>
