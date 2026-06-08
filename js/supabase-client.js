@@ -353,8 +353,18 @@ async function getApprovedReviews(limit = 10) {
 }
 
 async function submitReview(review) {
+  // 1. Пікірді сақтау (сіздің ескі кодыңыз)
   const { data, error } = await sb.from('reviews').insert(review).select().single();
   if (error) throw error;
+
+  // 2. Админге хабарлама жіберу (ЖАҢА ҚОСЫЛДЫ)
+  // Егер қате шықса да, негізгі әрекет тоқтамайды
+  fetch('/api/notify-admin-review', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ reviewId: data.id })
+  }).catch(err => console.warn('Admin notification failed:', err));
+
   return data;
 }
 
