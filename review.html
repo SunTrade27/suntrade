@@ -732,7 +732,7 @@
 
     try {
       // Call the global submitReview from supabase-client.js
-      await window.submitReview(review);
+      await window.submitReview(review, currentProduct);
 
       // Show success
       document.getElementById('review-content').style.display = 'none';

@@ -352,20 +352,20 @@ async function getApprovedReviews(limit = 10) {
   return data || [];
 }
 
-async function submitReview(review) {
-  // 1. Пікірді сақтау (сіздің ескі кодыңыз)
-  const { data, error } = await sb.from('reviews').insert(review).select().single();
+async function submitReview(review, productData) {
+  // 1. Пікірді сақтау — WITHOUT .select() because SELECT RLS only allows approved=true
+  const { error } = await sb.from('reviews').insert(review);
   if (error) throw error;
 
   // 2. Админге хабарлама жіберу (ЖАҢА ҚОСЫЛДЫ)
-  // Егер қате шықса да, негізгі әрекет тоқтамайды
+  // Пікір деректерін тікелей жібереміз (ID-мен емес), API service_role арқылы іздейді
   fetch('/api/notify-admin-review', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ reviewId: data.id })
+    body: JSON.stringify({ review, product: productData || null })
   }).catch(err => console.warn('Admin notification failed:', err));
 
-  return data;
+  return review;
 }
 
 async function uploadReviewImage(file) {

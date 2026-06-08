@@ -25,26 +25,35 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { reviewId } = req.body;
-    if (!reviewId) return res.status(400).json({ error: 'reviewId required' });
+    const { review, product } = req.body;
+    if (!review) return res.status(400).json({ error: 'review data required' });
 
-    const { data: review, error: reviewError } = await supabase
-      .from('reviews')
-      .select('*, products(name_en, name_kz, name_ru, price, images)')
-      .eq('id', reviewId)
-      .single();
-
-    if (reviewError || !review) {
-      return res.status(404).json({ error: 'Review not found' });
+    // Try to find the review in DB using service role (bypasses RLS)
+    let dbReview = null;
+    try {
+      const { data: found } = await supabase
+        .from('reviews')
+        .select('*, products(name_en, name_kz, name_ru, price, images)')
+        .eq('product_id', review.product_id)
+        .eq('customer_name', review.customer_name)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+      if (found) dbReview = found;
+    } catch (e) {
+      // DB lookup failed — fall back to passed data
     }
 
-    const productName = review.products
-      ? (review.products.name_kz || review.products.name_ru || review.products.name_en || 'Product')
+    // Use DB data if available, otherwise use passed data
+    const reviewData = dbReview || review;
+    const productData = dbReview?.products || product || null;
+
+    const productName = productData
+      ? (productData.name_kz || productData.name_ru || productData.name_en || 'Product')
       : 'Unknown product';
     
-    const productPrice = review.products ? parseFloat(review.products.price).toFixed(2) : '';
-    const productImage = review.products?.images?.[0] || '';
-
+    const productPrice = productData ? parseFloat(productData.price).toFixed(2) : '';
+    const productImage = productData?.images?.[0] || '';
     const result = await sendMail({
       to: 'serjanyelemesov@gmail.com',
       subject: `Жаңа пікір: ${productName}`,
@@ -72,8 +81,8 @@ module.exports = async function handler(req, res) {
                   Бағалау:
                 </p>
                 <p style="margin: 0; font-size: 2rem; color: #FFC107; display:flex;gap:4px;">
-                  ${Array(review.rating).fill('<svg class="icon icon-md" style="color:#FFC107"><use href="#icon-star"/></svg>').join('')}
-                  ${Array(5 - review.rating).fill('<svg class="icon icon-md" style="color:#ccc"><use href="#icon-star-outline"/></svg>').join('')}
+                  ${Array(reviewData.rating).fill('<svg class="icon icon-md" style="color:#FFC107"><use href="#icon-star"/></svg>').join('')}
+                  ${Array(5 - reviewData.rating).fill('<svg class="icon icon-md" style="color:#ccc"><use href="#icon-star-outline"/></svg>').join('')}
                 </p>
               </div>
 
@@ -82,24 +91,24 @@ module.exports = async function handler(req, res) {
                   <svg class="icon icon-sm" style="color:#0EA5E9"><use href="#icon-message"/></svg>
                   Пікір:
                 </p>
-                <p style="margin: 0; font-size: 1.1rem; color: #1F2937; line-height: 1.6;">${review.comment || 'No comment'}</p>
+                <p style="margin: 0; font-size: 1.1rem; color: #1F2937; line-height: 1.6;">${reviewData.comment || 'No comment'}</p>
               </div>
 
               <!-- Клиент ақпараты -->
               <div style="background: #F3F4F6; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
                 <p style="margin: 0.25rem 0; display:flex;align-items:center;gap:6px;">
                   <svg class="icon icon-xs" style="color:#666"><use href="#icon-user"/></svg>
-                  <strong>Клиент:</strong> ${review.customer_name || 'Anonymous'}
+                  <strong>Клиент:</strong> ${reviewData.customer_name || 'Anonymous'}
                 </p>
-                ${review.customer_email ? `<p style="margin: 0.25rem 0; display:flex;align-items:center;gap:6px;">
+                ${reviewData.customer_email ? `<p style="margin: 0.25rem 0; display:flex;align-items:center;gap:6px;">
                   <svg class="icon icon-xs" style="color:#666"><use href="#icon-mail"/></svg>
-                  <strong>Email:</strong> ${review.customer_email}
+                  <strong>Email:</strong> ${reviewData.customer_email}
                 </p>` : ''}
                 <p style="margin: 0.25rem 0; display:flex;align-items:center;gap:6px;">
                   <svg class="icon icon-xs" style="color:#666"><use href="#icon-clock"/></svg>
-                  <strong>Уақыты:</strong> ${new Date(review.created_at).toLocaleString('kk-KZ')}
+                  <strong>Уақыты:</strong> ${new Date(reviewData.created_at || Date.now()).toLocaleString('kk-KZ')}
                 </p>
-                ${review.verified ? `<p style="margin: 0.25rem 0; color: #059669; display:flex;align-items:center;gap:6px;">
+                ${reviewData.verified ? `<p style="margin: 0.25rem 0; color: #059669; display:flex;align-items:center;gap:6px;">
                   <svg class="icon icon-xs" style="color:#059669"><use href="#icon-check"/></svg>
                   <strong>Расталған сатып алушы</strong>
                 </p>` : ''}
@@ -121,14 +130,14 @@ module.exports = async function handler(req, res) {
               </div>
 
               <!-- Фото -->
-              ${review.images && review.images.length > 0 ? `
+              ${reviewData.images && reviewData.images.length > 0 ? `
                 <div style="margin-bottom: 1.5rem;">
                   <p style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: #666; display:flex;align-items:center;gap:6px;">
                     <svg class="icon icon-sm" style="color:#666"><use href="#icon-image"/></svg>
-                    Фото (${review.images.length}):
+                    Фото (${reviewData.images.length}):
                   </p>
                   <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                    ${review.images.map(url => `<img src="${url}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`).join('')}
+                    ${reviewData.images.map(url => `<img src="${url}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`).join('')}
                   </div>
                 </div>
               ` : ''}
