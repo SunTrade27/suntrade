@@ -77,7 +77,12 @@
 <section class="section">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
     <h2 class="section-title" style="margin-bottom:0;" data-i18n="testimonials_title">What Our Customers Say</h2>
-    <a href="/reviews.html" class="btn-sm btn-outline" data-i18n="view_all_reviews">Барлық пікірлер →</a>
+    <div style="display:flex;gap:0.5rem;align-items:center;">
+      <a href="/reviews.html" class="btn-sm btn-outline" data-i18n="view_all_reviews">Барлық пікірлер →</a>
+      <button id="admin-add-review-btn" onclick="openAdminReviewModal()" class="btn-sm btn-primary" style="display:none;background:#FF6B00;color:white;padding:6px 16px;border:none;border-radius:6px;cursor:pointer;font-weight:600;">
+        + Пікір қосу
+      </button>
+    </div>
   </div>
   <div class="reviews-carousel-wrapper">
     <button class="carousel-btn carousel-prev" onclick="scrollReviews(-1)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
@@ -87,6 +92,46 @@
     <button class="carousel-btn carousel-next" onclick="scrollReviews(1)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
   </div>
 </section>
+
+<!-- ADMIN REVIEW MODAL -->
+<div id="admin-review-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10000;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:16px;padding:2rem;max-width:500px;width:90%;max-height:90vh;overflow-y:auto;position:relative;">
+    <button onclick="closeAdminReviewModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.5rem;cursor:pointer;color:#666;">×</button>
+    <h3 style="margin-bottom:1.5rem;color:#1A1A2E;">Пікір қосу (Admin)</h3>
+    <form id="admin-review-form" onsubmit="submitAdminReview(event)">
+      <input type="hidden" id="admin-review-id" value="">
+      <div style="margin-bottom:1rem;">
+        <label style="display:block;margin-bottom:0.5rem;font-weight:600;color:#374151;">Клиент аты</label>
+        <input type="text" id="admin-review-name" required style="width:100%;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:0.95rem;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block;margin-bottom:0.5rem;font-weight:600;color:#374151;">Тауар</label>
+        <select id="admin-review-product" required style="width:100%;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:0.95rem;">
+          <option value="">Тауарды таңдаңыз</option>
+        </select>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block;margin-bottom:0.5rem;font-weight:600;color:#374151;">Баға (1-5)</label>
+        <div id="admin-review-stars" style="display:flex;gap:4px;">
+          <span onclick="setAdminRating(1)" style="font-size:1.5rem;cursor:pointer;color:#FF6B00;">★</span>
+          <span onclick="setAdminRating(2)" style="font-size:1.5rem;cursor:pointer;color:#FF6B00;">★</span>
+          <span onclick="setAdminRating(3)" style="font-size:1.5rem;cursor:pointer;color:#FF6B00;">★</span>
+          <span onclick="setAdminRating(4)" style="font-size:1.5rem;cursor:pointer;color:#FF6B00;">★</span>
+          <span onclick="setAdminRating(5)" style="font-size:1.5rem;cursor:pointer;color:#D1D5DB;">★</span>
+        </div>
+        <input type="hidden" id="admin-review-rating" value="4">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="display:block;margin-bottom:0.5rem;font-weight:600;color:#374151;">Пікір</label>
+        <textarea id="admin-review-comment" rows="3" required style="width:100%;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:0.95rem;resize:vertical;"></textarea>
+      </div>
+      <div style="display:flex;gap:0.75rem;">
+        <button type="submit" style="flex:1;background:#FF6B00;color:white;padding:12px;border:none;border-radius:8px;font-weight:600;cursor:pointer;">Жіберу</button>
+        <button type="button" onclick="closeAdminReviewModal()" style="flex:1;background:#F3F4F6;color:#374151;padding:12px;border:none;border-radius:8px;font-weight:600;cursor:pointer;">Бас тарту</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -300,6 +345,9 @@
       const reviews = await getApprovedReviews(20);
       cachedReviews = reviews;
       renderHomepageReviews();
+
+      // Check admin access for review button
+      checkAdminAccess();
     }, 500);
   });
 
@@ -319,6 +367,99 @@
       </a>
     `;
   }
+
+  // Admin Review Functions
+  let adminReviewRating = 4;
+  let allProductsForReview = [];
+
+  function setAdminRating(rating) {
+    adminReviewRating = rating;
+    document.getElementById('admin-review-rating').value = rating;
+    const stars = document.querySelectorAll('#admin-review-stars span');
+    stars.forEach((star, i) => {
+      star.style.color = i < rating ? '#FF6B00' : '#D1D5DB';
+    });
+  }
+
+  async function openAdminReviewModal() {
+    // Check admin FIRST before showing modal
+    const admin = await isUserAdmin();
+    if (!admin) {
+      alert('Тек әкімшілер ғана пікір қоса алады!');
+      return;
+    }
+    
+    const modal = document.getElementById('admin-review-modal');
+    modal.style.display = 'flex';
+    
+    // Load products for dropdown
+    if (allProductsForReview.length === 0) {
+      allProductsForReview = await getProducts({});
+    }
+    
+    const select = document.getElementById('admin-review-product');
+    select.innerHTML = '<option value="">Тауарды таңдаңыз</option>' + 
+      allProductsForReview.map(p => {
+        const name = p['name_' + currentLang] || p.name_en || 'Product';
+        return `<option value="${p.id}">${name}</option>`;
+      }).join('');
+  }
+
+  function closeAdminReviewModal() {
+    document.getElementById('admin-review-modal').style.display = 'none';
+    document.getElementById('admin-review-form').reset();
+    setAdminRating(4);
+  }
+
+  async function submitAdminReview(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('admin-review-name').value.trim();
+    const productId = document.getElementById('admin-review-product').value;
+    const rating = parseInt(document.getElementById('admin-review-rating').value);
+    const comment = document.getElementById('admin-review-comment').value.trim();
+    
+    if (!name || !productId || !comment) {
+      alert('Барлық өрістерді толтырыңыз!');
+      return;
+    }
+    
+    try {
+      const review = {
+        customer_name: name,
+        product_id: productId,
+        rating: rating,
+        comment: comment,
+        approved: true
+      };
+      
+      await submitReview(review);
+      closeAdminReviewModal();
+      alert('Пікір сәтті қосылды!');
+      
+      // Refresh reviews
+      const reviews = await getApprovedReviews(20);
+      cachedReviews = reviews;
+      renderHomepageReviews();
+    } catch (err) {
+      alert('Қате: ' + err.message);
+    }
+  }
+
+  // Check admin status and show/hide admin button
+  async function checkAdminAccess() {
+    try {
+      const admin = await isUserAdmin();
+      const btn = document.getElementById('admin-add-review-btn');
+      if (btn) {
+        btn.style.display = admin ? 'inline-block' : 'none';
+      }
+    } catch (err) {
+      console.log('Not admin');
+    }
+  }
+
+  // Admin check is now called after sb init in DOMContentLoaded
 </script>
 <script src="/js/chat-widget.js"></script>
 <script src="/js/user-menu.js"></script>

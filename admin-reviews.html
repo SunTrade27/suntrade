@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Reviews - SunTrade</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/icons.js"></script>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-screen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:1rem;">
+  <div class="logo">Sun<span>Trade</span></div>
+  <p style="color:var(--text-light);">Loading...</p>
+</div>
+
+<!-- LOGIN PAGE -->
+<div id="login-page" class="login-page" style="display:none;">
+  <div class="login-card">
+    <div class="logo">Sun<span>Trade</span></div>
+    <p>Admin Login</p>
+    <form onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="login-email" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" required>
+      </div>
+      <button type="submit" class="btn-pay">Login</button>
+      <p id="login-error" style="color:var(--danger);margin-top:1rem;display:none;"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel" style="display:none;max-width:1200px;margin:0 auto;padding:1rem;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;">
+    <h1>Пікірлерді басқару</h1>
+    <div style="display:flex;gap:0.5rem;">
+      <a href="/admin.html" class="btn-sm btn-outline">← Артқа</a>
+      <button onclick="handleLogout()" class="btn-sm btn-outline">Шығу</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem;">
+    <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:1.5rem;text-align:center;">
+      <div style="font-size:2rem;font-weight:700;color:var(--primary);" id="stat-total-reviews">0</div>
+      <div style="color:var(--text-light);">Барлық пікірлер</div>
+    </div>
+    <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:1.5rem;text-align:center;">
+      <div style="font-size:2rem;font-weight:700;color:#22C55E;" id="stat-approved-reviews">0</div>
+      <div style="color:var(--text-light);">Мақұлданған</div>
+    </div>
+    <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:1.5rem;text-align:center;">
+      <div style="font-size:2rem;font-weight:700;color:#F59E0B;" id="stat-pending-reviews">0</div>
+      <div style="color:var(--text-light);">Күтуде</div>
+    </div>
+  </div>
+
+  <!-- Filter -->
+  <div style="margin-bottom:1.5rem;display:flex;gap:0.5rem;">
+    <button onclick="filterReviews('all')" class="btn-sm btn-outline filter-btn active">Барлығы</button>
+    <button onclick="filterReviews('pending')" class="btn-sm btn-outline filter-btn">Күтуде</button>
+    <button onclick="filterReviews('approved')" class="btn-sm btn-outline filter-btn">Мақұлданған</button>
+    <button onclick="filterReviews('with_product')" class="btn-sm btn-outline filter-btn">Тауармен</button>
+  </div>
+
+  <!-- Reviews Grid -->
+  <div id="reviews-container" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:1rem;"></div>
+</div>
+
+<script src="/js/supabase-client.js"></script>
+<script>
+  let allReviews = [];
+  let currentFilter = 'all';
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    let attempts = 0;
+    async function tryInit() {
+      attempts++;
+      if (!sb && attempts < 10) {
+        setTimeout(tryInit, 300);
+        return;
+      }
+      if (!sb) {
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('login-page').style.display = 'flex';
+        return;
+      }
+      try {
+        const session = await getAdminSession();
+        document.getElementById('loading-screen').style.display = 'none';
+        if (session) {
+          const admin = await isUserAdmin();
+          if (admin) {
+            showAdminPanel();
+          } else {
+            document.getElementById('login-page').style.display = 'flex';
+            document.getElementById('login-error').textContent = 'Рұқсат жоқ';
+            document.getElementById('login-error').style.display = 'block';
+          }
+        } else {
+          document.getElementById('login-page').style.display = 'flex';
+        }
+      } catch (err) {
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('login-page').style.display = 'flex';
+      }
+    }
+    tryInit();
+  });
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    try {
+      await adminLogin(
+        document.getElementById('login-email').value,
+        document.getElementById('login-password').value
+      );
+      const admin = await isUserAdmin();
+      if (admin) {
+        showAdminPanel();
+      } else {
+        await adminLogout();
+        document.getElementById('login-error').textContent = 'Рұқсат жоқ';
+        document.getElementById('login-error').style.display = 'block';
+      }
+    } catch (err) {
+      document.getElementById('login-error').textContent = err.message;
+      document.getElementById('login-error').style.display = 'block';
+    }
+  }
+
+  async function handleLogout() {
+    await adminLogout();
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('login-page').style.display = 'flex';
+  }
+
+  async function showAdminPanel() {
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    await loadAllReviews();
+  }
+
+  async function loadAllReviews() {
+    allReviews = await adminGetReviews();
+    updateStats();
+    renderReviews();
+  }
+
+  function updateStats() {
+    const total = allReviews.length;
+    const approved = allReviews.filter(r => r.approved).length;
+    const pending = allReviews.filter(r => !r.approved).length;
+    
+    document.getElementById('stat-total-reviews').textContent = total;
+    document.getElementById('stat-approved-reviews').textContent = approved;
+    document.getElementById('stat-pending-reviews').textContent = pending;
+  }
+
+  function filterReviews(filter) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    renderReviews();
+  }
+
+  function renderReviews() {
+    const container = document.getElementById('reviews-container');
+    let filtered = allReviews;
+    
+    if (currentFilter === 'pending') filtered = allReviews.filter(r => !r.approved);
+    if (currentFilter === 'approved') filtered = allReviews.filter(r => r.approved);
+    if (currentFilter === 'with_product') filtered = allReviews.filter(r => r.product_id);
+    
+    if (filtered.length === 0) {
+      container.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--text-light);">Пікірлер табылмады</p>';
+      return;
+    }
+
+    container.innerHTML = filtered.map(r => {
+      const productName = r.products ? r.products.name_en || 'Product' : 'N/A';
+      const productImg = r.products?.images?.[0] || '';
+      const safeName = escapeHtml(r.customer_name);
+      const safeComment = escapeHtml(r.comment || '');
+      const isCopied = copiedReviews.has(r.id);
+      
+      return `
+        <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:1.5rem;position:relative;">
+          ${!r.approved ? '<span style="position:absolute;top:12px;right:12px;background:#FEF3C7;color:#92400E;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:600;">Күтуде</span>' : ''}
+          
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <div style="width:48px;height:48px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.2rem;">${safeName.charAt(0).toUpperCase()}</div>
+            <div>
+              <div style="font-weight:600;">${safeName}</div>
+              <div style="color:var(--text-light);font-size:0.85rem;">${r.customer_email || ''}</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            ${productImg ? `<img src="${productImg}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;">` : ''}
+            <div>
+              <div style="font-weight:500;font-size:0.9rem;">${escapeHtml(productName)}</div>
+              <div style="color:var(--primary);">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+            </div>
+          </div>
+
+          <p style="color:var(--text-light);font-style:italic;margin-bottom:12px;">"${safeComment}"</p>
+
+          ${r.images && r.images.length ? `
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+              ${r.images.slice(0,3).map(img => `<img src="${img}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">`).join('')}
+            </div>
+          ` : ''}
+
+          <div style="font-size:0.8rem;color:var(--text-light);margin-bottom:12px;">
+            ${new Date(r.created_at).toLocaleString('ru-RU')}
+          </div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button onclick="copyReviewText('${r.id}')" style="flex:1;padding:8px;border:1px solid var(--border);border-radius:8px;background:white;cursor:pointer;font-size:0.85rem;${isCopied ? 'background:#D1FAE5;border-color:#22C55E;' : ''}">
+              ${isCopied ? '✓ Көшірілді!' : '📋 Көшіру'}
+            </button>
+            <button onclick="sendReviewToCustomer('${r.id}')" style="flex:1;padding:8px;border:1px solid var(--primary);border-radius:8px;background:var(--primary);color:white;cursor:pointer;font-size:0.85rem;">
+              📧 Клиентке жіберу
+            </button>
+            ${!r.approved ? `
+              <button onclick="approveReview('${r.id}')" style="padding:8px 12px;border:none;border-radius:8px;background:#22C55E;color:white;cursor:pointer;font-size:0.85rem;">
+                ✓ Мақұлдау
+              </button>
+            ` : ''}
+            <button onclick="deleteReview('${r.id}')" style="padding:8px 12px;border:none;border-radius:8px;background:#EF4444;color:white;cursor:pointer;font-size:0.85rem;">
+              🗑️
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  const copiedReviews = new Set();
+
+  function copyReviewText(reviewId) {
+    const review = allReviews.find(r => r.id === reviewId);
+    if (!review) return;
+
+    const productName = review.products ? review.products.name_en || 'Product' : 'Product';
+    const text = `"${review.comment}" - ${review.customer_name}, ${'★'.repeat(review.rating)} (${productName})`;
+    
+    navigator.clipboard.writeText(text).then(() => {
+      copiedReviews.add(reviewId);
+      renderReviews();
+      setTimeout(() => {
+        copiedReviews.delete(reviewId);
+        renderReviews();
+      }, 2000);
+    });
+  }
+
+  async function sendReviewToCustomer(reviewId) {
+    const review = allReviews.find(r => r.id === reviewId);
+    if (!review) return;
+
+    if (!review.customer_email) {
+      alert('Клиенттің email адресі жоқ!');
+      return;
+    }
+
+    const productName = review.products ? review.products.name_en || 'Product' : 'Product';
+    const productImg = review.products?.images?.[0] || '';
+    
+    const subject = encodeURIComponent(`Сіздің пікіріңіз: ${productName}`);
+    const body = encodeURIComponent(`Сәлеметсіз бе!
+
+Сіздің "${productName}" тауарына қалдырған пікіріңіз расталды:
+
+"${review.comment}"
+${'★'.repeat(review.rating)}
+
+Рахмет! SunTrade командасы.`);
+    
+    window.open(`mailto:${review.customer_email}?subject=${subject}&body=${body}`);
+  }
+
+  async function approveReview(id) {
+    try {
+      await adminApproveReview(id);
+      await loadAllReviews();
+    } catch (err) {
+      alert('Қате: ' + err.message);
+    }
+  }
+
+  async function deleteReview(id) {
+    if (!confirm('Пікірді жою керек пе?')) return;
+    try {
+      await adminDeleteReview(id);
+      await loadAllReviews();
+    } catch (err) {
+      alert('Қате: ' + err.message);
+    }
+  }
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+</script>
+</body>
+</html>
