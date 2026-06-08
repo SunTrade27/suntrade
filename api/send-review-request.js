@@ -64,10 +64,11 @@ module.exports = async function handler(req, res) {
       ? (order.products.name_en || order.products.name_kz || order.products.name_ru || 'your product')
       : 'your product';
 
+    const productPrice = order.products ? parseFloat(order.products.price).toFixed(2) : '';
     const productImage = order.products?.images?.[0] || '';
 
     const reviewUrl = order.product_id
-      ? `${SITE_URL}/product.html?id=${order.product_id}`
+      ? `${SITE_URL}/review.html?product=${order.product_id}&order=${orderId}`
       : `${SITE_URL}`;
 
     // Send email via Gmail SMTP (nodemailer)
@@ -90,7 +91,7 @@ module.exports = async function handler(req, res) {
               <h2 style="color: #1A1A2E; margin-bottom: 1rem;">How was your order?</h2>
               <p style="color: #6B7280; line-height: 1.6;">
                 Hi ${order.customer_name || 'there'},<br><br>
-                Your order of <strong>${productName}</strong> has been delivered! We hope you love it.
+                Your order of <strong>${productName}</strong>${productPrice ? ` (€${productPrice})` : ''} has been delivered! We hope you love it.
               </p>
               ${productImage ? `<div style="text-align: center; margin: 1.5rem 0;"><img src="${productImage}" style="width: 200px; height: 200px; object-fit: cover; border-radius: 12px;"></div>` : ''}
               <p style="color: #6B7280; line-height: 1.6; margin-bottom: 1.5rem;">

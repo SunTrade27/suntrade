@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leave a Review - SunTrade</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☀️</text></svg>">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .review-page {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    .product-review-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+    .product-review-card img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: var(--radius);
+    }
+    .product-review-info h2 {
+      margin: 0 0 0.5rem;
+      font-size: 1.25rem;
+    }
+    .product-review-info .order-info {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    .verified-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #D1FAE5;
+      color: #065F46;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+    .review-form-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+    }
+    .star-rating {
+      display: flex;
+      gap: 8px;
+      font-size: 2.5rem;
+      cursor: pointer;
+    }
+    .star-rating span {
+      color: #D1D5DB;
+      transition: color 0.2s;
+    }
+    .star-rating span.active,
+    .star-rating span:hover {
+      color: #F59E0B;
+    }
+    .review-images-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .review-images-preview img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+    }
+    .review-images-preview .remove-btn {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 24px;
+      height: 24px;
+      background: #EF4444;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+    }
+    .review-images-preview .image-wrapper {
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="/" class="logo">
+        <span class="logo-icon">☀️</span>
+        <span>SunTrade</span>
+      </a>
+      <div id="nav-links" class="nav-links">
+        <a href="/" data-i18n="nav_home">Home</a>
+        <a href="/catalog.html" data-i18n="nav_catalog">Catalog</a>
+        <a href="/reviews.html" data-i18n="nav_reviews">Reviews</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="review-page">
+    <h1 style="text-align: center; margin-bottom: 2rem;">Leave a Review</h1>
+
+    <!-- Product Info Card -->
+    <div class="product-review-card" id="product-card">
+      <div class="loading-spinner"><div class="spinner"></div></div>
+    </div>
+
+    <!-- Review Form -->
+    <div class="review-form-card">
+      <form id="review-form" onsubmit="submitReview(event)">
+        <div class="form-group">
+          <label>Your Name *</label>
+          <input type="text" id="review-name" required placeholder="Your name">
+        </div>
+
+        <div class="form-group">
+          <label>Your Email</label>
+          <input type="email" id="review-email" placeholder="your@email.com">
+          <small style="color: var(--text-secondary);">Required for verified purchase badge</small>
+        </div>
+
+        <div class="form-group">
+          <label>Rating *</label>
+          <div class="star-rating" id="star-rating">
+            <span data-star="1" onclick="setRating(1)">☆</span>
+            <span data-star="2" onclick="setRating(2)">☆</span>
+            <span data-star="3" onclick="setRating(3)">☆</span>
+            <span data-star="4" onclick="setRating(4)">☆</span>
+            <span data-star="5" onclick="setRating(5)">☆</span>
+          </div>
+          <input type="hidden" id="review-rating" value="0">
+        </div>
+
+        <div class="form-group">
+          <label>Your Review</label>
+          <textarea id="review-comment" rows="4" placeholder="Share your experience with this product..." style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; resize: vertical;"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Add Photos (optional)</label>
+          <input type="file" id="review-image-input" accept="image/*" multiple onchange="handleImageUpload(event)">
+          <div class="review-images-preview" id="image-preview"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem;">
+          Submit Review
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/supabase-client.js"></script>
+  <script>
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('product');
+    const orderId = urlParams.get('order');
+
+    let selectedRating = 0;
+    let reviewImageUrls = [];
+    let currentProduct = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadProductInfo();
+    });
+
+    async function loadProductInfo() {
+      if (!productId) {
+        document.getElementById('product-card').innerHTML = '<p>Product not found</p>';
+        return;
+      }
+
+      try {
+        const product = await getProduct(productId);
+        if (!product) {
+          document.getElementById('product-card').innerHTML = '<p>Product not found</p>';
+          return;
+        }
+        currentProduct = product;
+
+        const productName = product.name_en || product.name_kz || product.name_ru || 'Product';
+        const productImage = product.images && product.images[0] ? product.images[0] : '';
+
+        let html = '';
+        if (productImage) {
+          html += `<img src="${productImage}" alt="${productName}">`;
+        }
+        html += `
+          <div class="product-review-info">
+            <h2>${productName}</h2>
+            <p class="order-info">€${parseFloat(product.price).toFixed(2)}</p>
+            ${orderId ? '<div class="verified-badge">✓ Verified Purchase</div>' : ''}
+          </div>
+        `;
+
+        document.getElementById('product-card').innerHTML = html;
+
+        // If there's an order, try to get customer email for verified badge
+        if (orderId && window.sb) {
+          try {
+            const { data: order } = await window.sb.from('orders')
+              .select('customer_email, customer_name')
+              .eq('id', orderId)
+              .single();
+
+            if (order) {
+              if (order.customer_email) {
+                document.getElementById('review-email').value = order.customer_email;
+              }
+              if (order.customer_name) {
+                document.getElementById('review-name').value = order.customer_name;
+              }
+            }
+          } catch (e) { console.error('Order fetch error:', e); }
+        }
+      } catch (err) {
+        console.error('Error loading product:', err);
+        document.getElementById('product-card').innerHTML = '<p>Error loading product</p>';
+      }
+    }
+
+    function setRating(rating) {
+      selectedRating = rating;
+      document.getElementById('review-rating').value = rating;
+
+      const stars = document.querySelectorAll('#star-rating span');
+      stars.forEach((star, index) => {
+        star.classList.toggle('active', index < rating);
+        star.textContent = index < rating ? '★' : '☆';
+      });
+    }
+
+    async function handleImageUpload(e) {
+      const files = Array.from(e.target.files);
+      if (!files.length) return;
+
+      for (const file of files) {
+        if (file.size > 5 * 1024 * 1024) {
+          alert('Image too large. Max 5MB.');
+          continue;
+        }
+
+        try {
+          const url = await uploadReviewImage(file);
+          reviewImageUrls.push(url);
+        } catch (err) {
+          console.error('Upload error:', err);
+          alert('Failed to upload image: ' + err.message);
+        }
+      }
+
+      updateImagePreview();
+    }
+
+    function updateImagePreview() {
+      const container = document.getElementById('image-preview');
+      container.innerHTML = reviewImageUrls.map((url, i) => `
+        <div class="image-wrapper">
+          <img src="${url}" alt="Review image">
+          <button type="button" class="remove-btn" onclick="removeImage(${i})">×</button>
+        </div>
+      `).join('');
+    }
+
+    function removeImage(index) {
+      reviewImageUrls.splice(index, 1);
+      updateImagePreview();
+    }
+
+    async function submitReview(e) {
+      e.preventDefault();
+
+      if (selectedRating === 0) {
+        alert('Please select a rating');
+        return;
+      }
+
+      if (!currentProduct) {
+        alert('Product not loaded');
+        return;
+      }
+
+      const review = {
+        product_id: currentProduct.id,
+        customer_name: document.getElementById('review-name').value,
+        customer_email: document.getElementById('review-email').value || null,
+        rating: selectedRating,
+        comment: document.getElementById('review-comment').value || null,
+        images: reviewImageUrls,
+        approved: false,
+        verified: !!orderId
+      };
+
+      if (orderId) {
+        review.order_id = orderId;
+      }
+
+      try {
+        await submitReview(review);
+        document.getElementById('review-form').reset();
+        setRating(0);
+        reviewImageUrls = [];
+        updateImagePreview();
+
+        // Show success and redirect
+        alert('Thank you! Your review has been submitted and will appear after approval.');
+        window.location.href = '/reviews.html';
+      } catch (err) {
+        alert('Error submitting review: ' + err.message);
+      }
+    }
+  </script>
+</body>
+</html>
