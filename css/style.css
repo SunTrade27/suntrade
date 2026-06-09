@@ -814,6 +814,107 @@ input, textarea, select { font-family: inherit; }
   font-size: 0.85rem;
 }
 
+/* ===== MOBILE REVIEWS WHEEL (Slot Machine Style) ===== */
+.mobile-reviews-wheel {
+  display: none;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--bg-white);
+  border: 1px solid rgba(255, 107, 0, 0.12);
+  touch-action: pan-y;
+  box-shadow: 0 2px 12px rgba(255, 107, 0, 0.06);
+}
+
+.mobile-reviews-wheel-track {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.mobile-reviews-wheel-track > div {
+  height: 133px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.mobile-reviews-wheel-track > div:last-child {
+  border-bottom: none;
+}
+
+/* Gradient overlays for slot-machine depth effect */
+.mobile-reviews-wheel::before,
+.mobile-reviews-wheel::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 48px;
+  z-index: 2;
+  pointer-events: none;
+}
+.mobile-reviews-wheel::before {
+  top: 0;
+  background: linear-gradient(180deg, var(--bg-white) 0%, transparent 100%);
+}
+.mobile-reviews-wheel::after {
+  bottom: 0;
+  background: linear-gradient(0deg, var(--bg-white) 0%, transparent 100%);
+}
+
+/* Wheel indicator dots */
+.wheel-indicators {
+  display: none;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+.wheel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: all 0.35s ease;
+  cursor: pointer;
+}
+.wheel-dot.active {
+  background: var(--primary);
+  width: 24px;
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .mobile-reviews-wheel {
+    display: block;
+    height: 400px;
+  }
+  .wheel-indicators {
+    display: flex;
+  }
+  .mobile-reviews-wheel-track > div {
+    height: 133px;
+    padding: 0.85rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-reviews-wheel {
+    height: 399px;
+    border-radius: 10px;
+  }
+  .mobile-reviews-wheel-track > div {
+    height: 133px;
+    padding: 0.75rem 0.85rem;
+  }
+}
+
 /* ===== WHATSAPP BUTTON ===== */
 
 /* ===== REVIEW CARDS ===== */

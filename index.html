@@ -91,6 +91,14 @@
     </div>
     <button class="carousel-btn carousel-next" onclick="scrollReviews(1)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
   </div>
+
+  <!-- Mobile Reviews Wheel (slot machine style, mobile only) -->
+  <div id="mobile-reviews-wheel" class="mobile-reviews-wheel">
+    <div id="mobile-reviews-track" class="mobile-reviews-wheel-track">
+      <!-- Loaded dynamically -->
+    </div>
+  </div>
+  <div id="mobile-wheel-indicators" class="wheel-indicators"></div>
 </section>
 
 <!-- ADMIN REVIEW MODAL -->
@@ -216,12 +224,179 @@
     }
   }
 
-  // Reviews carousel scroll
+  // Reviews carousel scroll (desktop)
   function scrollReviews(direction) {
     const carousel = document.getElementById('homepage-reviews');
     if (!carousel) return;
     const scrollAmount = 340;
     carousel.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+  }
+
+  // ===== Mobile Reviews Wheel (Slot Machine Style) =====
+  let wheelInterval = null;
+  let wheelCurrentPage = 0;
+  let wheelTotalPages = 0;
+  let wheelTouchStartY = 0;
+  let wheelTouchMoving = false;
+
+  function initMobileReviewsWheel() {
+    const wheel = document.getElementById('mobile-reviews-wheel');
+    if (!wheel || cachedReviews.length < 1) return;
+
+    const itemsPerPage = 3;
+    wheelTotalPages = Math.max(1, Math.ceil(cachedReviews.length / itemsPerPage));
+
+    renderMobileWheel();
+    initWheelTouch();
+    startWheelAutoRotate();
+  }
+
+  function renderMobileWheel() {
+    const track = document.getElementById('mobile-reviews-track');
+    const indicators = document.getElementById('mobile-wheel-indicators');
+    if (!track) return;
+
+    if (cachedReviews.length === 0) {
+      track.innerHTML = '<div style="height:133px;display:flex;align-items:center;justify-content:center;color:var(--text-light);font-size:0.9rem;">' + (typeof t === 'function' ? t('no_reviews_yet') : 'No reviews yet') + '</div>';
+      if (indicators) indicators.innerHTML = '';
+      return;
+    }
+
+    track.innerHTML = cachedReviews.map(r => {
+      const safeName = escHtml(r.customer_name);
+      return '<div>' +
+        '<div style="display:flex;align-items:center;gap:0.65rem;margin-bottom:0.4rem;">' +
+          '<div style="width:34px;height:34px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0;">' + safeName.charAt(0).toUpperCase() + '</div>' +
+          '<div style="flex:1;min-width:0;">' +
+            '<strong style="font-size:0.85rem;">' + safeName + '</strong>' +
+            (r.verified ? '<span style="background:#D1FAE5;color:#065F46;padding:1px 6px;border-radius:50px;font-size:0.62rem;font-weight:600;margin-left:4px;vertical-align:middle;">✓</span>' : '') +
+            '<div style="color:var(--primary);font-size:0.78rem;line-height:1.3;">' + '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating) + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<p style="color:var(--text-light);font-size:0.82rem;line-height:1.45;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">"' + escHtml(r.comment) + '"</p>' +
+      '</div>';
+    }).join('');
+
+    // Create indicator dots
+    if (indicators) {
+      if (wheelTotalPages <= 1) {
+        indicators.innerHTML = '';
+      } else {
+        indicators.innerHTML = Array.from({length: wheelTotalPages}, (_, i) =>
+          '<span class="wheel-dot ' + (i === 0 ? 'active' : '') + '" data-page="' + i + '"></span>'
+        ).join('');
+
+        // Click on dots to navigate
+        indicators.querySelectorAll('.wheel-dot').forEach(dot => {
+          dot.addEventListener('click', function() {
+            const page = parseInt(this.dataset.page);
+            if (!isNaN(page) && page !== wheelCurrentPage) {
+              wheelCurrentPage = page;
+              updateWheelPosition();
+              restartWheelAutoRotate();
+            }
+          });
+        });
+      }
+    }
+
+    wheelCurrentPage = 0;
+    updateWheelPosition();
+  }
+
+  function updateWheelPosition() {
+    const track = document.getElementById('mobile-reviews-track');
+    if (!track) return;
+
+    // Use children to get only DIRECT child divs (review cards), not nested ones
+    const cards = Array.from(track.children);
+    if (cards.length < 3) return;
+
+    // Get the height of one card (first card)
+    const cardHeight = cards[0].offsetHeight;
+    const offset = -wheelCurrentPage * 3 * cardHeight;
+    track.style.transform = 'translateY(' + offset + 'px)';
+
+    // Update indicators
+    document.querySelectorAll('.wheel-dot').forEach(function(dot) {
+      dot.classList.toggle('active', parseInt(dot.dataset.page) === wheelCurrentPage);
+    });
+  }
+
+  function startWheelAutoRotate() {
+    if (wheelInterval) clearInterval(wheelInterval);
+    if (wheelTotalPages <= 1) return;
+
+    wheelInterval = setInterval(function() {
+      wheelCurrentPage = (wheelCurrentPage + 1) % wheelTotalPages;
+      updateWheelPosition();
+    }, 4500);
+  }
+
+  function restartWheelAutoRotate() {
+    if (wheelInterval) clearInterval(wheelInterval);
+    startWheelAutoRotate();
+  }
+
+  let wheelTouchInitialized = false;
+
+  function initWheelTouch() {
+    const wheel = document.getElementById('mobile-reviews-wheel');
+    if (!wheel || wheelTouchInitialized) return;
+    wheelTouchInitialized = true;
+
+    wheel.addEventListener('touchstart', function(e) {
+      wheelTouchStartY = e.touches[0].clientY;
+      wheelTouchMoving = false;
+      if (wheelInterval) clearInterval(wheelInterval);
+    }, { passive: true });
+
+    wheel.addEventListener('touchmove', function() {
+      wheelTouchMoving = true;
+    }, { passive: true });
+
+    wheel.addEventListener('touchend', function(e) {
+      if (!wheelTouchMoving || wheelTotalPages <= 1) {
+        if (!wheelTouchMoving) restartWheelAutoRotate();
+        return;
+      }
+      const diff = e.changedTouches[0].clientY - wheelTouchStartY;
+      if (Math.abs(diff) > 40) {
+        if (diff > 0) {
+          // Swipe down - previous page
+          wheelCurrentPage = (wheelCurrentPage - 1 + wheelTotalPages) % wheelTotalPages;
+        } else {
+          // Swipe up - next page
+          wheelCurrentPage = (wheelCurrentPage + 1) % wheelTotalPages;
+        }
+        updateWheelPosition();
+      }
+      restartWheelAutoRotate();
+    }, { passive: true });
+
+    // Also handle mouse wheel for desktop preview
+    wheel.addEventListener('wheel', function(e) {
+      if (wheelTotalPages <= 1) return;
+      e.preventDefault();
+      if (wheelInterval) clearInterval(wheelInterval);
+
+      if (e.deltaY > 0) {
+        wheelCurrentPage = (wheelCurrentPage + 1) % wheelTotalPages;
+      } else {
+        wheelCurrentPage = (wheelCurrentPage - 1 + wheelTotalPages) % wheelTotalPages;
+      }
+      updateWheelPosition();
+      restartWheelAutoRotate();
+    }, { passive: false });
+
+    // Handle resize to recalculate position
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function() {
+        updateWheelPosition();
+      }, 200);
+    });
   }
 
   // Category icon mapping
@@ -330,6 +505,7 @@
     renderCategories();
     renderFeaturedProducts();
     renderHomepageReviews();
+    initMobileReviewsWheel();
     const input = document.getElementById('hero-search-input');
     if (input && input.value.trim().length >= 2 && typeof doHeroSearch === 'function') doHeroSearch();
   });
@@ -356,6 +532,9 @@
       const reviews = await getApprovedReviews(20);
       cachedReviews = reviews;
       renderHomepageReviews();
+
+      // Mobile reviews wheel
+      initMobileReviewsWheel();
 
       // Check admin access for review button
       checkAdminAccess();
