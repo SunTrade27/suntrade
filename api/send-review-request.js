@@ -34,10 +34,10 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'orderId required' });
     }
 
-    // Get order details
+    // Get order details with order_items
     const { data: order, error: orderError } = await supabase
       .from('orders')
-      .select('*, products(name_en, name_kz, name_ru, images)')
+      .select('*, order_items(*)')
       .eq('id', orderId)
       .single();
 
@@ -60,20 +60,43 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ success: true, message: 'Review request already sent' });
     }
 
-    const productName = order.products
-      ? (order.products.name_en || order.products.name_kz || order.products.name_ru || 'your product')
-      : 'your product';
+    // Get product_id from order_items (first item) or from order.product_id
+    const firstItem = order.order_items && order.order_items[0];
+    const productId = firstItem ? firstItem.product_id : (order.product_id || null);
 
-    const productPrice = order.products ? parseFloat(order.products.price).toFixed(2) : '';
-    const productImage = order.products?.images?.[0] || '';
+    // Fetch product details
+    let productName = 'your product';
+    let productPrice = '';
+    let productImage = '';
 
-    const reviewUrl = order.product_id
-      ? `${SITE_URL}/review.html?product=${order.product_id}&order=${orderId}`
+    if (firstItem) {
+      productName = firstItem.product_name || 'your product';
+      productImage = firstItem.product_image || '';
+      productPrice = firstItem.unit_price ? parseFloat(firstItem.unit_price).toFixed(2) : '';
+    }
+
+    // Try to get more product details from products table
+    if (productId) {
+      const { data: product } = await supabase
+        .from('products')
+        .select('name_en, name_kz, name_ru, images, price')
+        .eq('id', productId)
+        .single();
+
+      if (product) {
+        productName = product.name_en || product.name_kz || product.name_ru || productName;
+        productImage = (product.images && product.images[0]) || productImage;
+        productPrice = product.price ? parseFloat(product.price).toFixed(2) : productPrice;
+      }
+    }
+
+    const reviewUrl = productId
+      ? `${SITE_URL}/review.html?product=${productId}&order=${orderId}`
       : `${SITE_URL}`;
 
     // Product page link
-    const productUrl = order.product_id
-      ? `${SITE_URL}/product.html?id=${order.product_id}`
+    const productUrl = productId
+      ? `${SITE_URL}/product.html?id=${productId}`
       : `${SITE_URL}`;
 
     // Send email via Gmail SMTP (nodemailer)

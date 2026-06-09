@@ -434,7 +434,7 @@
                   </div>
                   <div style="display:flex;gap:0.5rem;flex-shrink:0;">
                     ${o.status === 'delivered' ? `
-                      <button onclick="sendAdminReviewRequest('${o.id}', '${escHtml(o.customer_email || '')}')" style="padding:8px 16px;background:#FF6B00;color:white;border:none;border-radius:8px;font-weight:600;font-size:0.8rem;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#E05E00'" onmouseout="this.style.background='#FF6B00'">📧 Send Review</button>
+                      <button onclick="sendAdminReviewRequest('${o.id}', '${escHtml(o.customer_email || '')}', '${productId}')" style="padding:8px 16px;background:#FF6B00;color:white;border:none;border-radius:8px;font-weight:600;font-size:0.8rem;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#E05E00'" onmouseout="this.style.background='#FF6B00'">📧 Send Review</button>
                     ` : `
                       <span style="padding:8px 12px;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.3);border-radius:8px;font-size:0.75rem;">⏳ ${o.status === 'paid' ? 'Ақы төленді' : o.status === 'shipped' ? 'Жолда' : 'Күтілуде'}</span>
                     `}
@@ -452,7 +452,7 @@
     }
   }
 
-  async function sendAdminReviewRequest(orderId, customerEmail) {
+  async function sendAdminReviewRequest(orderId, customerEmail, productId) {
     const btn = event.target;
     const originalText = btn.textContent;
     btn.textContent = '⏳ Sending...';
@@ -463,7 +463,7 @@
       const resp = await fetch('/api/send-review-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId })
+        body: JSON.stringify({ orderId, productId })
       });
       const result = await resp.json();
       if (result.success) {

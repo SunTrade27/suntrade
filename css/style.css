@@ -276,7 +276,7 @@ input, textarea, select { font-family: inherit; }
   transition: background 0.2s;
 }
 .hero-search-item:hover { background: var(--bg-light); }
-.hero-search-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
+.hero-search-item img { width: 50px; height: 50px; object-fit: cover; object-position: center; border-radius: 8px; }
 @media (max-width: 600px) {
   .hero-search { border-radius: 50px; padding: 0.4rem 0.4rem 0.4rem 1rem; }
   .hero-search input { width: 100%; }
@@ -352,7 +352,7 @@ input, textarea, select { font-family: inherit; }
 
   /* Transform carousel into vertical combination-lock wheel on mobile */
   .reviews-carousel-wrapper {
-    height: 400px;
+    height: 480px;
     overflow: hidden;
     border: 1px solid rgba(255, 107, 0, 0.12);
     border-radius: var(--radius);
@@ -373,7 +373,7 @@ input, textarea, select { font-family: inherit; }
     min-width: 100% !important;
     max-width: 100% !important;
     scroll-snap-align: none;
-    height: 133px;
+    height: 160px;
     padding: 0.85rem 1rem !important;
     display: flex;
     flex-direction: column;
@@ -385,9 +385,21 @@ input, textarea, select { font-family: inherit; }
   .reviews-carousel > div:last-child {
     border-bottom: none;
   }
-  /* Hide product links and images on mobile for compact cards */
-  .reviews-carousel > div a,
-  .reviews-carousel > div img {
+  /* Mobile - show product links and images in review cards (keep them compact) */
+  .reviews-carousel > div a {
+    display: flex !important;
+    margin-bottom: 0.5rem !important;
+    font-size: 0.75rem;
+  }
+  .reviews-carousel > div a img {
+    display: block !important;
+    width: 28px !important;
+    height: 28px !important;
+  }
+  .reviews-carousel > div a .pd-arrow {
+    display: inline-block !important;
+  }
+  .reviews-carousel > div img:not(a img) {
     display: none;
   }
   /* Gradient overlays for depth effect */
@@ -484,8 +496,10 @@ input, textarea, select { font-family: inherit; }
 .product-card-img {
   width: 100%;
   height: 260px;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   background: var(--bg);
+  padding: 8px;
 }
 .product-card-body {
   padding: 1rem;
@@ -553,6 +567,7 @@ input, textarea, select { font-family: inherit; }
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   cursor: zoom-in;
 }
 .gallery-thumbs {
@@ -577,6 +592,7 @@ input, textarea, select { font-family: inherit; }
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
 }
 .product-info h1 {
   font-size: 2rem;
@@ -706,6 +722,7 @@ input, textarea, select { font-family: inherit; }
   width: 100px;
   height: 100px;
   object-fit: cover;
+  object-position: center;
   border-radius: var(--radius-sm);
   flex-shrink: 0;
 }
@@ -942,6 +959,7 @@ input, textarea, select { font-family: inherit; }
 }
 .review-card-images img {
   width: 80px; height: 80px; object-fit: cover;
+  object-position: center;
   border-radius: 8px; cursor: pointer;
   border: 1px solid var(--border);
   transition: transform 0.2s;

@@ -43,8 +43,22 @@ async function sendReviewRequestEmail(order, product) {
 
   const productName = product?.name_en || product?.name_kz || product?.name_ru || 'your product';
   const productImage = product?.images?.[0] || '';
-  const reviewUrl = order.product_id
-    ? `${SITE_URL}/product.html?id=${order.product_id}`
+
+  // Get product_id from order_items or from order.product_id
+  let productId = order.product_id || null;
+  if (!productId) {
+    const { data: items } = await supabase
+      .from('order_items')
+      .select('product_id')
+      .eq('order_id', order.id)
+      .limit(1);
+    if (items && items.length > 0 && items[0].product_id) {
+      productId = items[0].product_id;
+    }
+  }
+
+  const reviewUrl = productId
+    ? `${SITE_URL}/review.html?product=${productId}&order=${order.id}`
     : SITE_URL;
 
   try {
