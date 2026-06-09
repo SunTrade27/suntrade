@@ -312,5 +312,12 @@
   "loading_text": "Carregando...",
   "cart_clear": "Limpar carrinho",
   "cart_clear_confirm": "Limpar todos os itens do carrinho?",
-  "already_in_cart": "Já no carrinho"
+  "already_in_cart": "Já no carrinho",
+  "no_description": "Nenhuma descrição disponível.",
+  "no_reviews_yet": "Ainda sem avaliações.",
+  "be_first_to_review": "Seja o primeiro a avaliar!",
+  "based_on_reviews": "Baseado em {count} avaliação(ões)",
+  "thank_you_for_order": "Obrigado pelo seu pedido.",
+  "product_not_found": "Produto não encontrado",
+  "back_to_catalog": "Voltar ao catálogo"
 }

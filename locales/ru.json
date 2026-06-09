@@ -355,5 +355,12 @@
   "loading_text": "Загрузка...",
   "cart_clear": "Очистить корзину",
   "cart_clear_confirm": "Очистить все товары из корзины?",
-  "already_in_cart": "Уже в корзине"
+  "already_in_cart": "Уже в корзине",
+  "no_description": "Описание недоступно.",
+  "no_reviews_yet": "Отзывов пока нет.",
+  "be_first_to_review": "Будьте первым, кто оставит отзыв!",
+  "based_on_reviews": "На основе {count} отзыва(ов)",
+  "thank_you_for_order": "Спасибо за ваш заказ.",
+  "product_not_found": "Товар не найден",
+  "back_to_catalog": "Назад в каталог"
 }

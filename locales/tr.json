@@ -312,5 +312,12 @@
   "loading_text": "Yükleniyor...",
   "cart_clear": "Sepeti temizle",
   "cart_clear_confirm": "Sepetteki tüm ürünler silinsin mi?",
-  "already_in_cart": "Zaten sepette"
+  "already_in_cart": "Zaten sepette",
+  "no_description": "Açıklama mevcut değil.",
+  "no_reviews_yet": "Henüz yorum yok.",
+  "be_first_to_review": "İlk yorumu yapan siz olun!",
+  "based_on_reviews": "{count} yoruma dayalı",
+  "thank_you_for_order": "Siparişiniz için teşekkürler.",
+  "product_not_found": "Ürün bulunamadı",
+  "back_to_catalog": "Kataloga dön"
 }

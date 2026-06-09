@@ -142,7 +142,7 @@
       if (!sb) return;
       currentProduct = await getProduct(productId);
       if (!currentProduct) {
-        document.getElementById('product-detail').innerHTML = '<div style="text-align:center;padding:4rem;"><h2>Product not found</h2><a href="/catalog.html" style="color:var(--primary);">Back to catalog</a></div>';
+        document.getElementById('product-detail').innerHTML = '<div style="text-align:center;padding:4rem;"><h2>' + t('product_not_found') + '</h2><a href="/catalog.html" style="color:var(--primary);">' + t('back_to_catalog') + '</a></div>';
         return;
       }
       renderProduct();
@@ -211,7 +211,7 @@
         ` : ''}
         <div class="product-desc">
           <h3 data-i18n="product_description">Description</h3>
-          <p>${desc || 'No description available.'}</p>
+          <p>${desc || t('no_description')}</p>
         </div>
       </div>
     `;
@@ -222,6 +222,9 @@
 
     // Check admin and load order management
     checkAdminAndLoadOrders();
+
+    // Translate new dynamic content
+    applyTranslations();
 
     // Setup gallery zoom
     const mainImg = document.getElementById('main-image');
@@ -292,7 +295,7 @@
       navigator.share({ title: document.getElementById('product-name').textContent, url });
     } else {
       navigator.clipboard.writeText(url);
-      showNotification('Link copied!');
+      showNotification(t('share_link_copied'));
     }
   }
 
@@ -306,7 +309,7 @@
     const ratingData = await getProductRating(productId);
     const summaryEl = document.getElementById('rating-summary');
     if (ratingData.count === 0) {
-      summaryEl.innerHTML = '<p style="color:var(--text-light);">No reviews yet. Be the first to review!</p>';
+      summaryEl.innerHTML = '<p style="color:var(--text-light);">' + t('no_reviews_yet') + ' ' + t('be_first_to_review') + '</p>';
       return;
     }
     const fullStars = Math.floor(ratingData.avg);
@@ -314,7 +317,7 @@
     summaryEl.innerHTML = `
       <div style="font-size:3rem;font-weight:800;color:var(--primary);">${ratingData.avg}</div>
       <div style="font-size:2rem;color:var(--primary);margin:0.5rem 0;">${stars}</div>
-      <p style="color:var(--text-light);">Based on ${ratingData.count} review${ratingData.count > 1 ? 's' : ''}</p>
+      <p style="color:var(--text-light);">${t('based_on_reviews').replace('{count}', ratingData.count)}</p>
     `;
   }
 
@@ -325,28 +328,27 @@
 
     const listEl = document.getElementById('reviews-list');
     if (reviews.length === 0) {
-      listEl.innerHTML = '<p style="color:var(--text-light);text-align:center;">No reviews yet.</p>';
+      listEl.innerHTML = '<p style="color:var(--text-light);text-align:center;">' + t('no_reviews_yet') + '</p>';
       return;
     }
 
     listEl.innerHTML = reviews.map(r => `
-      <div style="background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+      <div class="review-card">
+        <div class="review-card-header">
           <div>
             <strong>${escHtml(r.customer_name)}</strong>
-            ${r.verified ? '<span style="background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:50px;font-size:0.75rem;font-weight:600;margin-left:8px;">Verified Purchase</span>' : ''}
+            ${r.verified ? '<span class="review-verified-badge">' + t('verified_badge') + '</span>' : ''}
           </div>
-          <div style="color:var(--primary);font-size:1.1rem;">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+          <div class="review-card-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
         </div>
-        <p style="color:var(--text-light);line-height:1.7;margin-bottom:0.75rem;">${escHtml(r.comment)}</p>
+        <p class="review-card-comment">${escHtml(r.comment)}</p>
         ${r.images && r.images.length ? `
-          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-            ${r.images.map(img => `<img src="${escHtml(img)}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;cursor:pointer;">`).join('')}
+          <div class="review-card-images">
+            ${r.images.map(img => `<img src="${escHtml(img)}" onclick="window.open('${escHtml(img)}','_blank')">`).join('')}
           </div>
         ` : ''}
-        <div style="color:var(--text-muted);font-size:0.8rem;margin-top:0.75rem;">${new Date(r.created_at).toLocaleDateString()}</div>
-      </div>
-    `).join('');
+        <div class="review-card-date">${new Date(r.created_at).toLocaleDateString()}</div>
+      </div>    `).join('');
   }
 
   // ===== ADMIN REVIEW MANAGEMENT =====

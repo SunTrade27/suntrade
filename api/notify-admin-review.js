@@ -1,6 +1,6 @@
 // Vercel Serverless Function: Notify admin when new review is submitted
 const { createClient } = require('@supabase/supabase-js');
-const { sendMail, isConfigured } = require('./lib/email');
+const { sendMail, isConfigured, ADMIN_EMAIL } = require('./lib/email');
 
 const SITE_URL = process.env.SITE_URL || 'https://www.suntrade.store';
 
@@ -55,7 +55,7 @@ module.exports = async function handler(req, res) {
     const productPrice = productData ? parseFloat(productData.price).toFixed(2) : '';
     const productImage = productData?.images?.[0] || '';
     const result = await sendMail({
-      to: 'serjanyelemesov@gmail.com',
+      to: ADMIN_EMAIL,
       subject: `Жаңа пікір: ${productName}`,
       html: `
         <!DOCTYPE html>

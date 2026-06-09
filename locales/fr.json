@@ -312,5 +312,12 @@
   "loading_text": "Chargement...",
   "cart_clear": "Vider le panier",
   "cart_clear_confirm": "Vider tous les articles du panier?",
-  "already_in_cart": "Déjà dans le panier"
+  "already_in_cart": "Déjà dans le panier",
+  "no_description": "Aucune description disponible.",
+  "no_reviews_yet": "Aucun avis pour le moment.",
+  "be_first_to_review": "Soyez le premier à donner votre avis !",
+  "based_on_reviews": "Basé sur {count} avis",
+  "thank_you_for_order": "Merci pour votre commande.",
+  "product_not_found": "Produit introuvable",
+  "back_to_catalog": "Retour au catalogue"
 }

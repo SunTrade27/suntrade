@@ -352,5 +352,12 @@
   "loading_text": "Жүктелуде...",
   "cart_clear": "Себетті тазалау",
   "cart_clear_confirm": "Себеттегі барлық тауарларды жою керек пе?",
-  "already_in_cart": "Себетте бар"
+  "already_in_cart": "Себетте бар",
+  "no_description": "Сипаттама жоқ.",
+  "no_reviews_yet": "Әлі пікірлер жоқ.",
+  "be_first_to_review": "Бірінші болып пікір қалдырыңыз!",
+  "based_on_reviews": "{count} пікір негізінде",
+  "thank_you_for_order": "Тапсырысыңыз үшін рахмет.",
+  "product_not_found": "Тауар табылмады",
+  "back_to_catalog": "Каталогқа оралу"
 }

@@ -199,7 +199,7 @@
     try {
       const products = await getProducts({ search: query, limit: 8 });
       if (products.length === 0) {
-        resultsEl.innerHTML = '<div style="padding:1rem;text-align:center;color:var(--text-light);">Нәтиже табылмады</div>';
+        resultsEl.innerHTML = '<div style="padding:1rem;text-align:center;color:var(--text-light);">' + t('no_search_results_msg') + '</div>';
       } else {
         resultsEl.innerHTML = products.map(p => {
           const name = p['name_' + currentLang] || p.name_en || 'Product';
