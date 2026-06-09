@@ -362,5 +362,8 @@
   "based_on_reviews": "На основе {count} отзыва(ов)",
   "thank_you_for_order": "Спасибо за ваш заказ.",
   "product_not_found": "Товар не найден",
-  "back_to_catalog": "Назад в каталог"
+  "back_to_catalog": "Назад в каталог",
+  "reviews_search_placeholder": "Поиск отзывов по имени, товару или тексту...",
+  "no_reviews_found": "Отзывы не найдены. Попробуйте другой запрос.",
+  "reviews_found_count": "Найдено {count} отзыв(ов)"
 }

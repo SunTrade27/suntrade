@@ -8,6 +8,76 @@
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/icons.js"></script>
+  <style>
+    /* ===== Reviews Search ===== */
+    .reviews-search {
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      position: relative;
+    }
+    .reviews-search input {
+      width: 100%;
+      padding: 14px 20px 14px 48px;
+      border: 2px solid var(--border);
+      border-radius: 50px;
+      font-size: 1rem;
+      transition: all 0.3s;
+      background: var(--bg-white);
+      box-sizing: border-box;
+    }
+    .reviews-search input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255,107,0,0.1);
+    }
+    .reviews-search .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .reviews-search .clear-btn {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px 8px;
+      font-size: 1.1rem;
+      display: none;
+    }
+    .reviews-search .clear-btn:hover {
+      color: var(--text);
+    }
+    .reviews-count {
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-bottom: 1.5rem;
+    }
+    /* Mobile: single column for reviews */
+    @media (max-width: 600px) {
+      #reviews-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+      }
+      .reviews-search input {
+        padding: 12px 16px 12px 42px;
+        font-size: 0.9rem;
+      }
+      .reviews-search .search-icon {
+        left: 14px;
+      }
+      .reviews-count {
+        font-size: 0.85rem;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -40,6 +110,15 @@
 <div class="catalog-page">
   <h1 data-i18n="testimonials_title">What Our Customers Say</h1>
   <p style="color:var(--text-light);margin-bottom:2rem;" data-i18n="reviews_subtitle">Real reviews from our happy customers around the world</p>
+
+  <!-- Search Bar -->
+  <div class="reviews-search">
+    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="reviews-search-input" placeholder="" oninput="filterReviews()" data-i18n="reviews_search_placeholder">
+    <button class="clear-btn" id="search-clear-btn" onclick="clearSearch()">×</button>
+  </div>
+
+  <div class="reviews-count" id="reviews-count"></div>
 
   <div id="reviews-grid" class="products-grid" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
     <div class="loading-spinner"><div class="spinner"></div></div>
@@ -85,24 +164,56 @@
 <script>
   let reviewOffset = 0;
   const reviewLimit = 20;
+  let allLoadedReviews = null;
+  let reviewsLoaded = false;
 
   function escHtml(s) {
     if (!s) return '';
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  async function loadReviews(reset) {
-    if (reset) reviewOffset = 0;
-    const reviews = await getApprovedReviews(100);
-    const container = document.getElementById('reviews-grid');
+  function getFilteredReviews() {
+    if (!allLoadedReviews) return [];
+    const search = (document.getElementById('reviews-search-input').value || '').toLowerCase().trim();
+    if (!search) return allLoadedReviews;
+    return allLoadedReviews.filter(r => {
+      const name = (r.customer_name || '').toLowerCase();
+      const comment = (r.comment || '').toLowerCase();
+      const productName = r.products ? (r.products['name_' + currentLang] || r.products.name_en || '').toLowerCase() : '';
+      return name.includes(search) || comment.includes(search) || productName.includes(search);
+    });
+  }
 
-    if (reviews.length === 0) {
-      container.innerHTML = '<p style="color:var(--text-light);text-align:center;grid-column:1/-1;">' + (typeof t === 'function' ? t('no_reviews_yet') : 'No reviews yet.') + '</p>';
+  function renderReviews() {
+    const container = document.getElementById('reviews-grid');
+    const countEl = document.getElementById('reviews-count');
+    const searchVal = document.getElementById('reviews-search-input').value.trim();
+    const clearBtn = document.getElementById('search-clear-btn');
+
+    // Show/hide clear button
+    clearBtn.style.display = searchVal ? 'block' : 'none';
+
+    // Don't replace loading state if reviews haven't loaded yet
+    if (!reviewsLoaded) return;
+
+    const filtered = getFilteredReviews();
+
+    if (filtered.length === 0) {
+      container.innerHTML = '<p style="color:var(--text-light);text-align:center;grid-column:1/-1;padding:3rem 1rem;">' + (typeof t === 'function' ? t('no_reviews_found') : 'No reviews found.') + '</p>';
+      countEl.textContent = '';
+      document.getElementById('load-more-wrapper').style.display = 'none';
       return;
     }
 
-    const toShow = reviews.slice(0, reviewOffset + reviewLimit);
+    const toShow = filtered.slice(0, reviewOffset + reviewLimit);
     reviewOffset = toShow.length;
+
+    // Show count
+    if (searchVal) {
+      countEl.textContent = (typeof t === 'function' ? t('reviews_found_count').replace('{count}', filtered.length) : 'Found ' + filtered.length + ' reviews');
+    } else {
+      countEl.textContent = '';
+    }
 
     container.innerHTML = toShow.map(r => {
       const safeName = escHtml(r.customer_name);
@@ -136,10 +247,32 @@
       `;
     }).join('');
 
-    document.getElementById('load-more-wrapper').style.display = reviewOffset < reviews.length ? 'block' : 'none';
+    document.getElementById('load-more-wrapper').style.display = reviewOffset < filtered.length ? 'block' : 'none';
   }
 
-  function loadMoreReviews() { loadReviews(false); }
+  async function loadReviews(reset) {
+    if (reset) reviewOffset = 0;
+    allLoadedReviews = await getApprovedReviews(100);
+    reviewsLoaded = true;
+    renderReviews();
+  }
+
+  function loadMoreReviews() {
+    reviewOffset += reviewLimit;
+    renderReviews();
+  }
+
+  function filterReviews() {
+    reviewOffset = 0;
+    renderReviews();
+  }
+
+  function clearSearch() {
+    document.getElementById('reviews-search-input').value = '';
+    reviewOffset = 0;
+    renderReviews();
+    document.getElementById('reviews-search-input').focus();
+  }
 
   document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => { if (sb) loadReviews(true); }, 500);

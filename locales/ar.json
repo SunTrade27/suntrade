@@ -319,5 +319,8 @@
   "based_on_reviews": "بناءً على {count} تقييم",
   "thank_you_for_order": "شكراً لطلبك.",
   "product_not_found": "المنتج غير موجود",
-  "back_to_catalog": "العودة إلى الكتالوج"
+  "back_to_catalog": "العودة إلى الكتالوج",
+  "reviews_search_placeholder": "البحث في التقييمات حسب الاسم أو المنتج أو النص...",
+  "no_reviews_found": "لم يتم العثور على تقييمات. جرب بحثًا مختلفًا.",
+  "reviews_found_count": "تم العثور على {count} تقييم(ات)"
 }

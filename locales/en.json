@@ -359,5 +359,8 @@
   "based_on_reviews": "Based on {count} review(s)",
   "thank_you_for_order": "Thank you for your order.",
   "product_not_found": "Product not found",
-  "back_to_catalog": "Back to catalog"
+  "back_to_catalog": "Back to catalog",
+  "reviews_search_placeholder": "Search reviews by name, product, or comment...",
+  "no_reviews_found": "No reviews found. Try a different search.",
+  "reviews_found_count": "Found {count} reviews"
 }

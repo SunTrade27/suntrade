@@ -359,5 +359,8 @@
   "based_on_reviews": "{count} пікір негізінде",
   "thank_you_for_order": "Тапсырысыңыз үшін рахмет.",
   "product_not_found": "Тауар табылмады",
-  "back_to_catalog": "Каталогқа оралу"
+  "back_to_catalog": "Каталогқа оралу",
+  "reviews_search_placeholder": "Пікірлерді аты, тауары немесе мәтіні бойынша іздеу...",
+  "no_reviews_found": "Пікірлер табылмады. Басқа сөзбен іздеп көріңіз.",
+  "reviews_found_count": "{count} пікір табылды"
 }

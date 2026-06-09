@@ -319,5 +319,8 @@
   "based_on_reviews": "{count} yoruma dayalı",
   "thank_you_for_order": "Siparişiniz için teşekkürler.",
   "product_not_found": "Ürün bulunamadı",
-  "back_to_catalog": "Kataloga dön"
+  "back_to_catalog": "Kataloga dön",
+  "reviews_search_placeholder": "Yorumları isme, ürüne veya metne göre ara...",
+  "no_reviews_found": "Yorum bulunamadı. Farklı bir arama deneyin.",
+  "reviews_found_count": "{count} yorum bulundu"
 }
