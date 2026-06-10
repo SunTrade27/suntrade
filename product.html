@@ -305,6 +305,39 @@
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  // ===== Review Image Lightbox =====
+  function openReviewLightbox(src) {
+    // Remove any existing lightbox
+    const existing = document.querySelector('.review-lightbox');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'review-lightbox';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-label', 'Review image');
+    overlay.innerHTML = `
+      <button class="review-lightbox-close" aria-label="Close" type="button">×</button>
+      <img src="${escHtml(src)}" alt="Review photo">
+    `;
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden';
+
+    const close = () => {
+      overlay.remove();
+      document.body.style.overflow = '';
+    };
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) close();
+    });
+    overlay.querySelector('.review-lightbox-close').addEventListener('click', close);
+    document.addEventListener('keydown', function escHandler(e) {
+      if (e.key === 'Escape') {
+        close();
+        document.removeEventListener('keydown', escHandler);
+      }
+    });
+  }
+
   async function loadProductRating(productId) {
     const ratingData = await getProductRating(productId);
     const summaryEl = document.getElementById('rating-summary');
@@ -330,25 +363,26 @@
     if (reviews.length === 0) {
       listEl.innerHTML = '<p style="color:var(--text-light);text-align:center;">' + t('no_reviews_yet') + '</p>';
       return;
-    }
-
-    listEl.innerHTML = reviews.map(r => `
+    }    listEl.innerHTML = reviews.map(r => {
+      const reviewImages = (r.images && r.images.length) ? r.images : [];
+      return `
       <div class="review-card">
         <div class="review-card-header">
           <div>
             <strong>${escHtml(r.customer_name)}</strong>
-            ${r.verified ? '<span class="review-verified-badge">' + t('verified_badge') + '</span>' : ''}
+            <span class="review-verified-badge">${t('verified_badge')}</span>
           </div>
           <div class="review-card-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
         </div>
         <p class="review-card-comment">${escHtml(r.comment)}</p>
-        ${r.images && r.images.length ? `
+        ${reviewImages.length ? `
           <div class="review-card-images">
-            ${r.images.map(img => `<img src="${escHtml(img)}" onclick="window.open('${escHtml(img)}','_blank')">`).join('')}
+            ${reviewImages.map(img => `<img src="${escHtml(img)}" alt="Review photo" loading="lazy" onerror="this.style.display='none'" onclick="openReviewLightbox('${escHtml(img)}')">`).join('')}
           </div>
         ` : ''}
         <div class="review-card-date">${new Date(r.created_at).toLocaleDateString()}</div>
-      </div>    `).join('');
+      </div>
+    `;}).join('');
   }
 
   // ===== ADMIN REVIEW MANAGEMENT =====

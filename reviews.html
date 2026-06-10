@@ -172,6 +172,38 @@
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
+  // ===== Review Image Lightbox =====
+  function openReviewsLightbox(src) {
+    const existing = document.querySelector('.review-lightbox');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'review-lightbox';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-label', 'Review image');
+    overlay.innerHTML = `
+      <button class="review-lightbox-close" aria-label="Close" type="button">×</button>
+      <img src="${escHtml(src)}" alt="Review photo">
+    `;
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden';
+
+    const close = () => {
+      overlay.remove();
+      document.body.style.overflow = '';
+    };
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) close();
+    });
+    overlay.querySelector('.review-lightbox-close').addEventListener('click', close);
+    document.addEventListener('keydown', function escHandler(e) {
+      if (e.key === 'Escape') {
+        close();
+        document.removeEventListener('keydown', escHandler);
+      }
+    });
+  }
+
   function getFilteredReviews() {
     if (!allLoadedReviews) return [];
     const search = (document.getElementById('reviews-search-input').value || '').toLowerCase().trim();
@@ -220,8 +252,9 @@
       const productName = r.products ? escHtml(r.products['name_' + currentLang] || r.products.name_en || '') : '';
       const displayName = productName || 'Product';
       const productImg = r.products && r.products.images && r.products.images[0] ? escHtml(r.products.images[0]) : '';
+      const reviewImages = (r.images && r.images.length) ? r.images : [];
       return `
-        <div style="background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem;">
+        <div style="background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; max-width:100%; min-width:0; box-sizing:border-box; word-wrap:break-word; overflow-wrap:break-word; display:flex; flex-direction:column;">
           ${r.product_id ? `
           <a href="/product.html?id=${r.product_id}" style="display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:1rem;background:linear-gradient(135deg,rgba(255,107,0,0.06),rgba(255,107,0,0.02));border:1px solid rgba(255,107,0,0.12);border-radius:10px;text-decoration:none;transition:all 0.25s;" onmouseover="this.style.borderColor='rgba(255,107,0,0.35)';this.style.background='linear-gradient(135deg,rgba(255,107,0,0.10),rgba(255,107,0,0.04))';this.querySelector('.pd-arrow').style.transform='translateX(3px)'" onmouseout="this.style.borderColor='rgba(255,107,0,0.12)';this.style.background='linear-gradient(135deg,rgba(255,107,0,0.06),rgba(255,107,0,0.02))';this.querySelector('.pd-arrow').style.transform='translateX(0)'">
             ${productImg ? `<img src="${productImg}" style="width:42px;height:42px;object-fit:cover;border-radius:8px;flex-shrink:0;box-shadow:0 2px 4px rgba(0,0,0,0.06);">` : '<div style="width:42px;height:42px;border-radius:8px;background:rgba(255,107,0,0.1);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">📦</div>'}
@@ -235,14 +268,14 @@
           </a>` : ''}
           <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
             <div style="width:44px;height:44px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;flex-shrink:0;">${safeName.charAt(0).toUpperCase()}</div>
-            <div>
+            <div style="min-width:0; flex:1;">
               <strong style="font-size:0.95rem;">${safeName}</strong>
-              ${r.verified ? '<span style="background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:50px;font-size:0.7rem;font-weight:600;margin-left:6px;">✓ Verified</span>' : ''}
+              <span style="background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:50px;font-size:0.7rem;font-weight:600;margin-left:6px;display:inline-block;">✓ Verified</span>
               <div style="color:var(--primary);font-size:0.85rem;margin-top:2px;">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
             </div>
           </div>
-          <p style="color: var(--text-light); font-style: italic; line-height:1.7; font-size:0.95rem;">"${escHtml(r.comment) || (typeof t === 'function' ? t('great_product') : 'Great product!')}"</p>
-          ${r.images && r.images.length ? `<div style="display:flex;gap:0.5rem;margin-top:1rem;">${r.images.slice(0,4).map(img => `<img src="${escHtml(img)}" style="width:65px;height:65px;object-fit:cover;border-radius:8px;cursor:pointer;border:1px solid var(--border);transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="window.open('${escHtml(img)}','_blank')">`).join('')}</div>` : ''}
+          <p style="color: var(--text-light); font-style: italic; line-height:1.7; font-size:0.95rem; word-wrap:break-word; overflow-wrap:break-word;">"${escHtml(r.comment) || (typeof t === 'function' ? t('great_product') : 'Great product!')}"</p>
+          ${reviewImages.length ? `<div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">${reviewImages.slice(0,4).map(img => `<img src="${escHtml(img)}" alt="Review photo" loading="lazy" onerror="this.style.display='none'" style="width:65px;height:65px;object-fit:cover;border-radius:8px;cursor:zoom-in;border:1px solid var(--border);transition:transform 0.2s,box-shadow 0.2s;pointer-events:auto !important;position:relative;z-index:1;" onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='none'" onclick="openReviewsLightbox('${escHtml(img)}')">`).join('')}</div>` : ''}
         </div>
       `;
     }).join('');

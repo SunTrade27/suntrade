@@ -582,13 +582,18 @@ input, textarea, select { font-family: inherit; }
   overflow: hidden;
   background: var(--bg);
   margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .gallery-main img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
+  object-fit: contain;
+  object-position: center center;
   cursor: zoom-in;
+  display: block;
+  margin: auto;
 }
 .gallery-thumbs {
   display: flex;
@@ -977,15 +982,25 @@ input, textarea, select { font-family: inherit; }
   flex-wrap: wrap;
   margin-top: 0.75rem;
 }
+.review-card-images {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
 .review-card-images img {
   width: 80px; height: 80px; object-fit: cover;
   object-position: center;
-  border-radius: 8px; cursor: pointer;
+  border-radius: 8px; cursor: zoom-in;
   border: 1px solid var(--border);
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
+  pointer-events: auto !important;
+  z-index: 1;
+  position: relative;
 }
 .review-card-images img:hover {
   transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 .review-card-date { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.75rem; }
 
@@ -1030,6 +1045,72 @@ input, textarea, select { font-family: inherit; }
     font-size: 1.5rem !important;
   }
 }
+
+/* ===== Reviews Page — Constrain card width & prevent overflow ===== */
+#reviews-grid {
+  max-width: 100%;
+  width: 100%;
+}
+#reviews-grid > div {
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  display: flex;
+  flex-direction: column;
+}
+@media (max-width: 480px) {
+  .catalog-page { padding: 1rem 0.5rem; }
+  #reviews-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+  #reviews-grid > div {
+    padding: 1rem !important;
+  }
+}
+
+/* ===== Review Image Lightbox ===== */
+.review-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  cursor: zoom-out;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.review-lightbox img {
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  cursor: default;
+}
+.review-lightbox-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.review-lightbox-close:hover { background: rgba(255,255,255,0.3); }
 
 @media (max-width: 480px) {
   .review-card {
