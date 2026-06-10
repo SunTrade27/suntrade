@@ -352,7 +352,7 @@ input, textarea, select { font-family: inherit; }
 
   /* Mobile: vertical lock-wheel style — one review per screen, stacked */
   .reviews-carousel-wrapper {
-    height: 380px;
+    height: 240px;
     overflow: hidden;
     border: 1px solid rgba(255, 107, 0, 0.12);
     border-radius: var(--radius);
@@ -381,7 +381,7 @@ input, textarea, select { font-family: inherit; }
     width: 100% !important;
     height: 100% !important;
     min-height: 0;
-    padding: 1rem 0.85rem !important;
+    padding: 0.75rem 0.85rem !important;
     display: flex !important;
     flex-direction: column;
     justify-content: flex-start;

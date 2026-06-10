@@ -270,7 +270,7 @@
             <div style="width:44px;height:44px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;flex-shrink:0;">${safeName.charAt(0).toUpperCase()}</div>
             <div style="min-width:0; flex:1;">
               <strong style="font-size:0.95rem;">${safeName}</strong>
-              <span style="background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:50px;font-size:0.7rem;font-weight:600;margin-left:6px;display:inline-block;">✓ Verified</span>
+              <span style="background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:50px;font-size:0.7rem;font-weight:600;margin-left:6px;display:inline-block;">${(typeof t === 'function' ? t('verified_badge') : '✓ Verified')}</span>
               <div style="color:var(--primary);font-size:0.85rem;margin-top:2px;">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
             </div>
           </div>
@@ -309,6 +309,11 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => { if (sb) loadReviews(true); }, 500);
+  });
+
+  // Re-render reviews when language changes so the "Verified" badge updates
+  window.addEventListener('langChanged', () => {
+    if (reviewsLoaded) renderReviews();
   });
 </script>
 </body>
