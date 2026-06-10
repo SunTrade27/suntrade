@@ -378,10 +378,10 @@ async function submitReview(review, productData) {
 
   // 2. Админге хабарлама жіберу (ЖАҢА ҚОСЫЛДЫ)
   // Пікір деректерін тікелей жібереміз (ID-мен емес), API service_role арқылы іздейді
-  fetch('/api/notify-admin-review', {
+  fetch('/api/email', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ review, product: productData || null })
+    body: JSON.stringify({ action: 'notify-review', review, product: productData || null })
   }).catch(err => console.warn('Admin notification failed:', err));
 
   return review;

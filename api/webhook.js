@@ -227,10 +227,10 @@ module.exports = async (req, res) => {
           const host = req.headers.host || process.env.SITE_URL?.replace('https://', '') || 'www.suntrade.store';
           const baseUrl = `${protocol}://${host}`;
 
-          await fetch(`${baseUrl}/api/send-order-confirmation`, {
+          await fetch(`${baseUrl}/api/email`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ orderId: order.id, language })
+            body: JSON.stringify({ action: 'order-confirmation', orderId: order.id, language })
           });
           console.log('Order confirmation email triggered for:', order.id, 'lang:', language);
         } catch (emailErr) {

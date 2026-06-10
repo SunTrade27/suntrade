@@ -494,10 +494,10 @@
     btn.style.opacity = '0.6';
 
     try {
-      const resp = await fetch('/api/send-review-request', {
+      const resp = await fetch('/api/email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId, productId })
+        body: JSON.stringify({ action: 'review-request', orderId, productId })
       });
       const result = await resp.json();
       if (result.success) {
