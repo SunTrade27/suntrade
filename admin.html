@@ -263,12 +263,12 @@
   <aside class="admin-sidebar" id="admin-sidebar">
     <div class="logo">Sun<span style="color:var(--primary);">Trade</span></div>
     <nav class="admin-nav">
-      <a href="#" class="active" onclick="showSection('dashboard')" data-i18n="admin_dashboard">Dashboard</a>
-      <a href="#" onclick="showSection('products')" data-i18n="admin_add_product">Тауар қосу</a>
-      <a href="#" onclick="showSection('orders')" data-i18n="admin_orders">Orders</a>
-      <a href="#" onclick="showSection('reviews')" data-i18n="admin_reviews">Reviews</a>
+      <a href="#" class="active" onclick="showSection('dashboard', this); return false;" data-i18n="admin_dashboard">Dashboard</a>
+      <a href="#" onclick="showSection('products', this); return false;" data-i18n="admin_add_product">Тауар қосу</a>
+      <a href="#" onclick="showSection('orders', this); return false;" data-i18n="admin_orders">Orders</a>
+      <a href="#" onclick="showSection('reviews', this); return false;" data-i18n="admin_reviews">Reviews</a>
       <a href="/" style="margin-top:2rem;" data-i18n="nav_home">View Site</a>
-      <a href="#" onclick="handleLogout()" data-i18n="admin_logout">Logout</a>
+      <a href="#" onclick="handleLogout(); return false;" data-i18n="admin_logout">Logout</a>
     </nav>
   </aside>
 
@@ -387,7 +387,7 @@
         <span class="translate-progress" id="translate-status"></span>
       </div>
 
-      <!-- Language fields -->
+      <!-- Language fields (per-lang name + description only) -->
       <div id="lang-fields">
         <div class="form-group">
           <label data-i18n="admin_product_name">Product Name</label>
@@ -404,10 +404,11 @@
           </div>
           <div id="pdesc-en" class="desc-editor" contenteditable="true" data-placeholder="Enter product description..." data-lang="en"></div>
           <textarea id="pdesc-en-raw" style="display:none;"></textarea>
+        </div>
       </div>
 
-      <!-- Hidden lang inputs -->
-      <div style="display:none;">
+      <!-- Hidden lang inputs (always present, outside lang-fields so they survive switchLangTab) -->
+      <div style="display:none;" id="hidden-lang-inputs">
         <input type="text" id="pname-kz"><input type="text" id="pname-ru"><input type="text" id="pname-de">
         <input type="text" id="pname-fr"><input type="text" id="pname-es"><input type="text" id="pname-it">
         <input type="text" id="pname-tr"><input type="text" id="pname-pt"><input type="text" id="pname-nl">
@@ -418,6 +419,7 @@
         <textarea id="pdesc-pl-raw"></textarea><textarea id="pdesc-ar-raw"></textarea>
       </div>
 
+      <!-- Common product fields (always visible, outside #lang-fields) -->
       <div class="form-row">
         <div class="form-group">
           <label data-i18n="admin_product_price">Price (EUR)</label>
@@ -677,16 +679,33 @@
     } catch (e) {}
   }
 
-  function showSection(name) {
+  function showSection(name, el) {
     ['dashboard', 'products', 'orders', 'reviews'].forEach(s => {
-      document.getElementById('section-' + s).style.display = s === name ? 'block' : 'none';
+      const sec = document.getElementById('section-' + s);
+      if (sec) sec.style.display = s === name ? 'block' : 'none';
     });
     document.querySelectorAll('.admin-nav a').forEach(a => a.classList.remove('active'));
-    event.target.classList.add('active');
-    document.getElementById('admin-page-title').textContent = t('admin_' + (name === 'dashboard' ? 'dashboard' : name));
+    if (el && el.classList) {
+      el.classList.add('active');
+    } else {
+      // Fallback: find the link whose onclick contains this name
+      const fallback = document.querySelector(`.admin-nav a[onclick*="showSection('${name}')"]`);
+      if (fallback) fallback.classList.add('active');
+    }
+    const titleEl = document.getElementById('admin-page-title');
+    if (titleEl) {
+      const i18nKey = 'admin_' + (name === 'dashboard' ? 'dashboard' : name);
+      titleEl.textContent = (typeof t === 'function' && translations && translations[i18nKey]) ? translations[i18nKey] : name;
+    }
     if (name === 'products') loadProducts();
     if (name === 'orders') loadOrders();
     if (name === 'reviews') loadReviews();
+
+    // On mobile, close the sidebar after navigating so it doesn't cover the content
+    if (window.innerWidth <= 768) {
+      const sidebar = document.getElementById('admin-sidebar');
+      if (sidebar) sidebar.classList.remove('open');
+    }
   }
 
   // Re-render current section when language changes
@@ -1065,10 +1084,16 @@
     document.getElementById('stat-pending-reviews').textContent = pending;
   }
 
-  function filterReviews(filter) {
+  function filterReviews(filter, el) {
     currentReviewFilter = filter;
     document.querySelectorAll('.review-filter-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    if (el && el.classList) {
+      el.classList.add('active');
+    } else {
+      // Fallback: find the filter button for this filter
+      const fallback = document.querySelector(`.review-filter-btn[onclick*="filterReviews('${filter}')"]`);
+      if (fallback) fallback.classList.add('active');
+    }
     renderReviews();
   }
 
