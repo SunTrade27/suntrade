@@ -57,8 +57,42 @@
         <label data-i18n="auth_password">Password</label>
         <input type="password" id="signin-password" required minlength="6">
       </div>
+      <div class="form-group" style="text-align:right;margin-top:-0.5rem;">
+        <a href="#" onclick="event.preventDefault(); switchAuthTab('forgot');" data-i18n="auth_forgot_password" style="color:var(--primary);font-size:0.9rem;text-decoration:none;font-weight:500;">Forgot password?</a>
+      </div>
       <p id="signin-error" class="auth-error"></p>
       <button type="submit" class="btn-pay" data-i18n="auth_signin_btn">Sign In</button>
+    </form>
+
+    <!-- Forgot Password Form -->
+    <form id="forgot-form" style="display:none;" onsubmit="handleForgotPassword(event)">
+      <p style="text-align:center;color:var(--text-muted);margin-bottom:1rem;font-size:0.9rem;" data-i18n="auth_forgot_desc">Enter your email and we'll send you a link to reset your password.</p>
+      <div class="form-group">
+        <label data-i18n="auth_email">Email</label>
+        <input type="email" id="forgot-email" required>
+      </div>
+      <p id="forgot-error" class="auth-error"></p>
+      <p id="forgot-success" class="auth-success"></p>
+      <button type="submit" class="btn-pay" data-i18n="auth_send_reset_link">Send Reset Link</button>
+      <div style="text-align:center;margin-top:1rem;">
+        <a href="#" onclick="event.preventDefault(); switchAuthTab('signin');" data-i18n="auth_back_to_signin" style="color:var(--text-muted);font-size:0.9rem;text-decoration:none;">← Back to Sign In</a>
+      </div>
+    </form>
+
+    <!-- Reset Password Form (used when user clicks the link in the email) -->
+    <form id="reset-form" style="display:none;" onsubmit="handleResetPassword(event)">
+      <p style="text-align:center;color:var(--text-muted);margin-bottom:1rem;font-size:0.9rem;" data-i18n="auth_reset_desc">Enter your new password below.</p>
+      <div class="form-group">
+        <label data-i18n="auth_new_password">New Password</label>
+        <input type="password" id="reset-password" required minlength="6">
+      </div>
+      <div class="form-group">
+        <label data-i18n="auth_confirm_password">Confirm Password</label>
+        <input type="password" id="reset-confirm" required minlength="6">
+      </div>
+      <p id="reset-error" class="auth-error"></p>
+      <p id="reset-success" class="auth-success"></p>
+      <button type="submit" class="btn-pay" data-i18n="auth_reset_password_btn">Reset Password</button>
     </form>
 
     <!-- Sign Up Form -->
@@ -118,9 +152,16 @@
     }, 500);
 
     // If ?mode=signup, switch to sign up tab
+    // If ?mode=reset, switch to reset password tab (user clicked link in email)
     const params = new URLSearchParams(window.location.search);
-    if (params.get('mode') === 'signup') {
+    const mode = params.get('mode');
+    if (mode === 'signup') {
       switchAuthTab('signup');
+    } else if (mode === 'reset') {
+      // Wait a bit for Supabase to detect the recovery session from the URL hash
+      setTimeout(() => switchAuthTab('reset'), 600);
+    } else if (mode === 'forgot') {
+      switchAuthTab('forgot');
     }
   });
 
@@ -128,11 +169,26 @@
     document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
     document.getElementById('signin-form').style.display = tab === 'signin' ? 'block' : 'none';
     document.getElementById('signup-form').style.display = tab === 'signup' ? 'block' : 'none';
+    const forgotForm = document.getElementById('forgot-form');
+    const resetForm = document.getElementById('reset-form');
+    if (forgotForm) forgotForm.style.display = tab === 'forgot' ? 'block' : 'none';
+    if (resetForm) resetForm.style.display = tab === 'reset' ? 'block' : 'none';
+    // Hide tab buttons on forgot/reset views
+    const tabsContainer = document.querySelector('.auth-tabs');
+    if (tabsContainer) tabsContainer.style.display = (tab === 'forgot' || tab === 'reset') ? 'none' : 'flex';
     const activeTab = document.querySelector(`.auth-tab[data-tab="${tab}"]`);
     if (activeTab) activeTab.classList.add('active');
     document.getElementById('signin-error').style.display = 'none';
     document.getElementById('signup-error').style.display = 'none';
     document.getElementById('signup-success').style.display = 'none';
+    const forgotErr = document.getElementById('forgot-error');
+    const forgotSucc = document.getElementById('forgot-success');
+    if (forgotErr) forgotErr.style.display = 'none';
+    if (forgotSucc) forgotSucc.style.display = 'none';
+    const resetErr = document.getElementById('reset-error');
+    const resetSucc = document.getElementById('reset-success');
+    if (resetErr) resetErr.style.display = 'none';
+    if (resetSucc) resetSucc.style.display = 'none';
   }
 
   async function handleSignIn(e) {
@@ -182,6 +238,52 @@
       succEl.textContent = t('auth_check_email');
       succEl.style.display = 'block';
       document.getElementById('signup-form').reset();
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.style.display = 'block';
+    }
+  }
+
+  async function handleForgotPassword(e) {
+    e.preventDefault();
+    const errEl = document.getElementById('forgot-error');
+    const succEl = document.getElementById('forgot-success');
+    errEl.style.display = 'none';
+    succEl.style.display = 'none';
+    try {
+      const email = document.getElementById('forgot-email').value.trim();
+      await resetPassword(email);
+      succEl.textContent = t('auth_reset_link_sent');
+      succEl.style.display = 'block';
+      document.getElementById('forgot-form').reset();
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.style.display = 'block';
+    }
+  }
+
+  async function handleResetPassword(e) {
+    e.preventDefault();
+    const errEl = document.getElementById('reset-error');
+    const succEl = document.getElementById('reset-success');
+    errEl.style.display = 'none';
+    succEl.style.display = 'none';
+
+    const password = document.getElementById('reset-password').value;
+    const confirm = document.getElementById('reset-confirm').value;
+    if (password !== confirm) {
+      errEl.textContent = t('auth_password_mismatch');
+      errEl.style.display = 'block';
+      return;
+    }
+
+    try {
+      await updatePassword(password);
+      succEl.textContent = t('auth_password_updated');
+      succEl.style.display = 'block';
+      document.getElementById('reset-form').reset();
+      // Redirect to account after a short delay
+      setTimeout(() => { window.location.href = '/account.html'; }, 2000);
     } catch (err) {
       errEl.textContent = err.message;
       errEl.style.display = 'block';

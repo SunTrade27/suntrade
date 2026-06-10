@@ -203,6 +203,23 @@ async function userSignOut() {
   await sb.auth.signOut();
 }
 
+// Password reset — sends a recovery email with a link
+async function resetPassword(email) {
+  if (!email) throw new Error('Email is required');
+  const redirectTo = window.location.origin + '/auth.html?mode=reset';
+  const { data, error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
+  if (error) throw error;
+  return data;
+}
+
+// Update password (used after user clicks the recovery link)
+async function updatePassword(newPassword) {
+  if (!newPassword || newPassword.length < 6) throw new Error('Password must be at least 6 characters');
+  const { data, error } = await sb.auth.updateUser({ password: newPassword });
+  if (error) throw error;
+  return data;
+}
+
 async function getCurrentUser() {
   const { data: { user } } = await sb.auth.getUser();
   return user;
