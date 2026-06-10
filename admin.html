@@ -9,7 +9,74 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/icons.js"></script>
 <style>
-  /* Rich Text Editor for description */
+  /* ===== ADMIN MOBILE: Orders as cards ===== */
+.admin-orders-cards { display: none; flex-direction: column; gap: 0.75rem; }
+.order-row-card {
+  background: var(--bg-white); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 0.85rem;
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+.order-row-card-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px dashed var(--border);
+}
+.order-row-card-id { font-family: ui-monospace, monospace; font-size: 0.75rem; color: var(--text-muted); }
+.order-row-card-amount { font-weight: 800; color: var(--primary); font-size: 1.1rem; }
+.order-row-card-body { display: flex; flex-direction: column; gap: 0.4rem; }
+.order-row-card-row { display: flex; gap: 0.5rem; font-size: 0.85rem; line-height: 1.4; }
+.order-row-card-label { color: var(--text-muted); flex-shrink: 0; min-width: 75px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; padding-top: 1px; }
+.order-row-card-value { color: var(--text); flex: 1; min-width: 0; word-break: break-word; }
+.order-row-card-foot { display: flex; gap: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border); }
+.order-row-card-foot .btn-sm { flex: 1; padding: 8px; font-size: 0.8rem; }
+.order-row-card select { width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.8rem; background: white; }
+
+@media (max-width: 768px) {
+  .admin-table-wrap { display: none; }
+  .admin-orders-cards { display: flex; }
+  /* Modal: prevent clipping, make usable */
+  .modal {
+    max-width: 100% !important;
+    width: calc(100vw - 1rem) !important;
+    margin: 0.5rem !important;
+    padding: 1rem !important;
+    max-height: calc(100vh - 1rem) !important;
+    border-radius: 12px !important;
+  }
+  .modal h2 { font-size: 1.05rem; margin-bottom: 0.75rem; }
+  .modal .form-group { margin-bottom: 0.75rem; }
+  .modal .form-group label { font-size: 0.8rem; margin-bottom: 0.3rem; }
+  .modal .form-group input,
+  .modal .form-group select { padding: 10px 12px; font-size: 0.9rem; }
+  .modal .form-row { grid-template-columns: 1fr; gap: 0; }
+  .modal .form-row .form-group { margin-bottom: 0.75rem; }
+  /* Image upload zone larger tap area */
+  #image-upload-zone { padding: 1.25rem 0.75rem !important; }
+  #image-upload-zone p { font-size: 0.85rem; }
+  /* Lang tabs scroll on mobile */
+  .modal > form > div:first-child { gap: 0.4rem; padding-bottom: 0.4rem; }
+  .modal .lang-tab { padding: 5px 10px; font-size: 0.75rem; }
+  .modal .translate-btn { font-size: 0.7rem; padding: 6px 10px; }
+  /* Description editor larger on mobile */
+  .modal #lang-fields .desc-editor { min-height: 140px; font-size: 0.9rem; padding: 10px; }
+  /* Admin header */
+  .admin-header { gap: 0.5rem; }
+  .admin-header h1 { font-size: 1.05rem; }
+  .mobile-menu-btn { padding: 6px; }
+  /* Stat cards */
+  .stat-card { padding: 1rem; }
+  .stat-card .stat-value { font-size: 1.5rem; }
+  .stat-card .stat-label { font-size: 0.8rem; }
+  /* Reviews */
+  #section-reviews > div[style*="grid-template-columns:repeat(3"] { grid-template-columns: 1fr !important; gap: 0.5rem !important; }
+  /* Backdrop for sidebar */
+  .admin-sidebar.open::after { background: rgba(0,0,0,0.5); }
+}
+@media (min-width: 769px) {
+  .admin-orders-cards { display: none; }
+  .admin-table-wrap { display: block; }
+}
+
+/* Rich Text Editor for description */
   .desc-editor {
     width: 100%;
     min-height: 120px;
@@ -67,12 +134,56 @@
     padding: 8px 12px;
     background: rgba(255,107,0,0.05);
     border-radius: 0 8px 8px 0;
+    color: var(--text);
   }
   .desc-editor:empty:before {
     content: attr(data-placeholder);
     color: var(--text-muted);
     pointer-events: none;
   }
+  /* Rich font/style for pasted descriptions */
+  .desc-editor,
+  .desc-editor * {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: var(--text);
+  }
+  .desc-editor b, .desc-editor strong { font-weight: 700; }
+  .desc-editor i, .desc-editor em { font-style: italic; }
+  .desc-editor u { text-decoration: underline; }
+  .desc-editor a { color: var(--primary); text-decoration: underline; word-break: break-word; }
+  .desc-editor code {
+    background: #F3F4F6; padding: 1px 6px; border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em;
+  }
+  .desc-editor pre {
+    background: #1A1A2E; color: #fff; padding: 12px;
+    border-radius: 8px; overflow-x: auto; margin: 8px 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.85rem; line-height: 1.5;
+  }
+  .desc-editor figure { margin: 12px 0; }
+  .desc-editor figcaption { color: var(--text-light); font-size: 0.85rem; text-align: center; margin-top: 4px; }
+  .desc-editor hr { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+  /* Toolbar for rich text editor */
+  .desc-toolbar {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    padding: 6px; margin-bottom: 6px;
+    background: #F9FAFB; border: 1px solid var(--border);
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    border-bottom: none;
+  }
+  .desc-tool-btn {
+    width: 30px; height: 30px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: white; border: 1px solid var(--border);
+    border-radius: 6px; cursor: pointer;
+    color: var(--text); font-size: 0.85rem; font-weight: 600;
+    transition: all 0.15s;
+  }
+  .desc-tool-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+  .desc-tool-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+  .desc-toolbar .desc-format-btn { margin-bottom: 0; }
+  .desc-editor.with-toolbar { border-top-left-radius: 0; border-top-right-radius: 0; }
   .desc-format-btn {
     display: inline-flex;
     align-items: center;
@@ -194,7 +305,8 @@
         </div>
       </div>
       <h3 data-i18n="admin_recent_orders" style="margin-bottom:1rem;">Recent Orders</h3>
-      <div id="recent-orders"></div>
+      <div id="recent-orders" class="admin-table-wrap"></div>
+      <div id="recent-orders-cards" class="admin-orders-cards" style="margin-top:0.75rem;"></div>
     </div>
 
     <!-- Products -->
@@ -209,7 +321,8 @@
     <!-- Orders -->
     <div id="section-orders" style="display:none;">
       <h2 data-i18n="admin_orders" style="margin-bottom:1.5rem;">Orders</h2>
-      <div id="orders-table"></div>
+      <div id="orders-table" class="admin-table-wrap"></div>
+      <div id="orders-cards" class="admin-orders-cards"></div>
     </div>
 
     <!-- Reviews -->
@@ -417,6 +530,7 @@
     if (initialEditor) {
       initialEditor.addEventListener('paste', handleRichPaste);
       initialEditor.addEventListener('input', syncDescRaw);
+      attachToolbarHandlers(initialEditor);
     }
   });
 
@@ -601,8 +715,10 @@
     document.getElementById('stat-revenue').textContent = '€' + revenue.toFixed(2);
 
     const recentDiv = document.getElementById('recent-orders');
+    const recentCards = document.getElementById('recent-orders-cards');
     if (orders.length === 0) {
       recentDiv.innerHTML = '<p style="color:var(--text-light);">' + t('no_orders_admin') + '</p>';
+      recentCards.innerHTML = '';
       return;
     }
     recentDiv.innerHTML = `
@@ -620,6 +736,25 @@
         `).join('')}</tbody>
       </table>
     `;
+    recentCards.innerHTML = orders.slice(0, 10).map(o => {
+      const ship = o.shipping_city ? `${escapeHtml(o.shipping_city)}, ${escapeHtml(o.shipping_country || '')}` : '—';
+      return `
+        <div class="order-row-card">
+          <div class="order-row-card-head">
+            <div>
+              <div class="order-row-card-id">#${o.id.substring(0, 8).toUpperCase()}</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">${new Date(o.created_at).toLocaleDateString()}</div>
+            </div>
+            <div class="order-row-card-amount">€${parseFloat(o.amount || 0).toFixed(2)}</div>
+          </div>
+          <div class="order-row-card-body">
+            <div class="order-row-card-row"><span class="order-row-card-label">Email</span><span class="order-row-card-value">${escapeHtml(o.customer_email || 'N/A')}</span></div>
+            <div class="order-row-card-row"><span class="order-row-card-label">Ship to</span><span class="order-row-card-value">${ship}</span></div>
+            <div class="order-row-card-row"><span class="order-row-card-label">Status</span><span class="order-row-card-value"><span class="status-badge status-${o.status}">${getStatusLabel(o.status)}</span></span></div>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   function getStatusLabel(status) {
@@ -660,10 +795,14 @@
   async function loadOrders() {
     const orders = await adminGetOrders();
     const container = document.getElementById('orders-table');
+    const cardsContainer = document.getElementById('orders-cards');
     if (orders.length === 0) {
       container.innerHTML = '<p style="color:var(--text-light);">' + t('no_orders_admin') + '</p>';
+      cardsContainer.innerHTML = '';
       return;
     }
+
+    // Desktop: table view
     container.innerHTML = `
       <table class="admin-table">
         <thead><tr><th>ID</th><th>Product</th><th>Customer</th><th>Amount</th><th>Shipping Address</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
@@ -677,7 +816,6 @@
             ${o.customer_phone ? `<br><small style="color:var(--primary)">📞 ${escapeHtml(o.customer_phone)}</small>` : ''}
           ` : '<span style="color:var(--text-light)">' + t('no_address') + '</span>';
 
-          // Show products from order_items
           let productList = 'N/A';
           if (o.order_items && o.order_items.length > 0) {
             productList = o.order_items.map(i => {
@@ -712,6 +850,61 @@
         `}).join('')}</tbody>
       </table>
     `;
+
+    // Mobile: compact card view (every text fully visible, narrow height)
+    cardsContainer.innerHTML = orders.map(o => {
+      let productList = '—';
+      if (o.order_items && o.order_items.length > 0) {
+        productList = o.order_items.map(i => `${escapeHtml(i.product_name || 'Product')} ×${i.quantity || 1}`).join(', ');
+      } else if (o.products && o.products.name_en) {
+        productList = escapeHtml(o.products['name_' + currentLang] || o.products.name_en);
+      }
+
+      const addr = o.shipping_address_line1
+        ? `${escapeHtml(o.shipping_name || o.customer_name || '')} • ${escapeHtml(o.shipping_address_line1)}${o.shipping_city ? ', ' + escapeHtml(o.shipping_city) : ''}${o.shipping_country ? ', ' + escapeHtml(o.shipping_country) : ''}${o.customer_phone ? ' • 📞 ' + escapeHtml(o.customer_phone) : ''}`
+        : '<span style="color:var(--text-light)">' + t('no_address') + '</span>';
+
+      return `
+        <div class="order-row-card">
+          <div class="order-row-card-head">
+            <div>
+              <div class="order-row-card-id">#${o.id.substring(0, 8).toUpperCase()}</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">${new Date(o.created_at).toLocaleDateString()}</div>
+            </div>
+            <div class="order-row-card-amount">€${parseFloat(o.amount || 0).toFixed(2)}</div>
+          </div>
+          <div class="order-row-card-body">
+            <div class="order-row-card-row">
+              <span class="order-row-card-label">Product</span>
+              <span class="order-row-card-value">${productList}</span>
+            </div>
+            <div class="order-row-card-row">
+              <span class="order-row-card-label">Customer</span>
+              <span class="order-row-card-value">${escapeHtml(o.customer_email || 'N/A')}</span>
+            </div>
+            <div class="order-row-card-row">
+              <span class="order-row-card-label">Ship to</span>
+              <span class="order-row-card-value">${addr}</span>
+            </div>
+            <div class="order-row-card-row">
+              <span class="order-row-card-label">Status</span>
+              <span class="order-row-card-value">
+                <select onchange="updateOrderStatus('${o.id}', this.value)">
+                  <option value="pending" ${o.status==='pending'?'selected':''}>${t('order_status_pending')}</option>
+                  <option value="accepted" ${o.status==='accepted'?'selected':''}>${t('order_status_accepted')}</option>
+                  <option value="packing" ${o.status==='packing'?'selected':''}>${t('order_status_packing')}</option>
+                  <option value="shipped" ${o.status==='shipped'?'selected':''}>${t('order_status_shipped')}</option>
+                  <option value="delivered" ${o.status==='delivered'?'selected':''}>${t('order_status_delivered')}</option>
+                </select>
+              </span>
+            </div>
+          </div>
+          <div class="order-row-card-foot">
+            <button class="btn-sm btn-outline" onclick="sendReviewRequest('${o.id}')">📧 Review</button>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   async function updateOrderStatus(orderId, status) {
@@ -763,6 +956,52 @@
     return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
   }
 
+  function buildDescToolbar(lang) {
+    return `
+      <div class="desc-toolbar">
+        <button type="button" class="desc-tool-btn" data-cmd="bold" title="Bold (Ctrl+B)"><b>B</b></button>
+        <button type="button" class="desc-tool-btn" data-cmd="italic" title="Italic (Ctrl+I)"><i>I</i></button>
+        <button type="button" class="desc-tool-btn" data-cmd="underline" title="Underline (Ctrl+U)"><u>U</u></button>
+        <button type="button" class="desc-tool-btn" data-cmd="formatBlock" data-arg="h2" title="Heading">H</button>
+        <button type="button" class="desc-tool-btn" data-cmd="formatBlock" data-arg="h3" title="Subheading" style="font-size:0.75rem;">h3</button>
+        <button type="button" class="desc-tool-btn" data-cmd="formatBlock" data-arg="p" title="Paragraph" style="font-size:0.75rem;">¶</button>
+        <button type="button" class="desc-tool-btn" data-cmd="insertUnorderedList" title="Bullet list">•</button>
+        <button type="button" class="desc-tool-btn" data-cmd="insertOrderedList" title="Numbered list">1.</button>
+        <button type="button" class="desc-tool-btn" data-cmd="formatBlock" data-arg="blockquote" title="Quote">”</button>
+        <button type="button" class="desc-tool-btn" data-cmd="createLink" title="Insert link">🔗</button>
+        <button type="button" class="desc-tool-btn" data-cmd="removeFormat" title="Clear formatting">⌫</button>
+        ${lang === 'en' ? `
+          <button type="button" class="desc-format-btn" onclick="formatDescription()" title="AI көмегімен сипаттаманы реттеу" style="margin-left:auto;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/><circle cx="12" cy="12" r="3"/></svg>
+            AI Format
+          </button>
+        ` : ''}
+      </div>
+      <span class="translate-progress" id="format-status" style="display:block;margin-bottom:6px;"></span>
+    `;
+  }
+
+  function attachToolbarHandlers(editor) {
+    const toolbar = editor.parentElement.querySelector('.desc-toolbar');
+    if (!toolbar) return;
+    toolbar.querySelectorAll('.desc-tool-btn').forEach(btn => {
+      btn.addEventListener('mousedown', (e) => e.preventDefault());
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const cmd = btn.dataset.cmd;
+        const arg = btn.dataset.arg;
+        editor.focus();
+        if (cmd === 'createLink') {
+          const url = prompt('Link URL:');
+          if (url) document.execCommand(cmd, false, url);
+        } else {
+          document.execCommand(cmd, false, arg || null);
+        }
+        syncDescRaw({ target: editor });
+      });
+    });
+  }
+
   function switchLangTab(lang) {
     currentLangTab = lang;
     document.querySelectorAll('.lang-tab').forEach(b => b.classList.toggle('active', b.textContent.trim().toLowerCase() === lang));
@@ -775,7 +1014,6 @@
       if (rawTextarea) {
         rawTextarea.value = currentEditor.innerHTML;
       }
-      // Also update the old-style hidden textarea for backward compatibility
       const oldTextarea = document.getElementById('pdesc-' + currentLangAttr);
       if (oldTextarea) {
         oldTextarea.value = currentEditor.innerHTML;
@@ -785,7 +1023,6 @@
     const nameInput = document.getElementById('pname-' + lang);
     const fieldsDiv = document.getElementById('lang-fields');
 
-    // Get description HTML from raw textarea
     const descRaw = document.getElementById('pdesc-' + lang + '-raw');
     const descHtml = descRaw ? descRaw.value : '';
 
@@ -796,25 +1033,17 @@
       </div>
       <div class="form-group">
         <label>Description (${lang.toUpperCase()})</label>
-        ${lang === 'en' ? `
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap;">
-          <button type="button" class="desc-format-btn" onclick="formatDescription()" title="AI көмегімен сипаттаманы реттеу">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/><circle cx="12" cy="12" r="3"/></svg>
-            AI Format
-          </button>
-          <span class="translate-progress" id="format-status"></span>
-        </div>
-        ` : ''}
-        <div id="pdesc-${lang}" class="desc-editor" contenteditable="true" data-placeholder="${lang === 'en' ? 'Enter product description...' : 'Product description...'}" data-lang="${lang}">${descHtml}</div>
+        ${buildDescToolbar(lang)}
+        <div id="pdesc-${lang}" class="desc-editor with-toolbar" contenteditable="true" data-placeholder="${lang === 'en' ? 'Paste a description from any website — images, text and formatting will be preserved and beautified.' : 'Product description...'}" data-lang="${lang}">${descHtml}</div>
         <textarea id="pdesc-${lang}-raw" style="display:none;">${descHtml.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
       </div>
     `;
 
-    // Add paste handler for rich text on the new editor
     const editor = document.getElementById('pdesc-' + lang);
     if (editor) {
       editor.addEventListener('paste', handleRichPaste);
       editor.addEventListener('input', syncDescRaw);
+      attachToolbarHandlers(editor);
     }
   }
 
@@ -1008,59 +1237,135 @@
 
   // ===== Rich Text Helpers =====
   function handleRichPaste(e) {
-    // Prevent default paste
     e.preventDefault();
-
-    // Try to get HTML content from clipboard
+    const editor = e.target;
     const html = e.clipboardData.getData('text/html');
     const text = e.clipboardData.getData('text/plain');
 
     if (html) {
-      // Clean up the HTML: remove scripts, styles, and other unwanted elements
       const cleaned = cleanPastedHtml(html);
       document.execCommand('insertHTML', false, cleaned);
     } else if (text) {
-      // Fallback: insert as plain text (preserving line breaks)
-      const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-      document.execCommand('insertHTML', false, escaped.replace(/\n/g, '<br>'));
+      // Plain text fallback: split by double newlines into paragraphs, single newlines into <br>
+      const paragraphs = text.split(/\n{2,}/);
+      const html = paragraphs.map(p => {
+        const trimmed = p.trim();
+        if (!trimmed) return '';
+        // Detect lines that look like list items
+        if (/^[\-\*•]\s+/.test(trimmed)) {
+          const items = trimmed.split(/\n/).map(l => l.replace(/^[\-\*•]\s+/, '').trim()).filter(Boolean);
+          return '<ul>' + items.map(i => '<li>' + i + '</li>').join('') + '</ul>';
+        }
+        if (/^\d+[\.)]\s+/.test(trimmed)) {
+          const items = trimmed.split(/\n/).map(l => l.replace(/^\d+[\.)]\s+/, '').trim()).filter(Boolean);
+          return '<ol>' + items.map(i => '<li>' + i + '</li>').join('') + '</ol>';
+        }
+        return '<p>' + trimmed.replace(/\n/g, '<br>') + '</p>';
+      }).join('');
+      document.execCommand('insertHTML', false, html);
     }
-
-    // Sync to raw textarea
-    syncDescRaw(e);
+    syncDescRaw({ target: editor });
   }
 
   function cleanPastedHtml(html) {
-    // Create a temporary DOM element to parse and clean the HTML
     const temp = document.createElement('div');
     temp.innerHTML = html;
 
-    // Remove script and style elements
-    temp.querySelectorAll('script, style, iframe, link, meta, form, input, button, select, textarea, svg, video, audio').forEach(el => el.remove());
+    // Strip dangerous/unwanted elements
+    temp.querySelectorAll('script, style, iframe, link, meta, form, input, button, select, textarea, svg, video, audio, object, embed').forEach(el => el.remove());
 
-    // Remove all on* event handlers
+    // Strip class attributes (avoid leaking site styles), keep ours
     temp.querySelectorAll('*').forEach(el => {
       [...el.attributes].forEach(attr => {
         if (attr.name.startsWith('on')) el.removeAttribute(attr.name);
+        if (attr.name === 'class' || attr.name === 'id') el.removeAttribute(attr.name);
         if (attr.name === 'style') {
-          // Keep style but clean potentially dangerous properties
-          el.style.removeProperty('position');
-          el.style.removeProperty('display');
+          // Drop layout-affecting styles; we'll apply our own
+          ['position','display','float','width','height','min-width','max-width','min-height','max-height','top','left','right','bottom','margin','padding','transform','transition','z-index','opacity','visibility','color','background','background-color','font-size','font-weight','font-family','line-height','text-align','text-decoration','box-shadow','border','border-radius'].forEach(p => {
+            el.style.removeProperty(p);
+          });
         }
       });
     });
 
-    // Remove empty tags
-    temp.querySelectorAll('p, div, span, b, i, u, strong, em').forEach(el => {
-      if (!el.innerHTML.trim() && !el.querySelector('img')) el.remove();
-    });
-
-    // Make image URLs relative - keep absolute URLs as-is (they'll work)
-    // But ensure images have max-width
+    // Style images: keep them, make them responsive & pretty
     temp.querySelectorAll('img').forEach(el => {
-      if (!el.style.maxWidth) el.style.maxWidth = '100%';
+      // If the image is wrapped in a link, unwrap it
+      const parentA = el.closest('a');
+      if (parentA && parentA.querySelector('img') === el) {
+        // Keep the link
+      }
+      el.setAttribute('loading', 'lazy');
+      el.style.maxWidth = '100%';
       el.style.height = 'auto';
       el.style.borderRadius = '8px';
+      el.style.margin = '10px 0';
+      el.style.display = 'block';
+      el.style.boxShadow = '0 1px 3px rgba(0,0,0,0.08)';
+    });
+
+    // Style links
+    temp.querySelectorAll('a').forEach(el => {
+      el.style.color = 'var(--primary)';
+      el.style.textDecoration = 'underline';
+      el.style.wordBreak = 'break-word';
+      if (!el.textContent.trim() && el.querySelector('img')) {
+        // a-only-wrapping-image: ensure the link doesn't break layout
+        el.style.display = 'inline-block';
+      }
+    });
+
+    // Style tables
+    temp.querySelectorAll('table').forEach(el => {
+      el.style.width = '100%';
+      el.style.borderCollapse = 'collapse';
+      el.style.margin = '10px 0';
+      el.style.fontSize = '0.9rem';
+    });
+    temp.querySelectorAll('td, th').forEach(el => {
+      el.style.border = '1px solid var(--border)';
+      el.style.padding = '8px 10px';
+      el.style.textAlign = 'left';
+    });
+
+    // Style headings & paragraphs
+    temp.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(el => {
+      el.style.margin = '14px 0 8px';
+      el.style.fontWeight = '700';
+      el.style.color = 'var(--text)';
+      el.style.lineHeight = '1.3';
+    });
+    temp.querySelectorAll('h1').forEach(el => el.style.fontSize = '1.4rem');
+    temp.querySelectorAll('h2').forEach(el => el.style.fontSize = '1.2rem');
+    temp.querySelectorAll('h3').forEach(el => el.style.fontSize = '1.05rem');
+    temp.querySelectorAll('h4, h5, h6').forEach(el => el.style.fontSize = '0.95rem');
+    temp.querySelectorAll('p').forEach(el => {
       el.style.margin = '8px 0';
+      el.style.lineHeight = '1.65';
+    });
+
+    // Lists
+    temp.querySelectorAll('ul, ol').forEach(el => {
+      el.style.paddingLeft = '1.5rem';
+      el.style.margin = '8px 0';
+    });
+    temp.querySelectorAll('li').forEach(el => {
+      el.style.marginBottom = '4px';
+    });
+
+    // Blockquotes
+    temp.querySelectorAll('blockquote').forEach(el => {
+      el.style.borderLeft = '3px solid var(--primary)';
+      el.style.margin = '10px 0';
+      el.style.padding = '8px 14px';
+      el.style.background = 'rgba(255,107,0,0.05)';
+      el.style.borderRadius = '0 8px 8px 0';
+      el.style.color = 'var(--text)';
+    });
+
+    // Remove empty tags (but keep ones with images)
+    temp.querySelectorAll('p, div, span, b, i, u, strong, em').forEach(el => {
+      if (!el.innerHTML.trim() && !el.querySelector('img')) el.remove();
     });
 
     return temp.innerHTML;
