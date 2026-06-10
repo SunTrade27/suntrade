@@ -4,7 +4,7 @@
 // Uses Gmail SMTP via api/lib/email.js
 
 const { createClient } = require('@supabase/supabase-js');
-const { sendMail, isConfigured, ADMIN_EMAIL } = require('./lib/email');
+const { sendMail, isConfigured, ADMIN_EMAIL, ORDER_NOTIFICATION_EMAIL } = require('./lib/email');
 
 const SITE_URL = process.env.SITE_URL || 'https://www.suntrade.store';
 
@@ -475,9 +475,13 @@ module.exports = async function handler(req, res) {
       results.customer = { ok: false, error: t.noEmail };
     }
 
-    // 8) Админге email жіберу
+    // 8) Админге email жіберу (ADMIN_EMAIL + ORDER_NOTIFICATION_EMAIL)
+    const adminRecipients = [ADMIN_EMAIL];
+    if (ORDER_NOTIFICATION_EMAIL && ORDER_NOTIFICATION_EMAIL !== ADMIN_EMAIL) {
+      adminRecipients.push(ORDER_NOTIFICATION_EMAIL);
+    }
     results.admin = await sendMail({
-      to: ADMIN_EMAIL,
+      to: adminRecipients,
       subject: `🆕 New order #${orderIdShort} — €${amount} — ${esc(order.customer_name || order.shipping_name || 'Customer')}`,
       html: adminEmailHtml,
       replyTo: order.customer_email || undefined
@@ -487,6 +491,7 @@ module.exports = async function handler(req, res) {
       success: true,
       language,
       orderId: order.id,
+      adminRecipients,
       ...results
     });
   } catch (err) {

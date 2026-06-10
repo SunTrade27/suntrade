@@ -4,7 +4,7 @@
 // Uses Gmail SMTP via api/lib/email.js
 
 const { createClient } = require('@supabase/supabase-js');
-const { sendMail, isConfigured, ADMIN_EMAIL } = require('./lib/email');
+const { sendMail, isConfigured, ADMIN_EMAIL, ORDER_NOTIFICATION_EMAIL } = require('./lib/email');
 
 const SITE_URL = process.env.SITE_URL || 'https://www.suntrade.store';
 
@@ -127,6 +127,31 @@ function buildCustomerEmail(order, status, language) {
   };
   const color = colors[status] || '#3B82F6';
 
+  // Delivered статусында — әр тауар үшін пікір қалдыру батырмасы
+  const reviewButtonsHtml = status === 'delivered' ? `
+    <div style="background:#FEF3C7;border-radius:12px;padding:20px;margin:24px 0;">
+      <p style="margin:0 0 16px;color:#92400E;font-size:15px;text-align:center;font-weight:600;">⭐ Enjoyed your order? Leave a review to help other customers!</p>
+      ${(order.order_items || []).filter(item => item.product_id).map(item => `
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:10px;">
+          <tr>
+            <td style="padding:10px 12px;background:#FFFFFF;border-radius:8px;border:1px solid #FDE68A;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="vertical-align:middle;">
+                    <p style="margin:0;color:#1A1A2E;font-size:14px;font-weight:600;">${item.product_name || 'Product'}</p>
+                  </td>
+                  <td align="right" style="vertical-align:middle;width:140px;">
+                    <a href="${SITE_URL}/review.html?product=${item.product_id}&order=${order.id}" style="display:inline-block;background:#FF6B00;color:#FFFFFF;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Leave a Review</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      `).join('')}
+    </div>
+  ` : '';
+
   return {
     subject: typeof t.subject === 'function' ? t.subject(status) : `Order Update: ${statusTitle}`,
     html: `<!DOCTYPE html>
@@ -165,10 +190,7 @@ function buildCustomerEmail(order, status, language) {
         <a href="${SITE_URL}/account.html#orders" style="display:inline-block;background:${color};color:#FFFFFF;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">View My Orders</a>
       </td></tr>
     </table>
-    ${status === 'delivered' ? `
-    <div style="background:#FEF3C7;border-radius:8px;padding:16px;margin:24px 0;text-align:center;">
-      <p style="margin:0;color:#92400E;font-size:14px;">⭐ Enjoyed your order? Leave a review to help other customers!</p>
-    </div>` : ''}
+    ${reviewButtonsHtml}
   </td></tr>
   <tr><td style="background:#F9FAFB;padding:24px;text-align:center;">
     <p style="margin:0;color:#6B7280;font-size:13px;">SunTrade — Quality products, fast delivery</p>
@@ -262,10 +284,14 @@ module.exports = async (req, res) => {
       });
     }
 
-    // 3) Админге email жіберу
+    // 3) Админге email жіберу (ADMIN_EMAIL + ORDER_NOTIFICATION_EMAIL)
     const adminEmail = buildAdminEmail(order, status);
+    const adminRecipients = [ADMIN_EMAIL];
+    if (ORDER_NOTIFICATION_EMAIL && ORDER_NOTIFICATION_EMAIL !== ADMIN_EMAIL) {
+      adminRecipients.push(ORDER_NOTIFICATION_EMAIL);
+    }
     results.admin = await sendMail({
-      to: ADMIN_EMAIL,
+      to: adminRecipients,
       subject: adminEmail.subject,
       html: adminEmail.html,
       replyTo: order.customer_email || undefined

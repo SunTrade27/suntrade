@@ -217,121 +217,116 @@
     }
   }
 
-  // Reviews carousel scroll (desktop)
+  // Reviews carousel scroll (desktop & mobile - 3 at a time on mobile)
   function scrollReviews(direction) {
     const carousel = document.getElementById('homepage-reviews');
     if (!carousel) return;
-    const scrollAmount = 340;
+    // On mobile, scroll by group of 3 (full width); on desktop, by single card
+    const isMobile = window.innerWidth <= 768;
+    const card = carousel.querySelector('div');
+    if (!card) return;
+    let scrollAmount;
+    if (isMobile) {
+      // Scroll by 3 cards at a time (full viewport width of carousel)
+      scrollAmount = card.offsetWidth * 3;
+    } else {
+      scrollAmount = 340;
+    }
     carousel.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
   }
 
-  // ===== Mobile Reviews Wheel (Combination Lock Style) =====
+  // ===== Mobile Reviews Pagination (3 at a time) =====
   let wheelPage = 0;
   let wheelTotalPages = 0;
-  let wheelTouchStartY = 0;
-  let wheelTouchMoved = false;
   let wheelInitialized = false;
 
   function initMobileWheel() {
     if (cachedReviews.length < 1) return;
-    wheelTotalPages = Math.max(1, Math.ceil(cachedReviews.length / 3));
 
-    // Reset position
+    const isMobile = window.innerWidth <= 768;
+    const perPage = isMobile ? 3 : Math.max(1, cachedReviews.length);
+    wheelTotalPages = Math.max(1, Math.ceil(cachedReviews.length / perPage));
+
+    // Reset to first page
     wheelPage = 0;
-    updateWheelPosition();
+    scrollToPage(wheelPage);
     updateWheelDots();
 
-    // Set up touch events only once
     if (wheelInitialized) return;
     wheelInitialized = true;
 
-    const wrapper = document.querySelector('.reviews-carousel-wrapper');
-    if (!wrapper) return;
-
-    wrapper.addEventListener('touchstart', function(e) {
-      wheelTouchStartY = e.touches[0].clientY;
-      wheelTouchMoved = false;
-    }, { passive: true });
-
-    wrapper.addEventListener('touchmove', function() {
-      wheelTouchMoved = true;
-    }, { passive: true });
-
-    wrapper.addEventListener('touchend', function(e) {
-      if (!wheelTouchMoved || wheelTotalPages <= 1) return;
-      const diff = e.changedTouches[0].clientY - wheelTouchStartY;
-      if (Math.abs(diff) > 40) {
-        if (diff > 0) {
-          // Swipe down — show previous page
-          wheelPage = (wheelPage - 1 + wheelTotalPages) % wheelTotalPages;
-        } else {
-          // Swipe up — show next page
-          wheelPage = (wheelPage + 1) % wheelTotalPages;
-        }
-        updateWheelPosition();
-        updateWheelDots();
-      }
-    }, { passive: true });
-
-    // Mouse wheel support on desktop
-    wrapper.addEventListener('wheel', function(e) {
-      if (wheelTotalPages <= 1) return;
-      e.preventDefault();
-      if (e.deltaY > 0) {
-        wheelPage = (wheelPage + 1) % wheelTotalPages;
-      } else {
-        wheelPage = (wheelPage - 1 + wheelTotalPages) % wheelTotalPages;
-      }
-      updateWheelPosition();
-      updateWheelDots();
-    }, { passive: false });
-
     // Click on indicator dots to navigate
-    document.getElementById('homepage-reviews-dots').addEventListener('click', function(e) {
-      const dot = e.target.closest('.reviews-wheel-dot');
-      if (!dot) return;
-      const page = parseInt(dot.dataset.page);
-      if (!isNaN(page) && page !== wheelPage) {
-        wheelPage = page;
-        updateWheelPosition();
-        updateWheelDots();
-      }
-    });
+    const dotsContainer = document.getElementById('homepage-reviews-dots');
+    if (dotsContainer) {
+      dotsContainer.addEventListener('click', function(e) {
+        const dot = e.target.closest('.reviews-wheel-dot');
+        if (!dot) return;
+        const page = parseInt(dot.dataset.page);
+        if (!isNaN(page) && page !== wheelPage) {
+          wheelPage = page;
+          scrollToPage(wheelPage);
+          updateWheelDots();
+        }
+      });
+    }
+
+    // Detect manual scroll on mobile to update the active dot
+    const carousel = document.getElementById('homepage-reviews');
+    if (carousel) {
+      let scrollTimeout;
+      carousel.addEventListener('scroll', function() {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(function() {
+          if (window.innerWidth > 768) return;
+          const card = carousel.querySelector('div');
+          if (!card) return;
+          const cardW = card.offsetWidth;
+          // Calculate which "page" of 3 we are closest to
+          const scrollLeft = carousel.scrollLeft;
+          // Snap scroll: round to nearest multiple of (cardW * 3)
+          const pageW = cardW * 3;
+          const newPage = Math.round(scrollLeft / pageW);
+          if (newPage !== wheelPage && newPage >= 0 && newPage < wheelTotalPages) {
+            wheelPage = newPage;
+            updateWheelDots();
+          }
+        }, 80);
+      }, { passive: true });
+    }
 
     // Handle resize
     let resizeTimer;
     window.addEventListener('resize', function() {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(function() {
-        updateWheelPosition();
+        const isM = window.innerWidth <= 768;
+        const pp = isM ? 3 : Math.max(1, cachedReviews.length);
+        wheelTotalPages = Math.max(1, Math.ceil(cachedReviews.length / pp));
+        if (wheelPage >= wheelTotalPages) wheelPage = wheelTotalPages - 1;
+        scrollToPage(wheelPage);
+        updateWheelDots();
       }, 200);
     });
   }
 
-  function updateWheelPosition() {
+  function scrollToPage(page) {
     const carousel = document.getElementById('homepage-reviews');
     if (!carousel) return;
-
-    // On desktop, clear any transform that was applied on mobile
-    if (window.innerWidth > 768) {
-      carousel.style.transform = '';
-      return;
-    }
-
-    const cards = Array.from(carousel.children);
-    if (cards.length < 3) return;
-
-    // Use the height of first card (CSS sets 133px on mobile)
-    const cardHeight = cards[0].offsetHeight;
-    const offset = -(wheelPage * 3 * cardHeight);
-    carousel.style.transform = 'translateY(' + offset + 'px)';
+    const card = carousel.querySelector('div');
+    if (!card) return;
+    const isMobile = window.innerWidth <= 768;
+    const pageSize = isMobile ? 3 : 1;
+    const cardW = card.offsetWidth;
+    carousel.scrollTo({ left: page * cardW * pageSize, behavior: 'smooth' });
   }
 
   function updateWheelDots() {
     const dotsContainer = document.getElementById('homepage-reviews-dots');
     if (!dotsContainer) return;
 
-    if (wheelTotalPages <= 1) {
+    const isMobile = window.innerWidth <= 768;
+    // Only show dots on mobile, and only if more than one page
+    if (!isMobile || wheelTotalPages <= 1) {
       dotsContainer.innerHTML = '';
       return;
     }

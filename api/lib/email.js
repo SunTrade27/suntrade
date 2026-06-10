@@ -16,6 +16,8 @@
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SMTP_FROM = process.env.SMTP_FROM || 'SunTrade <onboarding@resend.dev>';
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'sundetofficial@gmail.com';
+// Қосымша хабарлама алатын email (мысалы, иесі)
+const ORDER_NOTIFICATION_EMAIL = process.env.ORDER_NOTIFICATION_EMAIL || 'serjanyelemesov@gmail.com';
 const RESEND_API_URL = 'https://api.resend.com/emails';
 
 function isConfigured() {
@@ -91,5 +93,6 @@ module.exports = {
   sendMail,
   sendMailAll,
   ADMIN_EMAIL,
+  ORDER_NOTIFICATION_EMAIL,
   SMTP_FROM
 };
