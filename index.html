@@ -481,7 +481,9 @@
     const img = (p.images && p.images[0]) || '/images/placeholder.jpg';
     return `
       <a href="/product.html?id=${p.id}" class="product-card">
-        <img src="${img}" alt="${name}" class="product-card-img" loading="lazy">
+        <div class="product-card-img-wrap">
+          <img src="${img}" alt="${name}" class="product-card-img" loading="lazy">
+        </div>
         <div class="product-card-body">
           <h3 class="product-card-name">${name}</h3>
           <p class="product-card-price">&euro;${parseFloat(p.price).toFixed(2)}</p>
