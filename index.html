@@ -235,7 +235,7 @@
     carousel.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
   }
 
-  // ===== Mobile Reviews Pagination (3 at a time) =====
+  // ===== Mobile Reviews Pagination (vertical lock-wheel: 1 per page) =====
   let wheelPage = 0;
   let wheelTotalPages = 0;
   let wheelInitialized = false;
@@ -244,7 +244,7 @@
     if (cachedReviews.length < 1) return;
 
     const isMobile = window.innerWidth <= 768;
-    const perPage = isMobile ? 3 : Math.max(1, cachedReviews.length);
+    const perPage = isMobile ? 1 : Math.max(1, cachedReviews.length);
     wheelTotalPages = Math.max(1, Math.ceil(cachedReviews.length / perPage));
 
     // Reset to first page
@@ -280,12 +280,11 @@
           if (window.innerWidth > 768) return;
           const card = carousel.querySelector('div');
           if (!card) return;
-          const cardW = card.offsetWidth;
-          // Calculate which "page" of 3 we are closest to
-          const scrollLeft = carousel.scrollLeft;
-          // Snap scroll: round to nearest multiple of (cardW * 3)
-          const pageW = cardW * 3;
-          const newPage = Math.round(scrollLeft / pageW);
+          const cardH = card.offsetHeight;
+          // Snap scroll: round to nearest multiple of (cardH)
+          const scrollTop = carousel.scrollTop;
+          const pageH = cardH;
+          const newPage = Math.round(scrollTop / pageH);
           if (newPage !== wheelPage && newPage >= 0 && newPage < wheelTotalPages) {
             wheelPage = newPage;
             updateWheelDots();
@@ -300,7 +299,7 @@
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(function() {
         const isM = window.innerWidth <= 768;
-        const pp = isM ? 3 : Math.max(1, cachedReviews.length);
+        const pp = isM ? 1 : Math.max(1, cachedReviews.length);
         wheelTotalPages = Math.max(1, Math.ceil(cachedReviews.length / pp));
         if (wheelPage >= wheelTotalPages) wheelPage = wheelTotalPages - 1;
         scrollToPage(wheelPage);
@@ -315,9 +314,9 @@
     const card = carousel.querySelector('div');
     if (!card) return;
     const isMobile = window.innerWidth <= 768;
-    const pageSize = isMobile ? 3 : 1;
-    const cardW = card.offsetWidth;
-    carousel.scrollTo({ left: page * cardW * pageSize, behavior: 'smooth' });
+    const pageSize = isMobile ? 1 : 1;
+    const pageH = card.offsetHeight * pageSize;
+    carousel.scrollTo({ top: page * pageH, behavior: 'smooth' });
   }
 
   function updateWheelDots() {
@@ -408,6 +407,7 @@
         const productName = r.products ? escHtml(r.products['name_' + currentLang] || r.products.name_en || '') : '';
         const displayName = productName || 'Product';
         const productImg = r.products && r.products.images && r.products.images[0] ? escHtml(r.products.images[0]) : '';
+        const verifiedLabel = (typeof t === 'function' ? t('verified_badge') : '✓ Verified');
         return `
           <div style="background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;">
             ${r.product_id ? `
@@ -425,7 +425,7 @@
               <div style="width:48px;height:48px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.2rem;flex-shrink:0;">${safeName.charAt(0).toUpperCase()}</div>
               <div>
                 <strong>${safeName}</strong>
-                ${r.verified ? '<span style="background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:50px;font-size:0.7rem;font-weight:600;margin-left:6px;">' + (typeof t === 'function' ? t('verified_badge') : '✓ Verified') + '</span>' : ''}
+                <span style="background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:50px;font-size:0.7rem;font-weight:600;margin-left:6px;display:inline-block;">${verifiedLabel}</span>
                 <div style="color:var(--primary);font-size:0.9rem;">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
               </div>
             </div>

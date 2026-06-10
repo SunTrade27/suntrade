@@ -350,88 +350,97 @@ input, textarea, select { font-family: inherit; }
 @media (max-width: 768px) {
   .carousel-btn { display: none; }
 
-  /* Mobile: show 3 reviews at a time, swipe one group of 3 at a time */
+  /* Mobile: vertical lock-wheel style — one review per screen, stacked */
   .reviews-carousel-wrapper {
-    height: auto;
+    height: 380px;
     overflow: hidden;
     border: 1px solid rgba(255, 107, 0, 0.12);
     border-radius: var(--radius);
-    background: var(--bg-white);
+    background: linear-gradient(180deg, #FAFAFA 0%, #FFFFFF 50%, #FAFAFA 100%);
     position: relative;
-    touch-action: pan-x;
+    touch-action: pan-y;
+    perspective: 1200px;
+    box-shadow: inset 0 8px 16px -8px rgba(0,0,0,0.08), inset 0 -8px 16px -8px rgba(0,0,0,0.08);
   }
   .reviews-carousel {
-    flex-direction: row;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-snap-type: y mandatory;
     gap: 0;
     padding: 0;
     transition: none;
     will-change: scroll-position;
     -webkit-overflow-scrolling: touch;
+    height: 100%;
+    transform-style: preserve-3d;
   }
   .reviews-carousel > div {
-    min-width: calc((100% - 1.5rem) / 3) !important;
-    max-width: calc((100% - 1.5rem) / 3) !important;
-    width: calc((100% - 1.5rem) / 3) !important;
-    height: auto;
-    min-height: 280px;
-    padding: 0.75rem !important;
-    display: flex;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0;
+    padding: 1rem 0.85rem !important;
+    display: flex !important;
     flex-direction: column;
     justify-content: flex-start;
     box-sizing: border-box;
     overflow: hidden;
-    scroll-snap-align: start;
+    scroll-snap-align: center;
     scroll-snap-stop: always;
-    border-right: 1px solid var(--border);
+    border-right: none !important;
+    border-bottom: 1px solid var(--border);
+    background: transparent !important;
+    transform-style: preserve-3d;
   }
   .reviews-carousel > div:last-child {
-    border-right: none;
+    border-bottom: none;
   }
-  .reviews-carousel > div:nth-child(3n) {
-    border-right: none;
-  }
-  /* Mobile - show product links and images in review cards (keep them compact) */
+  /* Compact product link */
   .reviews-carousel > div a {
     display: flex !important;
     margin-bottom: 0.5rem !important;
     font-size: 0.7rem;
+    padding: 6px 10px !important;
   }
   .reviews-carousel > div a img {
     display: block !important;
-    width: 24px !important;
-    height: 24px !important;
+    width: 28px !important;
+    height: 28px !important;
   }
   .reviews-carousel > div a .pd-arrow {
     display: inline-block !important;
   }
-  .reviews-carousel > div img:not(a img) {
-    display: none;
+  /* Hide standalone review images on home page mobile (reviews.html keeps them) */
+  #homepage-reviews > div > div:last-child > img {
+    display: none !important;
   }
-  /* Compact content for 3-at-a-time view */
-  .reviews-carousel > div > div:first-child {
+  /* Compact header */
+  #homepage-reviews > div > div:nth-child(2) {
     margin-bottom: 0.5rem !important;
   }
-  .reviews-carousel > div > div:first-child > div:first-child {
+  #homepage-reviews > div > div:nth-child(2) > div:first-child {
     width: 36px !important;
     height: 36px !important;
     font-size: 0.95rem !important;
   }
-  .reviews-carousel > div > div:first-child > div:nth-child(2) strong {
-    font-size: 0.8rem;
+  #homepage-reviews > div > div:nth-child(2) > div:nth-child(2) strong {
+    font-size: 0.85rem;
   }
-  .reviews-carousel > div > div:first-child > div:nth-child(2) div {
+  #homepage-reviews > div > div:nth-child(2) > div:nth-child(2) div {
     font-size: 0.75rem !important;
   }
-  .reviews-carousel > div p {
-    font-size: 0.78rem !important;
-    line-height: 1.45 !important;
-    margin-bottom: 0.5rem !important;
+  /* Comment text — shorter, all visible */
+  #homepage-reviews > div > p {
+    font-size: 0.8rem !important;
+    line-height: 1.5 !important;
+    margin-bottom: 0 !important;
     display: -webkit-box;
-    -webkit-line-clamp: 5;
+    -webkit-line-clamp: 6;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    font-style: italic;
   }
   .reviews-carousel > div span[style*="background:#D1FAE5"] {
     font-size: 0.6rem !important;
