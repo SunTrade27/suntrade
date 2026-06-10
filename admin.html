@@ -1261,22 +1261,170 @@
   }
 
   // ===== Rich Text Helpers =====
-  function handleRichPaste(e) {
+
+  // Common site UI artifact patterns (button text, nav, overlays) to strip from pasted content
+  const UI_ARTIFACT_PATTERNS = [
+    /^add to (cart|basket|bag)$/i,
+    /^buy now$/i,
+    /^shop now$/i,
+    /^order now$/i,
+    /^get (it|one) now$/i,
+    /^contact (us|the seller|supplier)$/i,
+    /^start order$/i,
+    /^request quote$/i,
+    /^send message$/i,
+    /^message (us|the seller|supplier)$/i,
+    /^chat now$/i,
+    /^inquiry$/i,
+    /^negotiate$/i,
+    /^report (abuse|item|infringement)$/i,
+    /^report image$/i,
+    /^frequently bought together$/i,
+    /^customers who (also )?bought|bought this item (also|too)$/i,
+    /^edit selections?$/i,
+    /^add to wishlist|add to favorites$/i,
+    /^share (this|to)$/i,
+    /^print this page$/i,
+    /^subscribe.*newsletter$/i,
+    /^sign up for.*newsletter$/i,
+    /^follow (us|our).*(facebook|instagram|twitter|tiktok|youtube|wechat|whatsapp)$/i,
+    /^cookie.*(policy|consent|notice)$/i,
+    /^accept (all )?cookies$/i,
+    /^we use cookies$/i,
+    /^i agree$/i,
+    /^got it$/i,
+    /^learn more.*$|read more.*$/i,
+    /^show more$|^view more$|^see more$/i,
+    /^skip to (main )?content$/i,
+    /^back to top$/i,
+    /^loading\.\.\.$|^please wait\.\.\.$/i,
+    /^click here$/i,
+    /^tap here$/i,
+    /^go to (home|cart|checkout)$/i,
+    /^home\s*\/?\s*$/i,
+    /^menu$|^navigation$|^nav$|^breadcrumb/i,
+    /^translation missing/i,
+    /^powered by.*$/i,
+    /^copyright\s*©?\s*\d{4}/i,
+    /^all rights reserved$/i,
+    /^terms (of use|and conditions|& conditions|of service)$/i,
+    /^privacy policy$/i,
+    /^shipping (info|information|policy|rates)$/i,
+    /^return(s| policy)?$/i,
+    /^refund(s| policy)?$/i,
+    /^secure (checkout|payment)$/i,
+    /^free shipping$/i,
+    /^delivery (info|information)$/i,
+    /^save \$?\d+/i,
+    /^off\s*\d+%$/i,
+    /^best seller$/i,
+    /^top rated$/i,
+    /^new arrival$/i,
+    /^hot sale$/i,
+    /^limited time offer$/i,
+    /^promotion/i,
+    /^on sale$/i,
+    /^discount/i
+  ];
+
+  // Container-like roles / classes to drop wholesale (header, footer, nav, related, cookie, etc.)
+  const UI_ARTIFACT_TAGS = ['script','style','iframe','link','meta','form','input','button','select','textarea','svg','video','audio','object','embed','nav','header','footer','aside'];
+  const UI_ARTIFACT_CLASS_HINTS = [
+    'header','footer','navbar','nav-bar','topbar','top-bar','breadcrumb','sidebar','menu-bar',
+    'cookie','cookie-banner','cookie-consent','cookie-notice','gdpr','consent',
+    'subscribe','newsletter','social','share','share-buttons','social-share',
+    'related','related-products','related-items','you-may-also','you-may-also-like','frequently','frequently-bought','recommend','recommendations',
+    'reviews-summary','rating-summary','review-form','write-review',
+    'breadcrumb','pagination','pager','breadcrumbs',
+    'cta','call-to-action','action-buttons','buy-box','purchase','order-button',
+    'report-abuse','report-item','report-image',
+    'edit-selections','edit-selection',
+    'sku','vendor-info','seller-info','store-info',
+    'product-tags','product-meta','product-share',
+    'minicart','mini-cart','cart-preview','cart-drawer',
+    'popup','modal','overlay','banner','ad-','advert','promo-bar','promotion-bar',
+    'live-chat','chat-widget','support-widget','help-widget','intercom','zendesk'
+  ];
+
+  // Phrases in text content (e.g. labels above an image) to strip if no valuable content
+  const UI_LABEL_PHRASES = [
+    'frequently bought together', 'report abuse', 'report this item', 'report image',
+    'edit selections', 'customers also bought', 'customers who bought this',
+    'you may also like', 'related products', 'sponsored products',
+    'product description goes here', 'description goes here',
+    'no description available for this product',
+    'add to cart', 'buy now', 'shop now', 'contact supplier', 'start order',
+    'send inquiry', 'chat now', 'message supplier', 'negotiate', 'request quote'
+  ];
+
+  function isUiArtifactText(text) {
+    if (!text) return false;
+    const t = text.trim();
+    if (!t) return false;
+    if (t.length > 120) return false; // long text is real content
+    for (const re of UI_ARTIFACT_PATTERNS) {
+      if (re.test(t)) return true;
+    }
+    const lower = t.toLowerCase();
+    for (const phrase of UI_LABEL_PHRASES) {
+      if (lower === phrase || lower.includes(phrase) && t.length < 60) return true;
+    }
+    return false;
+  }
+
+  function isUiArtifactContainer(el) {
+    if (!el || !el.className) return false;
+    const cls = (typeof el.className === 'string' ? el.className : '').toLowerCase();
+    const id  = (el.id || '').toLowerCase();
+    const role = (el.getAttribute('role') || '').toLowerCase();
+    const aria = (el.getAttribute('aria-label') || '').toLowerCase();
+    const combined = cls + ' ' + id + ' ' + role + ' ' + aria;
+    if (!combined.trim()) return false;
+    return UI_ARTIFACT_CLASS_HINTS.some(h => combined.includes(h));
+  }
+
+  async function uploadPastedDataImage(dataUrl) {
+    try {
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      if (!blob || !blob.type.startsWith('image/')) return null;
+      const ext = (blob.type.split('/')[1] || 'png').replace('jpeg','jpg');
+      const file = new File([blob], `pasted_${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`, { type: blob.type });
+      const url = await uploadImage(file);
+      return url;
+    } catch (e) {
+      console.warn('Failed to upload pasted data:image:', e.message);
+      return null;
+    }
+  }
+
+  async function uploadAllDataImagesIn(tempRoot) {
+    const imgs = Array.from(tempRoot.querySelectorAll('img'));
+    for (const img of imgs) {
+      const src = img.getAttribute('src') || '';
+      if (src.startsWith('data:image/')) {
+        const uploaded = await uploadPastedDataImage(src);
+        if (uploaded) img.setAttribute('src', uploaded);
+      }
+    }
+  }
+
+  async function handleRichPaste(e) {
     e.preventDefault();
     const editor = e.target;
     const html = e.clipboardData.getData('text/html');
     const text = e.clipboardData.getData('text/plain');
 
     if (html) {
-      const cleaned = cleanPastedHtml(html);
+      const cleaned = await cleanPastedHtmlAsync(html);
       document.execCommand('insertHTML', false, cleaned);
     } else if (text) {
       // Plain text fallback: split by double newlines into paragraphs, single newlines into <br>
       const paragraphs = text.split(/\n{2,}/);
-      const html = paragraphs.map(p => {
+      const html2 = paragraphs.map(p => {
         const trimmed = p.trim();
         if (!trimmed) return '';
-        // Detect lines that look like list items
+        if (isUiArtifactText(trimmed)) return ''; // skip pure UI text
         if (/^[\-\*•]\s+/.test(trimmed)) {
           const items = trimmed.split(/\n/).map(l => l.replace(/^[\-\*•]\s+/, '').trim()).filter(Boolean);
           return '<ul>' + items.map(i => '<li>' + i + '</li>').join('') + '</ul>';
@@ -1287,25 +1435,33 @@
         }
         return '<p>' + trimmed.replace(/\n/g, '<br>') + '</p>';
       }).join('');
-      document.execCommand('insertHTML', false, html);
+      document.execCommand('insertHTML', false, html2);
     }
     syncDescRaw({ target: editor });
   }
 
-  function cleanPastedHtml(html) {
+  async function cleanPastedHtmlAsync(html) {
     const temp = document.createElement('div');
     temp.innerHTML = html;
 
-    // Strip dangerous/unwanted elements
-    temp.querySelectorAll('script, style, iframe, link, meta, form, input, button, select, textarea, svg, video, audio, object, embed').forEach(el => el.remove());
+    // 1) Remove dangerous / known UI container tags wholesale
+    UI_ARTIFACT_TAGS.forEach(tag => {
+      temp.querySelectorAll(tag).forEach(el => el.remove());
+    });
 
-    // Strip class attributes (avoid leaking site styles), keep ours
+    // 2) Remove containers whose class/id/role match common UI artifact hints
+    //    (iterate in document order; removing the element drops descendants too)
+    const allEls = Array.from(temp.querySelectorAll('*'));
+    for (const el of allEls) {
+      if (isUiArtifactContainer(el)) el.remove();
+    }
+
+    // 3) Strip event handlers, class/id, dangerous inline styles
     temp.querySelectorAll('*').forEach(el => {
       [...el.attributes].forEach(attr => {
         if (attr.name.startsWith('on')) el.removeAttribute(attr.name);
         if (attr.name === 'class' || attr.name === 'id') el.removeAttribute(attr.name);
         if (attr.name === 'style') {
-          // Drop layout-affecting styles; we'll apply our own
           ['position','display','float','width','height','min-width','max-width','min-height','max-height','top','left','right','bottom','margin','padding','transform','transition','z-index','opacity','visibility','color','background','background-color','font-size','font-weight','font-family','line-height','text-align','text-decoration','box-shadow','border','border-radius'].forEach(p => {
             el.style.removeProperty(p);
           });
@@ -1313,13 +1469,20 @@
       });
     });
 
-    // Style images: keep them, make them responsive & pretty
+    // 4) Remove text nodes that are pure UI artifact text (e.g. <p>Report abuse</p>)
+    //    Walk leaf containers only and check their textContent
+    const leafTextTags = ['p','span','div','li','b','strong','em','i','u','small','a','h1','h2','h3','h4','h5','h6'];
+    temp.querySelectorAll(leafTextTags.join(',')).forEach(el => {
+      if (el.querySelector('img')) return; // don't drop a paragraph that contains an image
+      const txt = (el.textContent || '').trim();
+      if (txt && isUiArtifactText(txt)) el.remove();
+    });
+
+    // 5) Upload data: image URLs to Supabase so they survive even if the clipboard image is lost
+    await uploadAllDataImagesIn(temp);
+
+    // 6) Style images: keep them, make them responsive & pretty
     temp.querySelectorAll('img').forEach(el => {
-      // If the image is wrapped in a link, unwrap it
-      const parentA = el.closest('a');
-      if (parentA && parentA.querySelector('img') === el) {
-        // Keep the link
-      }
       el.setAttribute('loading', 'lazy');
       el.style.maxWidth = '100%';
       el.style.height = 'auto';
@@ -1327,20 +1490,21 @@
       el.style.margin = '10px 0';
       el.style.display = 'block';
       el.style.boxShadow = '0 1px 3px rgba(0,0,0,0.08)';
+      // Remove tiny tracking pixel-style images (1x1, no src, etc.)
+      if (!el.getAttribute('src') || el.getAttribute('src') === '') el.remove();
     });
 
-    // Style links
+    // 7) Style links
     temp.querySelectorAll('a').forEach(el => {
       el.style.color = 'var(--primary)';
       el.style.textDecoration = 'underline';
       el.style.wordBreak = 'break-word';
       if (!el.textContent.trim() && el.querySelector('img')) {
-        // a-only-wrapping-image: ensure the link doesn't break layout
         el.style.display = 'inline-block';
       }
     });
 
-    // Style tables
+    // 8) Style tables
     temp.querySelectorAll('table').forEach(el => {
       el.style.width = '100%';
       el.style.borderCollapse = 'collapse';
@@ -1353,7 +1517,7 @@
       el.style.textAlign = 'left';
     });
 
-    // Style headings & paragraphs
+    // 9) Style headings & paragraphs
     temp.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(el => {
       el.style.margin = '14px 0 8px';
       el.style.fontWeight = '700';
@@ -1369,7 +1533,7 @@
       el.style.lineHeight = '1.65';
     });
 
-    // Lists
+    // 10) Lists
     temp.querySelectorAll('ul, ol').forEach(el => {
       el.style.paddingLeft = '1.5rem';
       el.style.margin = '8px 0';
@@ -1378,7 +1542,7 @@
       el.style.marginBottom = '4px';
     });
 
-    // Blockquotes
+    // 11) Blockquotes
     temp.querySelectorAll('blockquote').forEach(el => {
       el.style.borderLeft = '3px solid var(--primary)';
       el.style.margin = '10px 0';
@@ -1388,11 +1552,26 @@
       el.style.color = 'var(--text)';
     });
 
-    // Remove empty tags (but keep ones with images)
-    temp.querySelectorAll('p, div, span, b, i, u, strong, em').forEach(el => {
+    // 12) Drop empty containers (but keep ones with images)
+    temp.querySelectorAll('p, div, span, b, i, u, strong, em, h1, h2, h3, h4, h5, h6, li').forEach(el => {
       if (!el.innerHTML.trim() && !el.querySelector('img')) el.remove();
     });
 
+    return temp.innerHTML;
+  }
+
+  // Synchronous wrapper for backward compatibility / non-async callers
+  function cleanPastedHtml(html) {
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    UI_ARTIFACT_TAGS.forEach(tag => temp.querySelectorAll(tag).forEach(el => el.remove()));
+    Array.from(temp.querySelectorAll('*')).forEach(el => { if (isUiArtifactContainer(el)) el.remove(); });
+    temp.querySelectorAll('*').forEach(el => {
+      [...el.attributes].forEach(attr => {
+        if (attr.name.startsWith('on')) el.removeAttribute(attr.name);
+        if (attr.name === 'class' || attr.name === 'id') el.removeAttribute(attr.name);
+      });
+    });
     return temp.innerHTML;
   }
 
@@ -1514,23 +1693,28 @@
 
     formatBtn.disabled = true;
     formatBtn.textContent = '⏳ Formatting...';
-    statusEl.textContent = 'AI cleaning up formatting...';
+    statusEl.textContent = 'Uploading embedded images...';
     statusEl.classList.add('show');
 
     try {
-      // Send to Gemini via chat API for formatting
+      // 1) First, run local cleanup + upload any data: images to Supabase
+      const locallyCleaned = await cleanPastedHtmlAsync(rawHtml);
+      statusEl.textContent = 'AI beautifying typography...';
+
+      // 2) Send the cleaned HTML to Gemini to beautify typography and structure
       const resp = await fetch('/api/translate-product', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'format', html: rawHtml })
+        body: JSON.stringify({ action: 'format', html: locallyCleaned })
       });
 
       const result = await resp.json();
-      let cleanedHtml = result.success ? result.html : rawHtml;
+      let cleanedHtml = result.success && result.html ? result.html : locallyCleaned;
 
-      if (result.success && cleanedHtml) {
+      if (cleanedHtml) {
+        // 3) Re-apply our beautified inline styles (font, image radius, etc.) on the AI result
+        cleanedHtml = applyBeautifyStyles(cleanedHtml);
         editor.innerHTML = cleanedHtml;
-        // Sync to raw textarea
         const lang = editor.dataset.lang;
         const raw = document.getElementById('pdesc-' + lang + '-raw');
         if (raw) raw.value = cleanedHtml;
@@ -1543,14 +1727,13 @@
       }
     } catch (err) {
       console.error('Format error:', err);
-      // Fallback: just clean up the HTML a bit
       const temp = document.createElement('div');
       temp.innerHTML = rawHtml;
       temp.querySelectorAll('*').forEach(el => {
         if (!el.querySelector('img') && !el.textContent.trim()) el.remove();
       });
       if (temp.innerHTML) {
-        editor.innerHTML = temp.innerHTML;
+        editor.innerHTML = applyBeautifyStyles(temp.innerHTML);
         statusEl.textContent = '⚠️ Local cleanup only (AI unavailable)';
         setTimeout(() => { statusEl.classList.remove('show'); }, 3000);
       }
@@ -1558,6 +1741,83 @@
       formatBtn.disabled = false;
       formatBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/><circle cx="12" cy="12" r="3"/></svg> AI Format';
     }
+  }
+
+  // Apply our beautified inline styles to a cleaned HTML string
+  function applyBeautifyStyles(html) {
+    const t = document.createElement('div');
+    t.innerHTML = html;
+
+    // Drop empty tags
+    t.querySelectorAll('p, div, span, b, i, u, strong, em, h1, h2, h3, h4, h5, h6, li').forEach(el => {
+      if (!el.innerHTML.trim() && !el.querySelector('img')) el.remove();
+    });
+
+    t.querySelectorAll('img').forEach(el => {
+      el.setAttribute('loading', 'lazy');
+      el.style.maxWidth = '100%';
+      el.style.height = 'auto';
+      el.style.borderRadius = '8px';
+      el.style.margin = '12px 0';
+      el.style.display = 'block';
+      el.style.boxShadow = '0 1px 3px rgba(0,0,0,0.08)';
+    });
+
+    t.querySelectorAll('a').forEach(el => {
+      el.style.color = 'var(--primary)';
+      el.style.textDecoration = 'underline';
+      el.style.wordBreak = 'break-word';
+    });
+
+    t.querySelectorAll('table').forEach(el => {
+      el.style.width = '100%';
+      el.style.borderCollapse = 'collapse';
+      el.style.margin = '12px 0';
+      el.style.fontSize = '0.9rem';
+    });
+    t.querySelectorAll('td, th').forEach(el => {
+      el.style.border = '1px solid var(--border)';
+      el.style.padding = '8px 10px';
+      el.style.textAlign = 'left';
+    });
+
+    t.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(el => {
+      el.style.margin = '16px 0 8px';
+      el.style.fontWeight = '700';
+      el.style.color = 'var(--text)';
+      el.style.lineHeight = '1.3';
+      el.style.fontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
+    });
+    t.querySelectorAll('h1').forEach(el => el.style.fontSize = '1.5rem');
+    t.querySelectorAll('h2').forEach(el => el.style.fontSize = '1.3rem');
+    t.querySelectorAll('h3').forEach(el => el.style.fontSize = '1.1rem');
+    t.querySelectorAll('h4, h5, h6').forEach(el => el.style.fontSize = '0.95rem');
+
+    t.querySelectorAll('p').forEach(el => {
+      el.style.margin = '8px 0';
+      el.style.lineHeight = '1.7';
+      el.style.fontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
+    });
+
+    t.querySelectorAll('ul, ol').forEach(el => {
+      el.style.paddingLeft = '1.5rem';
+      el.style.margin = '8px 0';
+    });
+    t.querySelectorAll('li').forEach(el => { el.style.marginBottom = '4px'; });
+
+    t.querySelectorAll('blockquote').forEach(el => {
+      el.style.borderLeft = '3px solid var(--primary)';
+      el.style.margin = '12px 0';
+      el.style.padding = '10px 16px';
+      el.style.background = 'rgba(255,107,0,0.05)';
+      el.style.borderRadius = '0 8px 8px 0';
+      el.style.color = 'var(--text)';
+    });
+
+    t.querySelectorAll('strong, b').forEach(el => { el.style.fontWeight = '700'; });
+    t.querySelectorAll('em, i').forEach(el => { el.style.fontStyle = 'italic'; });
+
+    return t.innerHTML;
   }
 
   async function saveProduct(e) {

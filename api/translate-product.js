@@ -36,22 +36,49 @@ module.exports = async function handler(req, res) {
             body: JSON.stringify({
               systemInstruction: {
                 parts: [{
-                  text: `You are an HTML cleanup expert for an e-commerce store. Clean up and format the HTML product description.
+                  text: `You are an HTML cleanup expert for an e-commerce store (SunTrade). The input HTML is a product description that was pasted from a supplier site (e.g. Alibaba, 1688, Taobao) and may contain junk UI artifacts from those sites. Your job is to extract ONLY the real product description content and re-format it beautifully.
 
-Rules:
-1. Keep images, links, tables, lists, and all content intact
-2. Make it look professional and well-structured using proper HTML
-3. Remove inline styles EXCEPT width/height/max-width on images and table borders
-4. Add proper paragraph tags, headings, and structure
-5. Ensure the HTML is valid
-6. Keep the exact same text content - only improve formatting
-7. Wrap text in <p> tags where appropriate
-8. Ensure images have max-width:100% and height:auto
-9. Reply ONLY with the cleaned HTML, nothing else, no markdown formatting`
+RULES — STRICT:
+
+1. REMOVE these site UI artifacts (they are NOT product content):
+   - "Report abuse", "Report this item", "Report image"
+   - "Frequently bought together", "Customers who bought this", "Customers also bought", "You may also like", "Related products", "Sponsored products", "Edit selections"
+   - "Add to Cart", "Buy Now", "Shop Now", "Order Now", "Contact Supplier", "Start Order", "Send Inquiry", "Chat Now", "Negotiate", "Request Quote", "Message Supplier"
+   - "Add to Wishlist", "Add to Favorites", "Share"
+   - Navigation breadcrumbs, header/footer text, "Home > ... > ..."
+   - Cookie banners: "We use cookies", "Accept cookies", "I agree", "Got it", "Learn more"
+   - "Skip to content", "Back to top", "Loading...", "Please wait..."
+   - "Subscribe to newsletter", "Sign up for newsletter", "Follow us on..."
+   - "Translation missing", "Powered by ...", "Copyright ©", "All rights reserved"
+   - "Free shipping", "Secure payment", "Limited time offer", "Best seller", "Hot sale", "Promotion", "Discount"
+   - SKU numbers, "Vendor info", "Seller info", "Store info"
+
+2. KEEP all real product content:
+   - Product name, key features, specifications
+   - All product images (keep <img> tags with their src exactly as given)
+   - All product description text, bullet lists, tables
+   - Size charts, specification tables, package contents
+
+3. RE-FORMAT for beauty:
+   - Use <h2> for the main product title, <h3> for section headings ("Features", "Specifications", "Package Includes", etc.)
+   - Wrap every paragraph of text in <p> tags
+   - Use <ul><li> for feature lists, <ol><li> for step-by-step instructions
+   - Use <table><tr><td> for spec tables (do NOT invent specs; only keep what's in the source)
+   - Add <strong> for emphasis on key terms
+   - Add <br> between list items only if the original had line breaks
+   - Add an empty line (extra <br> or <p></p>) between major sections for breathing room
+
+4. DO NOT add, invent, or guess any product information that isn't in the source.
+
+5. DO NOT change, translate, or rephrase the product text — keep it word-for-word. Only restructure.
+
+6. All <img> tags must have: loading="lazy" and the original src unchanged.
+
+7. Output: reply with ONLY the cleaned HTML (no markdown, no code fences, no explanations, no preamble). The HTML should be valid and ready to insert into a webpage.`
                 }]
               },
               contents: [{ role: 'user', parts: [{ text: html }] }],
-              generationConfig: { maxOutputTokens: 2000, temperature: 0.2 }
+              generationConfig: { maxOutputTokens: 4000, temperature: 0.1 }
             })
           }
         );
@@ -59,8 +86,21 @@ Rules:
         const data = await resp.json();
         let cleanedHtml = data.candidates?.[0]?.content?.parts?.[0]?.text || html;
 
-        // Remove any markdown code blocks
-        cleanedHtml = cleanedHtml.replace(/^```html?\s*/gm, '').replace(/^```\s*$/gm, '').trim();
+        // Remove any markdown code blocks Gemini might wrap the answer in
+        cleanedHtml = cleanedHtml
+          .replace(/^```html?\s*/i, '')
+          .replace(/^```\s*$/gm, '')
+          .replace(/```$/g, '')
+          .trim();
+
+        // Ensure images have lazy loading and responsive sizing
+        if (cleanedHtml) {
+          cleanedHtml = cleanedHtml.replace(/<img(?![^>]*loading=)([^>]*)>/gi, '<img loading="lazy"$1>');
+          cleanedHtml = cleanedHtml.replace(/<img([^>]*?)\sstyle=(["'])([^"']*?)\2/gi, (m, attrs, q, css) => {
+            if (/max-width/i.test(css)) return m;
+            return `<img${attrs} style="max-width:100%;height:auto;border-radius:8px;${css}"`;
+          });
+        }
 
         if (!cleanedHtml) cleanedHtml = html;
 
