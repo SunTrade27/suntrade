@@ -370,13 +370,11 @@
     preview.innerHTML = uploadedImageUrls.map((url, i) => `
       <div style="position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:1px solid var(--border);">
         <img src="${url}" style="width:100%;height:100%;object-fit:cover;">
-        <button onclick="removeUploadedImage(${i})" style="position:absolute;top:2px;right:2px;background:var(--danger);color:white;border:none;border-radius:50%;width:20px;height:20px;font-size:12px;cursor:pointer;line-height:1;">x</button>
+        <button type="button" onclick="removeUploadedImage(${i})" style="position:absolute;top:2px;right:2px;background:var(--danger);color:white;border:none;border-radius:50%;width:20px;height:20px;font-size:12px;cursor:pointer;line-height:1;">x</button>
       </div>
     `).join('');
-    // Also update textarea
-    const existing = textarea.value.trim();
-    const allUrls = existing ? existing.split('\n').filter(u => u.trim()) : [];
-    textarea.value = [...allUrls.filter(u => !uploadedImageUrls.includes(u)), ...uploadedImageUrls].join('\n');
+    // uploadedImageUrls is the single source of truth — textarea mirrors it exactly
+    textarea.value = uploadedImageUrls.join('\n');
   }
 
   function removeUploadedImage(index) {
@@ -787,8 +785,11 @@
       document.getElementById('pprice').value = product.price;
       document.getElementById('pstock').value = product.stock;
       document.getElementById('pactive').checked = product.active;
-      document.getElementById('pimages').value = (product.images || []).join('\n');
-      uploadedImageUrls = product.images || [];
+      // uploadedImageUrls is the single source of truth for all product images
+      // (whether they came from the original product or were newly uploaded).
+      // Removing from the preview actually removes them on save.
+      uploadedImageUrls = (product.images || []).slice();
+      document.getElementById('pimages').value = uploadedImageUrls.join('\n');
       updateImagePreview();
       // Fill all lang fields
       ['en','kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'].forEach(lang => {
@@ -797,12 +798,15 @@
         if (nameEl) nameEl.value = product['name_' + lang] || '';
         if (descEl) descEl.value = product['desc_' + lang] || '';
       });
-    } else {
-      document.getElementById('modal-title').textContent = t('admin_add_product');
-      document.getElementById('product-form').reset();
-      document.getElementById('product-id').value = '';
-      document.getElementById('pactive').checked = true;
-    }
+  } else {
+    document.getElementById('modal-title').textContent = t('admin_add_product');
+    document.getElementById('product-form').reset();
+    document.getElementById('product-id').value = '';
+    document.getElementById('pactive').checked = true;
+    uploadedImageUrls = [];
+    document.getElementById('pimages').value = '';
+    updateImagePreview();
+  }
     switchLangTab('en');
   }
 
@@ -841,7 +845,8 @@
       stock: parseInt(document.getElementById('pstock').value),
       category_id: document.getElementById('pcategory').value || null,
       active: document.getElementById('pactive').checked,
-      images: document.getElementById('pimages').value.split('\n').filter(u => u.trim())
+      // Use uploadedImageUrls (the single source of truth) so removed images stay removed
+      images: uploadedImageUrls.slice()
     };
 
     // Collect all lang fields
