@@ -334,5 +334,18 @@
   "back_to_catalog": "Powrót do katalogu",
   "reviews_search_placeholder": "Szukaj opinii po nazwie, produkcie lub tekście...",
   "no_reviews_found": "Nie znaleziono opinii. Spróbuj innego wyszukiwania.",
-  "reviews_found_count": "Znaleziono {count} opinii"
+  "reviews_found_count": "Znaleziono {count} opinii",
+  "admin_ai_translate": "AI Auto-Tłumacz (EN → Wszystkie)",
+  "admin_ai_format": "Formatuj AI",
+  "admin_ai_translate_title": "Automatyczne tłumaczenie z angielskiego na wszystkie języki",
+  "admin_ai_format_title": "Wyczyść i sformatuj opis za pomocą AI",
+  "admin_translate_in_progress": "Tłumaczenie...",
+  "admin_format_in_progress": "Formatowanie...",
+  "admin_translate_success": "Przetłumaczono na wszystkie języki!",
+  "admin_translate_error": "Tłumaczenie nie powiodło się",
+  "admin_format_success": "Opis sformatowany!",
+  "admin_format_error": "Formatowanie nie powiodło się",
+  "admin_enter_name_first": "Najpierw wypełnij angielską nazwę produktu.",
+  "admin_paste_content_first": "Najpierw wklej lub wpisz treść.",
+  "admin_translate_progress": "Tłumaczenie na {count} języków..."
 }

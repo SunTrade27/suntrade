@@ -374,5 +374,18 @@
   "back_to_catalog": "Back to catalog",
   "reviews_search_placeholder": "Search reviews by name, product, or comment...",
   "no_reviews_found": "No reviews found. Try a different search.",
-  "reviews_found_count": "Found {count} reviews"
+  "reviews_found_count": "Found {count} reviews",
+  "admin_ai_translate": "AI Auto-Translate (EN \u2192 All)",
+  "admin_ai_format": "AI Format",
+  "admin_ai_translate_title": "Automatically translate from English to all languages",
+  "admin_ai_format_title": "Clean up and format description with AI",
+  "admin_translate_in_progress": "Translating...",
+  "admin_format_in_progress": "Formatting...",
+  "admin_translate_success": "Translated to all languages!",
+  "admin_translate_error": "Translation failed",
+  "admin_format_success": "Description formatted!",
+  "admin_format_error": "Formatting failed",
+  "admin_enter_name_first": "Please fill in the English product name first.",
+  "admin_paste_content_first": "Please paste or type some content first.",
+  "admin_translate_progress": "Translating to {count} languages..."
 }

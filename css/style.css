@@ -764,9 +764,51 @@ input, textarea, select { font-family: inherit; }
   font-weight: 600;
   margin-bottom: 1rem;
 }
-.product-desc p {
+.product-desc p, .product-desc-content p {
   color: var(--text-light);
   line-height: 1.8;
+}
+.product-desc-content {
+  color: var(--text-light);
+  line-height: 1.8;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+.product-desc-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 12px 0;
+}
+.product-desc-content ul, .product-desc-content ol {
+  padding-left: 1.5rem;
+  margin: 8px 0;
+}
+.product-desc-content li {
+  margin-bottom: 4px;
+  color: var(--text-light);
+}
+.product-desc-content h1, .product-desc-content h2, .product-desc-content h3, .product-desc-content h4 {
+  color: var(--text);
+  margin: 16px 0 8px;
+}
+.product-desc-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+}
+.product-desc-content table td, .product-desc-content table th {
+  border: 1px solid var(--border);
+  padding: 8px;
+  text-align: left;
+}
+.product-desc-content blockquote {
+  border-left: 3px solid var(--primary);
+  margin: 12px 0;
+  padding: 8px 16px;
+  background: rgba(255,107,0,0.05);
+  border-radius: 0 8px 8px 0;
+  color: var(--text);
 }
 
 /* ===== CART PAGE ===== */

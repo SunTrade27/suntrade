@@ -374,5 +374,18 @@
   "back_to_catalog": "Каталогқа оралу",
   "reviews_search_placeholder": "Пікірлерді аты, тауары немесе мәтіні бойынша іздеу...",
   "no_reviews_found": "Пікірлер табылмады. Басқа сөзбен іздеп көріңіз.",
-  "reviews_found_count": "{count} пікір табылды"
-}
+  "reviews_found_count": "{count} пікір табылды",
+  "admin_ai_translate": "AI Auto-Translate (EN - Барлығы)",
+  "admin_ai_format": "AI Format",
+  "admin_ai_translate_title": "Ағылшын тілінен барлық тілдерге автоматты аударма",
+  "admin_ai_format_title": "Сипаттаманы AI көмегімен тазалау және реттеу",
+  "admin_translate_in_progress": "Аударылуда...",
+  "admin_format_in_progress": "Форматталуда...",
+  "admin_translate_success": "Барлық тілдерге аударылды!",
+  "admin_translate_error": "Аударма сәтсіз",
+  "admin_format_success": "Сипаттама форматталды!",
+  "admin_format_error": "Форматтау сәтсіз",
+  "admin_enter_name_first": "Алдымен ағылшын тіліндегі тауар атауын толтырыңыз.",
+  "admin_paste_content_first": "Алдымен мазмұнды қойыңыз немесе теріңіз.",
+  "admin_translate_progress": "{count} тілге аударылуда..."
+}}

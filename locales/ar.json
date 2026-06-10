@@ -334,5 +334,18 @@
   "back_to_catalog": "العودة إلى الكتالوج",
   "reviews_search_placeholder": "البحث في التقييمات حسب الاسم أو المنتج أو النص...",
   "no_reviews_found": "لم يتم العثور على تقييمات. جرب بحثًا مختلفًا.",
-  "reviews_found_count": "تم العثور على {count} تقييم(ات)"
+  "reviews_found_count": "تم العثور على {count} تقييم(ات)",
+  "admin_ai_translate": "ترجمة AI تلقائية (EN ← الكل)",
+  "admin_ai_format": "تنسيق AI",
+  "admin_ai_translate_title": "الترجمة تلقائيًا من الإنجليزية إلى جميع اللغات",
+  "admin_ai_format_title": "تنظيف وتنسيق الوصف باستخدام AI",
+  "admin_translate_in_progress": "جارٍ الترجمة...",
+  "admin_format_in_progress": "جارٍ التنسيق...",
+  "admin_translate_success": "تمت الترجمة إلى جميع اللغات!",
+  "admin_translate_error": "فشلت الترجمة",
+  "admin_format_success": "تم تنسيق الوصف!",
+  "admin_format_error": "فشل التنسيق",
+  "admin_enter_name_first": "يرجى ملء اسم المنتج بالإنجليزية أولاً.",
+  "admin_paste_content_first": "يرجى لصق أو كتابة المحتوى أولاً.",
+  "admin_translate_progress": "جارٍ الترجمة إلى {count} لغة..."
 }

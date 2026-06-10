@@ -334,5 +334,18 @@
   "back_to_catalog": "Terug naar catalogus",
   "reviews_search_placeholder": "Zoek beoordelingen op naam, product of tekst...",
   "no_reviews_found": "Geen beoordelingen gevonden. Probeer een andere zoekopdracht.",
-  "reviews_found_count": "{count} beoordeling(en) gevonden"
+  "reviews_found_count": "{count} beoordeling(en) gevonden",
+  "admin_ai_translate": "AI Auto-Vertalen (EN → Alle)",
+  "admin_ai_format": "AI Opmaak",
+  "admin_ai_translate_title": "Automatisch vertalen van Engels naar alle talen",
+  "admin_ai_format_title": "Beschrijving opschonen en opmaken met AI",
+  "admin_translate_in_progress": "Bezig met vertalen...",
+  "admin_format_in_progress": "Bezig met opmaken...",
+  "admin_translate_success": "Vertaald naar alle talen!",
+  "admin_translate_error": "Vertaling mislukt",
+  "admin_format_success": "Beschrijving opgemaakt!",
+  "admin_format_error": "Opmaken mislukt",
+  "admin_enter_name_first": "Vul eerst de Engelse productnaam in.",
+  "admin_paste_content_first": "Plak of typ eerst inhoud.",
+  "admin_translate_progress": "Bezig met vertalen naar {count} talen..."
 }

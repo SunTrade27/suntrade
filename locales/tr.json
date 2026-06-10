@@ -334,5 +334,18 @@
   "back_to_catalog": "Kataloga dön",
   "reviews_search_placeholder": "Yorumları isme, ürüne veya metne göre ara...",
   "no_reviews_found": "Yorum bulunamadı. Farklı bir arama deneyin.",
-  "reviews_found_count": "{count} yorum bulundu"
+  "reviews_found_count": "{count} yorum bulundu",
+  "admin_ai_translate": "AI Otomatik Çeviri (EN → Tümü)",
+  "admin_ai_format": "AI Format",
+  "admin_ai_translate_title": "İngilizceden tüm dillere otomatik çeviri",
+  "admin_ai_format_title": "Açıklamayı AI ile temizle ve biçimlendir",
+  "admin_translate_in_progress": "Çevriliyor...",
+  "admin_format_in_progress": "Biçimlendiriliyor...",
+  "admin_translate_success": "Tüm dillere çevrildi!",
+  "admin_translate_error": "Çeviri başarısız",
+  "admin_format_success": "Açıklama biçimlendirildi!",
+  "admin_format_error": "Biçimlendirme başarısız",
+  "admin_enter_name_first": "Önce İngilizce ürün adını doldurun.",
+  "admin_paste_content_first": "Önce içeriği yapıştırın veya yazın.",
+  "admin_translate_progress": "{count} dile çevriliyor..."
 }

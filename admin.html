@@ -8,6 +8,115 @@
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/icons.js"></script>
+<style>
+  /* Rich Text Editor for description */
+  .desc-editor {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    resize: vertical;
+    overflow-y: auto;
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    background: var(--bg-white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  .desc-editor:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(255,107,0,0.1);
+  }
+  .desc-editor img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 8px 0;
+    display: block;
+  }
+  .desc-editor ul, .desc-editor ol {
+    padding-left: 1.5rem;
+    margin: 8px 0;
+  }
+  .desc-editor li {
+    margin-bottom: 4px;
+  }
+  .desc-editor h1, .desc-editor h2, .desc-editor h3, .desc-editor h4 {
+    margin: 12px 0 8px;
+    line-height: 1.3;
+  }
+  .desc-editor p {
+    margin: 8px 0;
+  }
+  .desc-editor table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+  }
+  .desc-editor table td, .desc-editor table th {
+    border: 1px solid var(--border);
+    padding: 8px;
+  }
+  .desc-editor blockquote {
+    border-left: 3px solid var(--primary);
+    margin: 8px 0;
+    padding: 8px 12px;
+    background: rgba(255,107,0,0.05);
+    border-radius: 0 8px 8px 0;
+  }
+  .desc-editor:empty:before {
+    content: attr(data-placeholder);
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+  .desc-format-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, #667EEA, #764BA2);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-bottom: 8px;
+  }
+  .desc-format-btn:hover { opacity: 0.9; }
+  .desc-format-btn svg { width: 16px; height: 16px; }
+  .translate-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, #FF6B00, #FF8533);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .translate-btn:hover { opacity: 0.9; }
+  .translate-btn:disabled, .desc-format-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .translate-progress {
+    font-size: 0.8rem;
+    color: var(--primary);
+    margin-left: 8px;
+    display: none;
+  }
+  .translate-progress.show { display: inline; }
+</style>
 </head>
 <body>
 
@@ -144,7 +253,7 @@
     <form id="product-form" onsubmit="saveProduct(event)">
       <input type="hidden" id="product-id">
 
-      <div style="display:flex;gap:0.5rem;overflow-x:auto;margin-bottom:1rem;padding-bottom:0.5rem;">
+      <div style="display:flex;gap:0.5rem;overflow-x:auto;margin-bottom:0.75rem;padding-bottom:0.5rem;align-items:center;">
         <button type="button" class="btn-sm btn-outline lang-tab active" onclick="switchLangTab('en')">EN</button>
         <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('kz')">KZ</button>
         <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('ru')">RU</button>
@@ -157,6 +266,12 @@
         <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('nl')">NL</button>
         <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('pl')">PL</button>
         <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('ar')">AR</button>
+        <span style="flex:1;"></span>
+        <button type="button" class="translate-btn" onclick="translateAll()" id="translate-btn" title="Барлық тілдерге аудару">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          AI Auto-Translate (EN → All)
+        </button>
+        <span class="translate-progress" id="translate-status"></span>
       </div>
 
       <!-- Language fields -->
@@ -167,8 +282,15 @@
         </div>
         <div class="form-group">
           <label data-i18n="admin_product_desc">Description</label>
-          <textarea id="pdesc-en" rows="3" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:var(--radius-sm);resize:vertical;"></textarea>
-        </div>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap;">
+            <button type="button" class="desc-format-btn" onclick="formatDescription()" title="AI көмегімен сипаттаманы реттеу">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/><circle cx="12" cy="12" r="3"/></svg>
+              AI Format
+            </button>
+            <span class="translate-progress" id="format-status"></span>
+          </div>
+          <div id="pdesc-en" class="desc-editor" contenteditable="true" data-placeholder="Enter product description..." data-lang="en"></div>
+          <textarea id="pdesc-en-raw" style="display:none;"></textarea>
       </div>
 
       <!-- Hidden lang inputs -->
@@ -177,10 +299,10 @@
         <input type="text" id="pname-fr"><input type="text" id="pname-es"><input type="text" id="pname-it">
         <input type="text" id="pname-tr"><input type="text" id="pname-pt"><input type="text" id="pname-nl">
         <input type="text" id="pname-pl"><input type="text" id="pname-ar">
-        <textarea id="pdesc-kz"></textarea><textarea id="pdesc-ru"></textarea><textarea id="pdesc-de"></textarea>
-        <textarea id="pdesc-fr"></textarea><textarea id="pdesc-es"></textarea><textarea id="pdesc-it"></textarea>
-        <textarea id="pdesc-tr"></textarea><textarea id="pdesc-pt"></textarea><textarea id="pdesc-nl"></textarea>
-        <textarea id="pdesc-pl"></textarea><textarea id="pdesc-ar"></textarea>
+        <textarea id="pdesc-kz-raw"></textarea><textarea id="pdesc-ru-raw"></textarea><textarea id="pdesc-de-raw"></textarea>
+        <textarea id="pdesc-fr-raw"></textarea><textarea id="pdesc-es-raw"></textarea><textarea id="pdesc-it-raw"></textarea>
+        <textarea id="pdesc-tr-raw"></textarea><textarea id="pdesc-pt-raw"></textarea><textarea id="pdesc-nl-raw"></textarea>
+        <textarea id="pdesc-pl-raw"></textarea><textarea id="pdesc-ar-raw"></textarea>
       </div>
 
       <div class="form-row">
@@ -288,6 +410,13 @@
       zone.addEventListener('dragleave', () => { zone.style.borderColor = 'var(--border)'; zone.style.background = 'none'; });
       zone.addEventListener('drop', (e) => { e.preventDefault(); zone.style.borderColor = 'var(--border)'; zone.style.background = 'none'; handleImageFiles(e.dataTransfer.files); });
       fileInput.addEventListener('change', (e) => handleImageFiles(e.target.files));
+    }
+
+    // Add paste handler for the initial English description editor
+    const initialEditor = document.getElementById('pdesc-en');
+    if (initialEditor) {
+      initialEditor.addEventListener('paste', handleRichPaste);
+      initialEditor.addEventListener('input', syncDescRaw);
     }
   });
 
@@ -637,20 +766,56 @@
   function switchLangTab(lang) {
     currentLangTab = lang;
     document.querySelectorAll('.lang-tab').forEach(b => b.classList.toggle('active', b.textContent.trim().toLowerCase() === lang));
-    // Update visible fields
+
+    // Save current visible editor content to raw textarea
+    const currentEditor = document.querySelector('.desc-editor[contenteditable]');
+    const currentLangAttr = currentEditor ? currentEditor.dataset.lang : '';
+    if (currentLangAttr && currentEditor) {
+      const rawTextarea = document.getElementById('pdesc-' + currentLangAttr + '-raw');
+      if (rawTextarea) {
+        rawTextarea.value = currentEditor.innerHTML;
+      }
+      // Also update the old-style hidden textarea for backward compatibility
+      const oldTextarea = document.getElementById('pdesc-' + currentLangAttr);
+      if (oldTextarea) {
+        oldTextarea.value = currentEditor.innerHTML;
+      }
+    }
+
     const nameInput = document.getElementById('pname-' + lang);
-    const descInput = document.getElementById('pdesc-' + lang);
     const fieldsDiv = document.getElementById('lang-fields');
+
+    // Get description HTML from raw textarea
+    const descRaw = document.getElementById('pdesc-' + lang + '-raw');
+    const descHtml = descRaw ? descRaw.value : '';
+
     fieldsDiv.innerHTML = `
       <div class="form-group">
         <label>Product Name (${lang.toUpperCase()})</label>
-        <input type="text" id="pname-${lang}" value="${nameInput ? nameInput.value : ''}">
+        <input type="text" id="pname-${lang}" value="${nameInput ? nameInput.value.replace(/"/g, '&quot;') : ''}">
       </div>
       <div class="form-group">
         <label>Description (${lang.toUpperCase()})</label>
-        <textarea id="pdesc-${lang}" rows="3" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:var(--radius-sm);resize:vertical;">${descInput ? descInput.value : ''}</textarea>
+        ${lang === 'en' ? `
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap;">
+          <button type="button" class="desc-format-btn" onclick="formatDescription()" title="AI көмегімен сипаттаманы реттеу">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/><circle cx="12" cy="12" r="3"/></svg>
+            AI Format
+          </button>
+          <span class="translate-progress" id="format-status"></span>
+        </div>
+        ` : ''}
+        <div id="pdesc-${lang}" class="desc-editor" contenteditable="true" data-placeholder="${lang === 'en' ? 'Enter product description...' : 'Product description...'}" data-lang="${lang}">${descHtml}</div>
+        <textarea id="pdesc-${lang}-raw" style="display:none;">${descHtml.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
       </div>
     `;
+
+    // Add paste handler for rich text on the new editor
+    const editor = document.getElementById('pdesc-' + lang);
+    if (editor) {
+      editor.addEventListener('paste', handleRichPaste);
+      editor.addEventListener('input', syncDescRaw);
+    }
   }
 
   let allReviews = [];
@@ -791,12 +956,12 @@
       uploadedImageUrls = (product.images || []).slice();
       document.getElementById('pimages').value = uploadedImageUrls.join('\n');
       updateImagePreview();
-      // Fill all lang fields
+      // Fill all lang fields - both visible inputs and raw textareas
       ['en','kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'].forEach(lang => {
         const nameEl = document.getElementById('pname-' + lang);
-        const descEl = document.getElementById('pdesc-' + lang);
+        const descRaw = document.getElementById('pdesc-' + lang + '-raw');
         if (nameEl) nameEl.value = product['name_' + lang] || '';
-        if (descEl) descEl.value = product['desc_' + lang] || '';
+        if (descRaw) descRaw.value = product['desc_' + lang] || '';
       });
   } else {
     document.getElementById('modal-title').textContent = t('admin_add_product');
@@ -831,13 +996,239 @@
     }
   }
 
+  // ===== Rich Text Helpers =====
+  function handleRichPaste(e) {
+    // Prevent default paste
+    e.preventDefault();
+
+    // Try to get HTML content from clipboard
+    const html = e.clipboardData.getData('text/html');
+    const text = e.clipboardData.getData('text/plain');
+
+    if (html) {
+      // Clean up the HTML: remove scripts, styles, and other unwanted elements
+      const cleaned = cleanPastedHtml(html);
+      document.execCommand('insertHTML', false, cleaned);
+    } else if (text) {
+      // Fallback: insert as plain text (preserving line breaks)
+      const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      document.execCommand('insertHTML', false, escaped.replace(/\n/g, '<br>'));
+    }
+
+    // Sync to raw textarea
+    syncDescRaw(e);
+  }
+
+  function cleanPastedHtml(html) {
+    // Create a temporary DOM element to parse and clean the HTML
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+
+    // Remove script and style elements
+    temp.querySelectorAll('script, style, iframe, link, meta, form, input, button, select, textarea, svg, video, audio').forEach(el => el.remove());
+
+    // Remove all on* event handlers
+    temp.querySelectorAll('*').forEach(el => {
+      [...el.attributes].forEach(attr => {
+        if (attr.name.startsWith('on')) el.removeAttribute(attr.name);
+        if (attr.name === 'style') {
+          // Keep style but clean potentially dangerous properties
+          el.style.removeProperty('position');
+          el.style.removeProperty('display');
+        }
+      });
+    });
+
+    // Remove empty tags
+    temp.querySelectorAll('p, div, span, b, i, u, strong, em').forEach(el => {
+      if (!el.innerHTML.trim() && !el.querySelector('img')) el.remove();
+    });
+
+    // Make image URLs relative - keep absolute URLs as-is (they'll work)
+    // But ensure images have max-width
+    temp.querySelectorAll('img').forEach(el => {
+      if (!el.style.maxWidth) el.style.maxWidth = '100%';
+      el.style.height = 'auto';
+      el.style.borderRadius = '8px';
+      el.style.margin = '8px 0';
+    });
+
+    return temp.innerHTML;
+  }
+
+  function syncDescRaw(e) {
+    const editor = e.target;
+    if (editor && editor.classList && editor.classList.contains('desc-editor')) {
+      const lang = editor.dataset.lang;
+      if (lang) {
+        const rawTextarea = document.getElementById('pdesc-' + lang + '-raw');
+        if (rawTextarea) {
+          rawTextarea.value = editor.innerHTML;
+        }
+      }
+    }
+  }
+
+  // ===== AI Auto-Translate =====
+  async function translateAll() {
+    const btn = document.getElementById('translate-btn');
+    const status = document.getElementById('translate-status');
+
+    // Save current editor content first
+    const editor = document.querySelector('.desc-editor[contenteditable]');
+    if (editor) {
+      const lang = editor.dataset.lang;
+      const raw = document.getElementById('pdesc-' + lang + '-raw');
+      if (raw) raw.value = editor.innerHTML;
+    }
+
+    const nameEn = document.getElementById('pname-en').value;
+    if (!nameEn) {
+      alert('Please fill in the English product name first.');
+      return;
+    }
+
+    // Get description from raw textarea
+    const descRaw = document.getElementById('pdesc-en-raw');
+    const descEn = descRaw ? descRaw.value : '';
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Translating...';
+    status.textContent = 'Translating to 10 languages...';
+    status.classList.add('show');
+
+    try {
+      const resp = await fetch('/api/translate-product', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name_en: nameEn, desc_en: descEn })
+      });
+
+      const result = await resp.json();
+
+      if (result.success && result.translations) {
+        const translations = result.translations;
+        let count = 0;
+        const total = Object.keys(translations).length;
+
+        for (const [lang, data] of Object.entries(translations)) {
+          const nameInput = document.getElementById('pname-' + lang);
+          const descRaw = document.getElementById('pdesc-' + lang + '-raw');
+
+          if (nameInput && data.name) {
+            nameInput.value = data.name;
+          }
+          if (descRaw && data.desc) {
+            descRaw.value = data.desc;
+          }
+
+          count++;
+          status.textContent = `Translating... ${count}/${total}`;
+        }
+
+        // If currently viewing English tab, need to refresh
+        // If currently viewing one of the translated tabs, refresh the display
+        const currentEditor = document.querySelector('.desc-editor[contenteditable]');
+        if (currentEditor) {
+          const currentLang = currentEditor.dataset.lang;
+          // Refresh the raw textarea for the current tab
+          const currentRaw = document.getElementById('pdesc-' + currentLang + '-raw');
+          if (currentRaw && currentLang !== 'en') {
+            // Update the editor display with translated content
+            switchLangTab(currentLang);
+          } else if (currentLang === 'en') {
+            // Stay on EN, but refresh the editor content from raw
+            switchLangTab('en');
+          }
+        }
+
+        status.textContent = '✅ Translated to ' + total + ' languages!';
+        setTimeout(() => { status.classList.remove('show'); }, 3000);
+      } else {
+        status.textContent = '❌ Translation failed';
+        setTimeout(() => { status.classList.remove('show'); }, 3000);
+      }
+    } catch (err) {
+      console.error('Translation error:', err);
+      status.textContent = '❌ Error: ' + err.message;
+      setTimeout(() => { status.classList.remove('show'); }, 4000);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> AI Auto-Translate (EN → All)';
+    }
+  }
+
+  // ===== AI Format Description =====
+  async function formatDescription() {
+    const editor = document.querySelector('.desc-editor[contenteditable]');
+    if (!editor) return;
+
+    const rawHtml = editor.innerHTML;
+    if (!rawHtml || rawHtml === '<br>' || rawHtml.trim() === '') {
+      alert('Please paste or type some content first.');
+      return;
+    }
+
+    const formatBtn = document.querySelector('.desc-format-btn');
+    const statusEl = document.getElementById('format-status');
+
+    formatBtn.disabled = true;
+    formatBtn.textContent = '⏳ Formatting...';
+    statusEl.textContent = 'AI cleaning up formatting...';
+    statusEl.classList.add('show');
+
+    try {
+      // Send to Gemini via chat API for formatting
+      const resp = await fetch('/api/translate-product', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'format', html: rawHtml })
+      });
+
+      const result = await resp.json();
+      let cleanedHtml = result.success ? result.html : rawHtml;
+
+      if (result.success && cleanedHtml) {
+        editor.innerHTML = cleanedHtml;
+        // Sync to raw textarea
+        const lang = editor.dataset.lang;
+        const raw = document.getElementById('pdesc-' + lang + '-raw');
+        if (raw) raw.value = cleanedHtml;
+
+        statusEl.textContent = '✅ Formatted!';
+        setTimeout(() => { statusEl.classList.remove('show'); }, 3000);
+      } else {
+        statusEl.textContent = '❌ Formatting failed, keeping original';
+        setTimeout(() => { statusEl.classList.remove('show'); }, 3000);
+      }
+    } catch (err) {
+      console.error('Format error:', err);
+      // Fallback: just clean up the HTML a bit
+      const temp = document.createElement('div');
+      temp.innerHTML = rawHtml;
+      temp.querySelectorAll('*').forEach(el => {
+        if (!el.querySelector('img') && !el.textContent.trim()) el.remove();
+      });
+      if (temp.innerHTML) {
+        editor.innerHTML = temp.innerHTML;
+        statusEl.textContent = '⚠️ Local cleanup only (AI unavailable)';
+        setTimeout(() => { statusEl.classList.remove('show'); }, 3000);
+      }
+    } finally {
+      formatBtn.disabled = false;
+      formatBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/><circle cx="12" cy="12" r="3"/></svg> AI Format';
+    }
+  }
+
   async function saveProduct(e) {
     e.preventDefault();
-    // Collect current tab value first
-    const currentName = document.getElementById('pname-' + currentLangTab);
-    const currentDesc = document.getElementById('pdesc-' + currentLangTab);
-    if (currentName) {
-      const hiddenName = document.querySelector(`#pname-${currentLangTab}[type="hidden"]`) || document.getElementById('pname-' + currentLangTab);
+
+    // Save current editor content to raw textarea
+    const editor = document.querySelector('.desc-editor[contenteditable]');
+    if (editor) {
+      const lang = editor.dataset.lang;
+      const raw = document.getElementById('pdesc-' + lang + '-raw');
+      if (raw) raw.value = editor.innerHTML;
     }
 
     const product = {
@@ -849,12 +1240,12 @@
       images: uploadedImageUrls.slice()
     };
 
-    // Collect all lang fields
+    // Collect all lang fields from inputs (name) and raw textareas (description)
     ['en','kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'].forEach(lang => {
       const nameEl = document.getElementById('pname-' + lang);
-      const descEl = document.getElementById('pdesc-' + lang);
+      const descRaw = document.getElementById('pdesc-' + lang + '-raw');
       product['name_' + lang] = nameEl ? nameEl.value : '';
-      product['desc_' + lang] = descEl ? descEl.value : '';
+      product['desc_' + lang] = descRaw ? descRaw.value : '';
     });
 
     const idField = document.getElementById('product-id').value;
