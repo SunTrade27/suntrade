@@ -1699,38 +1699,72 @@ input, textarea, select { font-family: inherit; }
   }
   .product-gallery { position: static; width: 100%; min-width: 0; padding: 0 !important; }
   .product-info { width: 100%; min-width: 0; padding: 0 !important; }
-  .product-info h1 { font-size: 1.15rem; line-height: 1.3; margin-bottom: 0.6rem; margin-top: 0.75rem; }
-  .product-price-detail { font-size: 1.5rem; margin-bottom: 0.85rem; }
-  .product-stock { font-size: 0.75rem; margin-bottom: 0.85rem; }
-  .product-qty { margin-bottom: 1rem; }
-  .product-qty label { font-size: 0.85rem; }
-  .qty-control button { width: 36px; height: 36px; }
-  .qty-control input { width: 44px; height: 36px; font-size: 0.9rem; }
-  .product-actions { flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem; }
-  .btn-add-cart, .btn-buy-now { padding: 12px 16px; font-size: 0.9rem; width: 100%; }
-  .btn-share { padding: 10px; flex-shrink: 0; align-self: center; }
-  .product-desc { margin-top: 1.25rem; padding-top: 1.25rem; }
-  .product-desc h3 { font-size: 1rem; margin-bottom: 0.75rem; }
-  .product-desc p { font-size: 0.9rem; line-height: 1.7; }
+
   .gallery-main { aspect-ratio: 1; margin-bottom: 1.5rem !important; }
   .gallery-thumbs { gap: 0.4rem; margin-bottom: 1.5rem !important; padding-bottom: 0.5rem; }
   .gallery-thumb { width: 60px; height: 60px; }
   #product-detail {
-    padding: 1rem 1.25rem !important;
+    padding: 0.75rem 1rem !important;
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 auto !important;
     box-sizing: border-box !important;
     display: block !important;
+    gap: 0.75rem !important;
   }
+  #reviews-section { padding: 0 1rem 2rem; }
+  .review-card { padding: 1rem; }
+  .review-card-header strong { font-size: 0.85rem; }
+  .section-title { font-size: 1.3rem !important; margin-bottom: 1rem !important; }
+
+  .product-info h1 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+  .product-price-detail { font-size: 1.6rem; margin-bottom: 0.6rem; }
+  .product-stock { font-size: 0.8rem; margin-bottom: 0.75rem; }
+  .product-qty { margin-bottom: 0.75rem; }
+  .product-qty label { font-size: 0.85rem; }
+  .qty-control button { width: 36px; height: 36px; font-size: 1rem; }
+  .qty-control input { width: 48px; height: 36px; font-size: 0.9rem; }
+  .product-actions { gap: 0.5rem; margin-bottom: 1rem; }
+  .btn-add-cart, .btn-buy-now { padding: 10px 14px; font-size: 0.85rem; flex: 1; }
+  .product-desc { margin-top: 1.25rem; padding-top: 1.25rem; }
+  .product-desc h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+  .product-desc p { font-size: 0.85rem; line-height: 1.6; }
+  .product-desc-content { font-size: 0.9rem; line-height: 1.6; }
+  .product-desc-content img { margin: 8px 0; }
+  #reviews-section .section-title { font-size: 1.3rem !important; }
 
   .cart-item { flex-direction: column; text-align: center; }
-  .cart-item-right { text-align: center; }
 
   .footer-inner { grid-template-columns: 1fr; }
   .footer-bottom { flex-direction: column; gap: 0.5rem; text-align: center; }
 
   .form-row { grid-template-columns: 1fr; }
+  /* Compact lang tabs on mobile */
+  .modal .lang-tab {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+  }
+  .modal .translate-btn {
+    font-size: 0.65rem;
+    padding: 4px 8px;
+  }
+  .modal #lang-fields .desc-editor {
+    min-height: 80px;
+    font-size: 0.85rem;
+  }
+  .modal .form-group {
+    margin-bottom: 0.75rem;
+  }
+  .modal .form-group label {
+    font-size: 0.8rem;
+  }
+  .modal .form-group input,
+  .modal .form-group select {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+  .modal .form-row { gap: 0.5rem; }
+  #image-upload-zone { padding: 1rem !important; }
 
   .admin-layout { grid-template-columns: 1fr; }
   .admin-sidebar {
@@ -1743,9 +1777,40 @@ input, textarea, select { font-family: inherit; }
     transition: var(--transition);
   }
   .admin-sidebar.open { left: 0; }
+  .admin-sidebar.open::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: -1;
+  }
   .admin-stats { grid-template-columns: 1fr; }
-  .admin-table { font-size: 0.8rem; }
+  .admin-table {
+    font-size: 0.8rem;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
   .admin-table th, .admin-table td { padding: 8px 10px; }
+  .admin-main { padding: 1rem; }
+  .admin-header { flex-wrap: wrap; gap: 0.75rem; }
+  .admin-header h1 { font-size: 1.2rem; }
+  .admin-nav a { font-size: 0.85rem; padding: 10px 1rem; }
+  /* Modal mobile fullwidth */
+  .modal {
+    max-width: 100%;
+    padding: 1.25rem;
+    margin: 0.5rem;
+    max-height: 85vh;
+  }
+  .modal h2 { font-size: 1.1rem; margin-bottom: 1rem; }
+  .modal-actions { flex-direction: column; gap: 0.5rem; }
+  .modal-actions button { width: 100%; text-align: center; padding: 12px; }
+  /* Reviews container mobile */
+  #reviews-container { grid-template-columns: 1fr !important; }
+  /* Recent orders */
+  #section-dashboard h3 { font-size: 1rem; }
 
   .section { padding: 40px 1rem; }
   .section-title { font-size: 1.5rem; margin-bottom: 1.5rem; }

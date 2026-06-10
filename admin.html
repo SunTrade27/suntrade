@@ -721,10 +721,10 @@
 
       // 1) Клиентке + админге email жіберу (статус өзгергенде)
       try {
-        await fetch('/api/send-order-status-update', {
+        await fetch('/api/email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderId, status, language: currentLang })
+          body: JSON.stringify({ action: 'status-update', orderId, status, language: currentLang })
         });
       } catch (emailErr) {
         console.error('Status email error:', emailErr);
@@ -741,10 +741,10 @@
 
   async function sendReviewRequest(orderId) {
     try {
-      const resp = await fetch('/api/send-review-request', {
+      const resp = await fetch('/api/email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId })
+        body: JSON.stringify({ action: 'review-request', orderId })
       });
       const result = await resp.json();
       if (result.success) {
@@ -974,6 +974,16 @@
   }
     switchLangTab('en');
   }
+
+  // Close sidebar when clicking backdrop on mobile
+  document.addEventListener('click', function(e) {
+    const sidebar = document.getElementById('admin-sidebar');
+    const menuBtn = document.querySelector('.mobile-menu-btn');
+    if (sidebar && sidebar.classList.contains('open') &&
+        !sidebar.contains(e.target) && !menuBtn?.contains(e.target)) {
+      sidebar.classList.remove('open');
+    }
+  });
 
   function closeProductModal() {
     document.getElementById('product-modal').style.display = 'none';
