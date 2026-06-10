@@ -157,6 +157,17 @@
   document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(async () => {
       // ============================================================
+      // 0) Пароль қалпына келтіру сілтемесінен келдік пе?
+      //    URL hash-та access_token бар болса — бұл Supabase-тен келген
+      //    recovery сілтемесі. Баптаулар бетін ашып, "Жаңа пароль орнату"
+      //    формасын көрсету керек.
+      // ============================================================
+      const isRecoveryFlow = window.location.hash &&
+        (window.location.hash.includes('access_token') ||
+         window.location.hash.includes('type=recovery') ||
+         window.location.hash.includes('error_description'));
+
+      // ============================================================
       // 1) Ең алдымен — Stripe-тан кейін келсек, save-order-ды МІНДЕТТІ ТҮРДЕ шақырамыз
       //    (логин болса да, болмаса да — webhook өткізбеген жағдайда кепілдік)
       // ============================================================
@@ -244,7 +255,14 @@
       // ============================================================
       // 3) Логин болған жағдайда — orders секциясын ашу + тапсырысты жүктеу
       // ============================================================
-      if (window.location.hash === '#orders' || isSuccessReturn) {
+      if (isRecoveryFlow) {
+        // Пароль қалпына келтіру сілтемесінен келдік — баптаулар бетін ашып,
+        // access_token-ды URL-ден тазалау
+        showAccountSection('settings', null);
+        showRecoveryBanner();
+        // Hash-ты access_token-сыз қалдыру, reload болса қайта кірмесін
+        history.replaceState(null, '', window.location.pathname + '#settings');
+      } else if (window.location.hash === '#orders' || isSuccessReturn) {
         showAccountSection('orders', null);
       }
     }, 500);
@@ -347,21 +365,25 @@
       return;
     }
 
-    container.innerHTML = orders.map(o => {
+    container.innerHTML = '<div class="orders-wrap">' + orders.map(o => {
       const statusSteps = ['pending', 'accepted', 'packing', 'shipped', 'delivered'];
       const currentStep = statusSteps.indexOf(o.status);
+      // Қауіпсіз мән — белгісіз статус жағдайында 0 деп есептейміз
+      const safeStep = currentStep < 0 ? 0 : currentStep;
 
       // Build product list (from order_items or fallback to products)
       let productsHtml = '';
       if (o.order_items && o.order_items.length > 0) {
         productsHtml = o.order_items.map(item => `
-          <div style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--border);">
-            ${item.product_image ? `<img src="${escHtml(item.product_image)}" style="width:50px;height:50px;object-fit:cover;border-radius:6px;">` : '<div style="width:50px;height:50px;background:var(--bg-light);border-radius:6px;"></div>'}
-            <div style="flex:1;">
-              <div style="font-weight:500;">${escHtml(item.product_name || 'Product')}</div>
-              <div style="font-size:0.8rem;color:var(--text-light);">${t('qty_label') || 'Qty'}: ${item.quantity} × €${parseFloat(item.unit_price || 0).toFixed(2)}</div>
+          <div class="order-item">
+            ${item.product_image
+              ? `<img src="${escHtml(item.product_image)}" class="order-item-img" alt="${escHtml(item.product_name || '')}" loading="lazy">`
+              : '<div class="order-item-img"></div>'}
+            <div class="order-item-info">
+              <div class="order-item-name">${escHtml(item.product_name || 'Product')}</div>
+              <div class="order-item-meta">${t('qty_label') || 'Qty'}: ${item.quantity} × &euro;${parseFloat(item.unit_price || 0).toFixed(2)}</div>
             </div>
-            <div style="font-weight:600;">€${(parseFloat(item.unit_price || 0) * (item.quantity || 1)).toFixed(2)}</div>
+            <div class="order-item-price">&euro;${(parseFloat(item.unit_price || 0) * (item.quantity || 1)).toFixed(2)}</div>
           </div>
         `).join('');
       } else if (o.products) {
@@ -369,60 +391,77 @@
         const productName = o.products['name_' + currentLang] || o.products.name_en || 'N/A';
         const productImage = (o.products.images && o.products.images[0]) || '';
         productsHtml = `
-          <div style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0;">
-            ${productImage ? `<img src="${escHtml(productImage)}" style="width:50px;height:50px;object-fit:cover;border-radius:6px;">` : ''}
-            <div style="flex:1;font-weight:500;">${escHtml(productName)}</div>
+          <div class="order-item">
+            ${productImage ? `<img src="${escHtml(productImage)}" class="order-item-img" alt="${escHtml(productName)}" loading="lazy">` : '<div class="order-item-img"></div>'}
+            <div class="order-item-info">
+              <div class="order-item-name">${escHtml(productName)}</div>
+            </div>
+            <div class="order-item-price">&euro;${parseFloat(o.amount || 0).toFixed(2)}</div>
           </div>
         `;
       } else {
-        productsHtml = '<div style="color:var(--text-light);">' + (t('product_info_unavailable') || 'Product info unavailable') + '</div>';
+        productsHtml = '<div style="color:var(--text-light);font-size:0.85rem;padding:0.5rem 0;">' + (t('product_info_unavailable') || 'Product info unavailable') + '</div>';
       }
 
       // Shipping address
       const shippingHtml = o.shipping_address_line1 ? `
-        <div style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border);font-size:0.85rem;color:var(--text-light);display:flex;align-items:flex-start;gap:0.5rem;">
-          <svg class="icon icon-sm" style="color:var(--primary);flex-shrink:0;margin-top:2px;"><use href="#icon-truck"/></svg>
-          <div><strong style="color:var(--text);">Shipping to:</strong> ${escHtml(o.shipping_address_line1)}${o.shipping_address_line2 ? ', ' + escHtml(o.shipping_address_line2) : ''}, ${escHtml(o.shipping_city || '')}${o.shipping_postal_code ? ' ' + escHtml(o.shipping_postal_code) : ''}, ${escHtml(o.shipping_country || '')}</div>
+        <div class="order-shipping">
+          <svg class="icon icon-sm"><use href="#icon-truck"/></svg>
+          <div><strong>${t('order_shipping_to') || 'Shipping to'}:</strong> ${escHtml(o.shipping_address_line1)}${o.shipping_address_line2 ? ', ' + escHtml(o.shipping_address_line2) : ''}, ${escHtml(o.shipping_city || '')}${o.shipping_postal_code ? ' ' + escHtml(o.shipping_postal_code) : ''}, ${escHtml(o.shipping_country || '')}</div>
         </div>
       ` : '';
 
-      return `
-        <div style="background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
-            <div>
-              <p style="font-size:0.85rem;color:var(--text-light);margin:0 0 4px;">ID: ${o.id.substring(0, 8)}... | ${new Date(o.created_at).toLocaleDateString()}</p>
-            </div>
-            <span style="font-weight:700;color:var(--primary);font-size:1.1rem;">&euro;${parseFloat(o.amount || 0).toFixed(2)}</span>
-          </div>
-          <div style="margin-bottom:1rem;">${productsHtml}</div>
-          <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
-            ${statusSteps.map((step, i) => {
-              let circleContent, circleStyle;
-              if (i < currentStep) {
-                // Өткен қадам — check иконкасы
-                circleContent = '<svg class="icon icon-sm" style="color:white;"><use href="#icon-check"/></svg>';
-                circleStyle = 'background:var(--primary);color:white;';
-              } else if (i === currentStep) {
-                // Ағымдағы қадам — статус иконкасы
-                circleContent = getOrderStatusIcon(step).replace('<svg class="icon icon-sm">', '<svg class="icon icon-sm" style="color:white;">');
-                circleStyle = 'background:var(--primary);color:white;';
-              } else {
-                // Болашақ қадам — нөмір
-                circleContent = (i + 1);
-                circleStyle = 'background:var(--border);color:var(--text-muted);';
-              }
-              return `
-              <div style="display:flex;align-items:center;gap:4px;">
-                <div style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;${circleStyle}">${circleContent}</div>
-                <span style="font-size:0.75rem;${i === currentStep ? 'font-weight:700;color:var(--primary);' : 'color:var(--text-muted);'}">${getOrderStatusLabel(step)}</span>
-                ${i < statusSteps.length - 1 ? '<div style="width:20px;height:2px;background:' + (i < currentStep ? 'var(--primary)' : 'var(--border)') + ';"></div>' : ''}
+      // Vertical stepper (mobile-first), with pulsing current step
+      const stepperHtml = `
+        <div class="order-stepper">
+          <div class="order-stepper-track"></div>
+          <div class="order-stepper-fill" style="height: 0;"></div>
+          ${statusSteps.map((step, i) => {
+            let stepClass = '';
+            if (i < safeStep) stepClass = 'done';
+            else if (i === safeStep) stepClass = 'current';
+            let dotContent = (i + 1);
+            if (i < safeStep) {
+              dotContent = '<svg class="icon icon-sm" style="color:white;width:12px;height:12px;"><use href="#icon-check"/></svg>';
+            } else if (i === safeStep) {
+              dotContent = getOrderStatusIcon(step).replace('<svg class="icon icon-sm">', '<svg class="icon icon-sm" style="color:white;width:12px;height:12px;">');
+            }
+            return `
+              <div class="order-step ${stepClass}">
+                <div class="order-step-dot">${dotContent}</div>
+                <div class="order-step-label">${getOrderStatusLabel(step)}</div>
               </div>
-            `;}).join('')}
+            `;
+          }).join('')}
+        </div>
+      `;
+
+      return `
+        <div class="order-card">
+          <div class="order-card-head">
+            <div class="order-meta">
+              <span class="order-id">#${o.id.substring(0, 8).toUpperCase()}</span>
+              <span class="order-date">${new Date(o.created_at).toLocaleDateString()}</span>
+            </div>
+            <span class="order-total">&euro;${parseFloat(o.amount || 0).toFixed(2)}</span>
           </div>
+          <div>${productsHtml}</div>
+          ${stepperHtml}
           ${shippingHtml}
         </div>
       `;
-    }).join('');
+    }).join('') + '</div>';
+
+    // Stepper-дің fill сызығының биіктігін орнат (мобильді вертикальды stepper)
+    requestAnimationFrame(() => {
+      container.querySelectorAll('.order-card').forEach(card => {
+        const fill = card.querySelector('.order-stepper-fill');
+        const track = card.querySelector('.order-stepper-track');
+        if (fill && track) {
+          fill.style.height = track.offsetHeight + 'px';
+        }
+      });
+    });
   }
 
   async function handleSaveProfile(e) {
@@ -473,10 +512,61 @@
       succEl.textContent = t('account_password_changed') || 'Password changed!';
       succEl.style.display = 'block';
       document.getElementById('password-form').reset();
+      // Recovery режимінде сәтті өзгертілді — баннерді жасыру
+      const banner = document.getElementById('recovery-banner');
+      if (banner) banner.remove();
     } catch (err) {
       errEl.textContent = err.message;
       errEl.style.display = 'block';
     }
+  }
+
+  // Пароль қалпына келтіру email-нен келгенде — баптаулар бетінің үстіне
+  // хабарлама баннері шығады
+  function showRecoveryBanner() {
+    const settingsSection = document.getElementById('section-settings');
+    if (!settingsSection) return;
+    // Қолданушы бұрын кірген бе, кірмеген бе — Supabase auth сессиясын hash-тан
+    // автоматты түрде оқиды (detectSessionInUrl=true әдепкі мәні).
+    // Бірақ кейде сессия әлі жүктелмеуі мүмкін — бірнеше рет тексереміз
+    let attempts = 0;
+    const tryShow = async () => {
+      const user = await getCurrentUser();
+      if (user) {
+        const msg = t('auth_reset_subtitle') || 'Сілтеме арқылы келдіңіз. Жаңа парольді төменде орнатыңыз.';
+        const title = t('auth_reset_title') || 'Жаңа пароль орнату';
+        const banner = document.createElement('div');
+        banner.id = 'recovery-banner';
+        banner.style.cssText = 'background:linear-gradient(135deg,#DBEAFE,#BFDBFE);border:1px solid #93C5FD;border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:flex-start;gap:0.75rem;';
+        banner.innerHTML = `
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px;"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <div style="flex:1;">
+            <strong style="color:#1E3A8A;display:block;margin-bottom:2px;">${escHtml(title)}</strong>
+            <span style="color:#1E40AF;font-size:0.9rem;">${escHtml(msg)}</span>
+          </div>
+        `;
+        // Баптаулар бөлімінің ең басына қою
+        const h2 = settingsSection.querySelector('h2');
+        if (h2) settingsSection.insertBefore(banner, h2.nextSibling);
+        else settingsSection.prepend(banner);
+        return;
+      }
+      // Сессия әлі жүктелмеген — тағы күтеміз (ең көбі 5 секунд)
+      attempts++;
+      if (attempts < 10) setTimeout(tryShow, 500);
+      else {
+        // Сессия орнамады — қате хабарламасы
+        const banner = document.createElement('div');
+        banner.id = 'recovery-banner';
+        banner.style.cssText = 'background:#FEE2E2;border:1px solid #FCA5A5;border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.25rem;';
+        banner.innerHTML = `<strong style="color:#991B1B;">⚠ ${t('auth_reset_failed') || 'Сілтеменің мерзімі аяқталған немесе жарамсыз'}</strong>
+          <p style="margin:0.5rem 0 0;color:#7F1D1D;font-size:0.9rem;">${t('auth_back_to_login') || 'Кіру бетіне оралу'}: <a href="/auth.html" style="color:#991B1B;font-weight:600;">/auth.html</a></p>`;
+        const h2 = settingsSection.querySelector('h2');
+        if (h2) settingsSection.insertBefore(banner, h2.nextSibling);
+        else settingsSection.prepend(banner);
+      }
+    };
+    tryShow();
   }
 
   async function handleAccountLogout() {

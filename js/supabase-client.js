@@ -206,7 +206,9 @@ async function userSignOut() {
 // Password reset — sends a recovery email with a link
 async function resetPassword(email) {
   if (!email) throw new Error('Email is required');
-  const redirectTo = window.location.origin + '/auth.html?mode=reset';
+  // Сілтеме account.html#settings бетіне барады — сол жерде access_token
+  // автоматты түрде анықталып, "Жаңа пароль орнату" формасы ашылады
+  const redirectTo = window.location.origin + '/account.html#settings';
   const { data, error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
   if (error) throw error;
   return data;
