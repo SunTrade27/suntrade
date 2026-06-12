@@ -29,12 +29,12 @@ module.exports = async function handler(req, res) {
 
       try {
         const resp = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              systemInstruction: {
+              system_instruction: {
                 parts: [{
                   text: `You are an HTML cleanup expert for an e-commerce store (SunTrade). The input HTML is a product description that was pasted from a supplier site (e.g. Alibaba, 1688, Taobao) and may contain junk UI artifacts from those sites. Your job is to extract ONLY the real product description content and re-format it beautifully.
 
@@ -86,6 +86,12 @@ RULES — STRICT:
             })
           }
         );
+
+        if (!resp.ok) {
+          const errBody = await resp.text().catch(() => 'Unknown error');
+          console.error('Gemini API error (format):', resp.status, errBody);
+          return res.status(200).json({ success: false, html, error: 'Gemini API error: ' + resp.status });
+        }
 
         const data = await resp.json();
         let cleanedHtml = data.candidates?.[0]?.content?.parts?.[0]?.text || html;
@@ -151,12 +157,12 @@ Rules:
 6. If description is empty, return empty string for desc`;
 
         const resp = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              systemInstruction: {
+              system_instruction: {
                 parts: [{ text: `You are a professional e-commerce translator. Translate from English to ${langName}. Reply ONLY with valid JSON.` }]
               },
               contents: [{ role: 'user', parts: [{ text: prompt }] }],
@@ -164,6 +170,13 @@ Rules:
             })
           }
         );
+
+        if (!resp.ok) {
+          const errBody = await resp.text().catch(() => 'Unknown error');
+          console.error(`Gemini API error for ${langCode}:`, resp.status, errBody);
+          translations[langCode] = { name: '', desc: '' };
+          continue;
+        }
 
         const data = await resp.json();
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -181,15 +194,16 @@ Rules:
           };
         } catch (parseErr) {
           console.error(`JSON parse error for ${langCode}:`, parseErr, 'Raw:', text);
-          // Fallback: use the raw response or original
+          // Return empty — don't save English as a fake translation
           translations[langCode] = {
-            name: text.replace(/^["']|["']$/g, '').substring(0, 200) || name_en,
-            desc: desc_en || ''
+            name: '',
+            desc: ''
           };
         }
       } catch (langErr) {
         console.error(`Translation error for ${langCode}:`, langErr);
-        translations[langCode] = { name: name_en, desc: desc_en || '' };
+        // Return empty — don't save English as a fake translation
+        translations[langCode] = { name: '', desc: '' };
       }
     }
 

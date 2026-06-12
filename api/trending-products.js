@@ -74,12 +74,12 @@ Reply ONLY in valid JSON format (no markdown, no code fences):
 }`;
 
     const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          systemInstruction: {
+          system_instruction: {
             parts: [{ text: 'You are a market research expert who analyzes Google Trends data. Reply ONLY with valid JSON.' }]
           },
           contents: [{ role: 'user', parts: [{ text: trendPrompt }] }],
@@ -87,6 +87,12 @@ Reply ONLY in valid JSON format (no markdown, no code fences):
         })
       }
     );
+
+    if (!resp.ok) {
+      const errBody = await resp.text().catch(() => 'Unknown error');
+      console.error('Gemini API error:', resp.status, errBody);
+      return res.status(500).json({ error: 'Gemini API error: ' + resp.status, detail: errBody.substring(0, 500) });
+    }
 
     const data = await resp.json();
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
