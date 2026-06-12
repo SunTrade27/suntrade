@@ -284,18 +284,18 @@
     }
     const lang = (typeof currentLang !== 'undefined' ? currentLang : 'en');
     const messages = {
-      kz: '✅ Төлеміңіз сәтті өтті! Тапсырысыңыз қабылданды. Электрондық поштаңызға растау жіберілді.',
-      ru: '✅ Ваш платёж прошёл успешно! Заказ принят. На вашу почту отправлено подтверждение.',
-      en: '✅ Payment successful! Your order has been received. A confirmation email has been sent.',
-      de: '✅ Zahlung erfolgreich! Ihre Bestellung wurde erhalten. Eine Bestätigung wurde per E-Mail gesendet.',
-      fr: '✅ Paiement réussi ! Votre commande a été reçue. Un email de confirmation a été envoyé.',
-      es: '✅ ¡Pago exitoso! Tu pedido ha sido recibido. Se ha enviado un email de confirmación.',
-      it: '✅ Pagamento riuscito! Il tuo ordine è stato ricevuto. Una email di conferma è stata inviata.',
-      tr: '✅ Ödeme başarılı! Siparişiniz alındı. Onay e-postası gönderildi.',
-      pt: '✅ Pagamento bem-sucedido! Seu pedido foi recebido. Um e-mail de confirmação foi enviado.',
-      nl: '✅ Betaling geslaagd! Uw bestelling is ontvangen. Een bevestigingsmail is verzonden.',
-      pl: '✅ Płatność udana! Twoje zamówienie zostało przyjęte. Wysłano e-mail z potwierdzeniem.',
-      ar: '✅ تمت العملية بنجاح! تم استلام طلبك. تم إرسال بريد إلكتروني للتأكيد.'
+      kz: 'Төлеміңіз сәтті өтті! Тапсырысыңыз қабылданды. Электрондық поштаңызға растау жіберілді.',
+      ru: 'Ваш платёж прошёл успешно! Заказ принят. На вашу почту отправлено подтверждение.',
+      en: 'Payment successful! Your order has been received. A confirmation email has been sent.',
+      de: 'Zahlung erfolgreich! Ihre Bestellung wurde erhalten. Eine Bestätigung wurde per E-Mail gesendet.',
+      fr: 'Paiement réussi ! Votre commande a été reçue. Un email de confirmation a été envoyé.',
+      es: '¡Pago exitoso! Tu pedido ha sido recibido. Se ha enviado un email de confirmación.',
+      it: 'Pagamento riuscito! Il tuo ordine è stato ricevuto. Una email di conferma è stata inviata.',
+      tr: 'Ödeme başarılı! Siparişiniz alındı. Onay e-postası gönderildi.',
+      pt: 'Pagamento bem-sucedido! Seu pedido foi recebido. Um e-mail de confirmação foi enviado.',
+      nl: 'Betaling geslaagd! Uw bestelling is ontvangen. Een bevestigingsmail is verzonden.',
+      pl: 'Płatność udana! Twoje zamówienie zostało przyjęte. Wysłano e-mail z potwierdzeniem.',
+      ar: 'تمت العملية بنجاح! تم استلام طلبك. تم إرسال بريد إلكتروني للتأكيد.'
     };
     const msg = messages[lang] || messages.en;
     const signInHtml = (lang === 'kz' || lang === 'ru') ?
@@ -559,7 +559,7 @@
         const banner = document.createElement('div');
         banner.id = 'recovery-banner';
         banner.style.cssText = 'background:#FEE2E2;border:1px solid #FCA5A5;border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.25rem;';
-        banner.innerHTML = `<strong style="color:#991B1B;">⚠ ${t('auth_reset_failed') || 'Сілтеменің мерзімі аяқталған немесе жарамсыз'}</strong>
+        banner.innerHTML = `<strong style="color:#991B1B;"><svg class="icon icon-sm" style="vertical-align:middle;color:#991B1B;"><use href="#icon-alert"/></svg> ${t('auth_reset_failed') || 'Сілтеменің мерзімі аяқталған немесе жарамсыз'}</strong>
           <p style="margin:0.5rem 0 0;color:#7F1D1D;font-size:0.9rem;">${t('auth_back_to_login') || 'Кіру бетіне оралу'}: <a href="/auth.html" style="color:#991B1B;font-weight:600;">/auth.html</a></p>`;
         const h2 = settingsSection.querySelector('h2');
         if (h2) settingsSection.insertBefore(banner, h2.nextSibling);

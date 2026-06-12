@@ -661,7 +661,7 @@
                     ${o.status === 'delivered' ? `
                       <button onclick="sendAdminReviewRequest('${o.id}', '${escHtml(o.customer_email || '')}', '${productId}')" style="padding:8px 16px;background:#FF6B00;color:white;border:none;border-radius:8px;font-weight:600;font-size:0.8rem;cursor:pointer;transition:background 0.2s;display:inline-flex;align-items:center;gap:0.4rem;" onmouseover="this.style.background='#E05E00'" onmouseout="this.style.background='#FF6B00'"><svg class="icon icon-sm" style="color:white;"><use href="#icon-mail"/></svg> Send Review</button>
                     ` : `
-                      <span style="padding:8px 12px;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.3);border-radius:8px;font-size:0.75rem;">⏳ ${o.status === 'paid' ? 'Ақы төленді' : o.status === 'shipped' ? 'Жолда' : 'Күтілуде'}</span>
+                      <span style="padding:8px 12px;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.3);border-radius:8px;font-size:0.75rem;display:inline-flex;align-items:center;gap:4px;"><svg class="icon icon-sm" style="color:rgba(255,255,255,0.3);"><use href="#icon-clock"/></svg> ${o.status === 'paid' ? 'Ақы төленді' : o.status === 'shipped' ? 'Жолда' : 'Күтілуде'}</span>
                     `}
                     <button onclick="copyToClipboard('${reviewUrl}', this)" style="padding:8px 12px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.15);border-radius:8px;font-size:0.8rem;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:0.4rem;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><svg class="icon icon-sm" style="color:rgba(255,255,255,0.7);"><use href="#icon-clipboard"/></svg> Link</button>
                   </div>
@@ -681,7 +681,7 @@
     const btn = event && event.target || document.querySelector('#admin-orders-list button');
     if (!btn) return;
     const originalText = btn.textContent;
-    btn.textContent = '⏳ Sending...';
+    btn.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Sending...';
     btn.disabled = true;
     btn.style.opacity = '0.6';
 

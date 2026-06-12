@@ -409,11 +409,11 @@
         <h2 data-i18n="admin_products" style="font-size:1.4rem;">Products</h2>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
           <button class="btn-sm btn-outline" onclick="seedTrendingProducts()" id="seed-btn" style="font-size:0.8rem;padding:8px 14px;background:linear-gradient(135deg,#667EEA,#764BA2);color:white;border:none;">
-            📦 Add Trending Electronics (10)
+            <svg class="icon icon-sm" style="vertical-align:middle"><use href="#icon-package"/></svg> Add Trending Electronics (10)
           </button>
           <button class="btn-sm btn-outline" onclick="batchTranslateAll()" id="batch-translate-btn" style="font-size:0.8rem;padding:8px 14px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            🌍 Batch Translate All
+            <svg class="icon icon-sm" style="vertical-align:middle"><use href="#icon-globe"/></svg> Batch Translate All
           </button>
           <button class="btn-sm btn-primary" onclick="openProductModal()" data-i18n="admin_add_product" style="font-size:0.85rem;padding:8px 14px;">+ Add Product</button>
         </div>
@@ -432,7 +432,7 @@
 
     <!-- Reviews -->
     <div id="section-reviews" style="display:none;">
-      <h2 data-i18n="admin_reviews" style="margin-bottom:1.5rem;">📝 Пікірлер / Reviews</h2>
+      <h2 data-i18n="admin_reviews" style="margin-bottom:1.5rem;"><svg class="icon icon-lg" style="vertical-align:middle;margin-right:6px;"><use href="#icon-edit"/></svg> Пікірлер / Reviews</h2>
 
       <!-- Stats -->
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem;">
@@ -452,10 +452,10 @@
 
       <!-- Filters -->
       <div style="margin-bottom:1.5rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
-        <button onclick="filterReviews('all')" class="btn-sm btn-outline review-filter-btn active" data-i18n="admin_reviews_all">📋 Барлығы</button>
-        <button onclick="filterReviews('pending')" class="btn-sm btn-outline review-filter-btn" data-i18n="review_pending">⏳ Күтуде</button>
-        <button onclick="filterReviews('approved')" class="btn-sm btn-outline review-filter-btn" data-i18n="review_approved">✅ Мақұлданған</button>
-        <button onclick="filterReviews('with_product')" class="btn-sm btn-outline review-filter-btn" data-i18n="admin_reviews_with_product">📦 Тауармен</button>
+        <button onclick="filterReviews('all')" class="btn-sm btn-outline review-filter-btn active" data-i18n="admin_reviews_all"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-grid"/></svg> Барлығы</button>
+        <button onclick="filterReviews('pending')" class="btn-sm btn-outline review-filter-btn" data-i18n="review_pending"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Күтуде</button>
+        <button onclick="filterReviews('approved')" class="btn-sm btn-outline review-filter-btn" data-i18n="review_approved"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#22C55E;"><use href="#icon-check-circle"/></svg> Мақұлданған</button>
+        <button onclick="filterReviews('with_product')" class="btn-sm btn-outline review-filter-btn" data-i18n="admin_reviews_with_product"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-package"/></svg> Тауармен</button>
       </div>
 
       <div id="reviews-container" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:1rem;"></div>
@@ -776,7 +776,7 @@
       const orders = await adminGetOrders();
       if (lastOrderCount > 0 && orders.length > lastOrderCount) {
         const newCount = orders.length - lastOrderCount;
-        const msg = (typeof t === 'function' ? t('new_orders_notification') : '🆕 new order(s)!').replace('{count}', newCount);
+        const msg = (typeof t === 'function' ? t('new_orders_notification') : '<svg class="icon icon-sm" style="vertical-align:middle"><use href="#icon-sparkle"/></svg> new order(s)!').replace('{count}', newCount);
         showNotification(msg);
         // Play sound
         try { new Audio('data:audio/wav;base64,UklGRl9vT19teleXBBDAQABABEAIlYAAESsAAABAAgA').play(); } catch(e) {}
@@ -934,7 +934,7 @@
               <span><strong>€${parseFloat(p.price).toFixed(2)}</strong></span>
               <span>${stockLabel}: ${p.stock}</span>
             </div>
-            <span class="product-row-card-status ${statusClass}">${p.active ? '✓' : '✕'} ${statusLabel}</span>
+            <span class="product-row-card-status ${statusClass}">${p.active ? '<svg class="icon icon-sm" style="color:#22C55E;vertical-align:middle;"><use href="#icon-check"/></svg>' : '<svg class="icon icon-sm" style="color:var(--danger);vertical-align:middle;"><use href="#icon-x"/></svg>'} ${statusLabel}</span>
           </div>
           <div class="product-row-card-actions">
             <button class="btn-sm btn-outline" onclick="editProduct('${p.id}')">${t('edit_btn')}</button>
@@ -966,7 +966,7 @@
             ${o.shipping_address_line2 ? `<br><small>${escapeHtml(o.shipping_address_line2)}</small>` : ''}
             <br><small>${escapeHtml(o.shipping_city || '')}${o.shipping_postal_code ? ', ' + escapeHtml(o.shipping_postal_code) : ''}</small>
             <br><small>${escapeHtml(o.shipping_country || '')}</small>
-            ${o.customer_phone ? `<br><small style="color:var(--primary)">📞 ${escapeHtml(o.customer_phone)}</small>` : ''}
+            ${o.customer_phone ? `<br><small style="color:var(--primary)"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:2px;"><use href="#icon-phone"/></svg> ${escapeHtml(o.customer_phone)}</small>` : ''}
           ` : '<span style="color:var(--text-light)">' + t('no_address') + '</span>';
 
           let productList = 'N/A';
@@ -997,7 +997,7 @@
             </td>
             <td>${new Date(o.created_at).toLocaleDateString()}</td>
             <td>
-              <button class="btn-sm btn-outline" onclick="sendReviewRequest('${o.id}')" style="font-size:0.75rem;"><svg class="icon icon-sm" style="margin-right:4px"><use href="#icon-mail"/></svg>Review</button>
+              <button class="btn-sm btn-outline" onclick="sendReviewRequest('${o.id}')" style="font-size:0.75rem;"><svg class="icon icon-sm" style="margin-right:4px"><use href="#icon-mail"/></svg> Review</button>
             </td>
           </tr>
         `}).join('')}</tbody>
@@ -1053,7 +1053,7 @@
             </div>
           </div>
           <div class="order-row-card-foot">
-            <button class="btn-sm btn-outline" onclick="sendReviewRequest('${o.id}')">📧 Review</button>
+            <button class="btn-sm btn-outline" onclick="sendReviewRequest('${o.id}')"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-mail"/></svg> Review</button>
           </div>
         </div>
       `;
@@ -1121,7 +1121,7 @@
         <button type="button" class="desc-tool-btn" data-cmd="insertUnorderedList" title="Bullet list">•</button>
         <button type="button" class="desc-tool-btn" data-cmd="insertOrderedList" title="Numbered list">1.</button>
         <button type="button" class="desc-tool-btn" data-cmd="formatBlock" data-arg="blockquote" title="Quote">”</button>
-        <button type="button" class="desc-tool-btn" data-cmd="createLink" title="Insert link">🔗</button>
+        <button type="button" class="desc-tool-btn" data-cmd="createLink" title="Insert link"><svg class="icon icon-sm"><use href="#icon-share"/></svg></button>
         <button type="button" class="desc-tool-btn" data-cmd="removeFormat" title="Clear formatting">⌫</button>
         ${lang === 'en' ? `
           <button type="button" class="desc-format-btn" onclick="formatDescription()" title="AI көмегімен сипаттаманы реттеу" style="margin-left:auto;">
@@ -1280,18 +1280,18 @@
 
           <!-- Date -->
           <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:12px;">
-            🕐 ${new Date(r.created_at).toLocaleDateString()}
+            <svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:var(--text-muted);"><use href="#icon-clock"/></svg> ${new Date(r.created_at).toLocaleDateString()}
           </div>
 
           <!-- Actions -->
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             ${!r.approved ? `
               <button onclick="approveReview('${r.id}')" style="flex:1;padding:8px 10px;border:none;border-radius:8px;background:#22C55E;color:white;cursor:pointer;font-size:0.8rem;font-weight:600;">
-                ✅ ${t('approve_btn')}
+                <svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-check-circle"/></svg> ${t('approve_btn')}
               </button>
             ` : ''}
             <button onclick="deleteReview('${r.id}')" style="padding:8px 14px;border:none;border-radius:8px;background:#FEE2E2;color:#DC2626;cursor:pointer;font-size:0.8rem;font-weight:600;">
-              🗑️ ${t('delete_btn')}
+              <svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-trash"/></svg> ${t('delete_btn')}
             </button>
           </div>
         </div>
@@ -1746,8 +1746,8 @@
     const descEn = descRaw ? descRaw.value : '';
 
     btn.disabled = true;
-    btn.textContent = '⏳ Translating...';
-    status.textContent = 'Translating to 10 languages...';
+    btn.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Translating...';
+    status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Translating to 10 languages...';
     status.classList.add('show');
 
     try {
@@ -1776,7 +1776,7 @@
           }
 
           count++;
-          status.textContent = `Translating... ${count}/${total}`;
+          status.innerHTML = `<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Translating... ${count}/${total}`;
         }
 
         // If currently viewing English tab, need to refresh
@@ -1795,15 +1795,15 @@
           }
         }
 
-        status.textContent = '✅ Translated to ' + total + ' languages!';
+        status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#22C55E;"><use href="#icon-check-circle"/></svg> Translated to ' + total + ' languages!';
         setTimeout(() => { status.classList.remove('show'); }, 3000);
       } else {
-        status.textContent = '❌ Translation failed';
+        status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#EF4444;"><use href="#icon-x"/></svg> Translation failed';
         setTimeout(() => { status.classList.remove('show'); }, 3000);
       }
     } catch (err) {
       console.error('Translation error:', err);
-      status.textContent = '❌ Error: ' + err.message;
+      status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#EF4444;"><use href="#icon-x"/></svg> Error: ' + err.message;
       setTimeout(() => { status.classList.remove('show'); }, 4000);
     } finally {
       btn.disabled = false;
@@ -1818,7 +1818,7 @@
     const btn = document.getElementById('batch-translate-btn');
     const statusEl = document.getElementById('batch-translate-status');
     btn.disabled = true;
-    btn.textContent = '⏳ Translating...';
+    btn.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Translating...';
     statusEl.style.display = 'block';
     statusEl.style.background = '#FEF3C7';
     statusEl.style.color = '#92400E';
@@ -1827,7 +1827,7 @@
     try {
       const products = await adminGetProducts();
       if (products.length === 0) {
-        statusEl.textContent = '❌ No products found.';
+        statusEl.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#EF4444;"><use href="#icon-x"/></svg> No products found.';
         statusEl.style.background = '#FEE2E2';
         statusEl.style.color = '#991B1B';
         setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
@@ -1844,7 +1844,7 @@
         const name = p.name_en || '';
         if (!name) { skipCount++; continue; }
 
-        statusEl.textContent = `⏳ [${i + 1}/${total}] Translating: ${name.substring(0, 40)}...`;
+        statusEl.innerHTML = `<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> [${i + 1}/${total}] Translating: ${name.substring(0, 40)}...`;
 
         // Check if already has translations (at least Kazakh filled)
         if (p.name_kz && p.name_kz.trim()) {
@@ -1885,7 +1885,7 @@
 
       statusEl.style.background = successCount > 0 ? '#D1FAE5' : '#FEF3C7';
       statusEl.style.color = successCount > 0 ? '#065F46' : '#92400E';
-      statusEl.textContent = `✅ Done! ${successCount} translated, ${skipCount} skipped (already have translations), ${errorCount} errors.`;
+      statusEl.innerHTML = `<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#22C55E;"><use href="#icon-check-circle"/></svg> Done! ${successCount} translated, ${skipCount} skipped (already have translations), ${errorCount} errors.`;
 
       // Reload products list
       loadProducts();
@@ -1893,10 +1893,10 @@
       console.error('Batch translate error:', err);
       statusEl.style.background = '#FEE2E2';
       statusEl.style.color = '#991B1B';
-      statusEl.textContent = '❌ Error: ' + err.message;
+      statusEl.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#EF4444;"><use href="#icon-x"/></svg> Error: ' + err.message;
     } finally {
       btn.disabled = false;
-      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> 🌍 Batch Translate All';
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> <svg class="icon icon-sm" style="vertical-align:middle"><use href="#icon-globe"/></svg> Batch Translate All';
       setTimeout(() => { statusEl.style.display = 'none'; }, 8000);
     }
   }
@@ -1961,13 +1961,13 @@
     const btn = document.getElementById('seed-btn');
     const statusEl = document.getElementById('batch-translate-status');
     btn.disabled = true;
-    btn.textContent = '⏳ Adding products...';
+    btn.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Adding products...';
     statusEl.style.display = 'block';
     statusEl.style.background = '#FEF3C7';
     statusEl.style.color = '#92400E';
 
     // Check for existing products to avoid duplicates
-    statusEl.textContent = 'Checking existing products and categories...';
+    statusEl.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Checking existing products and categories...';
     const existingProducts = await adminGetProducts();
     const existingNames = new Set(existingProducts.map(p => (p.name_en || '').trim().toLowerCase()));
 
@@ -1990,7 +1990,7 @@
         continue;
       }
 
-      statusEl.textContent = `⏳ [${i + 1}/${TRENDING_PRODUCTS.length}] Adding: ${p.name.substring(0, 45)}...`;
+      statusEl.innerHTML = `<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> [${i + 1}/${TRENDING_PRODUCTS.length}] Adding: ${p.name.substring(0, 45)}...`;
 
       try {
         const product = {
@@ -2023,7 +2023,7 @@
 
     statusEl.style.background = errors === 0 ? '#D1FAE5' : '#FEF3C7';
     statusEl.style.color = errors === 0 ? '#065F46' : '#92400E';
-    statusEl.textContent = `✅ ${success} products added! ${errors > 0 ? errors + ' errors.' : ''} Now click "🌍 Batch Translate All" to translate to 11 languages.`;
+    statusEl.innerHTML = `<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#22C55E;"><use href="#icon-check-circle"/></svg> ${success} products added! ${errors > 0 ? errors + ' errors.' : ''} Now click "<svg class="icon icon-sm" style="vertical-align:middle;"><use href="#icon-globe"/></svg> Batch Translate All" to translate to 11 languages.`;
 
     // Reload products
     loadProducts();
@@ -2048,7 +2048,7 @@
     const statusEl = document.getElementById('format-status');
 
     formatBtn.disabled = true;
-    formatBtn.textContent = '⏳ Formatting...';
+    formatBtn.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Formatting...';
     statusEl.textContent = 'Uploading embedded images...';
     statusEl.classList.add('show');
 
@@ -2075,10 +2075,10 @@
         const raw = document.getElementById('pdesc-' + lang + '-raw');
         if (raw) raw.value = cleanedHtml;
 
-        statusEl.textContent = '✅ Formatted!';
+        statusEl.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#22C55E;"><use href="#icon-check-circle"/></svg> Formatted!';
         setTimeout(() => { statusEl.classList.remove('show'); }, 3000);
       } else {
-        statusEl.textContent = '❌ Formatting failed, keeping original';
+        statusEl.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#EF4444;"><use href="#icon-x"/></svg> Formatting failed, keeping original';
         setTimeout(() => { statusEl.classList.remove('show'); }, 3000);
       }
     } catch (err) {
@@ -2090,7 +2090,7 @@
       });
       if (temp.innerHTML) {
         editor.innerHTML = applyBeautifyStyles(temp.innerHTML);
-        statusEl.textContent = '⚠️ Local cleanup only (AI unavailable)';
+        statusEl.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#F59E0B;"><use href="#icon-alert"/></svg> Local cleanup only (AI unavailable)';
         setTimeout(() => { statusEl.classList.remove('show'); }, 3000);
       }
     } finally {
@@ -2224,7 +2224,7 @@
       if (needsTranslate) {
         const status = document.getElementById('translate-status');
         const btn = document.getElementById('translate-btn');
-        status.textContent = '⏳ Auto-translating to 10 languages...';
+        status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Auto-translating to 10 languages...';
         status.classList.add('show');
         if (btn) btn.disabled = true;
 
@@ -2245,17 +2245,17 @@
               if (nameInput && data.name) nameInput.value = data.name;
               if (descRaw && data.desc) descRaw.value = data.desc;
               count++;
-              status.textContent = `⏳ Translating... ${count}/${total}`;
+              status.innerHTML = `<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Translating... ${count}/${total}`;
             }
-            status.textContent = '✅ Auto-translated to ' + total + ' languages!';
+            status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#22C55E;"><use href="#icon-check-circle"/></svg> Auto-translated to ' + total + ' languages!';
             setTimeout(() => { status.classList.remove('show'); }, 3000);
           } else {
-            status.textContent = '⚠️ Translation failed, saving with English only';
+            status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#F59E0B;"><use href="#icon-alert"/></svg> Translation failed, saving with English only';
             setTimeout(() => { status.classList.remove('show'); }, 4000);
           }
         } catch (err) {
           console.error('Auto-translate error:', err);
-          status.textContent = '⚠️ Translation error, saving with English only';
+          status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#F59E0B;"><use href="#icon-alert"/></svg> Translation error, saving with English only';
           setTimeout(() => { status.classList.remove('show'); }, 4000);
         } finally {
           if (btn) btn.disabled = false;
