@@ -140,6 +140,7 @@
   window.addEventListener('langChanged', () => {
     renderCategoryOptions();
     loadCatalogProducts();
+    applyTranslations();
   });
 
   document.addEventListener('DOMContentLoaded', async () => {
@@ -206,6 +207,7 @@
         </div>
       `;
     }).join('');
+    applyTranslations();
   }
 </script>
 <script src="/js/chat-widget.js"></script>
