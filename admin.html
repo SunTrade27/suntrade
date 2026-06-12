@@ -1967,9 +1967,14 @@
     statusEl.style.color = '#92400E';
 
     // Check for existing products to avoid duplicates
-    statusEl.textContent = 'Checking existing products...';
+    statusEl.textContent = 'Checking existing products and categories...';
     const existingProducts = await adminGetProducts();
     const existingNames = new Set(existingProducts.map(p => (p.name_en || '').trim().toLowerCase()));
+
+    // Auto-detect an Electronics category
+    const cats = await getCategories();
+    const electronicsCat = cats.find(c => /electron|gadget|tech|accessories|phone|audio/i.test(c.name_en || ''));
+    const defaultCategoryId = electronicsCat ? electronicsCat.id : null;
 
     let success = 0;
     let skipped = 0;
