@@ -44,13 +44,13 @@ function addToCart(productId, name, price, image, qty = 1) {
   const existing = cart.find(item => item.id === productId);
   if (existing) {
     // Already in cart - don't add again, just notify
-    showNotification((typeof t === 'function' ? t('already_in_cart') : 'Already in cart') + ' ✓');
+    showNotification((typeof t === 'function' ? t('already_in_cart') : 'Already in cart') + ' <svg class="icon icon-sm" style="color:white;vertical-align:middle;"><use href="#icon-check"/></svg>');
     return false;
   } else {
     cart.push({ id: productId, name: String(name), price: numPrice, image: image || '', qty: numQty });
   }
   saveCart();
-  showNotification((typeof t === 'function' ? t('product_add_cart') : 'Add to Cart') + ' ✓');
+  showNotification((typeof t === 'function' ? t('product_add_cart') : 'Add to Cart') + ' <svg class="icon icon-sm" style="color:white;vertical-align:middle;"><use href="#icon-check"/></svg>');
   return true;
 }
 
@@ -136,7 +136,10 @@ function renderCartPage() {
 function showNotification(message) {
   const notif = document.createElement('div');
   notif.className = 'notification';
-  notif.textContent = message;
+  // Use innerHTML so callers can pass SVG icons (e.g. <svg class="icon"><use href="#icon-check"/></svg>).
+  // All current callers pass hardcoded strings or translated text from JSON files (no user input),
+  // so this is safe. If user-provided data is ever passed, sanitize it first.
+  notif.innerHTML = message;
   document.body.appendChild(notif);
   setTimeout(() => notif.classList.add('show'), 10);
   setTimeout(() => {

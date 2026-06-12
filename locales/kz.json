@@ -387,5 +387,13 @@
   "admin_format_error": "Форматтау сәтсіз",
   "admin_enter_name_first": "Алдымен ағылшын тіліндегі тауар атауын толтырыңыз.",
   "admin_paste_content_first": "Алдымен мазмұнды қойыңыз немесе теріңіз.",
-  "admin_translate_progress": "{count} тілге аударылуда..."
+  "admin_translate_progress": "{count} тілге аударылуда...",
+  "trust_secure_payment": "Қауіпсіз төлем",
+  "trust_secure_payment_sub": "SSL қорғалған",
+  "trust_money_back": "Ақша қайтару",
+  "trust_money_back_sub": "30 күн ішінде",
+  "trust_verified": "Расталған дүкен",
+  "trust_verified_sub": "1000+ сенімді",
+  "trust_shipping": "Жылдам жеткізу",
+  "trust_shipping_sub": "Әлемдік жеткізу"
 }

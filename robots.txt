@@ -1,0 +1,11 @@
+# SunTrade - Robots.txt
+# https://www.suntrade.store
+
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /admin-reviews.html
+Disallow: /chat.html
+Disallow: /api/
+
+Sitemap: https://www.suntrade.store/sitemap.xml

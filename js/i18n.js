@@ -68,8 +68,9 @@ function applyTranslations() {
   if (typeof renderCartPage === 'function') renderCartPage();
   if (typeof renderFeaturedProducts === 'function') renderFeaturedProducts();
   if (typeof loadProducts === 'function' && document.getElementById('products-grid')) loadProducts();
-  if (typeof loadCategories === 'function') loadCategories();
-  if (typeof loadProductDetail === 'function') loadProductDetail();
+  // Note: Individual pages handle re-rendering via their own
+  // langChanged event listeners (e.g. renderProduct in product.html,
+  // renderCategories + renderFeaturedProducts in index.html, etc.)
   if (typeof loadHomepageReviews === 'function') loadHomepageReviews();
   if (typeof doHeroSearch === 'function' && document.getElementById('hero-search-input')?.value) doHeroSearch();
 }

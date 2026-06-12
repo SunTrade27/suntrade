@@ -15,14 +15,27 @@
     zh: '在 WhatsApp 上写', ja: 'WhatsAppで書く', ko: 'WhatsApp에 쓰기'
   };
 
-  // Generate or retrieve customer ID
+  // Generate or retrieve customer ID (safe in private mode / restricted contexts)
   function getCustomerId() {
-    let id = localStorage.getItem(STORAGE_KEY);
+    let id = null;
+    try { id = localStorage.getItem(STORAGE_KEY); } catch (e) {}
     if (!id) {
       id = 'cust_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem(STORAGE_KEY, id);
+      try { localStorage.setItem(STORAGE_KEY, id); } catch (e) {}
     }
     return id;
+  }
+
+  // Detect a sensible default language (site lang > browser lang > 'en')
+  function getDefaultLang() {
+    try { if (localStorage.getItem('suntrade_lang')) return localStorage.getItem('suntrade_lang'); } catch (e) {}
+    if (document.documentElement && document.documentElement.lang) {
+      return (document.documentElement.lang || 'en').split('-')[0];
+    }
+    if (typeof navigator !== 'undefined' && navigator.language) {
+      return (navigator.language || 'en').split('-')[0];
+    }
+    return 'en';
   }
 
   // Get current site language
@@ -34,6 +47,11 @@
   let isOpen = false;
   let pollInterval = null;
   let lastMessageCount = 0;
+
+  // Check if mobile
+  function isMobile() {
+    return window.innerWidth <= 768;
+  }
 
   // Create widget HTML
   function createWidget() {
@@ -51,6 +69,9 @@
       <!-- Chat Window -->
       <div class="cw-window" id="cw-window" style="display:none;">
         <div class="cw-header">
+          <button class="cw-back-btn" id="cw-back-btn" onclick="ChatWidget.close()" aria-label="Back">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
           <div class="cw-header-info">
             <div class="cw-avatar">S</div>
             <div>
@@ -59,6 +80,9 @@
             </div>
           </div>
           <div class="cw-header-actions">
+            <a href="${WHATSAPP_FALLBACK_URL}" target="_blank" rel="noopener" class="cw-wa-link" id="cw-wa-link" title="Write on WhatsApp">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </a>
             <select id="cw-lang" class="cw-lang-select" onchange="ChatWidget.setLang(this.value)">
               <option value="en">EN</option>
               <option value="ru">RU</option>
@@ -76,7 +100,7 @@
               <option value="ja">JA</option>
               <option value="ko">KO</option>
             </select>
-            <button class="cw-close-btn" onclick="ChatWidget.toggle()">×</button>
+            <button class="cw-close-btn" onclick="ChatWidget.toggle()" aria-label="Close">×</button>
           </div>
         </div>
 
@@ -84,7 +108,7 @@
           <div class="cw-welcome">
             <div class="cw-avatar-lg">S</div>
             <h3>SunTrade</h3>
-            <p id="cw-welcome-text">Сәлеметсіз бе! Сізге қалай көмектесе аламын?</p>
+            <p id="cw-welcome-text"></p>
             <div class="cw-quick-actions">
               <button onclick="ChatWidget.quickMsg('Сіздерде қандай тауарлар бар?')"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-cart"/></svg>Тауарлар</button>
               <button onclick="ChatWidget.quickMsg('Жеткізу қанша тұрады?')"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-truck"/></svg>Жеткізу</button>
@@ -109,8 +133,10 @@
     `;
     document.body.appendChild(widget);
 
-    // Set saved language
-    const savedLang = localStorage.getItem(LANG_KEY) || 'kz';
+    // Set saved language (fall back to site/browser language, not hardcoded KZ)
+    let savedLang = null;
+    try { savedLang = localStorage.getItem(LANG_KEY); } catch (e) {}
+    if (!savedLang) savedLang = getDefaultLang();
     document.getElementById('cw-lang').value = savedLang;
     updateWelcomeText(savedLang);
   }
@@ -158,13 +184,51 @@
     if (isOpen) {
       win.style.display = 'flex';
       btn.classList.add('active');
-      document.getElementById('cw-input').focus();
+      // On mobile, lock background scroll. The back button is shown by CSS @media
+      // (max-width: 768px) and hidden on desktop, so no JS override needed here.
+      if (isMobile()) {
+        document.body.classList.add('cw-no-scroll');
+      }
+      // Focus input after the window has rendered so mobile keyboard pushes layout correctly
+      setTimeout(() => {
+        const input = document.getElementById('cw-input');
+        if (input) input.focus();
+      }, 100);
       loadHistory();
       startPolling();
     } else {
       win.style.display = 'none';
       btn.classList.remove('active');
+      document.body.classList.remove('cw-no-scroll');
       stopPolling();
+    }
+  }
+
+  // Close chat (used by back button on mobile)
+  function close() {
+    if (isOpen) toggle();
+  }
+
+  // Keep chat layout in sync with viewport size (handles rotation / resize)
+  // The back button visibility is handled by CSS @media (max-width: 768px),
+  // so JS only needs to manage the body scroll-lock class on resize.
+  function handleResize() {
+    if (!isOpen) return; // only matters while chat is open
+    if (isMobile()) {
+      document.body.classList.add('cw-no-scroll');
+    } else {
+      document.body.classList.remove('cw-no-scroll');
+    }
+  }
+
+  // Auto-resize textarea
+  function setupInput() {
+    const input = document.getElementById('cw-input');
+    if (input) {
+      input.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+      });
     }
   }
 
@@ -261,7 +325,7 @@
     showTyping(true);
 
     try {
-      const lang = localStorage.getItem(LANG_KEY) || 'kz';
+      const lang = (() => { try { return localStorage.getItem(LANG_KEY) || getDefaultLang(); } catch (e) { return 'en'; } })();
       const resp = await fetch(`${API_BASE}/api/chat?action=message`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -398,42 +462,38 @@
     }
   }
 
-  // Auto-resize textarea
-  function setupInput() {
-    const input = document.getElementById('cw-input');
-    if (input) {
-      input.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-      });
-    }
-  }
-
-  // Check if mobile
-  function isMobile() {
-    return window.innerWidth <= 768;
-  }
-
   // Initialize
   function init() {
-    // On mobile, hide floating widget and redirect WhatsApp button to chat page
-    if (isMobile()) {
-      const waBtn = document.querySelector('.whatsapp-btn');
-      if (waBtn) {
-        waBtn.href = '/chat.html';
-        waBtn.removeAttribute('onclick');
-      }
-      return; // Don't create floating widget on mobile
-    }
+    // Defensive: clear any leftover scroll-lock from a previous page (e.g. when
+    // the user opened the chat on one page and navigated to another, the
+    // .cw-no-scroll class would otherwise leave the new page unscrollable).
+    document.body.classList.remove('cw-no-scroll');
+
+    // Always create the floating widget (works on both desktop and mobile)
     createWidget();
     setupInput();
     // Sync with current site language
     const siteLang = localStorage.getItem('suntrade_lang') || 'en';
     syncWithSiteLang(siteLang);
+
+    // Keep chat layout in sync with viewport size (rotation, mobile <-> desktop)
+    window.addEventListener('resize', handleResize);
+
+    // On mobile, the legacy .whatsapp-btn is kept as a quick WhatsApp shortcut.
+    // On desktop, clicking it just opens WhatsApp in a new tab.
+    if (isMobile()) {
+      const waBtn = document.querySelector('.whatsapp-btn');
+      if (waBtn) {
+        waBtn.href = WHATSAPP_FALLBACK_URL;
+        waBtn.setAttribute('target', '_blank');
+        waBtn.setAttribute('rel', 'noopener');
+        waBtn.removeAttribute('onclick');
+      }
+    }
   }
 
   // Public API
-  window.ChatWidget = { toggle, send, quickMsg, setLang };
+  window.ChatWidget = { toggle, close, send, quickMsg, setLang };
 
   // Init when DOM ready
   if (document.readyState === 'loading') {

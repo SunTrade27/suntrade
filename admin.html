@@ -11,6 +11,38 @@
 <style>
   /* ===== ADMIN MOBILE: Orders as cards ===== */
 .admin-orders-cards { display: none; flex-direction: column; gap: 0.75rem; }
+.admin-products-cards { display: none; flex-direction: column; gap: 0.75rem; }
+.product-row-card {
+  background: var(--bg-white); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 0.85rem;
+  display: flex; gap: 0.75rem; align-items: flex-start;
+}
+.product-row-card-img {
+  width: 72px; height: 72px; flex-shrink: 0;
+  object-fit: cover; object-position: center;
+  border-radius: 10px; border: 1px solid var(--border);
+  background: var(--bg);
+}
+.product-row-card-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+.product-row-card-name {
+  font-weight: 600; font-size: 0.9rem; line-height: 1.3; color: var(--text);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; word-break: break-word;
+}
+.product-row-card-meta {
+  display: flex; gap: 0.75rem; flex-wrap: wrap;
+  font-size: 0.75rem; color: var(--text-muted);
+}
+.product-row-card-meta strong { color: var(--primary); font-size: 0.95rem; }
+.product-row-card-status {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 0.7rem; font-weight: 600;
+  padding: 2px 8px; border-radius: 50px;
+}
+.product-row-card-status.active { background: #D1FAE5; color: #065F46; }
+.product-row-card-status.inactive { background: #FEE2E2; color: #991B1B; }
+.product-row-card-actions { display: flex; flex-direction: column; gap: 0.35rem; flex-shrink: 0; }
+.product-row-card-actions .btn-sm { padding: 6px 10px; font-size: 0.75rem; min-width: 64px; }
 .order-row-card {
   background: var(--bg-white); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 0.85rem;
@@ -33,6 +65,7 @@
 @media (max-width: 768px) {
   .admin-table-wrap { display: none; }
   .admin-orders-cards { display: flex; }
+  .admin-products-cards { display: flex; }
   /* Modal: prevent clipping, make usable */
   .modal {
     max-width: 100% !important;
@@ -41,23 +74,73 @@
     padding: 1rem !important;
     max-height: calc(100vh - 1rem) !important;
     border-radius: 12px !important;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .modal h2 { font-size: 1.05rem; margin-bottom: 0.75rem; }
-  .modal .form-group { margin-bottom: 0.75rem; }
-  .modal .form-group label { font-size: 0.8rem; margin-bottom: 0.3rem; }
+  .modal .form-group { margin-bottom: 0.7rem; }
+  .modal .form-group label { font-size: 0.78rem; margin-bottom: 0.25rem; }
   .modal .form-group input,
-  .modal .form-group select { padding: 10px 12px; font-size: 0.9rem; }
-  .modal .form-row { grid-template-columns: 1fr; gap: 0; }
-  .modal .form-row .form-group { margin-bottom: 0.75rem; }
-  /* Image upload zone larger tap area */
-  #image-upload-zone { padding: 1.25rem 0.75rem !important; }
-  #image-upload-zone p { font-size: 0.85rem; }
-  /* Lang tabs scroll on mobile */
-  .modal > form > div:first-child { gap: 0.4rem; padding-bottom: 0.4rem; }
-  .modal .lang-tab { padding: 5px 10px; font-size: 0.75rem; }
-  .modal .translate-btn { font-size: 0.7rem; padding: 6px 10px; }
-  /* Description editor larger on mobile */
-  .modal #lang-fields .desc-editor { min-height: 140px; font-size: 0.9rem; padding: 10px; }
+  .modal .form-group select { padding: 9px 10px; font-size: 0.88rem; }
+  .modal .form-row { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+  .modal .form-row .form-group { margin-bottom: 0; }
+  /* Image upload zone compact */
+  #image-upload-zone { padding: 1rem 0.6rem !important; }
+  #image-upload-zone p { font-size: 0.8rem; }
+  /* Lang tabs: horizontal scroll, compact */
+  .modal-lang-tabs {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 0.3rem !important;
+    padding-bottom: 0.5rem !important;
+    scrollbar-width: none;
+    align-items: center;
+  }
+  .modal-lang-tabs::-webkit-scrollbar { display: none; }
+  .modal .lang-tab {
+    padding: 5px 8px;
+    font-size: 0.72rem;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .modal .translate-btn {
+    font-size: 0.65rem;
+    padding: 5px 8px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .modal .translate-btn svg { display: none; }
+  /* Desc editor compact */
+  .modal #lang-fields .desc-editor { min-height: 100px; font-size: 0.85rem; padding: 8px; }
+  /* Desc toolbar: wrap, compact buttons */
+  .modal .desc-toolbar {
+    padding: 4px;
+    gap: 3px;
+    margin-bottom: 4px;
+  }
+  .modal .desc-tool-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+  .modal .desc-format-btn {
+    font-size: 0.7rem;
+    padding: 5px 8px;
+  }
+  /* Actions: stack vertically */
+  .modal .modal-actions {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    margin-top: 1rem;
+  }
+  .modal .modal-actions .btn-sm {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    font-size: 0.85rem;
+  }
   /* Admin header */
   .admin-header { gap: 0.5rem; }
   .admin-header h1 { font-size: 1.05rem; }
@@ -73,6 +156,7 @@
 }
 @media (min-width: 769px) {
   .admin-orders-cards { display: none; }
+  .admin-products-cards { display: none; }
   .admin-table-wrap { display: block; }
 }
 
@@ -227,6 +311,16 @@
     display: none;
   }
   .translate-progress.show { display: inline; }
+  /* Mobile: short translate text; Desktop: full text */
+  @media (max-width: 768px) {
+    .translate-btn-text { display: inline !important; }
+    .translate-btn-text-full { display: none !important; }
+    .translate-btn svg { display: none; }
+  }
+  @media (min-width: 769px) {
+    .translate-btn-text { display: none !important; }
+    .translate-btn-text-full { display: inline !important; }
+  }
 </style>
 </head>
 <body>
@@ -311,11 +405,19 @@
 
     <!-- Products -->
     <div id="section-products" style="display:none;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
-        <h2 data-i18n="admin_products">Products</h2>
-        <button class="btn-sm btn-primary" onclick="openProductModal()" data-i18n="admin_add_product">+ Add Product</button>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.5rem;">
+        <h2 data-i18n="admin_products" style="font-size:1.4rem;">Products</h2>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+          <button class="btn-sm btn-outline" onclick="batchTranslateAll()" id="batch-translate-btn" style="font-size:0.8rem;padding:8px 14px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            🌍 Batch Translate All
+          </button>
+          <button class="btn-sm btn-primary" onclick="openProductModal()" data-i18n="admin_add_product" style="font-size:0.85rem;padding:8px 14px;">+ Add Product</button>
+        </div>
       </div>
+      <div id="batch-translate-status" style="display:none;margin-bottom:1rem;padding:0.75rem 1rem;border-radius:8px;font-size:0.9rem;"></div>
       <div id="products-table"></div>
+      <div id="products-cards" class="admin-products-cards"></div>
     </div>
 
     <!-- Orders -->
@@ -366,7 +468,7 @@
     <form id="product-form" onsubmit="saveProduct(event)">
       <input type="hidden" id="product-id">
 
-      <div style="display:flex;gap:0.5rem;overflow-x:auto;margin-bottom:0.75rem;padding-bottom:0.5rem;align-items:center;">
+      <div class="modal-lang-tabs" style="display:flex;gap:0.5rem;overflow-x:auto;margin-bottom:0.75rem;padding-bottom:0.5rem;align-items:center;-webkit-overflow-scrolling:touch;scrollbar-width:none;">
         <button type="button" class="btn-sm btn-outline lang-tab active" onclick="switchLangTab('en')">EN</button>
         <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('kz')">KZ</button>
         <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('ru')">RU</button>
@@ -379,10 +481,11 @@
         <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('nl')">NL</button>
         <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('pl')">PL</button>
         <button type="button" class="btn-sm btn-outline lang-tab" onclick="switchLangTab('ar')">AR</button>
-        <span style="flex:1;"></span>
+        <span style="flex:0 0 auto;width:1px;"></span>
         <button type="button" class="translate-btn" onclick="translateAll()" id="translate-btn" title="Барлық тілдерге аудару">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-          AI Auto-Translate (EN → All)
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          <span class="translate-btn-text">AI Auto-Translate</span>
+          <span class="translate-btn-text-full">AI Auto-Translate (EN → All)</span>
         </button>
         <span class="translate-progress" id="translate-status"></span>
       </div>
@@ -395,9 +498,9 @@
         </div>
         <div class="form-group">
           <label data-i18n="admin_product_desc">Description</label>
-          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap;">
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;flex-wrap:wrap;">
             <button type="button" class="desc-format-btn" onclick="formatDescription()" title="AI көмегімен сипаттаманы реттеу">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/><circle cx="12" cy="12" r="3"/></svg>
               AI Format
             </button>
             <span class="translate-progress" id="format-status"></span>
@@ -787,8 +890,10 @@
   async function loadProducts() {
     const products = await adminGetProducts();
     const container = document.getElementById('products-table');
+    const cardsContainer = document.getElementById('products-cards');
     if (products.length === 0) {
       container.innerHTML = '<p style="color:var(--text-light);">' + t('no_products_admin') + '</p>';
+      cardsContainer.innerHTML = '';
       return;
     }
     container.innerHTML = `
@@ -809,6 +914,32 @@
         `).join('')}</tbody>
       </table>
     `;
+
+    // Mobile: card view
+    cardsContainer.innerHTML = products.map(p => {
+      const img = (p.images && p.images[0]) || '/images/placeholder.jpg';
+      const name = p.name_en || 'Unnamed';
+      const statusClass = p.active ? 'active' : 'inactive';
+      const statusLabel = p.active ? (typeof t === 'function' ? t('active_label') : 'Active') : (typeof t === 'function' ? t('inactive_label') : 'Inactive');
+      const stockLabel = typeof t === 'function' ? t('admin_product_stock') : 'Stock';
+      return `
+        <div class="product-row-card">
+          <img class="product-row-card-img" src="${img}" alt="${escapeHtml(name)}" loading="lazy">
+          <div class="product-row-card-info">
+            <div class="product-row-card-name">${escapeHtml(name)}</div>
+            <div class="product-row-card-meta">
+              <span><strong>€${parseFloat(p.price).toFixed(2)}</strong></span>
+              <span>${stockLabel}: ${p.stock}</span>
+            </div>
+            <span class="product-row-card-status ${statusClass}">${p.active ? '✓' : '✕'} ${statusLabel}</span>
+          </div>
+          <div class="product-row-card-actions">
+            <button class="btn-sm btn-outline" onclick="editProduct('${p.id}')">${t('edit_btn')}</button>
+            <button class="btn-sm btn-danger" onclick="deleteProduct('${p.id}')">${t('delete_btn')}</button>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   async function loadOrders() {
@@ -1673,7 +1804,97 @@
       setTimeout(() => { status.classList.remove('show'); }, 4000);
     } finally {
       btn.disabled = false;
-      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> AI Auto-Translate (EN → All)';
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> <span class="translate-btn-text">AI Auto-Translate</span> <span class="translate-btn-text-full">AI Auto-Translate (EN → All)</span>';
+    }
+  }
+
+  // ===== Batch Translate All Existing Products =====
+  async function batchTranslateAll() {
+    if (!confirm('Барлық тауарларды 11 тілге аудару? Бұл біраз уақыт алуы мүмкін.\n\nTranslate ALL existing products to 11 languages? This may take a while.')) return;
+
+    const btn = document.getElementById('batch-translate-btn');
+    const statusEl = document.getElementById('batch-translate-status');
+    btn.disabled = true;
+    btn.textContent = '⏳ Translating...';
+    statusEl.style.display = 'block';
+    statusEl.style.background = '#FEF3C7';
+    statusEl.style.color = '#92400E';
+    statusEl.textContent = 'Loading products...';
+
+    try {
+      const products = await adminGetProducts();
+      if (products.length === 0) {
+        statusEl.textContent = '❌ No products found.';
+        statusEl.style.background = '#FEE2E2';
+        statusEl.style.color = '#991B1B';
+        setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
+        return;
+      }
+
+      let successCount = 0;
+      let skipCount = 0;
+      let errorCount = 0;
+      const total = products.length;
+
+      for (let i = 0; i < products.length; i++) {
+        const p = products[i];
+        const name = p.name_en || '';
+        if (!name) { skipCount++; continue; }
+
+        statusEl.textContent = `⏳ [${i + 1}/${total}] Translating: ${name.substring(0, 40)}...`;
+
+        // Check if already has translations (at least Kazakh filled)
+        if (p.name_kz && p.name_kz.trim()) {
+          skipCount++;
+          continue;
+        }
+
+        try {
+          const descEn = p.desc_en || '';
+          const resp = await fetch('/api/translate-product', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name_en: name, desc_en: descEn })
+          });
+          const result = await resp.json();
+
+          if (result.success && result.translations) {
+            const updateFields = {};
+            for (const [lang, data] of Object.entries(result.translations)) {
+              updateFields['name_' + lang] = data.name || '';
+              updateFields['desc_' + lang] = data.desc || '';
+            }
+            // Update product in Supabase directly
+            const { error } = await sb.from('products').update(updateFields).eq('id', p.id);
+            if (error) throw error;
+            successCount++;
+          } else {
+            errorCount++;
+          }
+        } catch (err) {
+          console.error('Batch translate error for', p.id, err);
+          errorCount++;
+        }
+
+        // Small delay to avoid rate limiting
+        await new Promise(r => setTimeout(r, 300));
+      }
+
+      statusEl.style.background = successCount > 0 ? '#D1FAE5' : '#FEF3C7';
+      statusEl.style.color = successCount > 0 ? '#065F46' : '#92400E';
+      statusEl.textContent = `✅ Done! ${successCount} translated, ${skipCount} skipped (already have translations), ${errorCount} errors.`;
+
+      // Reload products list
+      loadProducts();
+    } catch (err) {
+      console.error('Batch translate error:', err);
+      statusEl.style.background = '#FEE2E2';
+      statusEl.style.color = '#991B1B';
+      statusEl.textContent = '❌ Error: ' + err.message;
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> 🌍 Batch Translate All';
+      setTimeout(() => { statusEl.style.display = 'none'; }, 8000);
     }
   }
 
@@ -1814,6 +2035,27 @@
       el.style.color = 'var(--text)';
     });
 
+    // Handle .desc-callout boxes — preserve the class + add inline styles
+    t.querySelectorAll('.desc-callout').forEach(el => {
+      el.style.background = 'linear-gradient(135deg, #FFF5ED 0%, #FFF0E6 30%, #FFE8D6 100%)';
+      el.style.borderLeft = '4px solid var(--primary, #FF6B00)';
+      el.style.borderRadius = '0 10px 10px 0';
+      el.style.padding = '14px 18px';
+      el.style.margin = '16px 0';
+      el.style.boxShadow = '0 2px 8px rgba(255,107,0,0.06)';
+      el.style.fontSize = '0.92rem';
+      el.style.lineHeight = '1.7';
+    });
+
+    // Handle <hr> separators — make them gradient
+    t.querySelectorAll('hr').forEach(el => {
+      el.style.border = 'none';
+      el.style.height = '1px';
+      el.style.background = 'linear-gradient(90deg, transparent, var(--border, #e5e7eb), transparent)';
+      el.style.margin = '18px 0';
+      el.style.opacity = '0.4';
+    });
+
     t.querySelectorAll('strong, b').forEach(el => { el.style.fontWeight = '700'; });
     t.querySelectorAll('em, i').forEach(el => { el.style.fontStyle = 'italic'; });
 
@@ -1831,6 +2073,62 @@
       if (raw) raw.value = editor.innerHTML;
     }
 
+    // ===== AUTO-TRANSLATE: Егер тек ағылшынша толтырылса, қалған 10 тілді автоматты аудару =====
+    const nameEn = document.getElementById('pname-en').value.trim();
+    const descRawEn = document.getElementById('pdesc-en-raw');
+    const descEn = descRawEn ? descRawEn.value.trim() : '';
+    const translateLangs = ['kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'];
+
+    if (nameEn) {
+      // Check if any other language fields are empty
+      const needsTranslate = translateLangs.some(lang => {
+        const nameEl = document.getElementById('pname-' + lang);
+        return nameEl && !nameEl.value.trim();
+      });
+
+      if (needsTranslate) {
+        const status = document.getElementById('translate-status');
+        const btn = document.getElementById('translate-btn');
+        status.textContent = '⏳ Auto-translating to 10 languages...';
+        status.classList.add('show');
+        if (btn) btn.disabled = true;
+
+        try {
+          const resp = await fetch('/api/translate-product', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name_en: nameEn, desc_en: descEn })
+          });
+          const result = await resp.json();
+
+          if (result.success && result.translations) {
+            let count = 0;
+            const total = Object.keys(result.translations).length;
+            for (const [lang, data] of Object.entries(result.translations)) {
+              const nameInput = document.getElementById('pname-' + lang);
+              const descRaw = document.getElementById('pdesc-' + lang + '-raw');
+              if (nameInput && data.name) nameInput.value = data.name;
+              if (descRaw && data.desc) descRaw.value = data.desc;
+              count++;
+              status.textContent = `⏳ Translating... ${count}/${total}`;
+            }
+            status.textContent = '✅ Auto-translated to ' + total + ' languages!';
+            setTimeout(() => { status.classList.remove('show'); }, 3000);
+          } else {
+            status.textContent = '⚠️ Translation failed, saving with English only';
+            setTimeout(() => { status.classList.remove('show'); }, 4000);
+          }
+        } catch (err) {
+          console.error('Auto-translate error:', err);
+          status.textContent = '⚠️ Translation error, saving with English only';
+          setTimeout(() => { status.classList.remove('show'); }, 4000);
+        } finally {
+          if (btn) btn.disabled = false;
+        }
+      }
+    }
+
+    // ===== САҚТАУ =====
     const product = {
       price: parseFloat(document.getElementById('pprice').value),
       stock: parseInt(document.getElementById('pstock').value),
@@ -1841,7 +2139,7 @@
     };
 
     // Collect all lang fields from inputs (name) and raw textareas (description)
-    ['en','kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'].forEach(lang => {
+    ['en', ...translateLangs].forEach(lang => {
       const nameEl = document.getElementById('pname-' + lang);
       const descRaw = document.getElementById('pdesc-' + lang + '-raw');
       product['name_' + lang] = nameEl ? nameEl.value : '';

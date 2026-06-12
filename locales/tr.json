@@ -347,5 +347,13 @@
   "admin_format_error": "Biçimlendirme başarısız",
   "admin_enter_name_first": "Önce İngilizce ürün adını doldurun.",
   "admin_paste_content_first": "Önce içeriği yapıştırın veya yazın.",
-  "admin_translate_progress": "{count} dile çevriliyor..."
+  "admin_translate_progress": "{count} dile çevriliyor...",
+  "trust_secure_payment": "Güvenli Ödeme",
+  "trust_secure_payment_sub": "SSL şifreli",
+  "trust_money_back": "Para İadesi",
+  "trust_money_back_sub": "30 gün iade",
+  "trust_verified": "Onaylı Mağaza",
+  "trust_verified_sub": "1000+ güveniyor",
+  "trust_shipping": "Hızlı Kargo",
+  "trust_shipping_sub": "Dünya çapında"
 }

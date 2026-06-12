@@ -347,5 +347,13 @@
   "admin_format_error": "Formatação falhou",
   "admin_enter_name_first": "Primeiro preencha o nome do produto em inglês.",
   "admin_paste_content_first": "Primeiro cole ou digite o conteúdo.",
-  "admin_translate_progress": "Traduzindo para {count} idiomas..."
+  "admin_translate_progress": "Traduzindo para {count} idiomas...",
+  "trust_secure_payment": "Pagamento seguro",
+  "trust_secure_payment_sub": "Criptografado SSL",
+  "trust_money_back": "Reembolso",
+  "trust_money_back_sub": "Devolução em 30 dias",
+  "trust_verified": "Loja verificada",
+  "trust_verified_sub": "1000+ confiam",
+  "trust_shipping": "Entrega rápida",
+  "trust_shipping_sub": "Mundial"
 }

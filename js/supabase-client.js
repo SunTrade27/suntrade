@@ -57,7 +57,13 @@ function fuzzyMatch(query, text) {
 async function getProducts(options = {}) {
   let query = sb.from('products').select('*, categories(*)').eq('active', true);
   if (options.categoryId) query = query.eq('category_id', options.categoryId);
-  if (options.search) query = query.or(`name_en.ilike.%${options.search}%,name_ru.ilike.%${options.search}%,name_kz.ilike.%${options.search}%`);
+  // Search across ALL language fields so users find products no matter what language they search in
+  if (options.search) {
+    const searchTerm = options.search;
+    const allNameFields = ['name_en','name_kz','name_ru','name_de','name_fr','name_es','name_it','name_tr','name_pt','name_nl','name_pl','name_ar'];
+    const conditions = allNameFields.map(f => `${f}.ilike.%${searchTerm}%`).join(',');
+    query = query.or(conditions);
+  }
   if (options.sort === 'price_asc') query = query.order('price', { ascending: true });
   else if (options.sort === 'price_desc') query = query.order('price', { ascending: false });
   else query = query.order('created_at', { ascending: false });
@@ -75,11 +81,16 @@ async function getProducts(options = {}) {
       if (allProducts) {
         const searchLower = options.search.toLowerCase();
         const fuzzyResults = allProducts.filter(p => {
-          return fuzzyMatch(searchLower, p.name_en) ||
-                 fuzzyMatch(searchLower, p.name_ru) ||
-                 fuzzyMatch(searchLower, p.name_kz) ||
-                 fuzzyMatch(searchLower, p.desc_en) ||
-                 fuzzyMatch(searchLower, p.desc_ru);
+          // Check ALL language name fields
+          const nameFields = ['name_en','name_kz','name_ru','name_de','name_fr','name_es','name_it','name_tr','name_pt','name_nl','name_pl','name_ar'];
+          const descFields = ['desc_en','desc_kz','desc_ru','desc_de','desc_fr','desc_es','desc_it','desc_tr','desc_pt','desc_nl','desc_pl','desc_ar'];
+          for (const f of nameFields) {
+            if (fuzzyMatch(searchLower, p[f])) return true;
+          }
+          for (const f of descFields) {
+            if (fuzzyMatch(searchLower, p[f])) return true;
+          }
+          return false;
         });
         // Merge: exact matches first, then fuzzy
         const exactIds = new Set(results.map(r => r.id));

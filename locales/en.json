@@ -387,5 +387,13 @@
   "admin_format_error": "Formatting failed",
   "admin_enter_name_first": "Please fill in the English product name first.",
   "admin_paste_content_first": "Please paste or type some content first.",
-  "admin_translate_progress": "Translating to {count} languages..."
+  "admin_translate_progress": "Translating to {count} languages...",
+  "trust_secure_payment": "Secure Payment",
+  "trust_secure_payment_sub": "SSL encrypted",
+  "trust_money_back": "Money-Back",
+  "trust_money_back_sub": "30-day return",
+  "trust_verified": "Verified Store",
+  "trust_verified_sub": "Trusted by 1000+",
+  "trust_shipping": "Fast Delivery",
+  "trust_shipping_sub": "Worldwide shipping"
 }

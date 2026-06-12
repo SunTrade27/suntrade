@@ -5,12 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title data-i18n="meta_title">SunTrade - Product</title>
   <meta name="description" content="" data-i18n="meta_description">
+  <link rel="canonical" href="https://www.suntrade.store/product.html" id="canonical-link">
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+  <!-- Hreflang for multi-language support -->
+  <link rel="alternate" hreflang="en" href="https://www.suntrade.store/product.html" />
+  <link rel="alternate" hreflang="ru" href="https://www.suntrade.store/product.html" />
+  <link rel="alternate" hreflang="kk" href="https://www.suntrade.store/product.html" />
+  <link rel="alternate" hreflang="de" href="https://www.suntrade.store/product.html" />
+  <link rel="alternate" hreflang="fr" href="https://www.suntrade.store/product.html" />
+  <link rel="alternate" hreflang="es" href="https://www.suntrade.store/product.html" />
+  <link rel="alternate" hreflang="it" href="https://www.suntrade.store/product.html" />
+  <link rel="alternate" hreflang="tr" href="https://www.suntrade.store/product.html" />
+  <link rel="alternate" hreflang="pt" href="https://www.suntrade.store/product.html" />
+  <link rel="alternate" hreflang="nl" href="https://www.suntrade.store/product.html" />
+  <link rel="alternate" hreflang="pl" href="https://www.suntrade.store/product.html" />
+  <link rel="alternate" hreflang="ar" href="https://www.suntrade.store/product.html" />
+  <link rel="alternate" hreflang="x-default" href="https://www.suntrade.store/product.html" />
   <link rel="stylesheet" href="/css/style.css">
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/icons.js"></script>
 </head>
 <body>
+<script>document.body.classList.remove('cw-no-scroll');document.body.style.overflow='';</script>
 
 <!-- NAVBAR -->
 <nav class="navbar">
@@ -59,7 +76,7 @@
   <div style="background:linear-gradient(135deg,#1A1A2E,#16213E);border-radius:var(--radius-lg);padding:2rem;margin-bottom:2rem;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
       <div>
-        <h2 style="color:white;margin:0;font-size:1.3rem;">📬 Пікір сұрау / Send Review Request</h2>
+        <h2 style="color:white;margin:0;font-size:1.3rem;display:flex;align-items:center;gap:0.5rem;"><svg class="icon icon-lg" style="color:white;"><use href="#icon-mail"/></svg> Пікір сұрау / Send Review Request</h2>
         <p style="color:rgba(255,255,255,0.6);font-size:0.85rem;margin-top:0.5rem;">Тауарды сатып алған клиенттерге пікір сілтемесін жіберу</p>
       </div>
       <span style="background:#FF6B00;color:white;padding:4px 12px;border-radius:50px;font-size:0.75rem;font-weight:600;">ADMIN</span>
@@ -75,10 +92,10 @@
 
     <!-- Quick copy link -->
     <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.1);">
-      <label style="color:rgba(255,255,255,0.7);font-size:0.85rem;font-weight:600;display:block;margin-bottom:0.5rem;">📋 Пікір сілтемесін көшіру / Copy Review Link</label>
+      <label style="color:rgba(255,255,255,0.7);font-size:0.85rem;font-weight:600;display:block;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.4rem;"><svg class="icon icon-sm"><use href="#icon-clipboard"/></svg> Пікір сілтемесін көшіру / Copy Review Link</label>
       <div style="display:flex;gap:0.5rem;">
         <input type="text" id="review-link-input" readonly style="flex:1;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(0,0,0,0.3);color:white;font-size:0.85rem;">
-        <button onclick="copyReviewLink()" style="padding:10px 20px;background:#FF6B00;color:white;border:none;border-radius:8px;font-weight:600;font-size:0.85rem;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#E05E00'" onmouseout="this.style.background='#FF6B00'">📋 Copy</button>
+        <button onclick="copyReviewLink()" style="padding:10px 20px;background:#FF6B00;color:white;border:none;border-radius:8px;font-weight:600;font-size:0.85rem;cursor:pointer;transition:background 0.2s;display:inline-flex;align-items:center;gap:0.4rem;" onmouseover="this.style.background='#E05E00'" onmouseout="this.style.background='#FF6B00'"><svg class="icon icon-sm"><use href="#icon-clipboard"/></svg> Copy</button>
       </div>
     </div>
   </div>
@@ -98,8 +115,8 @@
     </div>
     <div class="footer-col">
       <h4 data-i18n="footer_contact">Contact</h4>
-      <a href="https://wa.me/77471205935" target="_blank" rel="noopener" data-i18n="footer_whatsapp">WhatsApp</a>
-      <a href="tel:+77471205935">+7 747 120 5935</a>
+      <a href="https://wa.me/77021379248" target="_blank" rel="noopener" data-i18n="footer_whatsapp">WhatsApp</a>
+      <a href="tel:+77021379248">+7 702 137 9248</a>
       <a href="mailto:info@suntrade.store" data-i18n="footer_email">Email</a>
     </div>
     <div class="footer-col">
@@ -117,7 +134,7 @@
   </div>
 </footer>
 
-<a href="https://wa.me/77471205935" class="whatsapp-btn" target="_blank" title="WhatsApp">
+<a href="https://wa.me/77021379248" class="whatsapp-btn" target="_blank" title="WhatsApp">
   <svg viewBox="0 0 24 24" width="30" height="30"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </a>
 
@@ -152,24 +169,49 @@
   function renderProduct() {
     const p = currentProduct;
     const name = p['name_' + currentLang] || p.name_en || 'Product';
-    const desc = p['desc_' + currentLang] || p.desc_en || '';
+    // Clean description HTML to remove Alibaba/1688/Taobao UI junk before rendering
+    const rawDesc = p['desc_' + currentLang] || p.desc_en || '';
+    const desc = applyAlternatingFloats(cleanDescriptionHtml(rawDesc));
     const images = p.images && p.images.length ? p.images : ['/images/placeholder.jpg'];
     const inStock = p.stock > 0;
 
     // Update page title and meta
     document.title = name + ' - SunTrade';
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.content = desc.substring(0, 160);
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.content = desc.replace(/<[^>]*>/g, '').substring(0, 160);
+
+    // Update canonical URL with product ID
+    const canon = document.getElementById('canonical-link');
+    if (canon) canon.href = 'https://www.suntrade.store/product.html?id=' + p.id;
 
     // Update OG tags for sharing
     const ogTitle = document.createElement('meta');
     ogTitle.setAttribute('property', 'og:title');
     ogTitle.content = name;
     document.head.appendChild(ogTitle);
+    const ogDesc = document.createElement('meta');
+    ogDesc.setAttribute('property', 'og:description');
+    ogDesc.content = desc.replace(/<[^>]*>/g, '').substring(0, 200);
+    document.head.appendChild(ogDesc);
+    const ogUrl = document.createElement('meta');
+    ogUrl.setAttribute('property', 'og:url');
+    ogUrl.content = 'https://www.suntrade.store/product.html?id=' + p.id;
+    document.head.appendChild(ogUrl);
+    const ogSiteName = document.createElement('meta');
+    ogSiteName.setAttribute('property', 'og:site_name');
+    ogSiteName.content = 'SunTrade';
+    document.head.appendChild(ogSiteName);
     const ogImage = document.createElement('meta');
     ogImage.setAttribute('property', 'og:image');
     ogImage.content = images[0];
     document.head.appendChild(ogImage);
+    const ogType = document.createElement('meta');
+    ogType.setAttribute('property', 'og:type');
+    ogType.content = 'product';
+    document.head.appendChild(ogType);
+
+    // Add JSON-LD Product schema (structured data for Google)
+    addProductSchema(p, name, desc, images);
 
     document.getElementById('product-detail').innerHTML = `
       <div class="product-gallery">
@@ -200,19 +242,58 @@
             <input type="number" id="qty-input" value="1" min="1" max="${p.stock}">
             <button onclick="changeQty(1)">+</button>
           </div>
-        </div>
-        <div class="product-actions">
-          <button class="btn-add-cart" onclick="addProductToCart()" data-i18n="product_add_cart">Add to Cart</button>
-          <button class="btn-buy-now" onclick="buyNow()" data-i18n="product_buy_now">Buy Now</button>
           <button class="btn-share" onclick="shareProduct()" title="Share">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
           </button>
         </div>
-        ` : ''}
-        <div class="product-desc">
-          <h3 data-i18n="product_description">Description</h3>
-          <div class="product-desc-content">${desc || t('no_description')}</div>
+        <div class="product-actions">
+          <button class="btn-add-cart" onclick="addProductToCart()" data-i18n="product_add_cart">Add to Cart</button>
+          <button class="btn-buy-now" onclick="buyNow()" data-i18n="product_buy_now">Buy Now</button>
         </div>
+        ` : ''}
+        <!-- Trust badges: build buyer confidence. Shown both in stock and out of stock. -->
+        <div class="trust-badges" role="list" aria-label="Why buy from us">
+          <div class="trust-badge" role="listitem">
+            <div class="trust-badge-icon" style="background:rgba(16,185,129,0.12);color:#10B981;" aria-hidden="true">
+              <svg class="icon" aria-hidden="true"><use href="#icon-shield"/></svg>
+            </div>
+            <div class="trust-badge-text-block">
+              <div class="trust-badge-text" data-i18n="trust_secure_payment">Secure Payment</div>
+              <div class="trust-badge-sub" data-i18n="trust_secure_payment_sub">SSL encrypted</div>
+            </div>
+          </div>
+          <div class="trust-badge" role="listitem">
+            <div class="trust-badge-icon" style="background:rgba(255,107,0,0.12);color:#FF6B00;" aria-hidden="true">
+              <svg class="icon" aria-hidden="true"><use href="#icon-money"/></svg>
+            </div>
+            <div class="trust-badge-text-block">
+              <div class="trust-badge-text" data-i18n="trust_money_back">Money-Back</div>
+              <div class="trust-badge-sub" data-i18n="trust_money_back_sub">30-day return</div>
+            </div>
+          </div>
+          <div class="trust-badge" role="listitem">
+            <div class="trust-badge-icon" style="background:rgba(59,130,246,0.12);color:#3B82F6;" aria-hidden="true">
+              <svg class="icon" aria-hidden="true"><use href="#icon-check-circle"/></svg>
+            </div>
+            <div class="trust-badge-text-block">
+              <div class="trust-badge-text" data-i18n="trust_verified">Verified Store</div>
+              <div class="trust-badge-sub" data-i18n="trust_verified_sub">Trusted by 1000+</div>
+            </div>
+          </div>
+          <div class="trust-badge" role="listitem">
+            <div class="trust-badge-icon" style="background:rgba(168,85,247,0.12);color:#A855F7;" aria-hidden="true">
+              <svg class="icon" aria-hidden="true"><use href="#icon-truck"/></svg>
+            </div>
+            <div class="trust-badge-text-block">
+              <div class="trust-badge-text" data-i18n="trust_shipping">Fast Delivery</div>
+              <div class="trust-badge-sub" data-i18n="trust_shipping_sub">Worldwide shipping</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="product-desc">
+        <h3 data-i18n="product_description">Description</h3>
+        <div class="product-desc-content">${desc || t('no_description')}</div>
       </div>
     `;
 
@@ -264,7 +345,7 @@
     const existing = cart.find(item => item.id === currentProduct.id);
     if (existing) {
       // Already in cart - just notify and don't add again
-      showNotification((typeof t === 'function' ? t('already_in_cart') : 'Already in cart') + ' ✓');
+      showNotification((typeof t === 'function' ? t('already_in_cart') : 'Already in cart') + ' <svg class="icon icon-sm" style="color:white;vertical-align:middle;"><use href="#icon-check"/></svg>');
       return false;
     }
     return addToCart(currentProduct.id, name, currentProduct.price, img, qty);
@@ -299,7 +380,117 @@
     }
   }
 
+  // ===== JSON-LD Structured Data (Product Schema for Google) =====
+  function addProductSchema(p, name, desc, images) {
+    // Remove any existing product schema
+    document.querySelectorAll('script[type="application/ld+json"][data-schema="product"]').forEach(el => el.remove());
+
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      '@id': 'https://www.suntrade.store/product.html?id=' + p.id,
+      'name': name,
+      'description': desc.replace(/<[^>]*>/g, '').substring(0, 500),
+      'image': images.length > 0 ? images : ['https://www.suntrade.store/images/placeholder.jpg'],
+      'sku': p.id,
+      'mpn': p.id,
+      'brand': {
+        '@type': 'Brand',
+        'name': 'SunTrade'
+      },
+      'offers': {
+        '@type': 'Offer',
+        'url': 'https://www.suntrade.store/product.html?id=' + p.id,
+        'priceCurrency': 'EUR',
+        'price': parseFloat(p.price).toFixed(2),
+        'priceValidUntil': new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        'availability': p.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        'itemCondition': 'https://schema.org/NewCondition'
+      }
+    };
+
+    // Optionally add aggregateRating if product has reviews (fetched later)
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.setAttribute('data-schema', 'product');
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
+  }
+
+  // ===== Alternating image floats =====
+  // First image floats left, second right, third left, etc.
+  // Creates a magazine-style layout where text wraps around images.
+  function applyAlternatingFloats(html) {
+    if (!html || typeof html !== 'string') return html;
+    let imgIndex = 0;
+    return html.replace(/<img\b([^>]*)>/gi, (match, attrs) => {
+      // First image floats right (text on left), second floats left (text on right), repeat
+      const floatClass = imgIndex % 2 === 0 ? 'desc-img-float-right' : 'desc-img-float-left';
+      imgIndex++;
+      // If img already has a class attribute, append our float class
+      if (/class\s*=\s*["']/i.test(attrs)) {
+        return match.replace(/class\s*=\s*(["'])([^"']*)\1/i, (m, quote, cls) => {
+          return `class=${quote}${cls} ${floatClass}${quote}`;
+        });
+      }
+      // No existing class — add one
+      return `<img class="${floatClass}"${attrs}>`;
+    });
+  }
+
   // Reviews
+  // ===== Product description cleaner =====
+  // Removes supplier-site UI junk (Alibaba/1688/Taobao/Aliexpress/Tmall) so the
+  // description renders cleanly. Used to keep pasted descriptions beautiful.
+  function cleanDescriptionHtml(html) {
+    if (!html || typeof html !== 'string') return '';
+    let cleaned = html
+      // Strip <script> and <style> blocks (and their contents)
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+      // Strip inline event handlers (onclick, onload, etc.)
+      .replace(/\s+on[a-z]+\s*=\s*"[^"]*"/gi, '')
+      .replace(/\s+on[a-z]+\s*=\s*'[^']*'/gi, '')
+      // Neutralize javascript: links
+      .replace(/(href|src)\s*=\s*["']\s*javascript:[^"']*["']/gi, '$1="#"')
+      // Remove links pointing to supplier sites (Alibaba, 1688, Taobao, etc.)
+      .replace(/<a\b[^>]*?\bhref\s*=\s*["'][^"']*(?:alibaba|aliexpress|1688|taobao|tmall|alipay|alicdn|alicompany)[^"']*["'][^>]*>[\s\S]*?<\/a>/gi, '')
+      // Remove plain text references to supplier sites inside link text
+      .replace(/<a\b[^>]*>[\s\S]*?(?:alibaba|aliexpress|1688|taobao|tmall|alipay|supplier|manufacturer)[\s\S]*?<\/a>/gi, '')
+      // Remove common UI artifacts (buttons, forms, inputs, selects)
+      .replace(/<button\b[^>]*>[\s\S]*?<\/button>/gi, '')
+      .replace(/<input\b[^>]*\/?>/gi, '')
+      .replace(/<form\b[^>]*>[\s\S]*?<\/form>/gi, '')
+      .replace(/<select\b[^>]*>[\s\S]*?<\/select>/gi, '')
+      .replace(/<textarea\b[^>]*>[\s\S]*?<\/textarea>/gi, '')
+      // Remove divs that are clearly navigation / UI artifacts
+      .replace(/<div\b[^>]*?\bclass\s*=\s*["'][^"']*(?:breadcrumb|nav-|menu|header|footer|sidebar|cookie|banner|popup|modal|overlay|toolbar|tab|filter|action-?bar|button-?bar|review-?list|related-?product|recommend|sku-?info|vendor|supplier|seller)[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, '')
+      // Remove divs whose data-* attribute hints at supplier sites
+      .replace(/<div\b[^>]*?\bdata-?(?:scene|module|source|spm|track)[^>]*>[\s\S]*?<\/div>/gi, '')
+      // Strip supplier-specific class/id names
+      .replace(/\sclass\s*=\s*"[^"]*(?:alibaba|1688|taobao|aliexpress|supplier|alicdn)[^"]*"/gi, '')
+      .replace(/\sid\s*=\s*"[^"]*(?:alibaba|1688|taobao|aliexpress|supplier|alicdn)[^"]*"/gi, '')
+      // Remove "Powered by", "Copyright", "All rights reserved" footers
+      .replace(/<div\b[^>]*>[\s\S]*?(?:powered by|copyright|all rights reserved)[\s\S]*?<\/div>/gi, '')
+      // Remove tracking pixels and placeholder images
+      .replace(/<img\b[^>]*?\bsrc\s*=\s*["'][^"']*(?:spacer|blank|1x1|tracking|pixel|transparent|loading\.|placeholder)[^"']*["'][^>]*\/?>/gi, '')
+      // Remove fixed width/height that breaks responsive layout
+      .replace(/\swidth\s*=\s*"\d+"/gi, '')
+      .replace(/\sheight\s*=\s*"\d+"/gi, '')
+      // Drop the style attributes with fixed widths/heights
+      .replace(/style\s*=\s*"[^"]*(?:\bwidth\s*:\s*\d+|\bheight\s*:\s*\d+)[^"]*"/gi, '');
+
+    // Ensure images have lazy loading and responsive styling
+    cleaned = cleaned.replace(/<img\b(?![^>]*\bloading=)([^>]*)>/gi, '<img loading="lazy"$1>');
+    cleaned = cleaned.replace(/<img\b(?![^>]*\bstyle=)([^>]*)>/gi, '<img$1 style="max-width:100%;height:auto;">');
+
+    // Collapse runs of empty tags that some pastes leave behind
+    cleaned = cleaned.replace(/(<p[^>]*>\s*<\/p>)+/gi, '');
+    cleaned = cleaned.replace(/(<br\s*\/?>\s*){3,}/gi, '<br><br>');
+
+    return cleaned.trim();
+  }
+
   function escHtml(str) {
     if (!str) return '';
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -468,11 +659,11 @@
                   </div>
                   <div style="display:flex;gap:0.5rem;flex-shrink:0;">
                     ${o.status === 'delivered' ? `
-                      <button onclick="sendAdminReviewRequest('${o.id}', '${escHtml(o.customer_email || '')}', '${productId}')" style="padding:8px 16px;background:#FF6B00;color:white;border:none;border-radius:8px;font-weight:600;font-size:0.8rem;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#E05E00'" onmouseout="this.style.background='#FF6B00'">📧 Send Review</button>
+                      <button onclick="sendAdminReviewRequest('${o.id}', '${escHtml(o.customer_email || '')}', '${productId}')" style="padding:8px 16px;background:#FF6B00;color:white;border:none;border-radius:8px;font-weight:600;font-size:0.8rem;cursor:pointer;transition:background 0.2s;display:inline-flex;align-items:center;gap:0.4rem;" onmouseover="this.style.background='#E05E00'" onmouseout="this.style.background='#FF6B00'"><svg class="icon icon-sm" style="color:white;"><use href="#icon-mail"/></svg> Send Review</button>
                     ` : `
                       <span style="padding:8px 12px;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.3);border-radius:8px;font-size:0.75rem;">⏳ ${o.status === 'paid' ? 'Ақы төленді' : o.status === 'shipped' ? 'Жолда' : 'Күтілуде'}</span>
                     `}
-                    <button onclick="copyToClipboard('${reviewUrl}', this)" style="padding:8px 12px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.15);border-radius:8px;font-size:0.8rem;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">📋 Link</button>
+                    <button onclick="copyToClipboard('${reviewUrl}', this)" style="padding:8px 12px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.15);border-radius:8px;font-size:0.8rem;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:0.4rem;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><svg class="icon icon-sm" style="color:rgba(255,255,255,0.7);"><use href="#icon-clipboard"/></svg> Link</button>
                   </div>
                 </div>
               </div>
@@ -487,7 +678,8 @@
   }
 
   async function sendAdminReviewRequest(orderId, customerEmail, productId) {
-    const btn = event.target;
+    const btn = event && event.target || document.querySelector('#admin-orders-list button');
+    if (!btn) return;
     const originalText = btn.textContent;
     btn.textContent = '⏳ Sending...';
     btn.disabled = true;
@@ -501,9 +693,9 @@
       });
       const result = await resp.json();
       if (result.success) {
-        btn.textContent = '✅ Sent!';
+        btn.innerHTML = '<svg class="icon icon-sm" style="color:white;vertical-align:middle;"><use href="#icon-check"/></svg> Sent!';
         btn.style.background = '#22C55E';
-        showNotification('📧 Review request sent to ' + (customerEmail || 'customer'));
+        showNotification('<svg class="icon icon-sm" style="color:white;vertical-align:middle;"><use href="#icon-mail"/></svg> Review request sent to ' + (customerEmail || 'customer'));
         setTimeout(() => {
           btn.textContent = originalText;
           btn.disabled = false;
@@ -511,15 +703,14 @@
           btn.style.background = '#FF6B00';
         }, 3000);
       } else {
-        btn.textContent = '❌ Failed';
+        btn.innerHTML = '<svg class="icon icon-sm" style="color:white;vertical-align:middle;"><use href="#icon-x"/></svg> Failed';
         setTimeout(() => {
           btn.textContent = originalText;
           btn.disabled = false;
           btn.style.opacity = '1';
         }, 2000);
       }
-    } catch (err) {
-      btn.textContent = '❌ Error';
+    } catch (err) {        btn.innerHTML = '<svg class="icon icon-sm" style="color:white;vertical-align:middle;"><use href="#icon-x"/></svg> Error';
       setTimeout(() => {
         btn.textContent = originalText;
         btn.disabled = false;
@@ -532,9 +723,10 @@
     const input = document.getElementById('review-link-input');
     if (!input || !input.value) return;
     navigator.clipboard.writeText(input.value);
-    const btn = event.target;
+    const btn = document.querySelector('#admin-review-section button[onclick*="copyReviewLink"]') || event?.target;
+    if (!btn) return;
     const orig = btn.textContent;
-    btn.textContent = '✅ Copied!';
+    btn.innerHTML = '<svg class="icon icon-sm" style="color:white;vertical-align:middle;"><use href="#icon-check"/></svg> Copied!';
     btn.style.background = '#22C55E';
     showNotification('Link copied!');
     setTimeout(() => {
@@ -546,8 +738,8 @@
   function copyToClipboard(text, btn) {
     navigator.clipboard.writeText(text);
     const orig = btn.textContent;
-    btn.textContent = '✅ Copied!';
-    showNotification('Link copied!');
+    btn.innerHTML = '<svg class="icon icon-sm" style="color:white;vertical-align:middle;"><use href="#icon-check"/></svg> Copied!';
+    showNotification('<svg class="icon icon-sm" style="color:white;vertical-align:middle;"><use href="#icon-clipboard"/></svg> Link copied!');
     setTimeout(() => { btn.textContent = orig; }, 2000);
   }
 

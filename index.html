@@ -5,13 +5,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title data-i18n="meta_title">SunTrade - Global Marketplace</title>
   <meta name="description" content="" data-i18n="meta_description">
+  <link rel="canonical" href="https://www.suntrade.store/">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+  <!-- Hreflang for multi-language support -->
+  <link rel="alternate" hreflang="en" href="https://www.suntrade.store/" />
+  <link rel="alternate" hreflang="ru" href="https://www.suntrade.store/" />
+  <link rel="alternate" hreflang="kk" href="https://www.suntrade.store/" />
+  <link rel="alternate" hreflang="de" href="https://www.suntrade.store/" />
+  <link rel="alternate" hreflang="fr" href="https://www.suntrade.store/" />
+  <link rel="alternate" hreflang="es" href="https://www.suntrade.store/" />
+  <link rel="alternate" hreflang="it" href="https://www.suntrade.store/" />
+  <link rel="alternate" hreflang="tr" href="https://www.suntrade.store/" />
+  <link rel="alternate" hreflang="pt" href="https://www.suntrade.store/" />
+  <link rel="alternate" hreflang="nl" href="https://www.suntrade.store/" />
+  <link rel="alternate" hreflang="pl" href="https://www.suntrade.store/" />
+  <link rel="alternate" hreflang="ar" href="https://www.suntrade.store/" />
+  <link rel="alternate" hreflang="x-default" href="https://www.suntrade.store/" />
+  <!-- Organization + WebSite Schema (JSON-LD Structured Data) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://www.suntrade.store/#organization",
+    "name": "SunTrade",
+    "url": "https://www.suntrade.store",
+    "logo": "https://www.suntrade.store/images/favicon.svg",
+    "description": "Global marketplace for quality products from China. Worldwide shipping, secure payments.",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+7-702-137-9248",
+      "contactType": "customer service",
+      "availableLanguage": ["English", "Russian", "Kazakh"]
+    },
+    "sameAs": [
+      "https://www.instagram.com/sunna_china",
+      "https://www.tiktok.com/@sunna_china"
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": "https://www.suntrade.store/#website",
+    "url": "https://www.suntrade.store",
+    "name": "SunTrade - Global Marketplace",
+    "description": "Discover amazing products from China at the best prices. Worldwide shipping, secure payments via Stripe.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://www.suntrade.store/catalog.html?search={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/icons.js"></script>
-</head>
-<body>
-
+</head><body>
+<script>document.body.classList.remove('cw-no-scroll');document.body.style.overflow='';</script>
 <!-- NAVBAR -->
 <nav class="navbar">
   <div class="navbar-inner">
@@ -23,7 +77,7 @@
     </ul>
     <div class="nav-right">
       <div class="lang-wrapper">
-        <button id="lang-toggle"><svg class="icon icon-md" style="vertical-align:middle"><use href="#icon-globe"/></svg> EN</button>
+        <button id="lang-toggle"><svg class="icon icon-md" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg> EN</button>
         <div id="lang-dropdown"></div>
       </div>
       <a href="/cart.html" class="cart-link">
@@ -148,8 +202,8 @@
     </div>
     <div class="footer-col">
       <h4 data-i18n="footer_contact">Contact</h4>
-      <a href="https://wa.me/77471205935" target="_blank" rel="noopener" data-i18n="footer_whatsapp">WhatsApp</a>
-      <a href="tel:+77471205935">+7 747 120 5935</a>
+      <a href="https://wa.me/77021379248" target="_blank" rel="noopener" data-i18n="footer_whatsapp">WhatsApp</a>
+      <a href="tel:+77021379248">+7 702 137 9248</a>
       <a href="mailto:info@suntrade.store" data-i18n="footer_email">Email</a>
     </div>
     <div class="footer-col">
@@ -168,7 +222,7 @@
 </footer>
 
 <!-- WHATSAPP -->
-<a href="https://wa.me/77471205935" class="whatsapp-btn" target="_blank" title="WhatsApp">
+<a href="https://wa.me/77021379248" class="whatsapp-btn" target="_blank" title="WhatsApp">
   <svg viewBox="0 0 24 24" width="30" height="30"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </a>
 
@@ -385,7 +439,7 @@
       }
       return `
         <a href="/catalog.html?category=${cat.id}" class="category-card">
-          <div class="category-icon"><svg class="icon icon-xl"><use href="#icon-${iconName}"/></svg></div>
+          <div class="category-icon"><svg class="icon icon-xl" width="32" height="32"><use href="#icon-${iconName}"/></svg></div>
           <div class="category-name">${cat['name_' + currentLang] || cat.name_en || 'Category'}</div>
         </a>
       `;
@@ -479,19 +533,27 @@
   function renderProductCard(p) {
     const name = p['name_' + currentLang] || p.name_en || 'Product';
     const img = (p.images && p.images[0]) || '/images/placeholder.jpg';
+    const safeName = name.replace(/'/g, "&#39;");
+    // Stretched-link pattern: the entire card is wrapped in a positioned
+    // container, an invisible <a> covers the whole card, and the Add to Cart
+    // button sits on top with a higher z-index + stopPropagation so tapping it
+    // only adds to cart (no navigation). Tapping anywhere else on the card
+    // follows the product link. This fixes the mobile issue where the button
+    // swallowed the whole tap target and blocked entry into the product page.
     return `
-      <a href="/product.html?id=${p.id}" class="product-card">
+      <div class="product-card">
+        <a href="/product.html?id=${p.id}" class="product-card-link" aria-label="${safeName}"></a>
         <div class="product-card-img-wrap">
           <img src="${img}" alt="${name}" class="product-card-img" loading="lazy">
         </div>
         <div class="product-card-body">
           <h3 class="product-card-name">${name}</h3>
           <p class="product-card-price">&euro;${parseFloat(p.price).toFixed(2)}</p>
-          <button class="product-card-btn" onclick="event.preventDefault(); addToCart('${p.id}', '${name.replace(/'/g, "\\'")}', ${p.price}, '${img}')">
+          <button class="product-card-btn" onclick="event.preventDefault(); event.stopPropagation(); addToCart('${p.id}', '${safeName}', ${p.price}, '${img}');">
             <span data-i18n="product_add_cart">Add to Cart</span>
           </button>
         </div>
-      </a>
+      </div>
     `;
   }
 

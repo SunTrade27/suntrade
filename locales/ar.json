@@ -347,5 +347,13 @@
   "admin_format_error": "فشل التنسيق",
   "admin_enter_name_first": "يرجى ملء اسم المنتج بالإنجليزية أولاً.",
   "admin_paste_content_first": "يرجى لصق أو كتابة المحتوى أولاً.",
-  "admin_translate_progress": "جارٍ الترجمة إلى {count} لغة..."
+  "admin_translate_progress": "جارٍ الترجمة إلى {count} لغة...",
+  "trust_secure_payment": "دفع آمن",
+  "trust_secure_payment_sub": "مشفر SSL",
+  "trust_money_back": "استرداد المال",
+  "trust_money_back_sub": "إرجاع خلال 30 يوم",
+  "trust_verified": "متجر موثوق",
+  "trust_verified_sub": "+1000 يثقون",
+  "trust_shipping": "شحن سريع",
+  "trust_shipping_sub": "عالمي"
 }

@@ -59,14 +59,18 @@ RULES — STRICT:
    - All product description text, bullet lists, tables
    - Size charts, specification tables, package contents
 
-3. RE-FORMAT for beauty:
-   - Use <h2> for the main product title, <h3> for section headings ("Features", "Specifications", "Package Includes", etc.)
+3. RE-FORMAT for beauty using these specific HTML structures:
+   - Use <h2> for major sections ("Features", "Specifications", "Package Includes", etc.)
+   - Use <h3> for sub-sections within a major section
+   - Do NOT add a product title heading — the product name is already shown as an h1 outside the description
    - Wrap every paragraph of text in <p> tags
    - Use <ul><li> for feature lists, <ol><li> for step-by-step instructions
-   - Use <table><tr><td> for spec tables (do NOT invent specs; only keep what's in the source)
-   - Add <strong> for emphasis on key terms
-   - Add <br> between list items only if the original had line breaks
-   - Add an empty line (extra <br> or <p></p>) between major sections for breathing room
+   - For feature lists, start each <li> with <strong>Key Term:</strong> followed by the description
+   - Use <table><thead><tr><th> for spec table headers and <tbody><tr><td> for data rows (do NOT invent specs; only keep what's in the source)
+   - Use <strong> for emphasis on key terms within paragraphs
+   - Use <hr /> between major sections (e.g., between Features and Specifications) for visual separation
+   - If the source has a highlighted tip, note, or callout, wrap it in: <div class="desc-callout"><strong>Note:</strong> the text here</div>
+   - Add empty lines between major sections for breathing room
 
 4. DO NOT add, invent, or guess any product information that isn't in the source.
 

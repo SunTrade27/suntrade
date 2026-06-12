@@ -347,5 +347,13 @@
   "admin_format_error": "Opmaken mislukt",
   "admin_enter_name_first": "Vul eerst de Engelse productnaam in.",
   "admin_paste_content_first": "Plak of typ eerst inhoud.",
-  "admin_translate_progress": "Bezig met vertalen naar {count} talen..."
+  "admin_translate_progress": "Bezig met vertalen naar {count} talen...",
+  "trust_secure_payment": "Veilig betalen",
+  "trust_secure_payment_sub": "SSL-versleuteld",
+  "trust_money_back": "Geld terug",
+  "trust_money_back_sub": "30 dagen retour",
+  "trust_verified": "Geverifieerde winkel",
+  "trust_verified_sub": "1000+ vertrouwen ons",
+  "trust_shipping": "Snelle levering",
+  "trust_shipping_sub": "Wereldwijd"
 }

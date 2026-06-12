@@ -347,5 +347,13 @@
   "admin_format_error": "Formateo fallido",
   "admin_enter_name_first": "Por favor, primero complete el nombre del producto en inglés.",
   "admin_paste_content_first": "Por favor, primero pegue o escriba contenido.",
-  "admin_translate_progress": "Traduciendo a {count} idiomas..."
+  "admin_translate_progress": "Traduciendo a {count} idiomas...",
+  "trust_secure_payment": "Pago seguro",
+  "trust_secure_payment_sub": "Cifrado SSL",
+  "trust_money_back": "Devolución",
+  "trust_money_back_sub": "30 días para devolver",
+  "trust_verified": "Tienda verificada",
+  "trust_verified_sub": "1000+ confían",
+  "trust_shipping": "Envío rápido",
+  "trust_shipping_sub": "A todo el mundo"
 }
