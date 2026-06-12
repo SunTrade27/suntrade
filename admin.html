@@ -408,6 +408,9 @@
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.5rem;">
         <h2 data-i18n="admin_products" style="font-size:1.4rem;">Products</h2>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+          <button class="btn-sm btn-outline" onclick="seedTrendingProducts()" id="seed-btn" style="font-size:0.8rem;padding:8px 14px;background:linear-gradient(135deg,#667EEA,#764BA2);color:white;border:none;">
+            📦 Add Trending Electronics (10)
+          </button>
           <button class="btn-sm btn-outline" onclick="batchTranslateAll()" id="batch-translate-btn" style="font-size:0.8rem;padding:8px 14px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
             🌍 Batch Translate All
@@ -1896,6 +1899,133 @@
       btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> 🌍 Batch Translate All';
       setTimeout(() => { statusEl.style.display = 'none'; }, 8000);
     }
+  }
+
+  // ===== Seed Trending Products (Electronics) =====
+  const TRENDING_PRODUCTS = [
+    {
+      name: 'Xiaomi Redmi Buds 6 Active — Wireless Earbuds with ANC',
+      desc: '<h2>Features</h2><ul><li><strong>Active Noise Cancellation:</strong> Blocks up to 40dB of ambient noise for an immersive listening experience</li><li><strong>Bluetooth 5.4:</strong> Stable connection with ultra-low latency for gaming and video</li><li><strong>30 Hours Battery Life:</strong> 6 hours per charge + 24 hours from the compact charging case</li><li><strong>IP54 Water Resistant:</strong> Sweat and splash proof for workouts and outdoor use</li><li><strong>Touch Controls:</strong> Easy control of music, calls, and voice assistant</li></ul><hr /><h3>Specifications</h3><table><thead><tr><th>Specification</th><th>Details</th></tr></thead><tbody><tr><td>Driver Size</td><td>12mm dynamic</td></tr><tr><td>Frequency Range</td><td>20Hz — 20kHz</td></tr><tr><td>Charging Case</td><td>USB-C, 2 hours full charge</td></tr><tr><td>Weight</td><td>4.2g per earbud</td></tr><tr><td>Compatibility</td><td>iOS, Android, Windows, Mac</td></tr></tbody></table>',
+      price: 29.99, stock: 50, images: ['https://i.imgur.com/PTgQlim.png']
+    },
+    {
+      name: 'Baseus Power Bank 20,000mAh 65W — Fast Charging Portable Battery',
+      desc: '<h2>Features</h2><ul><li><strong>65W Super Fast Charging:</strong> Charge a MacBook Pro to 50% in just 30 minutes</li><li><strong>20,000mAh Capacity:</strong> Power your phone 4-5 times or tablet twice on a single charge</li><li><strong>Digital Display:</strong> Real-time battery percentage and remaining power</li><li><strong>2 USB-C + 1 USB-A:</strong> Charge three devices simultaneously</li><li><strong>PD 3.0 & QC 4.0:</strong> Supports all major fast charging protocols</li><li><strong>Airplane Safe:</strong> Certified for air travel</li></ul><hr /><h3>Specifications</h3><table><thead><tr><th>Specification</th><th>Details</th></tr></thead><tbody><tr><td>Capacity</td><td>20,000mAh / 74Wh</td></tr><tr><td>Input</td><td>USB-C PD 65W</td></tr><tr><td>Output Max</td><td>65W (USB-C) + 18W (USB-A)</td></tr><tr><td>Dimensions</td><td>150 × 68 × 28mm</td></tr><tr><td>Weight</td><td>345g</td></tr></tbody></table>',
+      price: 39.99, stock: 40, images: ['https://i.imgur.com/PTgQlim.png']
+    },
+    {
+      name: 'Xiaomi Mi Band 9 Pro — Smart Fitness Tracker with AMOLED Display',
+      desc: '<h2>Features</h2><ul><li><strong>1.74" AMOLED Display:</strong> Always-on vibrant screen with 60Hz refresh rate</li><li><strong>Heart Rate & SpO2 Monitoring:</strong> 24/7 health tracking with abnormal alerts</li><li><strong>GPS Built-in:</strong> Track runs, walks, and cycling without your phone</li><li><strong>14-Day Battery Life:</strong> Up to 2 weeks on a single charge</li><li><strong>5 ATM Water Resistant:</strong> Swim-proof, suitable for pool and shower</li><li><strong>150+ Watch Faces:</strong> Customize your style from the app store</li></ul><hr /><h3>Specifications</h3><table><thead><tr><th>Specification</th><th>Details</th></tr></thead><tbody><tr><td>Display</td><td>1.74" AMOLED, 336×480</td></tr><tr><td>Sensors</td><td>HR, SpO2, accelerometer, gyroscope</td></tr><tr><td>Battery</td><td>300mAh, magnetic charging</td></tr><tr><td>Compatibility</td><td>Android 8+ / iOS 14+</td></tr><tr><td>Weight</td><td>27g (without strap)</td></tr></tbody></table>',
+      price: 49.99, stock: 35, images: ['https://i.imgur.com/PTgQlim.png']
+    },
+    {
+      name: 'Ugreen GaN 65W USB-C Charger — 3-Port Fast Wall Charger',
+      desc: '<h2>Features</h2><ul><li><strong>GaN Technology:</strong> Compact size (40% smaller than traditional chargers) with less heat</li><li><strong>65W Total Power:</strong> Charge a laptop, tablet, and phone at full speed</li><li><strong>2 USB-C + 1 USB-A:</strong> Charge three devices at once with intelligent power distribution</li><li><strong>Universal Compatibility:</strong> Works with MacBook, iPad, iPhone, Samsung Galaxy, Switch, and more</li><li><strong>Safety Certified:</strong> Over-current, over-voltage, and short-circuit protection</li><li><strong>Foldable Plug:</strong> Easy to carry, no scratching of other items in your bag</li></ul><hr /><h3>Specifications</h3><table><thead><tr><th>Specification</th><th>Details</th></tr></thead><tbody><tr><td>Total Output</td><td>65W max</td></tr><tr><td>USB-C1/C2</td><td>65W PD 3.0</td></tr><tr><td>USB-A</td><td>22.5W QC 4.0</td></tr><tr><td>Dimensions</td><td>53 × 53 × 30mm</td></tr><tr><td>Weight</td><td>125g</td></tr></tbody></table>',
+      price: 24.99, stock: 60, images: ['https://i.imgur.com/PTgQlim.png']
+    },
+    {
+      name: 'QCY T13 ANC — Wireless Earbuds with Active Noise Cancellation',
+      desc: '<h2>Features</h2><ul><li><strong>Active Noise Cancellation:</strong> -25dB hybrid ANC for focused listening</li><li><strong>Transparency Mode:</strong> Hear your surroundings without removing earbuds</li><li><strong>28 Hours Playtime:</strong> 7 hours per charge + 21 hours with case</li><li><strong>Bluetooth 5.3:</strong> Faster pairing, lower power consumption</li><li><strong>6mm Dynamic Driver:</strong> Rich bass and clear treble</li><li><strong>Comfort Fit:</strong> Ultra-light 3.9g per earbud with 3 ear tip sizes</li></ul><hr /><h3>Specifications</h3><table><thead><tr><th>Specification</th><th>Details</th></tr></thead><tbody><tr><td>Noise Reduction</td><td>-25dB ANC</td></tr><tr><td>Bluetooth</td><td>5.3, range 10m</td></tr><tr><td>Waterproof</td><td>IPX5</td></tr><tr><td>Charging</td><td>USB-C, 1.5h full charge</td></tr><tr><td>Case Weight</td><td>35g</td></tr></tbody></table>',
+      price: 19.99, stock: 55, images: ['https://i.imgur.com/PTgQlim.png']
+    },
+    {
+      name: 'Amazfit Bip 5 — Smart Watch with GPS & 14-Day Battery',
+      desc: '<h2>Features</h2><ul><li><strong>1.91" Large Display:</strong> Bright colorful screen with auto-brightness</li><li><strong>Built-in GPS:</strong> Track outdoor activities accurately without your phone</li><li><strong>14-Day Battery Life:</strong> Go weeks without charging</li><li><strong>120+ Sport Modes:</strong> Running, cycling, swimming, yoga, and more</li><li><strong>Health Suite:</strong> Heart rate, sleep tracking, stress monitoring, SpO2</li><li><strong>Bluetooth Calling:</strong> Answer calls directly from your watch</li></ul><hr /><h3>Specifications</h3><table><thead><tr><th>Specification</th><th>Details</th></tr></thead><tbody><tr><td>Display</td><td>1.91" TFT, 320×380</td></tr><tr><td>Battery</td><td>300mAh, magnetic pogo pin</td></tr><tr><td>Waterproof</td><td>5 ATM</td></tr><tr><td>Sensors</td><td>HR, SpO2, accelerometer, gyro</td></tr><tr><td>Weight</td><td>40g (with strap)</td></tr></tbody></table>',
+      price: 69.99, stock: 25, images: ['https://i.imgur.com/PTgQlim.png']
+    },
+    {
+      name: 'Baseus Magnetic Wireless Charger — Qi2 15W Fast Charging Pad',
+      desc: '<h2>Features</h2><ul><li><strong>Qi2 Certified:</strong> 15W fast wireless charging with magnetic alignment</li><li><strong>Magnetic Snap:</strong> Perfect alignment for iPhone 12-17 and MagSafe-compatible cases</li><li><strong>LED Indicator:</strong> Blue light when charging, green when fully charged</li><li><strong>Slim Design:</strong> Only 7mm thick, perfect for desk or nightstand</li><li><strong>Overheat Protection:</strong> Intelligent temperature control for safe overnight charging</li><li><strong>Anti-Slip Ring:</strong> Keeps your phone firmly in place</li></ul><hr /><h3>Specifications</h3><table><thead><tr><th>Specification</th><th>Details</th></tr></thead><tbody><tr><td>Input</td><td>USB-C, 9V/2A</td></tr><tr><td>Output</td><td>15W (Qi2) / 7.5W (standard Qi)</td></tr><tr><td>Cable Length</td><td>1.2m USB-C cable included</td></tr><tr><td>Dimensions</td><td>60mm diameter, 7mm thick</td></tr><tr><td>Compatibility</td><td>All Qi2 and Qi devices</td></tr></tbody></table>',
+      price: 15.99, stock: 70, images: ['https://i.imgur.com/PTgQlim.png']
+    },
+    {
+      name: 'Huawei FreeBuds SE 3 — Lightweight Wireless Stereo Earbuds',
+      desc: '<h2>Features</h2><ul><li><strong>Ultra-Light Design:</strong> Only 3.8g per earbud for all-day comfort</li><li><strong>40 Hours Battery:</strong> 9 hours per charge + 31 hours with case — industry leading</li><li><strong>AI Noise Cancellation:</strong> Clear calls even in noisy environments</li><li><strong>Bluetooth 5.3:</strong> Energy efficient with stable connection</li><li><strong>IP54 Rated:</strong> Dust and water resistant for active lifestyles</li><li><strong>Smart Touch:</strong> Play/pause, skip tracks, answer calls with a tap</li></ul><hr /><h3>Specifications</h3><table><thead><tr><th>Specification</th><th>Details</th></tr></thead><tbody><tr><td>Driver</td><td>10mm dynamic, bass-enhanced</td></tr><tr><td>Codec</td><td>AAC, SBC</td></tr><tr><td>Charging</td><td>USB-C, 10 min charge = 3 hours play</td></tr><tr><td>Waterproof</td><td>IP54</td></tr><tr><td>Case Size</td><td>56 × 50 × 25mm</td></tr></tbody></table>',
+      price: 34.99, stock: 45, images: ['https://i.imgur.com/PTgQlim.png']
+    },
+    {
+      name: 'Ugreen 100W USB-C Braided Cable — 2m Fast Charging & Data Sync',
+      desc: '<h2>Features</h2><ul><li><strong>100W Power Delivery:</strong> Fast charge MacBook Pro, iPad Pro, and all USB-C phones</li><li><strong>Nylon Braided Design:</strong> Durable tangle-free cable, 30,000+ bend lifespan</li><li><strong>USB 3.2 Gen 2:</strong> 10Gbps data transfer speed — transfer 10GB in seconds</li><li><strong>2 Meter Length:</strong> Perfect for bedside, desk, or car use</li><li><strong>Universal Compatible:</strong> Works with all USB-C devices including Nintendo Switch</li><li><strong>E-Marker Chip:</strong> Intelligent chip for safe high-speed charging</li></ul><hr /><h3>Specifications</h3><table><thead><tr><th>Specification</th><th>Details</th></tr></thead><tbody><tr><td>Max Power</td><td>100W PD 3.0</td></tr><tr><td>Data Speed</td><td>10Gbps (USB 3.2 Gen 2)</td></tr><tr><td>Length</td><td>2 meters</td></tr><tr><td>Material</td><td>Braided nylon + aluminum shell</td></tr><tr><td>Warranty</td><td>24 months</td></tr></tbody></table>',
+      price: 9.99, stock: 100, images: ['https://i.imgur.com/PTgQlim.png']
+    },
+    {
+      name: 'Xiaomi Power Bank 10,000mAh 22.5W — Ultra-Compact Fast Charger',
+      desc: '<h2>Features</h2><ul><li><strong>22.5W Fast Charging:</strong> Charge an iPhone 16 to 60% in 30 minutes</li><li><strong>Ultra-Compact:</strong> Credit card size, fits in any pocket — only 200g</li><li><strong>10,000mAh Capacity:</strong> 2 full charges for most smartphones</li><li><strong>Dual Output:</strong> USB-C + USB-A, charge two devices at once</li><li><strong>LED Indicator:</strong> 4-dot LED shows remaining power level</li><li><strong>Premium Finish:</strong> textured matte surface, scratch resistant</li></ul><hr /><h3>Specifications</h3><table><thead><tr><th>Specification</th><th>Details</th></tr></thead><tbody><tr><td>Capacity</td><td>10,000mAh / 37Wh</td></tr><tr><td>USB-C Input/Output</td><td>22.5W PD 3.0</td></tr><tr><td>USB-A Output</td><td>18W QC 3.0</td></tr><tr><td>Dimensions</td><td>90 × 63 × 24mm</td></tr><tr><td>Weight</td><td>200g</td></tr></tbody></table>',
+      price: 17.99, stock: 80, images: ['https://i.imgur.com/PTgQlim.png']
+    }
+  ];
+
+  async function seedTrendingProducts() {
+    if (!confirm('10 танымал электроника тауарын қосу? (суреттерді кейін өзіңіз ауыстырасыз)\n\nAdd 10 trending electronic products? (You can update images later)')) return;
+
+    const btn = document.getElementById('seed-btn');
+    const statusEl = document.getElementById('batch-translate-status');
+    btn.disabled = true;
+    btn.textContent = '⏳ Adding products...';
+    statusEl.style.display = 'block';
+    statusEl.style.background = '#FEF3C7';
+    statusEl.style.color = '#92400E';
+
+    // Check for existing products to avoid duplicates
+    statusEl.textContent = 'Checking existing products...';
+    const existingProducts = await adminGetProducts();
+    const existingNames = new Set(existingProducts.map(p => (p.name_en || '').trim().toLowerCase()));
+
+    let success = 0;
+    let skipped = 0;
+    let errors = 0;
+
+    for (let i = 0; i < TRENDING_PRODUCTS.length; i++) {
+      const p = TRENDING_PRODUCTS[i];
+      const nameLower = p.name.trim().toLowerCase();
+
+      // Skip if product with same name already exists
+      if (existingNames.has(nameLower)) {
+        skipped++;
+        continue;
+      }
+
+      statusEl.textContent = `⏳ [${i + 1}/${TRENDING_PRODUCTS.length}] Adding: ${p.name.substring(0, 45)}...`;
+
+      try {
+        const product = {
+          name_en: p.name,
+          desc_en: p.desc,
+          price: p.price,
+          stock: p.stock,
+          images: p.images,
+          active: true,
+          category_id: null
+        };
+        // Add empty fields for all other languages (auto-translate will fill on save)
+        ['kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'].forEach(lang => {
+          product['name_' + lang] = '';
+          product['desc_' + lang] = '';
+        });
+
+        await adminSaveProduct(product);
+        success++;
+        // Mark as added so next run skips it
+        existingNames.add(nameLower);
+      } catch (err) {
+        console.error('Seed error:', err);
+        errors++;
+      }
+
+      // Small delay to avoid overwhelming the API
+      await new Promise(r => setTimeout(r, 200));
+    }
+
+    statusEl.style.background = errors === 0 ? '#D1FAE5' : '#FEF3C7';
+    statusEl.style.color = errors === 0 ? '#065F46' : '#92400E';
+    statusEl.textContent = `✅ ${success} products added! ${errors > 0 ? errors + ' errors.' : ''} Now click "🌍 Batch Translate All" to translate to 11 languages.`;
+
+    // Reload products
+    loadProducts();
+
+    btn.disabled = false;
+    btn.innerHTML = '📦 Add Trending Electronics (10)';
+    setTimeout(() => { statusEl.style.display = 'none'; }, 15000);
   }
 
   // ===== AI Format Description =====
