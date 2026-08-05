@@ -907,6 +907,7 @@
       <li><a href="/" class="active" data-i18n="nav_home">Home</a></li>
       <li><a href="/catalog.html" data-i18n="nav_catalog">Catalog</a></li>
       <li><a href="/cart.html" data-i18n="nav_cart">Cart</a></li>
+
     </ul>
     <div class="nav-right">
       <div class="lang-wrapper">
@@ -1078,7 +1079,6 @@
     </div>
   </div>
 </footer>
-
 
 <!-- WHATSAPP -->
 <a href="https://wa.me/77021379248" class="whatsapp-btn" target="_blank" title="WhatsApp">
@@ -1753,6 +1753,9 @@
   }
 
   // ===== Scroll Reveal Animations =====
+  function initScrollReveal() {
+    const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+    if (!revealElements.length) return;
 
     const observer = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
@@ -2036,7 +2039,6 @@
 
     // Scroll reveal: lightweight, start immediately
     initScrollReveal();
-
 
     // Tilt effect: only on devices with fine pointer (mouse), not touch
     if (window.innerWidth > 768 && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
