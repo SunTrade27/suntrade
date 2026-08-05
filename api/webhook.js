@@ -21,9 +21,21 @@ async function sendTelegramAlert(order, items) {
     const name = order.customer_name || 'Unknown';
     const amount = parseFloat(order.amount).toFixed(2);
     const phone = order.customer_phone || '';
-    const city = order.shipping_city || '';
-    const country = order.shipping_country || '';
     const email = order.customer_email || '';
+
+    // Full shipping address
+    const addrLine1 = order.shipping_address_line1 || '';
+    const addrLine2 = order.shipping_address_line2 || '';
+    const addrCity = order.shipping_city || '';
+    const addrZip = order.shipping_postal_code || '';
+    const addrCountry = order.shipping_country || '';
+
+    var addressParts = [];
+    if (addrLine1) addressParts.push(addrLine1);
+    if (addrLine2) addressParts.push(addrLine2);
+    if (addrZip || addrCity) addressParts.push([addrZip, addrCity].filter(Boolean).join(' '));
+    if (addrCountry) addressParts.push(addrCountry);
+    var fullAddress = addressParts.join(', ');
 
     // Build product lines
     let productLines = '';
@@ -48,7 +60,9 @@ async function sendTelegramAlert(order, items) {
       '\u{1F464} ' + name,
       email ? '\u{1F4E7} ' + email : '',
       phone ? '\u{1F4DE} ' + phone : '',
-      (city || country) ? '\u{1F4CD} ' + [city, country].filter(Boolean).join(', ') : '',
+      '',
+      fullAddress ? '<b>\u{1F4E6} Shipping Address:</b>' : '',
+      fullAddress ? '\u{1F4CD} ' + fullAddress : '',
       '',
       '<a href="' + SITE_URL + '/admin.html">\u{1F4CB} Admin Panel</a>'
     ].filter(function(l) { return l !== ''; }).join('\n');
