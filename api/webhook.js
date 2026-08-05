@@ -1,5 +1,5 @@
 // Stripe Webhook - Vercel Serverless Function
-// This saves completed orders to Supabase
+// Saves orders, sends Telegram alert + email confirmation
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { createClient } = require('@supabase/supabase-js');
 const { sendMail, isConfigured } = require('./lib/email');
@@ -11,34 +11,49 @@ const supabase = createClient(
 
 const SITE_URL = process.env.SITE_URL || 'https://www.suntrade.store';
 
-// ===== Telegram Alert (тегін + лимитсіз) =====
+// ===== Telegram Alert =====
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
-async function sendTelegramAlert(order) {
+async function sendTelegramAlert(order, items) {
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
   try {
-    const name = order.customer_name || 'Белгісіз';
+    const name = order.customer_name || 'Unknown';
     const amount = parseFloat(order.amount).toFixed(2);
     const phone = order.customer_phone || '';
     const city = order.shipping_city || '';
     const country = order.shipping_country || '';
     const email = order.customer_email || '';
-    const orderId = order.id || '';
+
+    // Build product lines
+    let productLines = '';
+    let totalItems = 0;
+    if (items && items.length > 0) {
+      productLines = '\n' + items.map(item => {
+        const pName = item.product_name || 'Product';
+        const pQty = item.quantity || 1;
+        const pPrice = parseFloat(item.unit_price || 0).toFixed(2);
+        totalItems += pQty;
+        return '\u{1F4E6} ' + pName + ' \u2014 ' + pQty + ' x \u20AC' + pPrice;
+      }).join('\n');
+    }
 
     const msg = [
-      '🛒 <b>ЖАҢА ЗАКАЗ!</b>',
+      '\u{1F6D2} <b>NEW ORDER!</b>',
       '',
-      `💰 <b>€${amount}</b>`,
-      `👤 ${name}`,
-      email ? `📧 ${email}` : '',
-      phone ? `📞 ${phone}` : '',
-      (city || country) ? `📍 ${[city, country].filter(Boolean).join(', ')}` : '',
+      '\u{1F4B0} <b>Total: \u20AC' + amount + '</b>',
+      '\u{1F4E6} Items: <b>' + totalItems + ' pcs</b>',
+      productLines,
       '',
-      `<a href="${SITE_URL}/admin.html">📋 Admin панель</a>`
-    ].filter(Boolean).join('\n');
+      '\u{1F464} ' + name,
+      email ? '\u{1F4E7} ' + email : '',
+      phone ? '\u{1F4DE} ' + phone : '',
+      (city || country) ? '\u{1F4CD} ' + [city, country].filter(Boolean).join(', ') : '',
+      '',
+      '<a href="' + SITE_URL + '/admin.html">\u{1F4CB} Admin Panel</a>'
+    ].filter(function(l) { return l !== ''; }).join('\n');
 
-    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+    const url = 'https://api.telegram.org/bot' + TELEGRAM_BOT_TOKEN + '/sendMessage';
     await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -49,16 +64,15 @@ async function sendTelegramAlert(order) {
         disable_web_page_preview: true
       })
     });
-    console.log('Telegram alert sent for order:', orderId);
+    console.log('Telegram alert sent for order:', order.id);
   } catch (err) {
     console.error('Telegram alert error:', err.message);
   }
 }
 
-// Stripe locale → біздің ISO кодымыз
 function mapStripeLocale(locale) {
   if (!locale) return null;
-  const l = locale.toLowerCase();
+  var l = locale.toLowerCase();
   if (l.startsWith('en')) return 'en';
   if (l.startsWith('kk') || l.startsWith('kz')) return 'kz';
   if (l.startsWith('ru')) return 'ru';
@@ -77,58 +91,39 @@ function mapStripeLocale(locale) {
 async function sendReviewRequestEmail(order, product) {
   if (!isConfigured() || !order.customer_email) return;
 
-  // Check if already sent
-  const { data: existing } = await supabase
+  var existingRes = await supabase
     .from('review_requests')
     .select('id')
     .eq('order_id', order.id)
     .limit(1);
+  var existing = existingRes.data;
   if (existing && existing.length > 0) return;
 
-  const productName = product?.name_en || product?.name_kz || product?.name_ru || 'your product';
-  const productImage = product?.images?.[0] || '';
+  var productName = (product && product.name_en) || (product && product.name_kz) || (product && product.name_ru) || 'your product';
+  var productImage = (product && product.images && product.images[0]) || '';
 
-  // Get product_id from order_items or from order.product_id
-  let productId = order.product_id || null;
+  var productId = order.product_id || null;
   if (!productId) {
-    const { data: items } = await supabase
+    var itemsRes = await supabase
       .from('order_items')
       .select('product_id')
       .eq('order_id', order.id)
       .limit(1);
+    var items = itemsRes.data;
     if (items && items.length > 0 && items[0].product_id) {
       productId = items[0].product_id;
     }
   }
 
-  const reviewUrl = productId
-    ? `${SITE_URL}/review.html?product=${productId}&order=${order.id}`
+  var reviewUrl = productId
+    ? SITE_URL + '/review.html?product=' + productId + '&order=' + order.id
     : SITE_URL;
 
   try {
     await sendMail({
       to: order.customer_email,
-      subject: `How was your ${productName}? Leave a review!`,
-      html: `
-        <!DOCTYPE html>
-        <html><body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#FAFAFA;margin:0;padding:2rem;">
-          <div style="max-width:600px;margin:0 auto;background:white;border-radius:16px;overflow:hidden;box-shadow:0 4px 6px rgba(0,0,0,0.1);">
-            <div style="background:linear-gradient(135deg,#FF6B00,#E05E00);padding:2rem;text-align:center;">
-              <h1 style="color:white;margin:0;font-size:1.5rem;">SunTrade</h1>
-            </div>
-            <div style="padding:2rem;">
-              <h2 style="color:#1A1A2E;margin-bottom:1rem;">How was your order?</h2>
-              <p style="color:#6B7280;line-height:1.6;">Hi ${order.customer_name || 'there'},<br><br>Your order of <strong>${productName}</strong> has been delivered! We hope you love it.</p>
-              ${productImage ? `<div style="text-align:center;margin:1.5rem 0;"><img src="${productImage}" style="width:200px;height:200px;object-fit:cover;border-radius:12px;"></div>` : ''}
-              <p style="color:#6B7280;line-height:1.6;margin-bottom:1.5rem;">Would you mind taking a moment to share your experience? Your feedback helps other customers!</p>
-              <div style="text-align:center;margin:2rem 0;">
-                <a href="${reviewUrl}" style="display:inline-block;background:#FF6B00;color:white;padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:600;">Leave a Review</a>
-              </div>
-              <p style="color:#9CA3AF;font-size:0.85rem;text-align:center;">Thank you for shopping with SunTrade!</p>
-            </div>
-          </div>
-        </body></html>
-      `
+      subject: 'How was your ' + productName + '? Leave a review!',
+      html: '<!DOCTYPE html><html><body style="font-family:sans-serif;background:#FAFAFA;margin:0;padding:2rem;"><div style="max-width:600px;margin:0 auto;background:white;border-radius:16px;overflow:hidden;"><div style="background:linear-gradient(135deg,#FF6B00,#E05E00);padding:2rem;text-align:center;"><h1 style="color:white;margin:0;">SunTrade</h1></div><div style="padding:2rem;"><h2>How was your order?</h2><p>Hi ' + (order.customer_name || 'there') + ',</p><p>Your order of <strong>' + productName + '</strong> has been delivered!</p>' + (productImage ? '<div style="text-align:center;margin:1rem 0;"><img src="' + productImage + '" style="width:200px;height:200px;object-fit:cover;border-radius:12px;"></div>' : '') + '<p>Share your experience!</p><div style="text-align:center;margin:2rem 0;"><a href="' + reviewUrl + '" style="display:inline-block;background:#FF6B00;color:white;padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:600;">Leave a Review</a></div></div></div></body></html>'
     });
 
     await supabase.from('review_requests').insert({
@@ -147,15 +142,14 @@ module.exports = async (req, res) => {
     return res.status(405).end();
   }
 
-  // Get raw body for signature verification
-  const chunks = [];
-  for await (const chunk of req) {
+  var chunks = [];
+  for await (var chunk of req) {
     chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
   }
-  const rawBody = Buffer.concat(chunks).toString('utf8');
+  var rawBody = Buffer.concat(chunks).toString('utf8');
 
-  const sig = req.headers['stripe-signature'];
-  let event;
+  var sig = req.headers['stripe-signature'];
+  var event;
 
   try {
     event = stripe.webhooks.constructEvent(
@@ -165,28 +159,24 @@ module.exports = async (req, res) => {
     );
   } catch (err) {
     console.error('Webhook signature verification failed:', err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
+    return res.status(400).send('Webhook Error: ' + err.message);
   }
 
   if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
+    var session = event.data.object;
 
     try {
-      // Get line items
-      const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+      var lineItems = await stripe.checkout.sessions.listLineItems(session.id);
 
-      // Retrieve shipping address from Stripe
-      const shipping = session.shipping_details?.address || {};
-      const shippingName = session.shipping_details?.name || session.metadata?.customer_name || '';
-      const customerPhone = session.metadata?.customer_phone || session.customer_details?.phone || '';
-      const customerEmail = session.customer_email || session.metadata?.customer_email;
+      var shipping = (session.shipping_details && session.shipping_details.address) || {};
+      var shippingName = (session.shipping_details && session.shipping_details.name) || (session.metadata && session.metadata.customer_name) || '';
+      var customerPhone = (session.metadata && session.metadata.customer_phone) || (session.customer_details && session.customer_details.phone) || '';
+      var customerEmail = session.customer_email || (session.metadata && session.metadata.customer_email);
 
-      // user_id және locale metadata-дан
-      const userId = session.metadata?.user_id || null;
-      const language = mapStripeLocale(session.locale) || session.metadata?.language || null;
+      var userId = (session.metadata && session.metadata.user_id) || null;
+      var language = mapStripeLocale(session.locale) || (session.metadata && session.metadata.language) || null;
 
-      // Save order to Supabase
-      const { data: order } = await supabase.from('orders').insert({
+      var orderRes = await supabase.from('orders').insert({
         stripe_session_id: session.id,
         user_id: userId,
         locale: language,
@@ -200,27 +190,26 @@ module.exports = async (req, res) => {
         shipping_postal_code: shipping.postal_code || '',
         shipping_country: shipping.country || '',
         amount: session.amount_total / 100,
-        currency: session.currency?.toUpperCase() || 'EUR',
+        currency: (session.currency || 'EUR').toUpperCase(),
         status: 'paid',
       }).select().single();
+      var order = orderRes.data;
 
       console.log('Order saved:', session.id, 'user_id:', userId, 'lang:', language);
 
-      // 📱 Telegram-ға хабарлама жіберу (телефонға келеді)
-      sendTelegramAlert(order).catch(err => console.error('Telegram fail:', err));
-
       // Save order_items
-      if (order && lineItems.data && lineItems.data.length > 0) {
-        const metaIds = (session.metadata?.product_ids || '').split(',').filter(Boolean);
-        const productIdQty = metaIds.map(entry => {
-          const [pid, qty] = entry.split(':');
-          return { id: pid, qty: parseInt(qty) || 1 };
-        }).filter(p => p.id);
+      var savedOrderItems = [];
 
-        const orderItems = lineItems.data.map((li, index) => {
-          let matchedProductId = null;
-          let productImage = '';
-          let productName = li.description || 'Product';
+      if (order && lineItems.data && lineItems.data.length > 0) {
+        var metaIds = ((session.metadata && session.metadata.product_ids) || '').split(',').filter(Boolean);
+        var productIdQty = metaIds.map(function (entry) {
+          var parts = entry.split(':');
+          return { id: parts[0], qty: parseInt(parts[1]) || 1 };
+        }).filter(function (p) { return p.id; });
+
+        var orderItems = lineItems.data.map(function (li, index) {
+          var matchedProductId = null;
+          var productName = li.description || 'Product';
 
           if (productIdQty[index]) {
             matchedProductId = productIdQty[index].id;
@@ -233,29 +222,30 @@ module.exports = async (req, res) => {
             user_id: userId,
             product_id: matchedProductId,
             product_name: productName,
-            product_image: productImage,
+            product_image: '',
             quantity: li.quantity || 1,
-            unit_price: (li.price?.unit_amount || 0) / 100
+            unit_price: ((li.price && li.price.unit_amount) || 0) / 100
           };
         });
 
-        // Fetch product images and proper names from our database
-        const productIds = [...new Set(orderItems.map(oi => oi.product_id).filter(Boolean))];
+        // Fetch real product names from database
+        var productIds = Array.from(new Set(orderItems.map(function (oi) { return oi.product_id; }).filter(Boolean)));
         if (productIds.length > 0) {
-          const { data: products } = await supabase
+          var productsRes = await supabase
             .from('products')
             .select('id, name_en, name_kz, name_ru, images')
             .in('id', productIds);
+          var products = productsRes.data;
 
           if (products) {
-            const productMap = {};
-            products.forEach(p => {
+            var productMap = {};
+            products.forEach(function (p) {
               productMap[p.id] = p;
             });
 
-            orderItems.forEach(oi => {
+            orderItems.forEach(function (oi) {
               if (oi.product_id && productMap[oi.product_id]) {
-                const p = productMap[oi.product_id];
+                var p = productMap[oi.product_id];
                 oi.product_name = p.name_en || p.name_kz || p.name_ru || oi.product_name;
                 oi.product_image = (p.images && p.images[0]) || '';
               }
@@ -264,20 +254,26 @@ module.exports = async (req, res) => {
         }
 
         await supabase.from('order_items').insert(orderItems);
+        savedOrderItems = orderItems;
         console.log('Order items saved:', orderItems.length, 'items for order:', order.id);
       }
 
-      // Send order confirmation email (multilingual + admin)
+      // Telegram alert WITH product details (after items are saved)
+      sendTelegramAlert(order, savedOrderItems).catch(function (err) {
+        console.error('Telegram fail:', err);
+      });
+
+      // Send order confirmation email
       if (order && customerEmail) {
         try {
-          const protocol = req.headers['x-forwarded-proto'] || 'https';
-          const host = req.headers.host || process.env.SITE_URL?.replace('https://', '') || 'www.suntrade.store';
-          const baseUrl = `${protocol}://${host}`;
+          var protocol = req.headers['x-forwarded-proto'] || 'https';
+          var host = req.headers.host || (process.env.SITE_URL || '').replace('https://', '') || 'www.suntrade.store';
+          var baseUrl = protocol + '://' + host;
 
-          await fetch(`${baseUrl}/api/email`, {
+          await fetch(baseUrl + '/api/email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'order-confirmation', orderId: order.id, language })
+            body: JSON.stringify({ action: 'order-confirmation', orderId: order.id, language: language })
           });
           console.log('Order confirmation email triggered for:', order.id, 'lang:', language);
         } catch (emailErr) {
