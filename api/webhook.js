@@ -11,6 +11,50 @@ const supabase = createClient(
 
 const SITE_URL = process.env.SITE_URL || 'https://www.suntrade.store';
 
+// ===== Telegram Alert (тегін + лимитсіз) =====
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+
+async function sendTelegramAlert(order) {
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
+  try {
+    const name = order.customer_name || 'Белгісіз';
+    const amount = parseFloat(order.amount).toFixed(2);
+    const phone = order.customer_phone || '';
+    const city = order.shipping_city || '';
+    const country = order.shipping_country || '';
+    const email = order.customer_email || '';
+    const orderId = order.id || '';
+
+    const msg = [
+      '🛒 <b>ЖАҢА ЗАКАЗ!</b>',
+      '',
+      `💰 <b>€${amount}</b>`,
+      `👤 ${name}`,
+      email ? `📧 ${email}` : '',
+      phone ? `📞 ${phone}` : '',
+      (city || country) ? `📍 ${[city, country].filter(Boolean).join(', ')}` : '',
+      '',
+      `<a href="${SITE_URL}/admin.html">📋 Admin панель</a>`
+    ].filter(Boolean).join('\n');
+
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: msg,
+        parse_mode: 'HTML',
+        disable_web_page_preview: true
+      })
+    });
+    console.log('Telegram alert sent for order:', orderId);
+  } catch (err) {
+    console.error('Telegram alert error:', err.message);
+  }
+}
+
 // Stripe locale → біздің ISO кодымыз
 function mapStripeLocale(locale) {
   if (!locale) return null;
@@ -161,6 +205,9 @@ module.exports = async (req, res) => {
       }).select().single();
 
       console.log('Order saved:', session.id, 'user_id:', userId, 'lang:', language);
+
+      // 📱 Telegram-ға хабарлама жіберу (телефонға келеді)
+      sendTelegramAlert(order).catch(err => console.error('Telegram fail:', err));
 
       // Save order_items
       if (order && lineItems.data && lineItems.data.length > 0) {
