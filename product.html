@@ -966,11 +966,13 @@
     const img = (currentProduct.images && currentProduct.images[0]) || '/images/placeholder.jpg';
     const qty = parseInt(document.getElementById('qty-input').value) || 1;
 
-    // For Buy Now, we need a single-item cart.
+    // For Buy Now, we need a single-item cart with the correct quantity.
     // Note: cart.js applies volume discounts automatically via getDiscountedPrice().
     const existing = cart.find(item => item.id === currentProduct.id);
     if (existing) {
-      // Already in cart - just go to checkout
+      // Already in cart — update quantity to match current selection, then checkout
+      existing.qty = qty;
+      saveCart();
       window.location.href = '/checkout.html';
       return;
     }
