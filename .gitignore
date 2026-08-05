@@ -7,3 +7,5 @@ node_modules/
 *.log
 .claude/
 nul
+.vercel
+.env*
