@@ -66,7 +66,7 @@ async function getProducts(options = {}) {
   }
   if (options.sort === 'price_asc') query = query.order('price', { ascending: true });
   else if (options.sort === 'price_desc') query = query.order('price', { ascending: false });
-  else query = query.order('created_at', { ascending: false });
+  else query = query.order('sort_order', { ascending: true }).order('created_at', { ascending: false });
   if (options.limit) query = query.limit(options.limit);
   const { data, error } = await query;
   if (error) console.error('getProducts error:', error);
@@ -123,14 +123,25 @@ async function getCategories() {
 
 // Admin - Products
 async function adminGetProducts() {
-  const { data, error } = await sb.from('products').select('*, categories(*)').order('created_at', { ascending: false });
+  const { data, error } = await sb.from('products').select('*, categories(*)').order('sort_order', { ascending: true }).order('created_at', { ascending: false });
   return data || [];
+}
+
+// Update product sort order (drag-and-drop reordering)
+async function updateProductOrder(productIds) {
+  const updates = productIds.map((id, index) => ({ id, sort_order: index }));
+  // Batch update in chunks of 50
+  for (let i = 0; i < updates.length; i += 50) {
+    const chunk = updates.slice(i, i + 50);
+    await Promise.all(chunk.map(u => sb.from('products').update({ sort_order: u.sort_order }).eq('id', u.id)));
+  }
 }
 
 async function adminSaveProduct(product) {
   const fields = ['name_en', 'name_kz', 'name_ru', 'name_de', 'name_fr', 'name_es', 'name_it', 'name_tr', 'name_pt', 'name_nl', 'name_pl', 'name_ar',
     'desc_en', 'desc_kz', 'desc_ru', 'desc_de', 'desc_fr', 'desc_es', 'desc_it', 'desc_tr', 'desc_pt', 'desc_nl', 'desc_pl', 'desc_ar',
-    'price', 'stock', 'category_id', 'images', 'active'];
+    'price', 'stock', 'category_id', 'images', 'active', 'type', 'type2', 'type3', 'type4', 'type5',
+    'type_image', 'type_image2', 'type_image3', 'type_image4', 'type_image5'];
   const row = {};
   fields.forEach(f => { if (product[f] !== undefined) row[f] = product[f]; });
   if (product.id) {
@@ -432,6 +443,39 @@ async function getProductRating(productId) {
   if (error || !data.length) return { avg: 0, count: 0 };
   const avg = data.reduce((s, r) => s + r.rating, 0) / data.length;
   return { avg: Math.round(avg * 10) / 10, count: data.length };
+}
+
+// ===== Favorites / Wishlist =====
+async function toggleFavorite(productId) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error('NOT_LOGGED_IN');
+  // Check if already favorited
+  const { data: existing } = await sb.from('favorites')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('product_id', productId)
+    .maybeSingle();
+  if (existing) {
+    // Remove favorite
+    const { error } = await sb.from('favorites').delete().eq('id', existing.id);
+    if (error) throw error;
+    return false; // removed
+  } else {
+    // Add favorite
+    const { error } = await sb.from('favorites').insert({ user_id: user.id, product_id: productId });
+    if (error) throw error;
+    return true; // added
+  }
+}
+
+async function getUserFavorites() {
+  const user = await getCurrentUser();
+  if (!user) return [];
+  const { data, error } = await sb.from('favorites')
+    .select('product_id')
+    .eq('user_id', user.id);
+  if (error) { console.error('getUserFavorites error:', error); return []; }
+  return (data || []).map(r => r.product_id);
 }
 
 if (document.readyState === 'loading') {

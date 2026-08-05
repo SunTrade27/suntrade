@@ -25,11 +25,295 @@
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/icons.js"></script>
-  <!-- Vercel Speed Insights -->
-  <script>
-    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/speed-insights/script.js"></script>
+<style>
+  /* ===== Image Magnifier / Lens Zoom ===== */
+  .img-magnifier-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    cursor: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .img-magnifier-container img {
+    display: block;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+  }
+  .magnifier-lens {
+    position: absolute;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 107, 0, 0.55);
+    background-repeat: no-repeat;
+    pointer-events: none;
+    display: none;
+    z-index: 10;
+    box-shadow:
+      0 0 0 2px rgba(255,255,255,0.6),
+      0 8px 32px rgba(0,0,0,0.25);
+    background-color: #fff;
+    transition: width 0.15s, height 0.15s;
+    will-change: transform, left, top;
+  }
+  .magnifier-lens::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 107, 0, 0.2);
+    pointer-events: none;
+  }
+  .magnifier-hint {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.55);
+    color: white;
+    font-size: 0.7rem;
+    padding: 4px 12px;
+    border-radius: 50px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+    z-index: 5;
+    backdrop-filter: blur(4px);
+    letter-spacing: 0.3px;
+  }
+  .img-magnifier-container:hover .magnifier-hint {
+    opacity: 1;
+  }
+  /* Lens shrinks on mobile so it doesn't cover the whole image */
+  @media (max-width: 768px) {
+    .magnifier-lens {
+      width: 100px;
+      height: 100px;
+    }
+  }
+  @media (max-width: 480px) {
+    .magnifier-lens {
+      display: none !important;
+    }
+    .img-magnifier-container {
+      cursor: zoom-in;
+    }
+    .magnifier-hint {
+      display: none;
+    }
+  }
+
+  /* ===== Volume Pricing Table ===== */
+  .volume-pricing {
+    margin: 1rem 0;
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: var(--radius-md, 12px);
+    overflow: hidden;
+    background: var(--bg-card, #ffffff);
+    transition: box-shadow 0.2s;
+  }
+  .volume-pricing:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .volume-pricing-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted, #6b7280);
+    background: var(--bg-subtle, #f9fafb);
+    border-bottom: 1px solid var(--border, #e5e7eb);
+  }
+  .volume-pricing-header svg {
+    width: 16px;
+    height: 16px;
+    color: var(--primary, #FF6B00);
+  }
+  .volume-tier {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border-light, #f3f4f6);
+    transition: background 0.15s;
+    cursor: default;
+  }
+  .volume-tier:last-child {
+    border-bottom: none;
+  }
+  .volume-tier:hover {
+    background: var(--bg-hover, #f9fafb);
+  }
+  .volume-tier.active {
+    background: rgba(255, 107, 0, 0.06);
+    border-left: 3px solid var(--primary, #FF6B00);
+    margin-left: -1px;
+  }
+  .volume-tier-qty {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary, #4b5563);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .volume-tier-qty .discount-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #10B981;
+    background: rgba(16, 185, 129, 0.1);
+    padding: 2px 8px;
+    border-radius: 50px;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+  }
+  .volume-tier-price {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary, #111827);
+  }
+  .volume-tier.active .volume-tier-price {
+    color: var(--primary, #FF6B00);
+  }
+  .volume-tier-base .volume-tier-price {
+    font-size: 1.1rem;
+  }
+
+  /* ===== Product Types ===== */
+  .product-types {
+    margin: 0.75rem 0;
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary, #4b5563);
+    border-bottom: 1px solid var(--border-light, #f3f4f6);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .product-types strong {
+    color: var(--text-muted, #6b7280);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .product-types .type-value {
+    display: inline-block;
+    background: var(--bg-subtle, #f3f4f6);
+    padding: 2px 10px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    color: var(--text, #111827);
+    font-weight: 500;
+    border: 1px solid var(--border, #e5e7eb);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .product-types .type-value:hover {
+    background: var(--primary, #FF6B00);
+    color: white;
+    border-color: var(--primary, #FF6B00);
+  }
+  .product-types .type-value.active {
+    background: var(--primary, #FF6B00);
+    color: white;
+    border-color: var(--primary, #FF6B00);
+    box-shadow: 0 0 0 2px rgba(255,107,0,0.2);
+  }
+
+  /* ===== Auto-Calculated Price Display ===== */
+  .product-price-block {
+    margin-bottom: 1.5rem;
+  }
+  .product-price-unit-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .product-price-per-unit {
+    font-size: 0.85rem;
+    color: var(--text-muted, #9CA3AF);
+    font-weight: 500;
+  }
+  .product-price-total {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+    padding-top: 0.6rem;
+    border-top: 2px dashed var(--border, #E5E7EB);
+    animation: priceFadeIn 0.35s ease;
+  }
+  @keyframes priceFadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .price-total-label {
+    font-size: 0.9rem;
+    color: var(--text-muted, #6B7280);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .price-total-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary, #FF6B00);
+    transition: all 0.25s ease;
+  }
+  .price-total-value.pulse {
+    animation: pricePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes pricePop {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.12); }
+    60% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+  .price-discount-badge {
+    background: linear-gradient(135deg, #10B981, #059669);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    animation: badgePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes badgePop {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  /* Savings line inside volume pricing */
+  .volume-savings-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    color: var(--text-muted, #6B7280);
+    background: rgba(16, 185, 129, 0.05);
+    border-top: 1px solid rgba(16, 185, 129, 0.15);
+    animation: priceFadeIn 0.35s ease;
+  }
+  .volume-savings-line strong {
+    color: #059669;
+    font-weight: 700;
+  }
+  @media (max-width: 768px) {
+    .price-total-value { font-size: 1.5rem; }
+    .price-discount-badge { font-size: 0.7rem; padding: 2px 8px; }
+  }
+</style>
 </head>
 <body>
 <script>document.body.classList.remove('cw-no-scroll');document.body.style.overflow='';</script>
@@ -51,6 +335,9 @@
       <a href="/cart.html" class="cart-link">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
         <span id="cart-badge">0</span>
+      </a>
+      <a href="/catalog.html?favorites=true" class="nav-fav-desktop" aria-label="Favorites" title="Favorites">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
       </a>
       <div id="user-menu-container"></div>
       <button class="mobile-menu-btn" onclick="document.getElementById('nav-links').classList.toggle('show')">
@@ -220,8 +507,18 @@
 
     document.getElementById('product-detail').innerHTML = `
       <div class="product-gallery">
+        <button class="btn-view-3d" onclick="open3DViewer()" aria-label="View in 3D">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
+          </svg>
+          360° View
+        </button>
         <div class="gallery-main">
-          <img id="main-image" src="${images[0]}" alt="${name}">
+          <div class="img-magnifier-container" id="magnifier-container">
+            <img id="main-image" src="${images[0]}" alt="${name}" draggable="false">
+            <div class="magnifier-hint">× 2.5 Hover to zoom</div>
+          </div>
         </div>
         ${images.length > 1 ? `
         <div class="gallery-thumbs">
@@ -235,7 +532,42 @@
       </div>
       <div class="product-info">
         <h1 id="product-name">${name}</h1>
-        <div class="product-price-detail">&euro;${parseFloat(p.price).toFixed(2)}</div>
+        <div class="product-price-block" id="product-price-block">
+          <div class="product-price-unit-wrap">
+            <span class="product-price-detail" id="product-price-display">&euro;${parseFloat(p.price).toFixed(2)}</span>
+            <span class="product-price-per-unit" data-i18n="product_per_piece">/ piece</span>
+          </div>
+          <div class="product-price-total" id="product-price-total">
+            <span class="price-total-label" data-i18n="product_total">Total:</span>
+            <span class="price-total-value" id="price-total-value">&euro;${parseFloat(p.price).toFixed(2)}</span>
+            <span class="price-discount-badge" id="price-discount-badge" style="display:none;">-0%</span>
+          </div>
+        </div>
+        ${p.type || p.type2 || p.type3 || p.type4 || p.type5 ? `
+        <div class="product-types">
+          <strong><span data-i18n="product_type_label">Type:</span></strong>
+          ${[p.type, p.type2, p.type3, p.type4, p.type5].map((v, i) => v ? `<span class="type-value${i === 0 ? ' active' : ''}" data-type-index="${i}" onclick="selectType(${i})">${v}</span>` : '').filter(Boolean).join(' ')}
+        </div>
+        ` : ''}
+        <!-- Volume Pricing Tiers -->
+        <div class="volume-pricing" id="volume-pricing">
+          <div class="volume-pricing-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            <span data-i18n="product_volume_pricing">Volume Pricing</span>
+          </div>
+          <div class="volume-tier volume-tier-base active" data-tier="1">
+            <span class="volume-tier-qty">1 <span data-i18n="product_piece">piece</span></span>
+            <span class="volume-tier-price">&euro;${parseFloat(p.price).toFixed(2)}</span>
+          </div>
+          <div class="volume-tier" data-tier="2">
+            <span class="volume-tier-qty">2-4 <span data-i18n="product_pieces">pieces</span></span>
+            <span class="volume-tier-price">&euro;${(p.price * 0.9).toFixed(2)}</span>
+          </div>
+          <div class="volume-tier" data-tier="3">
+            <span class="volume-tier-qty">5+ <span data-i18n="product_pieces">pieces</span> <span class="discount-badge" data-i18n="product_best_deal">Best Deal</span></span>
+            <span class="volume-tier-price">&euro;${(p.price * 0.8).toFixed(2)}</span>
+          </div>
+        </div>
         <span class="product-stock ${inStock ? 'in-stock' : 'out-of-stock'}">
           ${inStock ? t('product_in_stock') : t('product_out_of_stock')}
         </span>
@@ -249,6 +581,9 @@
           </div>
           <button class="btn-share" onclick="shareProduct()" title="Share">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </button>
+          <button class="btn-share btn-fav" id="product-fav-btn" onclick="toggleProductFav()" title="Add to favorites">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           </button>
         </div>
         <div class="product-actions">
@@ -312,33 +647,303 @@
     // Translate new dynamic content
     applyTranslations();
 
-    // Setup gallery zoom
-    const mainImg = document.getElementById('main-image');
-    if (mainImg) {
-      mainImg.addEventListener('click', () => {
-        if (mainImg.style.transform === 'scale(1.5)') {
-          mainImg.style.transform = 'scale(1)';
-          mainImg.style.cursor = 'zoom-in';
-        } else {
-          mainImg.style.transform = 'scale(1.5)';
-          mainImg.style.cursor = 'zoom-out';
-        }
-        mainImg.style.transition = 'transform 0.3s';
+    // Setup image magnifier lens (desktop hover zoom)
+    setupMagnifier('main-image', 'magnifier-container', 2.5);
+
+    // Check if product is favorited
+    checkProductFav();
+
+    // Init price display to match qty=1
+    updatePriceDisplay(1);
+
+    // Listen for manual qty input changes
+    const qtyInput = document.getElementById('qty-input');
+    if (qtyInput) {
+      qtyInput.addEventListener('input', function() {
+        let val = parseInt(this.value) || 1;
+        if (val < 1) val = 1;
+        if (val > currentProduct.stock) val = currentProduct.stock;
+        this.value = val;
+        updatePriceDisplay(val);
       });
+    }
+
+    // On small touch screens fall back to click-to-zoom
+    if (window.innerWidth <= 480) {
+      const mainImg = document.getElementById('main-image');
+      if (mainImg) {
+        mainImg.style.cursor = 'zoom-in';
+        mainImg.addEventListener('click', function zoomToggle() {
+          const container = document.getElementById('magnifier-container');
+          if (!container) return;
+          const isZoomed = container.classList.toggle('zoomed');
+          if (isZoomed) {
+            mainImg.style.transform = 'scale(2)';
+            mainImg.style.transformOrigin = 'center center';
+            mainImg.style.cursor = 'zoom-out';
+            container.style.overflow = 'auto';
+          } else {
+            mainImg.style.transform = 'scale(1)';
+            mainImg.style.cursor = 'zoom-in';
+            container.style.overflow = 'hidden';
+            container.scrollLeft = 0;
+            container.scrollTop = 0;
+          }
+          mainImg.style.transition = 'transform 0.25s ease';
+        });
+      }
+    }
+  }
+
+  // ===== Image Magnifier / Lens Zoom =====
+  // On desktop: a circular lens follows the cursor showing a zoomed-in view
+  // On mobile: falls back to click-to-zoom (handled separately)
+  function setupMagnifier(imgId, containerId, zoom, retryCount) {
+    const img = document.getElementById(imgId);
+    const container = document.getElementById(containerId);
+    if (!img || !container || !img.complete || img.naturalWidth === 0) {
+      // Image not loaded yet — retry up to 10 times
+      retryCount = retryCount || 0;
+      if (retryCount < 10) {
+        setTimeout(() => setupMagnifier(imgId, containerId, zoom, retryCount + 1), 300);
+      }
+      return;
+    }
+
+    // Remove old lens if present
+    const oldLens = container.querySelector('.magnifier-lens');
+    if (oldLens) oldLens.remove();
+
+    // Don't set up magnifier on small touch screens
+    if (window.innerWidth <= 480) return;
+
+    zoom = zoom || 2.5;
+
+    // Create lens element
+    const lens = document.createElement('div');
+    lens.className = 'magnifier-lens';
+    container.appendChild(lens);
+
+    // Named handlers so we can properly remove them later
+    function showLens() {
+      if (lens && lens.parentNode) lens.style.display = 'block';
+    }
+
+    function moveLens(e) {
+      if (!lens || !lens.parentNode) return;
+      const rect = container.getBoundingClientRect();
+
+      // Get cursor position relative to container
+      const clientX = e.clientX;
+      const clientY = e.clientY;
+
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+
+      // Clamp cursor inside container
+      const clampedX = Math.max(0, Math.min(x, rect.width));
+      const clampedY = Math.max(0, Math.min(y, rect.height));
+
+      // Lens dimensions
+      const lw = lens.offsetWidth || 160;
+      const lh = lens.offsetHeight || 160;
+
+      // Position lens centered on cursor, clamped so it stays within bounds
+      let lensX = clampedX - lw / 2;
+      let lensY = clampedY - lh / 2;
+      lensX = Math.max(0, Math.min(lensX, rect.width - lw));
+      lensY = Math.max(0, Math.min(lensY, rect.height - lh));
+
+      lens.style.left = lensX + 'px';
+      lens.style.top = lensY + 'px';
+      lens.style.display = 'block';
+
+      // Background position: map the lens position to the zoomed image
+      const bgW = rect.width * zoom;
+      const bgH = rect.height * zoom;
+      const bgX = -(clampedX * zoom - lw / 2);
+      const bgY = -(clampedY * zoom - lh / 2);
+
+      lens.style.backgroundImage = 'url(' + img.src + ')';
+      lens.style.backgroundSize = bgW + 'px ' + bgH + 'px';
+      lens.style.backgroundPosition = bgX + 'px ' + bgY + 'px';
+    }
+
+    function hideLens() {
+      if (lens) lens.style.display = 'none';
+    }
+
+    container.addEventListener('mouseenter', showLens);
+    container.addEventListener('mousemove', moveLens);
+    container.addEventListener('mouseleave', hideLens);
+
+    // Store refs so we can tear down later
+    container._magnifierShow = showLens;
+    container._magnifierLens = lens;
+    container._magnifierMove = moveLens;
+    container._magnifierHide = hideLens;
+  }
+
+  function destroyMagnifier(imgId, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    if (container._magnifierLens) {
+      container._magnifierLens.remove();
+      delete container._magnifierLens;
+    }
+    if (container._magnifierShow) {
+      container.removeEventListener('mouseenter', container._magnifierShow);
+      delete container._magnifierShow;
+    }
+    if (container._magnifierMove) {
+      container.removeEventListener('mousemove', container._magnifierMove);
+      delete container._magnifierMove;
+    }
+    if (container._magnifierHide) {
+      container.removeEventListener('mouseleave', container._magnifierHide);
+      delete container._magnifierHide;
     }
   }
 
   function setMainImage(index) {
     const images = currentProduct.images || [];
-    document.getElementById('main-image').src = images[index];
+    const mainImg = document.getElementById('main-image');
+    if (mainImg) mainImg.src = images[index];
     document.querySelectorAll('.gallery-thumb').forEach((t, i) => t.classList.toggle('active', i === index));
     currentImageIndex = index;
+    // Re-init magnifier for the new image
+    destroyMagnifier('main-image', 'magnifier-container');
+    setupMagnifier('main-image', 'magnifier-container', 2.5);
+  }
+
+  function selectType(index) {
+    const images = currentProduct.images || [];
+    const p = currentProduct;
+    const typeImages = [p.type_image, p.type_image2, p.type_image3, p.type_image4, p.type_image5];
+    const typeImage = typeImages[index];
+
+    // Highlight the selected type
+    document.querySelectorAll('.product-types .type-value').forEach(el => el.classList.remove('active'));
+    const activeEl = document.querySelector(`.product-types .type-value[data-type-index="${index}"]`);
+    if (activeEl) activeEl.classList.add('active');
+
+    // Deselect gallery thumbnails (to show that a type image is active, not a gallery thumb)
+    document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+
+    // If this type has a specific image, show it; otherwise show default image
+    const mainImg = document.getElementById('main-image');
+    if (mainImg) {
+      if (typeImage) {
+        mainImg.src = typeImage;
+      } else if (images[0]) {
+        mainImg.src = images[0];
+      }
+      // Re-init magnifier for the new image
+      destroyMagnifier('main-image', 'magnifier-container');
+      setupMagnifier('main-image', 'magnifier-container', 2.5);
+    }
   }
 
   function changeQty(delta) {
     const input = document.getElementById('qty-input');
+    if (!input) return;
     const newVal = Math.max(1, Math.min(parseInt(input.value) + delta, currentProduct.stock));
     input.value = newVal;
+    updatePriceDisplay(newVal);
+  }
+
+  function updatePriceDisplay(qty) {
+    const p = currentProduct;
+    if (!p) return;
+    qty = qty || parseInt(document.getElementById('qty-input')?.value) || 1;
+    const basePrice = parseFloat(p.price);
+    let effectiveUnitPrice = basePrice;
+    let activeTier = '1';
+    let discountPercent = 0;
+
+    if (qty >= 5) {
+      effectiveUnitPrice = basePrice * 0.8;
+      activeTier = '3';
+      discountPercent = 20;
+    } else if (qty >= 2) {
+      effectiveUnitPrice = basePrice * 0.9;
+      activeTier = '2';
+      discountPercent = 10;
+    }
+
+    const totalPrice = effectiveUnitPrice * qty;
+    const hasDiscount = discountPercent > 0;
+
+    // Update the unit price display
+    const priceEl = document.getElementById('product-price-display');
+    if (priceEl) {
+      priceEl.innerHTML = '&euro;' + effectiveUnitPrice.toFixed(2);
+    }
+
+    // Update the per-unit label: show crossed-out base price if discounted
+    const perUnitEl = document.querySelector('.product-price-per-unit');
+    if (perUnitEl) {
+      if (hasDiscount) {
+        perUnitEl.innerHTML = '/ ' + (typeof t === 'function' ? t('product_piece') : 'piece') + ' <s style="color:var(--text-muted);font-size:0.75rem;">&euro;' + basePrice.toFixed(2) + '</s>';
+      } else {
+        perUnitEl.textContent = typeof t === 'function' ? t('product_per_piece') : '/ piece';
+      }
+    }
+
+    // Update total price
+    const totalValue = document.getElementById('price-total-value');
+    if (totalValue) {
+      totalValue.textContent = '€' + totalPrice.toFixed(2);
+    }
+
+    // Show/hide total row: only show when qty > 1 (1x price is redundant)
+    const totalRow = document.getElementById('product-price-total');
+    if (totalRow) {
+      if (qty > 1) {
+        totalRow.style.display = 'flex';
+        // Restart animation
+        totalRow.style.animation = 'none';
+        requestAnimationFrame(() => {
+          totalRow.style.animation = 'priceFadeIn 0.3s ease';
+        });
+      } else {
+        totalRow.style.display = 'none';
+      }
+    }
+
+    // Discount badge
+    const badge = document.getElementById('price-discount-badge');
+    if (badge) {
+      if (hasDiscount) {
+        badge.textContent = '-' + discountPercent + '%';
+        badge.style.display = 'inline';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    // Highlight the active tier
+    document.querySelectorAll('.volume-tier').forEach(t => t.classList.remove('active'));
+    const activeEl = document.querySelector('.volume-tier[data-tier="' + activeTier + '"]');
+    if (activeEl) activeEl.classList.add('active');
+
+    // Also update savings info in the volume pricing section
+    const volumePricing = document.getElementById('volume-pricing');
+    if (volumePricing && hasDiscount) {
+      const savedPerUnit = basePrice - effectiveUnitPrice;
+      const savedTotal = savedPerUnit * qty;
+      // Add or update a savings line
+      let savingsLine = volumePricing.querySelector('.volume-savings-line');
+      if (!savingsLine) {
+        savingsLine = document.createElement('div');
+        savingsLine.className = 'volume-savings-line';
+        volumePricing.appendChild(savingsLine);
+      }
+      savingsLine.innerHTML = '<svg class="icon icon-sm" style="color:#10B981;"><use href="#icon-check-circle"/></svg> <span data-i18n="product_you_save">' + (typeof t === 'function' ? t('product_you_save') : 'You save') + '</span>: <strong>€' + savedTotal.toFixed(2) + '</strong>';
+    } else if (volumePricing) {
+      const savingsLine = volumePricing.querySelector('.volume-savings-line');
+      if (savingsLine) savingsLine.remove();
+    }
   }
 
   function addProductToCart() {
@@ -361,16 +966,17 @@
     const img = (currentProduct.images && currentProduct.images[0]) || '/images/placeholder.jpg';
     const qty = parseInt(document.getElementById('qty-input').value) || 1;
 
-    // For Buy Now, we need a single-item cart
-    // Clear cart and add this product, then go directly to checkout
+    // For Buy Now, we need a single-item cart.
+    // Note: cart.js applies volume discounts automatically via getDiscountedPrice().
     const existing = cart.find(item => item.id === currentProduct.id);
     if (existing) {
       // Already in cart - just go to checkout
       window.location.href = '/checkout.html';
       return;
     }
-    // Clear cart, add only this product, then go to checkout
+    // Clear cart, add only this product with effective price, then go to checkout
     cart = [];
+    // Store base price so cart.js can apply volume discount correctly
     addToCart(currentProduct.id, name, currentProduct.price, img, qty);
     window.location.href = '/checkout.html';
   }
@@ -748,8 +1354,86 @@
     setTimeout(() => { btn.textContent = orig; }, 2000);
   }
 
+  // ===== Favorites for Product Page (uses shared FavoritesManager) =====
+  var _favCheckRetries = 0;
+  async function checkProductFav() {
+    var favBtn = document.getElementById('product-fav-btn');
+    if (!favBtn || !currentProduct) return;
+    // Wait for FavoritesManager to be ready (max 10 retries = 3s)
+    if (!FavoritesManager.cachedIds && _favCheckRetries < 10) {
+      _favCheckRetries++;
+      setTimeout(checkProductFav, 300);
+      return;
+    }
+    if (FavoritesManager.isFav(currentProduct.id)) {
+      favBtn.classList.add('favorited');
+      favBtn.querySelector('svg').setAttribute('fill', 'currentColor');
+    }
+  }
+
+  async function toggleProductFav() {
+    if (!currentProduct) return;
+    var btn = document.getElementById('product-fav-btn');
+    var added = await FavoritesManager.toggle(currentProduct.id, btn);
+    // Also update the SVG fill for the product page button
+    if (btn) {
+      btn.querySelector('svg').setAttribute('fill', added ? 'currentColor' : 'none');
+    }
+  }
+
+  // ===== 3D Viewer Integration =====
+  function open3DViewer() {
+    if (!currentProduct || !currentProduct.images || currentProduct.images.length < 1) return;
+    if (window.Product3DViewer) {
+      Product3DViewer.open(currentProduct.images);
+    }
+  }
+
 </script>
 <script src="/js/chat-widget.js"></script>
 <script src="/js/user-menu.js"></script>
+<script src="/js/product-3d-viewer.js"></script>
+<script src="/js/shared-ui.js"></script>
+
+<!-- BOTTOM NAVIGATION (Mobile) -->
+<nav class="bottom-nav" aria-label="Mobile navigation">
+  <div class="bottom-nav-inner">
+    <a href="/" class="bottom-nav-item" aria-label="Home">
+      <svg class="icon icon-lg"><use href="#icon-home"/></svg>
+      <span data-i18n="nav_home">Home</span>
+    </a>
+    <a href="/catalog.html?favorites=true" class="bottom-nav-item" aria-label="Favorites">
+      <svg class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span data-i18n="nav_favorites">Favorites</span>
+    </a>
+    <a href="/cart.html" class="bottom-nav-item" aria-label="Cart">
+      <svg class="icon icon-lg"><use href="#icon-cart"/></svg>
+      <span data-i18n="nav_cart">Cart</span>
+      <span class="bottom-nav-badge" id="bottom-nav-cart-badge" style="display:none;">0</span>
+    </a>
+    <a href="/account.html" class="bottom-nav-item" aria-label="Account">
+      <svg class="icon icon-lg"><use href="#icon-user"/></svg>
+      <span data-i18n="account_title">Account</span>
+    </a>
+  </div>
+</nav>
+
+<!-- CART DRAWER -->
+<div class="cart-drawer-overlay" id="cart-drawer-overlay" onclick="CartDrawer.close()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-drawer-header">
+    <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg> <span data-i18n="nav_cart">Cart</span> <span class="cart-drawer-count" id="cart-drawer-count">0</span></h3>
+    <button class="cart-drawer-close" onclick="CartDrawer.close()" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="cart-drawer-items" id="cart-drawer-items"></div>
+  <div class="cart-drawer-footer" id="cart-drawer-footer" style="display:none;">
+    <div class="cart-drawer-total">
+      <span data-i18n="cart_total">Total</span>
+      <span id="cart-drawer-total-amount">€0.00</span>
+    </div>
+    <a href="/checkout.html" class="cart-drawer-checkout" data-i18n="cart_checkout">Proceed to Checkout</a>
+    <a href="/cart.html" class="cart-drawer-view-all">View Full Cart →</a>
+  </div>
+</div>
 </body>
 </html>

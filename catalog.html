@@ -41,6 +41,9 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
         <span id="cart-badge">0</span>
       </a>
+      <a href="/catalog.html?favorites=true" class="nav-fav-desktop" aria-label="Favorites" title="Favorites">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </a>
       <div id="user-menu-container"></div>
       <button class="mobile-menu-btn" onclick="document.getElementById('nav-links').classList.toggle('show')">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -148,11 +151,29 @@
     applyTranslations();
   });
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const isFavoritesView = urlParams.get('favorites') === 'true';
+
   document.addEventListener('DOMContentLoaded', async () => {
     // Check URL params
     const params = new URLSearchParams(window.location.search);
     const catId = params.get('category');
     const searchQuery = params.get('search');
+
+    // If favorites view, update page title and hide filters
+    if (isFavoritesView) {
+      document.title = (typeof t === 'function' ? t('nav_favorites') : 'Favorites') + ' - SunTrade';
+      const titleEl = document.querySelector('.catalog-page h1');
+      if (titleEl) {
+        titleEl.setAttribute('data-i18n', 'nav_favorites');
+        titleEl.textContent = typeof t === 'function' ? t('nav_favorites') : 'Favorites';
+      }
+      // Hide search bar and filter bar in favorites view
+      var searchBar = document.querySelector('.search-bar');
+      var filterBar = document.querySelector('.filter-bar');
+      if (searchBar) searchBar.style.display = 'none';
+      if (filterBar) filterBar.style.display = 'none';
+    }
 
     setTimeout(async () => {
       if (!sb) return;
@@ -181,12 +202,39 @@
     const sort = document.getElementById('sort-filter').value;
     const search = document.getElementById('search-input').value || null;
 
-    const products = await getProducts({ categoryId, sort, search });
+    let products = await getProducts({ categoryId, sort, search });
     const countEl = document.getElementById('product-count');
 
+    // Favorites view: filter to only show favorited products
+    if (isFavoritesView) {
+      if (FavoritesManager.cachedIds && FavoritesManager.cachedIds.size > 0) {
+        products = products.filter(p => FavoritesManager.cachedIds.has(p.id));
+      } else {
+        // If favorites not loaded yet, wait for them
+        await FavoritesManager.load();
+        if (FavoritesManager.cachedIds && FavoritesManager.cachedIds.size > 0) {
+          products = products.filter(p => FavoritesManager.cachedIds.has(p.id));
+        } else {
+          products = [];
+        }
+      }
+    }
+
     if (products.length === 0) {
-      grid.innerHTML = '<div style="text-align:center;padding:3rem;grid-column:1/-1;"><p style="font-size:1.2rem;color:var(--text-light);" data-i18n="search_no_results">No products found</p></div>';
-      if (countEl) countEl.textContent = '0 products';
+      if (isFavoritesView) {
+        var favEmptyMsg = (typeof t === 'function' ? t('favorites_empty') : 'No favorites yet');
+        var favEmptyHint = (typeof t === 'function' ? t('favorites_empty_hint') : 'Tap the heart icon on products to add them here');
+        var startShopping = (typeof t === 'function' ? t('start_shopping') : 'Start Shopping');
+        grid.innerHTML = '<div style="text-align:center;padding:3rem;grid-column:1/-1;">' +
+          '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:1rem;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
+          '<p style="font-size:1.2rem;color:var(--text-light);margin-bottom:0.5rem;">' + favEmptyMsg + '</p>' +
+          '<p style="color:var(--text-muted);font-size:0.9rem;">' + favEmptyHint + '</p>' +
+          '<a href="/catalog.html" class="btn-checkout" style="display:inline-block;width:auto;padding:12px 32px;margin-top:1.5rem;">' + startShopping + '</a>' +
+          '</div>';
+      } else {
+        grid.innerHTML = '<div style="text-align:center;padding:3rem;grid-column:1/-1;"><p style="font-size:1.2rem;color:var(--text-light);" data-i18n="search_no_results">No products found</p></div>';
+      }
+      if (countEl) countEl.textContent = '0 ' + (isFavoritesView ? (typeof t === 'function' ? t('nav_favorites') : 'Favorites') : (typeof t === 'function' ? t('products') : 'products'));
       return;
     }
 
@@ -199,6 +247,9 @@
       return `
         <div class="product-card">
           <a href="/product.html?id=${p.id}" class="product-card-link" aria-label="${safeName}"></a>
+          <button class="wishlist-btn" data-product-id="${p.id}" onclick="event.preventDefault(); event.stopPropagation(); toggleFav('${p.id}', this);" aria-label="Add to favorites">
+            <svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
           <div class="product-card-img-wrap">
             <img src="${img}" alt="${name}" class="product-card-img" loading="lazy">
           </div>
@@ -213,9 +264,58 @@
       `;
     }).join('');
     applyTranslations();
+    // Update wishlist button states
+    FavoritesManager.updateButtons();
+  }
+
+  // ===== Favorites (uses shared FavoritesManager from shared-ui.js) =====
+  async function toggleFav(productId, btnEl) {
+    await FavoritesManager.toggle(productId, btnEl);
   }
 </script>
 <script src="/js/chat-widget.js"></script>
 <script src="/js/user-menu.js"></script>
+<script src="/js/shared-ui.js"></script>
+
+<!-- BOTTOM NAVIGATION (Mobile) -->
+<nav class="bottom-nav" aria-label="Mobile navigation">
+  <div class="bottom-nav-inner">
+    <a href="/" class="bottom-nav-item" aria-label="Home">
+      <svg class="icon icon-lg"><use href="#icon-home"/></svg>
+      <span data-i18n="nav_home">Home</span>
+    </a>
+    <a href="/catalog.html?favorites=true" class="bottom-nav-item" aria-label="Favorites">
+      <svg class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span data-i18n="nav_favorites">Favorites</span>
+    </a>
+    <a href="/cart.html" class="bottom-nav-item" aria-label="Cart">
+      <svg class="icon icon-lg"><use href="#icon-cart"/></svg>
+      <span data-i18n="nav_cart">Cart</span>
+      <span class="bottom-nav-badge" id="bottom-nav-cart-badge" style="display:none;">0</span>
+    </a>
+    <a href="/account.html" class="bottom-nav-item" aria-label="Account">
+      <svg class="icon icon-lg"><use href="#icon-user"/></svg>
+      <span data-i18n="account_title">Account</span>
+    </a>
+  </div>
+</nav>
+
+<!-- CART DRAWER -->
+<div class="cart-drawer-overlay" id="cart-drawer-overlay" onclick="CartDrawer.close()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-drawer-header">
+    <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg> <span data-i18n="nav_cart">Cart</span> <span class="cart-drawer-count" id="cart-drawer-count">0</span></h3>
+    <button class="cart-drawer-close" onclick="CartDrawer.close()" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="cart-drawer-items" id="cart-drawer-items"></div>
+  <div class="cart-drawer-footer" id="cart-drawer-footer" style="display:none;">
+    <div class="cart-drawer-total">
+      <span data-i18n="cart_total">Total</span>
+      <span id="cart-drawer-total-amount">€0.00</span>
+    </div>
+    <a href="/checkout.html" class="cart-drawer-checkout" data-i18n="cart_checkout">Proceed to Checkout</a>
+    <a href="/cart.html" class="cart-drawer-view-all">View Full Cart →</a>
+  </div>
+</div>
 </body>
 </html>

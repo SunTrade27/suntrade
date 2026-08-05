@@ -6,6 +6,9 @@
   <title data-i18n="meta_title">SunTrade - Global Marketplace</title>
   <meta name="description" content="" data-i18n="meta_description">
   <link rel="canonical" href="https://www.suntrade.store/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <!-- Hreflang for multi-language support -->
@@ -64,11 +67,837 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/icons.js"></script>
-  <!-- Vercel Speed Insights -->
-  <script>
-    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <!-- (Three.js removed — replaced with CSS 3D product carousel for performance) -->
+  <style>
+    /* ===== SunTrade Sky Hero ===== */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 85vh;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      background: linear-gradient(180deg,
+        #0b1628 0%,
+        #132744 15%,
+        #1a3a5c 30%,
+        #2d6187 45%,
+        #4a90b8 55%,
+        #7ec8e3 65%,
+        #f4a460 78%,
+        #ff8c42 88%,
+        #ff6b00 95%,
+        #ff4500 100%
+      );
+    }
+    /* Sun glow at horizon */
+    .hero::before {
+      content: '';
+      position: absolute;
+      bottom: -5%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 300px;
+      background: radial-gradient(ellipse, rgba(255,200,50,0.45) 0%, rgba(255,140,0,0.2) 40%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+      border-radius: 50%;
+    }
+    /* Sun disk removed */
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      background: rgba(11,22,40,0.45);
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      border-radius: 28px;
+      padding: 3rem 2.5rem;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 8px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06);
+      max-width: 420px;
+      margin: 0 auto 0 8%;
+    }
+    @media (max-width: 768px) {
+      .hero-content { max-width: 72%; margin: 0 auto; padding: 0.75rem 0.75rem; border-radius: 18px; }
+      /* Breathing room above & below hero on mobile */
+      .hero { margin-top: 0.5rem; margin-bottom: 0.75rem; }
+    }
+    @media (max-width: 480px) {
+      .hero-content { max-width: 78%; margin: 0 auto; padding: 0.6rem 0.6rem; border-radius: 14px; }
+      .hero { margin-top: 0.4rem; margin-bottom: 0.5rem; }
+    }
+    .hero h1 {
+      background: linear-gradient(135deg, #fff 0%, #ffd700 50%, #fff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 3.5rem;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      text-shadow: none;
+      filter: drop-shadow(0 2px 15px rgba(0,0,0,0.4)) drop-shadow(0 0 30px rgba(255,200,50,0.15));
+    }
+    .hero p {
+      color: rgba(255,255,255,0.9) !important;
+      -webkit-text-fill-color: initial;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.3);
+    }
+    /* Animated clouds */
+    .sky-cloud {
+      position: absolute;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.35;
+    }
+    .sky-cloud-inner {
+      background: rgba(255,255,255,0.6);
+      border-radius: 50%;
+      filter: blur(8px);
+    }
+    /* Sun rays removed — looked artificial */
+    /* Birds silhouette */
+    .sky-birds {
+      position: absolute;
+      z-index: 2;
+      pointer-events: none;
+      opacity: 0.2;
+    }
+    @media (max-width: 768px) {
+      .hero { min-height: auto; padding: 0.5rem 0; flex-direction: column; align-items: stretch; justify-content: flex-start; }
+      .hero h1 { font-size: 1.15rem !important; line-height: 1.15; }
+      .hero p { font-size: 0.7rem; margin-bottom: 0.3rem; }
+      .hero-content { order: 2; }
+      .hero-mobile-carousel { order: 1; }
+      .hero-search { margin-bottom: 0 !important; }
+    }
+    @media (max-width: 480px) {
+      .hero { min-height: auto; padding: 0.4rem 0; flex-direction: column; align-items: stretch; justify-content: flex-start; }
+      .hero h1 { font-size: 1.05rem !important; line-height: 1.1; }
+      .hero p { font-size: 0.68rem; margin-bottom: 0.2rem; }
+      .hero-content { order: 2; }
+      .hero-mobile-carousel { order: 1; }
+      .hero-search { margin-bottom: 0.2rem !important; max-width: 210px !important; margin-left: auto !important; margin-right: auto !important; padding: 0.15rem 0.15rem 0.15rem 0.4rem !important; gap: 0.1rem !important; }
+      .hero-search input { padding: 0.25rem 0.25rem !important; font-size: 0.62rem !important; }
+      .hero-search-btn { width: 24px !important; height: 24px !important; }
+      .hero-search-btn svg { width: 10px !important; height: 10px !important; margin: 0 !important; }
+      .hero-search > svg { width: 10px !important; height: 10px !important; }
+      .sun-rays { display: none; }
+      /* Spacing between hero and categories */
+      .hero + .section { margin-top: 0.75rem; }
+    }
+
+    /* ===== 3D Trending Product Cards (Floating) ===== */
+    #hero-3d-scene {
+      position: absolute;
+      inset: 0;
+      perspective: 1200px;
+      perspective-origin: center 40%;
+      overflow: hidden;
+      z-index: 2;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 2s ease;
+    }
+    #hero-3d-scene.loaded { opacity: 1; }
+
+    .hero-3d-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .hero-3d-product {
+      position: absolute;
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+    }
+
+    /* Trending product card style */
+    .hero-3d-product-inner {
+      width: 140px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.2);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.15);
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.4s ease;
+      pointer-events: auto;
+      cursor: pointer;
+      position: relative;
+    }
+    .hero-3d-product-inner:hover {
+      transform: scale(1.12) !important;
+      box-shadow: 0 16px 60px rgba(255,107,0,0.3), 0 0 0 2px rgba(255,200,50,0.4), inset 0 1px 0 rgba(255,255,255,0.25);
+    }
+    .hero-3d-product-inner .trending-card-img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: contain;
+      background: rgba(255,255,255,0.08);
+      display: block;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .hero-3d-product-inner .trending-card-info {
+      padding: 10px 12px;
+      text-align: center;
+    }
+    .hero-3d-product-inner .trending-card-name {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.95);
+      margin-bottom: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.3;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .hero-3d-product-inner .trending-card-price {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #ffd700;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    }
+    .hero-3d-product-inner .trending-card-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: linear-gradient(135deg, #ff6b00, #ff4500);
+      color: white;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 50px;
+      box-shadow: 0 2px 8px rgba(255,107,0,0.4);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    /* Glow behind each product */
+    .hero-3d-product-inner::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 24px;
+      background: radial-gradient(circle, rgba(255,200,50,0.1) 0%, transparent 60%);
+      z-index: -1;
+      animation: productPulse 3s ease-in-out infinite alternate;
+    }
+    @keyframes productPulse {
+      0% { opacity: 0.3; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1.05); }
+    }
+
+    /* Floating animation */
+    .hero-3d-product-float {
+      animation: productFloat var(--float-duration, 4s) ease-in-out infinite;
+      animation-delay: var(--float-delay, 0s);
+    }
+    @keyframes productFloat {
+      0%, 100% { transform: translateY(0px); }
+      25% { transform: translateY(-12px); }
+      75% { transform: translateY(10px); }
+    }
+
+    /* Mobile section titles — compact */
+    @media (max-width: 768px) {
+      .section-title { font-size: 1.15rem !important; letter-spacing: -0.3px !important; margin-bottom: 0.75rem !important; }
+      /* PERFORMANCE: disable heavy animations on mobile */
+      .hero-static-scanlines, .hero-static-noise { display: none !important; animation: none !important; }
+      .hero-particles, .sky-cloud, .sky-birds { display: none !important; }
+      .hero { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+      .hero h1 { filter: none !important; }
+      .hero-content { backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; }
+      /* Reduce View All spacing */
+      .view-all-btn { margin-top: 0.25rem !important; }
+      .products-grid { padding-bottom: 20px !important; }
+    }
+    @media (max-width: 480px) {
+      .section-title { font-size: 1rem !important; letter-spacing: -0.2px !important; margin-bottom: 0.5rem !important; }
+      .hero-content { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(11,22,40,0.7) !important; }
+      .products-grid { padding-bottom: 10px !important; }
+    }
+
+    /* Mobile fallback */
+    @media (max-width: 900px) {
+      #hero-3d-scene { perspective: 600px; }
+      .hero-3d-ring { position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; transform-style: preserve-3d; }
+      .hero-3d-product { position: absolute; }
+      .hero-3d-product-inner { width: 100px; border-radius: 12px; }
+      .hero-3d-product-inner .trending-card-info { padding: 6px 8px; }
+      .hero-3d-product-inner .trending-card-name { font-size: 0.6rem; }
+      .hero-3d-product-inner .trending-card-price { font-size: 0.7rem; }
+      .hero-3d-product-inner .trending-card-badge { font-size: 0.5rem; padding: 2px 6px; }
+    }
+    @media (max-width: 480px) {
+      .hero-3d-product-inner { width: 80px; border-radius: 10px; }
+      .hero-3d-product-inner .trending-card-info { padding: 4px 6px; }
+      .hero-3d-product-inner .trending-card-name { font-size: 0.5rem; -webkit-line-clamp: 1; }
+      .hero-3d-product-inner .trending-card-price { font-size: 0.6rem; }
+      .hero-3d-product-inner .trending-card-badge { display: none; }
+      .hero-3d-product-inner::before { display: none; }
+    }
+
+    /* ===== Staggered Entrance Animation ===== */
+    .stagger-enter {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    .stagger-enter.visible {
+      animation: staggerFadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    .stagger-enter.visible:nth-child(1) { animation-delay: 0.05s; }
+    .stagger-enter.visible:nth-child(2) { animation-delay: 0.1s; }
+    .stagger-enter.visible:nth-child(3) { animation-delay: 0.15s; }
+    .stagger-enter.visible:nth-child(4) { animation-delay: 0.2s; }
+    .stagger-enter.visible:nth-child(5) { animation-delay: 0.25s; }
+    .stagger-enter.visible:nth-child(6) { animation-delay: 0.3s; }
+    .stagger-enter.visible:nth-child(7) { animation-delay: 0.35s; }
+    .stagger-enter.visible:nth-child(8) { animation-delay: 0.4s; }
+    @keyframes staggerFadeIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== Premium Shimmer Loading ===== */
+    .shimmer-skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s ease-in-out infinite;
+      border-radius: 8px;
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    /* ===== TV Glitch Effect for Hero Title ===== */
+    .hero h1.tv-glitch {
+      text-shadow: 0 0 10px rgba(255,255,255,0.5), 0 0 20px rgba(255,215,0,0.3);
+    }
+    .hero h1 .tv-static-char {
+      display: inline-block;
+      position: relative;
+    }
+    .hero h1 .tv-static-char::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      opacity: 0;
+      animation: staticNoise 0.1s steps(3) infinite;
+      pointer-events: none;
+      border-radius: 2px;
+    }
+    @keyframes staticNoise {
+      0% { opacity: 0.6; transform: translate(0, 0); }
+      33% { opacity: 0.4; transform: translate(-1px, 1px); }
+      66% { opacity: 0.7; transform: translate(1px, -1px); }
+      100% { opacity: 0.5; transform: translate(0, 0); }
+    }
+    /* Scanline overlay during TV effect (used by JS burst) */
+    .hero .tv-scanlines {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.03) 2px,
+        rgba(0,0,0,0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 10;
+      opacity: 0;
+      animation: scanlinesIn 0.8s ease-out forwards;
+    }
+    @keyframes scanlinesIn {
+      0% { opacity: 1; }
+      70% { opacity: 0.8; }
+      100% { opacity: 0; }
+    }
+
+    /* ===== Permanent subtle scanline + static noise overlay on hero ===== */
+    .hero-static-scanlines {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.025) 2px,
+        rgba(0,0,0,0.025) 4px
+      );
+      pointer-events: none;
+      z-index: 4;
+      opacity: 0.4;
+      animation: heroScanlinePulse 4s ease-in-out infinite;
+    }
+    @keyframes heroScanlinePulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.5; }
+    }
+    .hero-static-noise {
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      pointer-events: none;
+      z-index: 3;
+      opacity: 0.06;
+      mix-blend-mode: overlay;
+      animation: heroNoiseShift 0.8s steps(2) infinite;
+    }
+    @keyframes heroNoiseShift {
+      0% { background-position: 0 0; }
+      50% { background-position: 5px -3px; }
+      100% { background-position: -3px 5px; }
+    }
+
+    /* ===== Scroll Hint ===== */
+    .scroll-hint {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      opacity: 0.5;
+      animation: scrollHintBob 2s ease-in-out infinite;
+    }
+    .scroll-hint svg { color: rgba(255,255,255,0.4); }
+    @keyframes scrollHintBob {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+    @media (max-width: 768px) {
+      .scroll-hint { display: none; }
+    }
+
+    /* Glassmorphism Navbar — night sky gradient with blur */
+    .navbar {
+      background: linear-gradient(180deg,
+        rgba(15, 23, 42, 0.7) 0%,
+        rgba(30, 41, 59, 0.65) 50%,
+        rgba(51, 65, 85, 0.6) 100%
+      ) !important;
+      backdrop-filter: blur(12px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.2) !important;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+    @media (max-width: 768px) {
+      .navbar {
+        background: rgba(11,22,40,0.55) !important;
+        backdrop-filter: blur(28px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+      }
+      .navbar-inner .logo { color: #FF6B00 !important; text-shadow: 0 0 20px rgba(255,107,0,0.4); }
+      .navbar-inner .logo span { color: rgba(255,255,255,0.95) !important; text-shadow: 0 1px 8px rgba(0,0,0,0.3); -webkit-text-fill-color: rgba(255,255,255,0.95); }
+      .nav-links a { color: var(--text) !important; }
+      .nav-links a:hover, .nav-links a.active { color: #FF6B00 !important; }
+      #lang-toggle {
+        background: rgba(255,255,255,0.12) !important;
+        border-color: rgba(255,255,255,0.2) !important;
+        color: rgba(255,255,255,0.9) !important;
+      }
+      .cart-link { color: rgba(255,255,255,0.85) !important; }
+      .mobile-menu-btn { color: rgba(255,255,255,0.85) !important; display: flex !important; align-items: center; justify-content: center; }
+      .nav-fav-desktop { color: rgba(255,255,255,0.85) !important; }
+      .nav-fav-desktop:hover { color: #FFD700 !important; }
+      
+      body.scrolled .navbar {
+        background: linear-gradient(180deg,
+          rgba(15, 23, 42, 0.92) 0%,
+          rgba(30, 41, 59, 0.9) 50%,
+          rgba(51, 65, 85, 0.88) 100%
+        ) !important;
+        box-shadow: 0 2px 20px rgba(0,0,0,0.2) !important;
+        backdrop-filter: blur(16px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+      }
+      body.scrolled .navbar-inner .logo span { color: rgba(255,255,255,0.95) !important; }
+      body.scrolled .nav-links a { color: rgba(255,255,255,0.85) !important; }
+      body.scrolled .nav-links a:hover { color: #FFD700 !important; }
+      body.scrolled #lang-toggle { color: rgba(255,255,255,0.9) !important; }
+      body.scrolled .cart-link { color: rgba(255,255,255,0.85) !important; }
+      body.scrolled .mobile-menu-btn { color: rgba(255,255,255,0.85) !important; display: flex !important; }
+      body.scrolled .nav-fav-desktop { color: rgba(255,255,255,0.85) !important; }
+      body.scrolled .nav-fav-desktop:hover { color: #FFD700 !important; }
+      .nav-links a:hover { transform: none !important; }
+    }
+    .navbar-inner .logo { color: #FF6B00 !important; text-shadow: 0 0 20px rgba(255,107,0,0.4); }
+    .navbar-inner .logo span { color: rgba(255,255,255,0.95) !important; text-shadow: 0 1px 8px rgba(0,0,0,0.3); -webkit-text-fill-color: rgba(255,255,255,0.95); }
+    /* Desktop navbar: dark glassmorphism with white text */
+    @media (min-width: 769px) {
+      .nav-links a { color: rgba(255,255,255,0.85) !important; position: relative; padding-bottom: 4px; transition: color 0.3s ease, transform 0.3s ease !important; }
+      .nav-links a:hover { color: #FFD700 !important; transform: translateY(-1px); }
+      .nav-links a.active { color: #FFD700 !important; }
+      .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 2px; background: linear-gradient(90deg, #FF6B00, #FFD700); border-radius: 2px; transition: width 0.3s ease, left 0.3s ease; }
+      .nav-links a:hover::after { width: 100%; left: 0; }
+      #lang-toggle {
+        background: rgba(255,255,255,0.12) !important;
+        border-color: rgba(255,255,255,0.2) !important;
+        color: rgba(255,255,255,0.9) !important;
+      }
+      .cart-link { color: rgba(255,255,255,0.85) !important; }
+      .nav-fav-desktop { color: rgba(255,255,255,0.85) !important; }
+      .nav-fav-desktop:hover { color: #FFD700 !important; }
+      .mobile-menu-btn { color: rgba(255,255,255,0.85) !important; }
+
+    }
+    .nav-links a { position: relative; padding-bottom: 4px; transition: color 0.3s ease, transform 0.3s ease !important; }
+    .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 2px; background: linear-gradient(90deg, #FF6B00, #FFD700); border-radius: 2px; transition: width 0.3s ease, left 0.3s ease; }
+    .nav-links a:hover::after { width: 100%; left: 0; }
+    .navbar {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 1000;
+    }
+
+    /* Navbar scroll state: deeper night sky glass (DESKTOP ONLY — mobile overrides are in the @media block above) */
+    @media (min-width: 769px) {
+      body.scrolled .navbar {
+        background: linear-gradient(180deg,
+          rgba(15, 23, 42, 0.92) 0%,
+          rgba(30, 41, 59, 0.9) 50%,
+          rgba(51, 65, 85, 0.88) 100%
+        ) !important;
+        box-shadow: 0 4px 30px rgba(0,0,0,0.35) !important;
+      }
+      body.scrolled .navbar-inner .logo span { color: rgba(255,255,255,0.95) !important; -webkit-text-fill-color: rgba(255,255,255,0.95); }
+      body.scrolled .nav-links a { color: rgba(255,255,255,0.85) !important; }
+      body.scrolled .nav-links a:hover,
+      body.scrolled .nav-links a.active { color: #FFD700 !important; }
+      body.scrolled #lang-toggle {
+        background: rgba(255,255,255,0.12) !important;
+        border-color: rgba(255,255,255,0.2) !important;
+        color: rgba(255,255,255,0.9) !important;
+      }
+      body.scrolled .cart-link { color: rgba(255,255,255,0.85) !important; }
+      body.scrolled .nav-fav-desktop { color: rgba(255,255,255,0.85) !important; }
+      body.scrolled .nav-fav-desktop:hover { color: #FFD700 !important; }
+      body.scrolled .mobile-menu-btn { color: rgba(255,255,255,0.85) !important; }
+    }
+
+    /* Scroll reveal animations — Emil Koval: 0.3s, transform/opacity only */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-24px);
+      transition: opacity 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .reveal-left.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(24px);
+      transition: opacity 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .reveal-right.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .reveal-scale {
+      opacity: 0;
+      transform: scale(0.95);
+      transition: opacity 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .reveal-scale.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Premium section titles */
+    .section-title {
+      background: linear-gradient(135deg, #1A1A2E 0%, #FF6B00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 2.2rem !important;
+      letter-spacing: -0.5px;
+    }
+
+    /* Premium category cards — Taste Scale: refined shadows, no heavy filters on mobile */
+    .category-card {
+      background: var(--bg-white) !important;
+      border: 1px solid var(--border) !important;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05) !important;
+      transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease !important;
+    }
+    .category-card:hover {
+      transform: translateY(-4px) !important;
+      box-shadow: 0 12px 40px rgba(255,107,0,0.12) !important;
+      border-color: rgba(255,107,0,0.25) !important;
+    }
+    @media (max-width: 768px) {
+      .category-card { background: var(--bg-white) !important; }
+    }
+
+    /* Premium product cards — Emil Koval: 0.3s, transform/opacity only, no backdrop-filter on mobile */
+    .product-card {
+      background: var(--bg-white) !important;
+      border: 1px solid var(--border) !important;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05) !important;
+      transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.35s ease !important;
+    }
+    .product-card:hover {
+      transform: translateY(-4px) scale(1.01) !important;
+      box-shadow: 0 16px 48px rgba(255,107,0,0.1) !important;
+    }
+    .product-card-btn {
+      background: var(--primary) !important;
+      border-radius: 8px !important;
+      transition: background 0.25s ease, transform 0.25s ease !important;
+    }
+    .product-card-btn:hover {
+      background: var(--primary-dark) !important;
+      transform: scale(1.02);
+    }
+
+    /* Shimmer effect for loading cards */
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    /* Premium review cards — Taste Scale: clean, no heavy filters */
+    #homepage-reviews > div {
+      background: var(--bg-white) !important;
+      border: 1px solid var(--border) !important;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05) !important;
+      border-radius: 16px !important;
+    }
+
+    /* Glass view all button */
+    .view-all-btn a {
+      background: var(--bg-white) !important;
+      border: 2px solid var(--primary) !important;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05) !important;
+      transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease !important;
+    }
+    .view-all-btn a:hover {
+      background: var(--primary) !important;
+      color: white !important;
+      box-shadow: 0 8px 24px rgba(255,107,0,0.2) !important;
+      transform: translateY(-2px);
+    }
+
+    /* Footer enhancement */
+    .footer {
+      background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 100%) !important;
+      position: relative;
+      overflow: hidden;
+    }
+    .footer::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -20%;
+      width: 80%;
+      height: 200%;
+      background: radial-gradient(ellipse, rgba(255,107,0,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .carousel-btn {
+      background: var(--bg-white) !important;
+      border: 1px solid var(--border) !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+      transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease !important;
+    }
+
+    /* Hero search — desktop: glass, mobile: solid */
+    .hero-search {
+      background: rgba(255,255,255,0.12) !important;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.2) !important;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.2) !important;
+    }
+    .hero-search input {
+      color: white !important;
+    }
+    .hero-search input::placeholder {
+      color: rgba(255,255,255,0.5) !important;
+    }
+    .hero-search svg { color: rgba(255,255,255,0.5) !important; }
+    .hero-search-btn {
+      background: var(--primary) !important;
+      box-shadow: 0 4px 15px rgba(255,107,0,0.3) !important;
+      transition: background 0.25s ease !important;
+    }
+    .hero-search-btn:hover {
+      background: var(--primary-dark) !important;
+    }
+    .hero-search-results {
+      background: rgba(255,255,255,0.96) !important;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.3) !important;
+    }
+    @media (max-width: 768px) {
+      .hero-search {
+        background: rgba(255,255,255,0.15) !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        max-width: 240px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        margin-bottom: 0.3rem !important;
+        padding: 0.2rem 0.2rem 0.2rem 0.5rem !important;
+        gap: 0.2rem !important;
+      }
+      .hero-search input {
+        padding: 0.3rem 0.3rem !important;
+        font-size: 0.7rem !important;
+      }
+      .hero-search-btn {
+        width: 26px !important;
+        height: 26px !important;
+      }
+      .hero-search svg {
+        width: 12px !important;
+        height: 12px !important;
+      }
+      .hero-search-results {
+        background: white !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+    }
+
+    /* ===== Mobile Hero Product Carousel (horizontal rotating) ===== */
+    @media (max-width: 900px) {
+      .hero-mobile-carousel {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        padding: 0.75rem 1rem 0.5rem;
+        margin-top: 0;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        position: relative;
+        z-index: 5;
+      }
+      .hero-mobile-carousel::-webkit-scrollbar { display: none; }
+      .hero-mobile-carousel .hmc-card {
+        flex: 0 0 120px;
+        scroll-snap-align: start;
+        border-radius: 14px;
+        overflow: hidden;
+        background: rgba(255,255,255,0.12);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255,255,255,0.18);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+        cursor: pointer;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        text-decoration: none;
+        display: block;
+        color: white;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .hero-mobile-carousel .hmc-card:active {
+        transform: scale(0.95);
+      }
+      .hero-mobile-carousel .hmc-card-img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        display: block;
+        background: rgba(255,255,255,0.06);
+      }
+      .hero-mobile-carousel .hmc-card-body {
+        padding: 3px 4px 6px;
+        text-align: center;
+      }
+      .hero-mobile-carousel .hmc-card-name {
+        font-size: 0.6rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.95);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.3;
+        margin-bottom: 3px;
+        text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+      }
+      .hero-mobile-carousel .hmc-card-price {
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: #ffd700;
+        text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+      }
+      .hero-mobile-carousel .hmc-card-badge {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        background: linear-gradient(135deg, #ff6b00, #ff4500);
+        color: white;
+        font-size: 0.5rem;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 50px;
+        box-shadow: 0 2px 8px rgba(255,107,0,0.4);
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+      .hero-mobile-carousel .hmc-card {
+        position: relative;
+      }
+    }
+    @media (min-width: 901px) {
+      .hero-mobile-carousel { display: none !important; }
+    }
+
+    /* === BULLETPROOF mobile section-title override (last in cascade) === */
+    @media (max-width: 768px) {
+      .section.reveal .section-title,
+      section .section-title,
+      h2.section-title {
+        font-size: 1.15rem !important;
+        letter-spacing: -0.3px !important;
+        margin-bottom: 0.75rem !important;
+        line-height: 1.3 !important;
+      }
+    }
+    @media (max-width: 480px) {
+      .section.reveal .section-title,
+      section .section-title,
+      h2.section-title {
+        font-size: 1rem !important;
+        letter-spacing: -0.2px !important;
+        margin-bottom: 0.5rem !important;
+        line-height: 1.2 !important;
+      }
+    }
+  </style>
 </head><body>
 <script>document.body.classList.remove('cw-no-scroll');document.body.style.overflow='';</script>
 <!-- NAVBAR -->
@@ -79,6 +908,7 @@
       <li><a href="/" class="active" data-i18n="nav_home">Home</a></li>
       <li><a href="/catalog.html" data-i18n="nav_catalog">Catalog</a></li>
       <li><a href="/cart.html" data-i18n="nav_cart">Cart</a></li>
+
     </ul>
     <div class="nav-right">
       <div class="lang-wrapper">
@@ -89,6 +919,9 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
         <span id="cart-badge">0</span>
       </a>
+      <a href="/catalog.html?favorites=true" class="nav-fav-desktop" aria-label="Favorites" title="Favorites">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </a>
       <div id="user-menu-container"></div>
       <button class="mobile-menu-btn" onclick="document.getElementById('nav-links').classList.toggle('show')">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -97,8 +930,28 @@
   </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
+<!-- HERO -->  <section class="hero">
+    <!-- Sky elements -->
+
+    <!-- Animated clouds -->
+    <div class="sky-cloud" id="sky-clouds"></div>
+    <!-- Birds -->
+    <svg class="sky-birds" id="sky-birds-svg" style="top:15%;left:10%;width:200px;height:60px;" viewBox="0 0 200 60"></svg>
+    <svg class="sky-birds" style="top:25%;right:15%;width:150px;height:40px;animation-delay:2s;" viewBox="0 0 150 40"></svg>
+    <!-- Particles (generated by JS in initHeroParticles) -->
+    <div class="hero-particles" id="hero-particles"></div>
+    <!-- Permanent subtle scanline + static noise overlays -->
+    <div class="hero-static-scanlines"></div>
+    <div class="hero-static-noise"></div>
+    <!-- 3D Product Ring (CSS-based, no Three.js) -->
+  <div id="hero-3d-scene">
+    <div id="hero-ring-outer" class="hero-3d-ring"></div>
+    <div id="hero-ring-inner" class="hero-3d-ring"></div>
+  </div>
+  <!-- Scroll hint -->
+  <div class="scroll-hint">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+  </div>
   <div class="hero-content">
     <h1 data-i18n="hero_title">Discover Amazing Products</h1>
     <p data-i18n="hero_subtitle">Quality products from China at the best prices. Worldwide shipping!</p>
@@ -109,10 +962,12 @@
     </div>
     <div id="hero-search-results" class="hero-search-results" style="display:none;"></div>
   </div>
+  <!-- Mobile product carousel (auto-rotating) -->
+  <div class="hero-mobile-carousel" id="hero-mobile-carousel"></div>
 </section>
 
 <!-- CATEGORIES -->
-<section class="section">
+<section class="section reveal">
   <h2 class="section-title" data-i18n="categories_title">Categories</h2>
   <div class="categories-grid" id="categories-grid">
     <!-- Loaded dynamically -->
@@ -120,7 +975,7 @@
 </section>
 
 <!-- FEATURED PRODUCTS -->
-<section class="section" style="background: var(--bg-white); max-width: 100%; padding-left: 0; padding-right: 0;">
+<section class="section reveal" style="background: var(--bg-white); max-width: 100%; padding-left: 0; padding-right: 0;">
   <div style="max-width: 1280px; margin: 0 auto; padding: 0 1rem;">
     <h2 class="section-title" data-i18n="featured_title">Featured Products</h2>
     <div class="products-grid" id="featured-products">
@@ -133,10 +988,10 @@
 </section>
 
 <!-- TESTIMONIALS -->
-<section class="section">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+<section id="testimonials-section" class="section reveal">
+  <div class="testimonials-header">
     <h2 class="section-title" style="margin-bottom:0;" data-i18n="testimonials_title">What Our Customers Say</h2>
-    <div style="display:flex;gap:0.5rem;align-items:center;">
+    <div class="testimonials-actions">
       <a href="/reviews.html" class="btn-sm btn-outline" data-i18n="view_all_reviews">Барлық пікірлер →</a>
       <button id="admin-add-review-btn" onclick="openAdminReviewModal()" class="btn-sm btn-primary" style="display:none;background:#FF6B00;color:white;padding:6px 16px;border:none;border-radius:6px;cursor:pointer;font-weight:600;">
         + Пікір қосу
@@ -534,22 +1389,28 @@
 
       // Check admin access for review button
       checkAdminAccess();
+
+      // Init all animations (3D ring, navbar scroll, scroll reveal, tilt effects, hero parallax, mobile carousel)
+      initAllAnimations();
     }, 500);
   });
+
+  // ===== Favorites (uses shared FavoritesManager from shared-ui.js) =====
+  async function toggleFav(productId, btnEl) {
+    await FavoritesManager.toggle(productId, btnEl);
+  }
 
   function renderProductCard(p) {
     const name = p['name_' + currentLang] || p.name_en || 'Product';
     const img = (p.images && p.images[0]) || '/images/placeholder.jpg';
     const safeName = name.replace(/'/g, "&#39;");
-    // Stretched-link pattern: the entire card is wrapped in a positioned
-    // container, an invisible <a> covers the whole card, and the Add to Cart
-    // button sits on top with a higher z-index + stopPropagation so tapping it
-    // only adds to cart (no navigation). Tapping anywhere else on the card
-    // follows the product link. This fixes the mobile issue where the button
-    // swallowed the whole tap target and blocked entry into the product page.
+    const isFav = FavoritesManager.isFav(p.id);
     return `
       <div class="product-card">
         <a href="/product.html?id=${p.id}" class="product-card-link" aria-label="${safeName}"></a>
+        <button class="wishlist-btn${isFav ? ' favorited' : ''}" data-product-id="${p.id}" onclick="event.preventDefault(); event.stopPropagation(); toggleFav('${p.id}', this);" aria-label="Add to favorites">
+          <svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
         <div class="product-card-img-wrap">
           <img src="${img}" alt="${name}" class="product-card-img" loading="lazy">
         </div>
@@ -657,8 +1518,596 @@
   }
 
   // Admin check is now called after sb init in DOMContentLoaded
+
+  // ===== 3D Product Ring — Trending Products in Hero Background =====
+  // CSS-based 3D transforms (no Three.js). Products float in a rotating 3D ring.
+  // Desktop: outer ring (8 products) + inner ring (6 products)
+  // Tablet/mobile: simplified floating layout, no 3D transforms
+  function initHero3DRing() {
+    var scene = document.getElementById('hero-3d-scene');
+    var outerRing = document.getElementById('hero-ring-outer');
+    var innerRing = document.getElementById('hero-ring-inner');
+    if (!scene || !outerRing || !innerRing) return;
+
+    var isMobile = window.innerWidth < 900;
+    var isSmall = window.innerWidth < 480;
+
+    // On mobile: skip heavy 3D ring entirely for fast loading
+    if (isMobile) {
+      scene.classList.add('loaded');
+      return;
+    }
+
+    var products = cachedFeatured && cachedFeatured.length ? cachedFeatured : [];
+    // If no cached products, try fetching them
+    if (products.length === 0 && typeof getProducts === 'function') {
+      getProducts({ limit: 8 }).then(function(prods) {
+        if (prods && prods.length) {
+          cachedFeatured = prods;
+          buildRings(prods);
+        } else {
+          // Fallback: show placeholder products
+          buildRingsWithPlaceholders();
+        }
+      }).catch(function() {
+        buildRingsWithPlaceholders();
+      });
+    } else {
+      buildRings(products);
+    }
+
+    function buildRings(products) {
+      var outerProducts = isMobile ? Math.min(products.length, 4) : Math.min(products.length, 8);
+      var innerCount = isMobile ? 0 : Math.min(products.length - outerProducts, 6);
+      var outerRadius = isSmall ? 160 : (isMobile ? 220 : 380);
+      var innerRadius = isMobile ? 0 : 240;
+      var angleStep = outerProducts > 0 ? (2 * Math.PI) / outerProducts : 0;
+
+      // Build outer ring
+      outerRing.innerHTML = '';
+      for (var i = 0; i < outerProducts; i++) {
+        var p = products[i % products.length];
+        createProductElement(outerRing, p, i, angleStep, outerRadius, true);
+      }
+
+      // Build inner ring (desktop only)
+      innerRing.innerHTML = '';
+      if (!isMobile && innerCount > 0) {
+        var innerAngleStep = (2 * Math.PI) / innerCount;
+        var offset = Math.floor(products.length / 2);
+        for (var j = 0; j < innerCount; j++) {
+          var pi = products[(offset + j) % products.length];
+          createProductElement(innerRing, pi, j, innerAngleStep, innerRadius, false);
+        }
+      } else if (isMobile && outerProducts < products.length) {
+        // On mobile: add remaining products as scattered floating elements
+        for (var k = outerProducts; k < Math.min(products.length, 6); k++) {
+          var pk = products[k];
+          var randomAngle = Math.random() * 2 * Math.PI;
+          var randomRadius = 100 + Math.random() * 120;
+          createProductElement(outerRing, pk, k + 100, 0, 0, true, randomAngle, randomRadius);
+        }
+      }
+
+      scene.classList.add('loaded');
+    }
+
+    function buildRingsWithPlaceholders() {
+      var count = isMobile ? 4 : 8;
+      outerRing.innerHTML = '';
+      innerRing.innerHTML = '';
+
+      var placeholders = [
+        { name: 'Wireless Earbuds', price: '€29.99', color: '#FF6B00' },
+        { name: 'Smart Watch', price: '€49.99', color: '#FFD700' },
+        { name: 'LED Strip Lights', price: '€15.99', color: '#FF8533' },
+        { name: 'Phone Case', price: '€9.99', color: '#FFB347' },
+        { name: 'USB-C Hub', price: '€34.99', color: '#FF6B80' },
+        { name: 'Bluetooth Speaker', price: '€24.99', color: '#FF4444' },
+        { name: 'Laptop Stand', price: '€39.99', color: '#FF8800' },
+        { name: 'Webcam HD', price: '€19.99', color: '#FFAA44' }
+      ];
+      var outerRadius = isSmall ? 160 : (isMobile ? 220 : 380);
+      var angleStep = (2 * Math.PI) / count;
+
+      for (var i = 0; i < count; i++) {
+        var ph = placeholders[i % placeholders.length];
+        var wrapper = document.createElement('div');
+        wrapper.className = 'hero-3d-product';
+        if (!isMobile) {
+          wrapper.style.transform = 'rotateY(' + (i * angleStep) + 'rad) translateZ(' + outerRadius + 'px)';
+        } else {
+          var xPos = Math.cos(i * angleStep) * outerRadius;
+          var yPos = Math.sin(i * angleStep) * outerRadius * 0.5;
+          wrapper.style.transform = 'translate(' + xPos + 'px, ' + yPos + 'px)';
+          wrapper.style.left = '50%';
+          wrapper.style.top = '50%';
+        }
+
+        var inner = document.createElement('div');
+        inner.className = 'hero-3d-product-inner hero-3d-product-float';
+        inner.style.setProperty('--float-duration', (3.5 + Math.random() * 2) + 's');
+        inner.style.setProperty('--float-delay', (Math.random() * 3) + 's');
+
+        // Trending card placeholder with gradient background
+        inner.innerHTML = '<div style="width:100%;aspect-ratio:1;background:linear-gradient(135deg,' + ph.color + ',' + placeholders[(i + 3) % placeholders.length].color + ');display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">' +
+          '<div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,0.25),transparent 60%);pointer-events:none;"></div>' +
+          '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></div>' +
+          '<div class="trending-card-info">' +
+            '<div class="trending-card-name">' + ph.name + '</div>' +
+            '<div class="trending-card-price">' + ph.price + '</div>' +
+          '</div>' +
+          '<div class="trending-card-badge">Trending</div>';
+
+        wrapper.appendChild(inner);
+        outerRing.appendChild(wrapper);
+      }
+
+      scene.classList.add('loaded');
+    }
+
+    function createProductElement(ring, product, index, angleStep, radius, isOuter, customAngle, customRadius) {
+      var wrapper = document.createElement('div');
+      wrapper.className = 'hero-3d-product';
+
+      var angle = customAngle !== undefined ? customAngle : (index * angleStep);
+      var r = customRadius !== undefined ? customRadius : radius;
+
+      // On desktop: 3D transform. On mobile: just position in 2D space
+      if (!isMobile) {
+        wrapper.style.transform = 'rotateY(' + angle + 'rad) translateZ(' + r + 'px)';
+      } else {
+        var xPos = Math.cos(angle) * r;
+        var yPos = Math.sin(angle) * r * 0.5; // flatten vertically
+        wrapper.style.transform = 'translate(' + xPos + 'px, ' + yPos + 'px)';
+        wrapper.style.left = '50%';
+        wrapper.style.top = '50%';
+      }
+
+      var inner = document.createElement('div');
+      inner.className = 'hero-3d-product-inner hero-3d-product-float';
+      inner.style.setProperty('--float-duration', (3.5 + Math.random() * 2.5) + 's');
+      inner.style.setProperty('--float-delay', (Math.random() * 4) + 's');
+
+      var imgUrl = (product.images && product.images[0]) || '/images/placeholder.jpg';
+      var productName = product['name_' + currentLang] || product.name_en || 'Product';
+      var safeName = escHtml(productName);
+      var productPrice = product.price ? ('€' + parseFloat(product.price).toFixed(2)) : '';
+
+      // Build trending card: product image with blurred background glow
+    var gradients = [
+      'linear-gradient(135deg, #FF6B00, #FF8C00)',
+      'linear-gradient(135deg, #FFD700, #FFA500)',
+      'linear-gradient(135deg, #FF4500, #FF6347)',
+      'linear-gradient(135deg, #FF8C00, #FFB347)',
+      'linear-gradient(135deg, #E05E00, #FF6B00)',
+      'linear-gradient(135deg, #FFA07A, #FF6B00)',
+      'linear-gradient(135deg, #FF7F50, #FF4500)',
+      'linear-gradient(135deg, #FFB347, #FF6B00)'
+    ];
+    var gradIdx = index % gradients.length;
+    var grad = gradients[gradIdx];
+
+    inner.innerHTML = '<div style="width:100%;aspect-ratio:1;position:relative;overflow:hidden;background:' + grad + ';">' +
+        '<img src="' + imgUrl + '" alt="' + safeName + '" style="position:absolute;inset:-10%;width:120%;height:120%;object-fit:cover;filter:blur(18px) saturate(1.4);opacity:0.6;pointer-events:none;" loading="lazy">' +
+        '<img src="' + imgUrl + '" alt="' + safeName + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:8px;z-index:1;pointer-events:none;" loading="lazy" draggable="false">' +
+        '<div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,0.15),transparent 60%);pointer-events:none;z-index:2;"></div>' +
+      '</div>' +
+      '<div class="trending-card-info">' +
+        '<div class="trending-card-name">' + safeName + '</div>' +
+        (productPrice ? '<div class="trending-card-price">' + productPrice + '</div>' : '') +
+      '</div>' +
+      '<div class="trending-card-badge">Trending</div>';
+
+      // Make clickable on desktop (pointer-events: auto set in CSS), on mobile keep pointer-events: none
+      if (!isMobile) {
+        var clickTimer = null;
+        inner.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; return; }
+          clickTimer = setTimeout(function() {
+            clickTimer = null;
+            window.location.href = '/product.html?id=' + product.id;
+          }, 250);
+        });
+        inner.addEventListener('dblclick', function(e) {
+          e.stopPropagation();
+          if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; }
+          window.open('/product.html?id=' + product.id, '_blank');
+        });
+        inner.addEventListener('mouseenter', function() {
+          this.style.transform = 'scale(1.12)';
+        });
+        inner.addEventListener('mouseleave', function() {
+          this.style.transform = '';
+        });
+      }
+
+      wrapper.appendChild(inner);
+      ring.appendChild(wrapper);
+    }
+
+    // Animate the ring rotation with requestAnimationFrame (only on desktop)
+    var outerAngle = 0;
+    var innerAngle = 0;
+    var running = true;
+
+    function animateRings() {
+      if (!running) return;
+      requestAnimationFrame(animateRings);
+
+      if (!isMobile) {
+        outerAngle -= 0.002;
+        innerAngle += 0.003;
+        outerRing.style.transform = 'translate(-50%, -50%) rotateY(' + outerAngle + 'rad)';
+        if (innerRing.children.length > 0) {
+          innerRing.style.transform = 'translate(-50%, -50%) rotateY(' + innerAngle + 'rad)';
+        }
+      } else {
+        // Mobile: slow floating rotation for visual appeal
+        outerAngle -= 0.001;
+        outerRing.style.transform = 'translate(-50%, -50%) rotateY(' + outerAngle + 'rad)';
+      }
+    }
+
+    animateRings();
+  }
+
+  // ===== Scroll Reveal Animations =====
+  function initScrollReveal() {
+    const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+    if (!revealElements.length) return;
+
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+    revealElements.forEach(function(el) { observer.observe(el); });
+  }
+
+  // ===== 3D Tilt Effect on Product Cards & Category Cards =====
+  function initTiltEffect() {
+    const productCards = document.querySelectorAll('.product-card');
+    productCards.forEach(function(card) {
+      card.addEventListener('mousemove', function(e) {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = (y - centerY) / centerY * -8;
+        const rotateY = (x - centerX) / centerX * 8;
+        card.style.transform = 'perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) translateY(-8px) scale(1.02)';
+      });
+
+      card.addEventListener('mouseleave', function() {
+        card.style.transform = '';
+      });
+    });
+
+
+  }
+
+  // ===== Hero Mouse Parallax — subtle 3D depth shift on mouse move =====
+  function initHeroParallax() {
+    var hero = document.querySelector('.hero');
+    var scene = document.getElementById('hero-3d-scene');
+    if (!hero || !scene) return;
+
+    hero.addEventListener('mousemove', function(e) {
+      var rect = hero.getBoundingClientRect();
+      var x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+      var y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+      scene.style.perspectiveOrigin = (50 - x * 3) + '% ' + (40 - y * 2) + '%';
+    });
+
+    hero.addEventListener('mouseleave', function() {
+      scene.style.perspectiveOrigin = '';
+    });
+  }
+
+  // Navbar scroll effect: add opaque background when scrolled past hero
+  function initNavbarScroll() {
+    const navbar = document.querySelector('.navbar');
+    const hero = document.querySelector('.hero');
+    if (!navbar || !hero) return;
+
+    function updateNavbar() {
+      if (window.scrollY > 50) {
+        document.body.classList.add('scrolled');
+      } else {
+        document.body.classList.remove('scrolled');
+      }
+    }
+
+    window.addEventListener('scroll', updateNavbar, { passive: true });
+    updateNavbar();
+  }
+
+  // ===== Hero Particles =====
+  function initHeroParticles() {
+    var container = document.getElementById('hero-particles');
+    if (!container) return;
+    var particleCount = window.innerWidth < 768 ? 12 : 35;
+    for (var i = 0; i < particleCount; i++) {
+      var p = document.createElement('div');
+      p.className = 'hero-particle';
+      p.style.left = (Math.random() * 100) + '%';
+      p.style.top = (Math.random() * 100) + '%';
+      p.style.setProperty('--duration', (6 + Math.random() * 10) + 's');
+      p.style.setProperty('--delay', (Math.random() * 6) + 's');
+      p.style.setProperty('--ty', -(80 + Math.random() * 250) + 'px');
+      p.style.setProperty('--tx', (Math.random() * 120 - 60) + 'px');
+      var size = (2 + Math.random() * 3) + 'px';
+      p.style.width = size;
+      p.style.height = size;
+      p.style.opacity = (0.2 + Math.random() * 0.5).toString();
+      container.appendChild(p);
+    }
+  }
+
+  // ===== TV Static Effect for Hero Title (runs once on page load) =====
+  function initTVStaticHero() {
+    var heroTitle = document.querySelector('.hero h1');
+    if (!heroTitle) return;
+
+    var i18nKey = heroTitle.getAttribute('data-i18n');
+    var originalText = (typeof t === 'function' && i18nKey) ? t(i18nKey) : heroTitle.textContent;
+    if (!originalText || originalText === i18nKey || !originalText.trim()) return;
+
+    // Restore clean text state first
+    heroTitle.textContent = originalText;
+    heroTitle.classList.remove('tv-glitch');
+    heroTitle.style.opacity = '';
+    heroTitle.style.transform = '';
+    heroTitle.style.filter = '';
+    heroTitle.style.textShadow = '';
+
+    var isMobile = window.innerWidth < 768;
+
+    // Mobile: simple fast fade-in (no heavy DOM manipulation)
+    if (isMobile) {
+      heroTitle.style.opacity = '0';
+      heroTitle.style.transform = 'scaleY(0.3)';
+      heroTitle.style.filter = 'brightness(3) blur(4px)';
+      setTimeout(function() {
+        heroTitle.style.transition = 'opacity 0.4s ease, transform 0.4s ease, filter 0.4s ease';
+        heroTitle.style.opacity = '1';
+        heroTitle.style.transform = 'scaleY(1)';
+        heroTitle.style.filter = 'brightness(1) blur(0px)';
+        setTimeout(function() {
+          heroTitle.style.transition = '';
+          heroTitle.style.filter = '';
+        }, 500);
+      }, 200);
+      return;
+    }
+
+    // Desktop: full TV static effect (runs ONCE)
+    heroTitle.style.opacity = '0';
+    heroTitle.style.transform = 'scaleY(0.01)';
+
+    var hero = document.querySelector('.hero');
+    var scanlines = document.createElement('div');
+    scanlines.className = 'tv-scanlines';
+    if (hero) hero.appendChild(scanlines);
+
+    setTimeout(function() {
+      var staticChars = '▓▒░█▀▄■□▪▫';
+      var staticText = '';
+      for (var i = 0; i < originalText.length; i++) {
+        if (originalText[i] === ' ') {
+          staticText += ' ';
+        } else {
+          staticText += staticChars[Math.floor(Math.random() * staticChars.length)];
+        }
+      }
+      heroTitle.textContent = '';
+      for (var j = 0; j < originalText.length; j++) {
+        var span = document.createElement('span');
+        span.className = 'tv-static-char';
+        span.textContent = staticText[j] || ' ';
+        heroTitle.appendChild(span);
+      }
+      heroTitle.style.opacity = '1';
+      heroTitle.classList.add('tv-glitch');
+    }, 300);
+
+    var flickerCount = 0;
+    var maxFlickers = 8;
+    var flickerInterval = setInterval(function() {
+      flickerCount++;
+      var spans = heroTitle.querySelectorAll('.tv-static-char');
+      var progress = flickerCount / maxFlickers;
+      for (var k = 0; k < spans.length; k++) {
+        if (Math.random() < progress) {
+          spans[k].textContent = originalText[k];
+          spans[k].style.color = '';
+        } else {
+          var sChars = '▓▒░█▀▄■□▪▫╳╋╋';
+          spans[k].textContent = sChars[Math.floor(Math.random() * sChars.length)];
+          spans[k].style.color = 'rgba(255,215,0,' + (0.3 + Math.random() * 0.5) + ')';
+        }
+      }
+      if (flickerCount >= maxFlickers) {
+        clearInterval(flickerInterval);
+        heroTitle.textContent = originalText;
+        heroTitle.style.opacity = '1';
+        heroTitle.style.transform = '';
+        heroTitle.style.filter = '';
+        heroTitle.style.textShadow = '';
+        heroTitle.classList.remove('tv-glitch');
+        if (scanlines.parentNode) scanlines.remove();
+      }
+    }, 80);
+  }
+
+  // ===== Mobile Hero Product Carousel (auto-rotating) =====
+  var hmcInterval = null;
+
+  function initHeroMobileCarousel() {
+    var container = document.getElementById('hero-mobile-carousel');
+    if (!container) return;
+    var products = cachedFeatured && cachedFeatured.length ? cachedFeatured : [];
+    if (products.length === 0) {
+      // Try to use placeholders if no products loaded yet
+      container.innerHTML = '';
+      var fallbacks = [
+        { name: 'Wireless Earbuds', price: '€29.99', img: '' },
+        { name: 'Smart Watch', price: '€49.99', img: '' },
+        { name: 'LED Strip Lights', price: '€15.99', img: '' },
+        { name: 'Phone Case', price: '€9.99', img: '' }
+      ];
+      var gradients = ['#FF6B00,#FF8C00', '#FFD700,#FFA500', '#FF4500,#FF6347', '#FF8C00,#FFB347'];
+      products = fallbacks.map(function(f, i) {
+        return { id: null, name_en: f.name, price: parseFloat(f.price.replace('€','')), images: [], _gradient: gradients[i % gradients.length] };
+      });
+    }
+
+    container.innerHTML = products.map(function(p) {
+      var name = p['name_' + currentLang] || p.name_en || 'Product';
+      var img = (p.images && p.images[0]) || '';
+      var price = p.price ? '€' + parseFloat(p.price).toFixed(2) : '';
+      var grad = p._gradient || 'linear-gradient(135deg, #FF6B00, #FF8C00)';
+      var imgHtml = img
+        ? '<img class="hmc-card-img" src="' + img + '" alt="' + name.replace(/'/g, "&#39;") + '" loading="lazy">'
+        : '<div class="hmc-card-img" style="background:' + grad + ';display:flex;align-items:center;justify-content:center;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></div>';
+      var href = p.id ? '/product.html?id=' + p.id : '#';
+      return '<a href="' + href + '" class="hmc-card">' +
+        imgHtml +
+        '<div class="hmc-card-body">' +
+          '<div class="hmc-card-name">' + name + '</div>' +
+          (price ? '<div class="hmc-card-price">' + price + '</div>' : '') +
+        '</div>' +
+        (p.id ? '<div class="hmc-card-badge">Trending</div>' : '') +
+      '</a>';
+    }).join('');
+
+    // Auto-scroll every 3.5 seconds (mobile only)
+    if (hmcInterval) clearInterval(hmcInterval);
+    if (window.innerWidth < 900 && container.children.length > 4) {
+      hmcInterval = setInterval(function() {
+        if (container.children.length < 2) return;
+        var scrollLeft = container.scrollLeft;
+        var cardW = container.querySelector('.hmc-card').offsetWidth + 12; // width + gap
+        var maxScroll = container.scrollWidth - container.clientWidth;
+        var nextScroll = scrollLeft + cardW;
+        if (nextScroll >= maxScroll) {
+          // Loop back to start smoothly
+          container.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          container.scrollTo({ left: nextScroll, behavior: 'smooth' });
+        }
+      }, 3500);
+
+      // Pause on user touch/scroll
+      container.addEventListener('touchstart', function() {
+        if (hmcInterval) clearInterval(hmcInterval);
+      }, { passive: true });
+      container.addEventListener('scroll', function() {
+        if (hmcInterval) { clearInterval(hmcInterval); hmcInterval = null; }
+        // Resume after 5s of inactivity
+        clearTimeout(container._hmcResume);
+        container._hmcResume = setTimeout(function() {
+          if (window.innerWidth < 900 && container.children.length > 4) {
+            hmcInterval = setInterval(function() {
+              if (container.children.length < 2) return;
+              var sl = container.scrollLeft;
+              var cw = container.querySelector('.hmc-card').offsetWidth + 12;
+              var ms = container.scrollWidth - container.clientWidth;
+              var ns = sl + cw;
+              if (ns >= ms) { container.scrollTo({ left: 0, behavior: 'smooth' }); }
+              else { container.scrollTo({ left: ns, behavior: 'smooth' }); }
+            }, 3500);
+          }
+        }, 5000);
+      }, { passive: true });
+    }
+  }
+
+  // Init all animations — Emil Koval: defer non-critical work, keep UI responsive
+  function initAllAnimations() {
+    // 3D product ring: uses cachedFeatured which is already populated at this point
+    initHero3DRing();
+
+    // Hero mouse parallax for immersive 3D depth
+    initHeroParallax();
+
+    // Scroll reveal: lightweight, start immediately
+    initScrollReveal();
+
+    // Tilt effect: only on devices with fine pointer (mouse), not touch
+    if (window.innerWidth > 768 && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(initTiltEffect, { timeout: 1000 });
+      } else {
+        setTimeout(initTiltEffect, 300);
+      }
+    }
+
+    // Navbar scroll: lightweight, run immediately
+    initNavbarScroll();
+
+    // Hero particles: lightweight CSS animations (reduced on mobile)
+    initHeroParticles();
+
+    // TV static effect hero title (simplified on mobile)
+    initTVStaticHero();
+
+    // Mobile product carousel
+    initHeroMobileCarousel();
+  }
+
 </script>
 <script src="/js/chat-widget.js"></script>
 <script src="/js/user-menu.js"></script>
+
+<script src="/js/shared-ui.js"></script>
+
+<!-- BOTTOM NAVIGATION (Mobile) -->
+<nav class="bottom-nav" aria-label="Mobile navigation">
+  <div class="bottom-nav-inner">
+    <a href="/" class="bottom-nav-item" aria-label="Home">
+      <svg class="icon icon-lg"><use href="#icon-home"/></svg>
+      <span data-i18n="nav_home">Home</span>
+    </a>
+    <a href="/catalog.html?favorites=true" class="bottom-nav-item" aria-label="Favorites">
+      <svg class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span data-i18n="nav_favorites">Favorites</span>
+    </a>
+    <a href="/cart.html" class="bottom-nav-item" aria-label="Cart">
+      <svg class="icon icon-lg"><use href="#icon-cart"/></svg>
+      <span data-i18n="nav_cart">Cart</span>
+      <span class="bottom-nav-badge" id="bottom-nav-cart-badge" style="display:none;">0</span>
+    </a>
+    <a href="/account.html" class="bottom-nav-item" aria-label="Account">
+      <svg class="icon icon-lg"><use href="#icon-user"/></svg>
+      <span data-i18n="account_title">Account</span>
+    </a>
+  </div>
+</nav>
+
+<!-- CART DRAWER -->
+<div class="cart-drawer-overlay" id="cart-drawer-overlay" onclick="CartDrawer.close()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-drawer-header">
+    <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg> <span data-i18n="nav_cart">Cart</span> <span class="cart-drawer-count" id="cart-drawer-count">0</span></h3>
+    <button class="cart-drawer-close" onclick="CartDrawer.close()" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="cart-drawer-items" id="cart-drawer-items"></div>
+  <div class="cart-drawer-footer" id="cart-drawer-footer" style="display:none;">
+    <div class="cart-drawer-total">
+      <span data-i18n="cart_total">Total</span>
+      <span id="cart-drawer-total-amount">€0.00</span>
+    </div>
+    <a href="/checkout.html" class="cart-drawer-checkout" data-i18n="cart_checkout">Proceed to Checkout</a>
+    <a href="/cart.html" class="cart-drawer-view-all">View Full Cart →</a>
+  </div>
+</div>
 </body>
 </html>

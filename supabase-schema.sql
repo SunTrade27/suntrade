@@ -112,11 +112,13 @@ CREATE TABLE IF NOT EXISTS products (
   desc_nl TEXT,
   desc_pl TEXT,
   desc_ar TEXT,
+  type TEXT DEFAULT '',
   price DECIMAL(10,2) NOT NULL DEFAULT 0,
   stock INTEGER DEFAULT 0,
   category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
   images TEXT[] DEFAULT '{}',
   active BOOLEAN DEFAULT true,
+  sort_order INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -141,6 +143,7 @@ CREATE TABLE IF NOT EXISTS orders (
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id);
 CREATE INDEX IF NOT EXISTS idx_products_active ON products(active);
 CREATE INDEX IF NOT EXISTS idx_products_created ON products(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_products_sort_order ON products(sort_order);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at DESC);
 

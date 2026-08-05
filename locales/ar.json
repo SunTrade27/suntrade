@@ -123,6 +123,7 @@
   "auth_update_password": "تحديث كلمة المرور",
   "auth_password_updated": "تم تحديث كلمة المرور بنجاح!",
   "auth_back_to_login": "العودة إلى تسجيل الدخول",
+  "nav_favorites": "المفضلة",
   "account_title": "حسابي",
   "account_profile": "الملف الشخصي",
   "account_orders": "طلباتي",
@@ -355,5 +356,13 @@
   "trust_verified": "متجر موثوق",
   "trust_verified_sub": "+1000 يثقون",
   "trust_shipping": "شحن سريع",
-  "trust_shipping_sub": "عالمي"
+  "trust_shipping_sub": "عالمي",
+  "product_volume_pricing": "أسعار الكمية",
+  "product_piece": "قطعة",
+  "product_pieces": "قطع",
+  "product_per_piece": "/ قطعة",
+  "product_total": "المجموع:",
+  "product_you_save": "توفر",
+  "product_best_deal": "أفضل صفقة",
+  "product_type_label": "النوع:"
 }

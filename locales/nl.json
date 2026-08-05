@@ -123,6 +123,7 @@
   "auth_update_password": "Wachtwoord bijwerken",
   "auth_password_updated": "Wachtwoord succesvol bijgewerkt!",
   "auth_back_to_login": "Terug naar inloggen",
+  "nav_favorites": "Favorieten",
   "account_title": "Mijn Account",
   "account_profile": "Profiel",
   "account_orders": "Mijn Bestellingen",
@@ -355,5 +356,13 @@
   "trust_verified": "Geverifieerde winkel",
   "trust_verified_sub": "1000+ vertrouwen ons",
   "trust_shipping": "Snelle levering",
-  "trust_shipping_sub": "Wereldwijd"
+  "trust_shipping_sub": "Wereldwijd",
+  "product_volume_pricing": "Volume prijzen",
+  "product_piece": "stuk",
+  "product_pieces": "stuks",
+  "product_per_piece": "/ stuk",
+  "product_total": "Totaal:",
+  "product_you_save": "U bespaart",
+  "product_best_deal": "Beste deal",
+  "product_type_label": "Type:"
 }

@@ -123,6 +123,7 @@
   "auth_update_password": "Passwort aktualisieren",
   "auth_password_updated": "Passwort erfolgreich aktualisiert!",
   "auth_back_to_login": "Zurück zur Anmeldung",
+  "nav_favorites": "Favoriten",
   "account_title": "Mein Konto",
   "account_profile": "Profil",
   "account_orders": "Meine Bestellungen",
@@ -355,5 +356,13 @@
   "trust_verified": "Verifizierter Shop",
   "trust_verified_sub": "1000+ vertrauen uns",
   "trust_shipping": "Schneller Versand",
-  "trust_shipping_sub": "Weltweit"
+  "trust_shipping_sub": "Weltweit",
+  "product_volume_pricing": "Mengenrabatte",
+  "product_piece": "Stück",
+  "product_pieces": "Stück",
+  "product_per_piece": "/ Stück",
+  "product_total": "Gesamt:",
+  "product_you_save": "Sie sparen",
+  "product_best_deal": "Bestes Angebot",
+  "product_type_label": "Typ:"
 }

@@ -1,12 +1,61 @@
 // Vercel Serverless Function: Translate product name & description to all languages
 // OR format/clean up product description HTML
-// Uses Gemini AI (same as chat.js)
+// Uses Gemini AI
 //
 // POST /api/translate-product
 // Body (translate): { name_en: string, desc_en: string }
 // Body (format): { action: 'format', html: string }
 // Response (translate): { success: true, translations: { kz: { name, desc }, ... } }
 // Response (format): { success: true, html: string }
+
+// Gemini models to try in order (2026 availability)
+const GEMINI_MODELS = [
+  'gemini-2.5-flash',
+  'gemini-2.5-pro',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash'
+];
+
+async function callGemini(prompt, systemInstruction, config = {}) {
+  const GEMINI_KEY = process.env.GEMINI_API_KEY;
+  if (!GEMINI_KEY) throw new Error('GEMINI_API_KEY not configured');
+
+  const lastError = { status: 0, body: '' };
+
+  for (const model of GEMINI_MODELS) {
+    try {
+      const resp = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            system_instruction: {
+              parts: [{ text: systemInstruction }]
+            },
+            contents: [{ role: 'user', parts: [{ text: prompt }] }],
+            generationConfig: { maxOutputTokens: config.maxTokens || 4000, temperature: config.temperature ?? 0.2 }
+          })
+        }
+      );
+
+      if (resp.ok) {
+        const data = await resp.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        if (text) return { model, text };
+      } else {
+        const errBody = await resp.text().catch(() => '');
+        lastError.status = resp.status;
+        lastError.body = errBody;
+        console.warn(`Gemini model ${model} failed (${resp.status}), trying next...`);
+      }
+    } catch (e) {
+      console.warn(`Gemini model ${model} error:`, e.message);
+    }
+  }
+
+  return { model: '', text: '' };
+}
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -28,15 +77,7 @@ module.exports = async function handler(req, res) {
       if (!html) return res.status(400).json({ error: 'html is required' });
 
       try {
-        const resp = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              system_instruction: {
-                parts: [{
-                  text: `You are an HTML cleanup expert for an e-commerce store (SunTrade). The input HTML is a product description that was pasted from a supplier site (e.g. Alibaba, 1688, Taobao) and may contain junk UI artifacts from those sites. Your job is to extract ONLY the real product description content and re-format it beautifully.
+        const sysInstruction = `You are an HTML cleanup expert for an e-commerce store (SunTrade). The input HTML is a product description that was pasted from a supplier site (e.g. Alibaba, 1688, Taobao) and may contain junk UI artifacts from those sites. Your job is to extract ONLY the real product description content and re-format it beautifully.
 
 RULES — STRICT:
 
@@ -49,7 +90,7 @@ RULES — STRICT:
    - Cookie banners: "We use cookies", "Accept cookies", "I agree", "Got it", "Learn more"
    - "Skip to content", "Back to top", "Loading...", "Please wait..."
    - "Subscribe to newsletter", "Sign up for newsletter", "Follow us on..."
-   - "Translation missing", "Powered by ...", "Copyright ©", "All rights reserved"
+   - "Translation missing", "Powered by ...", "Copyright \u00a9", "All rights reserved"
    - "Free shipping", "Secure payment", "Limited time offer", "Best seller", "Hot sale", "Promotion", "Discount"
    - SKU numbers, "Vendor info", "Seller info", "Store info"
 
@@ -78,23 +119,10 @@ RULES — STRICT:
 
 6. All <img> tags must have: loading="lazy" and the original src unchanged.
 
-7. Output: reply with ONLY the cleaned HTML (no markdown, no code fences, no explanations, no preamble). The HTML should be valid and ready to insert into a webpage.`
-                }]
-              },
-              contents: [{ role: 'user', parts: [{ text: html }] }],
-              generationConfig: { maxOutputTokens: 4000, temperature: 0.1 }
-            })
-          }
-        );
+7. Output: reply with ONLY the cleaned HTML (no markdown, no code fences, no explanations, no preamble). The HTML should be valid and ready to insert into a webpage.`;
 
-        if (!resp.ok) {
-          const errBody = await resp.text().catch(() => 'Unknown error');
-          console.error('Gemini API error (format):', resp.status, errBody);
-          return res.status(200).json({ success: false, html, error: 'Gemini API error: ' + resp.status });
-        }
-
-        const data = await resp.json();
-        let cleanedHtml = data.candidates?.[0]?.content?.parts?.[0]?.text || html;
+        const result = await callGemini(html, sysInstruction, { maxTokens: 4000, temperature: 0.1 });
+        let cleanedHtml = result.text || html;
 
         // Remove any markdown code blocks Gemini might wrap the answer in
         cleanedHtml = cleanedHtml
@@ -114,7 +142,7 @@ RULES — STRICT:
 
         if (!cleanedHtml) cleanedHtml = html;
 
-        return res.status(200).json({ success: true, html: cleanedHtml });
+        return res.status(200).json({ success: result.model ? true : false, html: cleanedHtml });
       } catch (formatErr) {
         console.error('Format error:', formatErr);
         return res.status(200).json({ success: false, html, error: formatErr.message });
@@ -156,30 +184,17 @@ Rules:
 5. The "desc" field should preserve any HTML formatting exactly as in the original
 6. If description is empty, return empty string for desc`;
 
-        const resp = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              system_instruction: {
-                parts: [{ text: `You are a professional e-commerce translator. Translate from English to ${langName}. Reply ONLY with valid JSON.` }]
-              },
-              contents: [{ role: 'user', parts: [{ text: prompt }] }],
-              generationConfig: { maxOutputTokens: 1000, temperature: 0.2 }
-            })
-          }
-        );
+        const result = await callGemini(prompt, `You are a professional e-commerce translator. Translate from English to ${langName}. Reply ONLY with valid JSON.`, {
+          maxTokens: 1000,
+          temperature: 0.2
+        });
 
-        if (!resp.ok) {
-          const errBody = await resp.text().catch(() => 'Unknown error');
-          console.error(`Gemini API error for ${langCode}:`, resp.status, errBody);
+        const text = result.text || '';
+
+        if (!text) {
           translations[langCode] = { name: '', desc: '' };
           continue;
         }
-
-        const data = await resp.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
         // Extract JSON from response (handle potential markdown wrapping)
         let jsonStr = text;

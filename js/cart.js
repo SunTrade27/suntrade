@@ -1,3 +1,29 @@
+// ===== Volume Discount Tiers =====
+// Quantity-based discount rules (applied automatically in cart)
+const DISCOUNT_TIERS = [
+  { minQty: 1, maxQty: 1, discount: 0, label: '1' },
+  { minQty: 2, maxQty: 4, discount: 0.10, label: '2-4' },
+  { minQty: 5, maxQty: Infinity, discount: 0.20, label: '5+' }
+];
+
+/** Get the effective (discounted) unit price for a given base price and quantity */
+function getDiscountedPrice(basePrice, qty) {
+  const tier = DISCOUNT_TIERS.find(t => qty >= t.minQty && qty <= t.maxQty) || DISCOUNT_TIERS[0];
+  return basePrice * (1 - tier.discount);
+}
+
+/** Get full discount info for an item */
+function getDiscountInfo(basePrice, qty) {
+  const tier = DISCOUNT_TIERS.find(t => qty >= t.minQty && qty <= t.maxQty) || DISCOUNT_TIERS[0];
+  const effectivePrice = basePrice * (1 - tier.discount);
+  return {
+    effectivePrice,
+    discountPercent: tier.discount * 100,
+    savedAmount: (basePrice - effectivePrice) * qty,
+    tier
+  };
+}
+
 // Cart management
 let cart = JSON.parse(localStorage.getItem('suntrade_cart') || '[]');
 
@@ -70,7 +96,7 @@ function updateCartQty(productId, qty) {
 }
 
 function getCartTotal() {
-  return cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  return cart.reduce((sum, item) => sum + getDiscountedPrice(item.price, item.qty) * item.qty, 0);
 }
 
 function getCartCount() {
@@ -109,12 +135,21 @@ function renderCartPage() {
   if (emptyEl) emptyEl.style.display = 'none';
   if (checkoutBtn) checkoutBtn.style.display = 'block';
 
-  container.innerHTML = cart.map(item => `
+  container.innerHTML = cart.map(item => {
+    const unitPrice = getDiscountedPrice(item.price, item.qty);
+    const subTotal = unitPrice * item.qty;
+    const info = getDiscountInfo(item.price, item.qty);
+    const hasDiscount = info.discountPercent > 0;
+    return `
     <div class="cart-item" data-id="${item.id}">
       <img src="${item.image || '/images/placeholder.jpg'}" alt="${item.name}" class="cart-item-img">
       <div class="cart-item-info">
         <h3 class="cart-item-name">${item.name}</h3>
-        <p class="cart-item-price">€${item.price.toFixed(2)}</p>
+        <p class="cart-item-price">
+          €${unitPrice.toFixed(2)}
+          ${hasDiscount ? `<span class="cart-item-base-price">€${item.price.toFixed(2)}</span>` : ''}
+          ${hasDiscount ? `<span class="cart-item-discount-badge">-${info.discountPercent}%</span>` : ''}
+        </p>
         <div class="cart-item-qty">
           <button onclick="updateCartQty('${item.id}', ${item.qty - 1})">-</button>
           <span>${item.qty}</span>
@@ -122,13 +157,14 @@ function renderCartPage() {
         </div>
       </div>
       <div class="cart-item-right">
-        <p class="cart-item-subtotal">€${(item.price * item.qty).toFixed(2)}</p>
+        <p class="cart-item-subtotal">€${subTotal.toFixed(2)}</p>
+        ${hasDiscount ? `<p class="cart-item-saved">${t('you_save') || 'You save'} €${info.savedAmount.toFixed(2)}</p>` : ''}
         <button class="cart-remove-btn" onclick="removeFromCart('${item.id}')">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
         </button>
       </div>
     </div>
-  `).join('');
+  `;}).join('');
 
   if (totalEl) totalEl.textContent = '€' + getCartTotal().toFixed(2);
 }

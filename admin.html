@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="/css/style.css">
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
   <script src="/js/icons.js"></script>
 <style>
   /* ===== ADMIN MOBILE: Orders as cards ===== */
@@ -321,6 +322,80 @@
     .translate-btn-text { display: none !important; }
     .translate-btn-text-full { display: inline !important; }
   }
+
+/* ===== Drag & Drop Reordering ===== */
+.drag-handle {
+  cursor: grab;
+  color: var(--text-muted);
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.drag-handle:hover {
+  color: var(--primary);
+  background: rgba(255,107,0,0.08);
+}
+.drag-handle:active {
+  cursor: grabbing;
+}
+.sortable-ghost {
+  opacity: 0.4;
+  background: rgba(255,107,0,0.06) !important;
+}
+.sortable-chosen {
+  box-shadow: 0 4px 20px rgba(255,107,0,0.15) !important;
+}
+.sortable-drag {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18) !important;
+}
+#products-table .admin-table tbody tr {
+  cursor: default;
+}
+#products-table .admin-table tbody tr td:first-child {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+/* Reorder status toast */
+.reorder-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #1A1A2E;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  z-index: 99999;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: toastIn 0.3s ease;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Product form fields row: 3 columns for Price, Type, Stock */
+#product-modal .product-fields-row {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+@media (max-width: 768px) {
+  #product-modal .product-fields-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 </style>
   <!-- Vercel Speed Insights -->
   <script>
@@ -531,10 +606,14 @@
       </div>
 
       <!-- Common product fields (always visible, outside #lang-fields) -->
-      <div class="form-row">
+      <div class="form-row product-fields-row">
         <div class="form-group">
           <label data-i18n="admin_product_price">Price (EUR)</label>
           <input type="number" id="pprice" step="0.01" min="0" required>
+        </div>
+        <div class="form-group">
+          <label data-i18n="admin_product_type">Type</label>
+          <input type="text" id="ptype" placeholder="e.g. Size, Color">
         </div>
         <div class="form-group">
           <label data-i18n="admin_product_stock">Stock</label>
@@ -907,9 +986,9 @@
     container.innerHTML = `
       <table class="admin-table">
         <thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Stock</th><th>Active</th><th>Actions</th></tr></thead>
-        <tbody>${products.map(p => `
-          <tr>
-            <td><img src="${(p.images && p.images[0]) || '/images/placeholder.jpg'}" style="width:50px;height:50px;object-fit:cover;border-radius:8px;"></td>
+        <tbody id="products-sortable-body">${products.map(p => `
+          <tr data-id="${p.id}">
+            <td><span class="drag-handle" title="Drag to reorder">☰</span><img src="${(p.images && p.images[0]) || '/images/placeholder.jpg'}" style="width:50px;height:50px;object-fit:cover;border-radius:8px;"></td>
             <td>${p.name_en || 'Unnamed'}</td>
             <td>€${parseFloat(p.price).toFixed(2)}</td>
             <td>${p.stock}</td>
@@ -931,7 +1010,8 @@
       const statusLabel = p.active ? (typeof t === 'function' ? t('active_label') : 'Active') : (typeof t === 'function' ? t('inactive_label') : 'Inactive');
       const stockLabel = typeof t === 'function' ? t('admin_product_stock') : 'Stock';
       return `
-        <div class="product-row-card">
+        <div class="product-row-card" data-id="${p.id}">
+          <span class="drag-handle" title="Drag to reorder" style="writing-mode:vertical-rl;">☰</span>
           <img class="product-row-card-img" src="${img}" alt="${escapeHtml(name)}" loading="lazy">
           <div class="product-row-card-info">
             <div class="product-row-card-name">${escapeHtml(name)}</div>
@@ -948,6 +1028,104 @@
         </div>
       `;
     }).join('');
+
+    // Initialize drag-and-drop reordering
+    initProductSortable();
+  }
+
+  // ===== Drag-and-Drop Product Reordering =====
+  let sortableDesktop = null;
+  let sortableMobile = null;
+
+  function initProductSortable() {
+    // Destroy previous instances
+    if (sortableDesktop) { sortableDesktop.destroy(); sortableDesktop = null; }
+    if (sortableMobile) { sortableMobile.destroy(); sortableMobile = null; }
+
+    // Desktop: sortable table body
+    const tbody = document.getElementById('products-sortable-body');
+    if (tbody) {
+      sortableDesktop = new Sortable(tbody, {
+        handle: '.drag-handle',
+        animation: 200,
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
+        onEnd: function() { saveProductOrder('desktop'); }
+      });
+    }
+
+    // Mobile: sortable card container
+    const cardsContainer = document.getElementById('products-cards');
+    if (cardsContainer) {
+      sortableMobile = new Sortable(cardsContainer, {
+        handle: '.drag-handle',
+        animation: 200,
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
+        onEnd: function() { saveProductOrder('mobile'); }
+      });
+    }
+  }
+
+  async function saveProductOrder(source) {
+    // Get the ordered product IDs from the source that was dragged
+    let container;
+    if (source === 'desktop') {
+      container = document.getElementById('products-sortable-body');
+    } else {
+      container = document.getElementById('products-cards');
+    }
+    if (!container) return;
+
+    const items = container.querySelectorAll('[data-id]');
+    const orderedIds = Array.from(items).map(el => el.dataset.id);
+
+    if (orderedIds.length === 0) return;
+
+    // Show saving toast
+    const toast = document.createElement('div');
+    toast.className = 'reorder-toast';
+    toast.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle"><use href="#icon-clock"/></svg> Saving order...';
+    document.body.appendChild(toast);
+
+    try {
+      await updateProductOrder(orderedIds);
+      toast.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;color:#22C55E"><use href="#icon-check-circle"/></svg> Order saved!';
+      toast.style.background = '#065F46';
+
+      // Sync the other view
+      if (source === 'desktop' && sortableMobile) {
+        // Reorder mobile cards to match
+        const mobileContainer = document.getElementById('products-cards');
+        if (mobileContainer) {
+          const mobileItems = Array.from(mobileContainer.querySelectorAll('[data-id]'));
+          const mobileMap = {};
+          mobileItems.forEach(el => { mobileMap[el.dataset.id] = el; });
+          orderedIds.forEach(id => {
+            if (mobileMap[id]) mobileContainer.appendChild(mobileMap[id]);
+          });
+        }
+      } else if (source === 'mobile' && sortableDesktop) {
+        // Reorder desktop rows to match
+        const desktopBody = document.getElementById('products-sortable-body');
+        if (desktopBody) {
+          const desktopItems = Array.from(desktopBody.querySelectorAll('[data-id]'));
+          const desktopMap = {};
+          desktopItems.forEach(el => { desktopMap[el.dataset.id] = el; });
+          orderedIds.forEach(id => {
+            if (desktopMap[id]) desktopBody.appendChild(desktopMap[id]);
+          });
+        }
+      }
+    } catch (err) {
+      console.error('Save order error:', err);
+      toast.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;color:#EF4444"><use href="#icon-x"/></svg> Failed to save order';
+      toast.style.background = '#991B1B';
+    }
+
+    setTimeout(() => { toast.remove(); }, 3000);
   }
 
   async function loadOrders() {
@@ -1341,6 +1519,7 @@
       document.getElementById('modal-title').textContent = t('admin_edit_product');
       document.getElementById('product-id').value = product.id;
       document.getElementById('pprice').value = product.price;
+      document.getElementById('ptype').value = product.type || '';
       document.getElementById('pstock').value = product.stock;
       document.getElementById('pactive').checked = product.active;
       // uploadedImageUrls is the single source of truth for all product images
@@ -2075,6 +2254,7 @@
     // ===== САҚТАУ =====
     const product = {
       price: parseFloat(document.getElementById('pprice').value),
+      type: document.getElementById('ptype').value,
       stock: parseInt(document.getElementById('pstock').value),
       category_id: document.getElementById('pcategory').value || null,
       active: document.getElementById('pactive').checked,

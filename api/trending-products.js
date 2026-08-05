@@ -5,10 +5,58 @@
 
 const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY || '';
 
+// Gemini models to try in order (2026 availability)
+const GEMINI_MODELS = [
+  'gemini-2.5-flash',
+  'gemini-2.5-pro',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash'
+];
+
+async function callGemini(prompt, systemInstruction, config = {}) {
+  const GEMINI_KEY = process.env.GEMINI_API_KEY;
+  if (!GEMINI_KEY) throw new Error('GEMINI_API_KEY not configured');
+
+  const lastError = { status: 0, body: '' };
+
+  for (const model of GEMINI_MODELS) {
+    try {
+      const resp = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            system_instruction: {
+              parts: [{ text: systemInstruction }]
+            },
+            contents: [{ role: 'user', parts: [{ text: prompt }] }],
+            generationConfig: { maxOutputTokens: config.maxTokens || 4000, temperature: config.temperature ?? 0.3 }
+          })
+        }
+      );
+
+      if (resp.ok) {
+        const data = await resp.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        if (text) return text;
+      } else {
+        const errBody = await resp.text().catch(() => '');
+        lastError.status = resp.status;
+        lastError.body = errBody;
+        console.warn(`Gemini model ${model} failed (${resp.status}), trying next...`);
+      }
+    } catch (e) {
+      console.warn(`Gemini model ${model} error:`, e.message);
+    }
+  }
+
+  throw new Error(`All Gemini models failed. Last error: ${lastError.status} - ${lastError.body.substring(0, 200)}`);
+}
+
 async function searchUnsplashImages(query) {
   try {
     if (!UNSPLASH_ACCESS_KEY) {
-      // Fallback: use source.unsplash.com which works without API key
       return [`https://source.unsplash.com/400x400/?${encodeURIComponent(query + ' product')}`];
     }
     const resp = await fetch(
@@ -73,29 +121,10 @@ Reply ONLY in valid JSON format (no markdown, no code fences):
   ]
 }`;
 
-    const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: {
-            parts: [{ text: 'You are a market research expert who analyzes Google Trends data. Reply ONLY with valid JSON.' }]
-          },
-          contents: [{ role: 'user', parts: [{ text: trendPrompt }] }],
-          generationConfig: { maxOutputTokens: 8000, temperature: 0.4 }
-        })
-      }
-    );
-
-    if (!resp.ok) {
-      const errBody = await resp.text().catch(() => 'Unknown error');
-      console.error('Gemini API error:', resp.status, errBody);
-      return res.status(500).json({ error: 'Gemini API error: ' + resp.status, detail: errBody.substring(0, 500) });
-    }
-
-    const data = await resp.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const text = await callGemini(trendPrompt, 'You are a market research expert who analyzes Google Trends data. Reply ONLY with valid JSON.', {
+      maxTokens: 8000,
+      temperature: 0.4
+    });
 
     // Extract JSON from response
     let jsonStr = text;
@@ -114,10 +143,7 @@ Reply ONLY in valid JSON format (no markdown, no code fences):
       return res.status(500).json({ error: 'Invalid AI response format', data: trendData });
     }
 
-    // Step 2: Look up categories in the database to find matching category IDs
-    // We'll get the category from the database on the client side, so return slug for now
-
-    // Step 3: Get images for each product
+    // Step 2: Get images for each product
     const products = await Promise.all(
       trendData.products.map(async (p) => {
         const images = await searchUnsplashImages(p.image_keyword || p.name);
