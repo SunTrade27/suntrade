@@ -410,5 +410,10 @@
   "trust_verified": "Расталған дүкен",
   "trust_verified_sub": "1000+ сенімді",
   "trust_shipping": "Жылдам жеткізу",
-  "trust_shipping_sub": "Әлемдік жеткізу"
+  "trust_shipping_sub": "Әлемдік жеткізу",
+  "analytics_subtitle": "SunTrade статистикасы — нақты уақытта",
+  "analytics_pending": "Күтілуде",
+  "analytics_order_status": "📊 Заказ статустары",
+  "analytics_countries": "🌍 Жеткізу елдері",
+  "analytics_recent_orders": "🛒 Соңғы заказдар"
 }

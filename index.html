@@ -1080,7 +1080,6 @@
   </div>
 </footer>
 
-<!-- SIDEBAR OVERLAY -->
 
 <!-- WHATSAPP -->
 <a href="https://wa.me/77021379248" class="whatsapp-btn" target="_blank" title="WhatsApp">
@@ -1755,7 +1754,6 @@
   }
 
   // ===== Scroll Reveal Animations =====
-  // ===== Sidebar Toggle =====
 
     const observer = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
@@ -2040,8 +2038,6 @@
     // Scroll reveal: lightweight, start immediately
     initScrollReveal();
 
-    // Sidebar: preload stats on page load (lightweight)
-    loadSidebarStats();
 
     // Tilt effect: only on devices with fine pointer (mouse), not touch
     if (window.innerWidth > 768 && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {

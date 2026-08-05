@@ -390,7 +390,7 @@
   "reviews_search_placeholder": "Search reviews by name, product, or comment...",
   "no_reviews_found": "No reviews found. Try a different search.",
   "reviews_found_count": "Found {count} reviews",
-  "admin_ai_translate": "AI Auto-Translate (EN \u2192 All)",
+  "admin_ai_translate": "AI Auto-Translate (EN → All)",
   "admin_ai_format": "AI Format",
   "admin_ai_translate_title": "Automatically translate from English to all languages",
   "admin_ai_format_title": "Clean up and format description with AI",
@@ -410,5 +410,10 @@
   "trust_verified": "Verified Store",
   "trust_verified_sub": "Trusted by 1000+",
   "trust_shipping": "Fast Delivery",
-  "trust_shipping_sub": "Worldwide shipping"
+  "trust_shipping_sub": "Worldwide shipping",
+  "analytics_subtitle": "SunTrade Statistics — Real-time",
+  "analytics_pending": "Pending",
+  "analytics_order_status": "📊 Order Statuses",
+  "analytics_countries": "🌍 Delivery Countries",
+  "analytics_recent_orders": "🛒 Recent Orders"
 }

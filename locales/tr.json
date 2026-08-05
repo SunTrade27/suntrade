@@ -365,5 +365,10 @@
   "product_total": "Toplam:",
   "product_you_save": "Tasarruf",
   "product_best_deal": "En İyi Fırsat",
-  "product_type_label": "Tür:"
+  "product_type_label": "Tür:",
+  "analytics_subtitle": "SunTrade İstatistikleri — gerçek zamanlı",
+  "analytics_pending": "Beklemede",
+  "analytics_order_status": "📊 Sipariş Durumları",
+  "analytics_countries": "🌍 Teslimat Ülkeleri",
+  "analytics_recent_orders": "🛒 Son Siparişler"
 }

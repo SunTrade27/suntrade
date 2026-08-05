@@ -365,5 +365,10 @@
   "product_total": "Total :",
   "product_you_save": "Vous économisez",
   "product_best_deal": "Meilleure offre",
-  "product_type_label": "Type:"
+  "product_type_label": "Type:",
+  "analytics_subtitle": "Statistiques SunTrade — en temps réel",
+  "analytics_pending": "En attente",
+  "analytics_order_status": "📊 Statuts des commandes",
+  "analytics_countries": "🌍 Pays de livraison",
+  "analytics_recent_orders": "🛒 Commandes récentes"
 }

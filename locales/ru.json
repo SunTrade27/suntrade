@@ -48,9 +48,6 @@
   "cart_invalid": "Ваша корзина пуста или содержит недопустимые товары. Очистите корзину и попробуйте снова.",
   "order_received_banner": "✅ Ваш заказ принят! Оплата подтверждена.",
   "no_name_alert": "Невозможно добавить товар без названия. Обратитесь в поддержку.",
-  "checkout_processing": "Обработка...",
-  "checkout_success": "Оплата прошла успешно!",
-  "checkout_order_id": "Номер заказа",
   "currency": "EUR",
   "currency_symbol": "€",
   "search_placeholder": "Поиск товаров...",
@@ -413,5 +410,10 @@
   "trust_verified": "Проверенный магазин",
   "trust_verified_sub": "Нам доверяют 1000+",
   "trust_shipping": "Быстрая доставка",
-  "trust_shipping_sub": "Доставка по миру"
+  "trust_shipping_sub": "Доставка по миру",
+  "analytics_subtitle": "Статистика SunTrade — в реальном времени",
+  "analytics_pending": "Ожидание",
+  "analytics_order_status": "📊 Статусы заказов",
+  "analytics_countries": "🌍 Страны доставки",
+  "analytics_recent_orders": "🛒 Последние заказы"
 }
