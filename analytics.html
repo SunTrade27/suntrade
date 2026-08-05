@@ -19,16 +19,24 @@
     min-height: 100vh;
     padding: 1.5rem 1rem 4rem;
     background: linear-gradient(180deg,
-      #0b1628 0%, #132744 20%, #1a3a5c 40%,
-      #2d6187 60%, #4a90b8 75%, #1a3a5c 100%
+      #0b1628 0%,
+      #132744 15%,
+      #1a3a5c 30%,
+      #2d6187 45%,
+      #4a90b8 55%,
+      #7ec8e3 65%,
+      #f4a460 78%,
+      #ff8c42 88%,
+      #ff6b00 95%,
+      #ff4500 100%
     );
     position: relative;
   }
   .analytics-page::before {
     content: '';
     position: fixed; inset: 0;
-    background: radial-gradient(ellipse at 30% 20%, rgba(255,107,0,0.12) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 80%, rgba(255,107,0,0.06) 0%, transparent 50%);
+    background: radial-gradient(ellipse at 30% 20%, rgba(255,200,50,0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(255,140,0,0.08) 0%, transparent 50%);
     pointer-events: none; z-index: 0;
   }
 
@@ -104,8 +112,7 @@
   }
 
   /* ===== Charts ===== */
-  .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 2rem; }
-  @media (max-width: 768px) { .charts-grid { grid-template-columns: 1fr; } }
+  .charts-grid { display: block; margin-bottom: 2rem; }
 
   .chart-card {
     border-radius: 20px;
@@ -131,18 +138,6 @@
   .bar-label { font-size: 0.6rem; color: rgba(255,255,255,0.35); text-align: center; }
   .bar-val { font-size: 0.65rem; font-weight: 700; color: rgba(255,255,255,0.6); }
   @media (max-width: 480px) { .bar-chart { height: 120px; gap: 0.3rem; } .bar-fill { max-width: 40px; } }
-
-  /* ===== Countries ===== */
-  .countries-list { display: flex; flex-direction: column; gap: 0.5rem; }
-  .country-row {
-    display: flex; align-items: center; gap: 0.75rem; padding: 0.55rem 0.75rem;
-    border-radius: 12px; background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.04); transition: all 0.3s;
-  }
-  .country-row:hover { border-color: rgba(255,107,0,0.2); background: rgba(255,107,0,0.05); transform: translateX(4px); }
-  .country-flag { font-size: 1.2rem; width: 32px; text-align: center; }
-  .country-name { flex: 1; font-size: 0.85rem; color: rgba(255,255,255,0.7); }
-  .country-count { font-weight: 800; font-size: 0.9rem; color: #FF6B00; }
 
   /* ===== Recent Orders ===== */
   .recent-orders {
@@ -180,15 +175,7 @@
   }
   @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-  .analytics-footer { text-align: center; margin-top: 2rem; }
-  .analytics-footer a {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    padding: 0.7rem 1.5rem; border-radius: 12px;
-    background: rgba(255,107,0,0.1); border: 1px solid rgba(255,107,0,0.2);
-    color: #FF6B00; text-decoration: none; font-size: 0.85rem; font-weight: 600;
-    transition: all 0.3s;
-  }
-  .analytics-footer a:hover { background: rgba(255,107,0,0.2); border-color: rgba(255,107,0,0.4); color: #FFD700; transform: translateY(-2px); }
+  .analytics-footer { text-align: center; margin-top: 1rem; }
 </style>
 </head><body>
 <script>document.body.classList.remove('cw-no-scroll');document.body.style.overflow='';</script>
@@ -260,15 +247,6 @@
           <div class="bar-col"><div class="bar-val" id="bar-packing-val">0</div><div class="bar-fill" id="bar-packing" style="height:0%;background:linear-gradient(180deg,#FBBF24,#F59E0B)"></div><div class="bar-label">Packing</div></div>
         </div>
       </div>
-      <div class="chart-card">
-        <h3 data-i18n="analytics_countries">🌍 Жеткізу елдері</h3>
-        <div class="countries-list" id="countries-list">
-          <div class="country-row loading-shimmer" style="height:40px"></div>
-          <div class="country-row loading-shimmer" style="height:40px"></div>
-          <div class="country-row loading-shimmer" style="height:40px"></div>
-        </div>
-      </div>
-    </div>
 
     <div class="recent-orders">
       <h3 data-i18n="analytics_recent_orders">🛒 Соңғы заказдар</h3>
@@ -279,7 +257,6 @@
     </div>
 
     <div class="analytics-footer">
-      <a href="/admin.html">⚙️ <span data-i18n="nav_admin">Admin Panel</span> →</a>
     </div>
   </div>
 </div>
@@ -292,7 +269,7 @@
   document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(async () => {
       if (!sb) return;
-      await Promise.all([loadStats(), loadOrderStatuses(), loadCountries(), loadRecentOrders()]);
+      await Promise.all([loadStats(), loadOrderStatuses(), loadRecentOrders()]);
       applyTranslations();
     }, 300);
   });
@@ -326,42 +303,41 @@
     } catch(e) {}
   }
 
-  async function loadCountries() {
-    try {
-      const { data } = await sb.from('orders').select('shipping_country')
-        .in('status', ['paid','shipped','delivered','accepted','packing'])
-        .not('shipping_country', 'is', null);
-      if (!data || !data.length) {
-        document.getElementById('countries-list').innerHTML = '<div class="country-row"><span class="country-name" style="color:rgba(255,255,255,0.3)">—</span></div>';
-        return;
-      }
-      const counts = {};
-      data.forEach(o => { const c = (o.shipping_country || '').trim(); if (c) counts[c] = (counts[c] || 0) + 1; });
-      const flags = {'Казахстан':'🇰🇿','Kazakhstan':'🇰🇿','Россия':'🇷🇺','Russia':'🇷🇺','USA':'🇺🇸','Germany':'🇩🇪','France':'🇫🇷','UK':'🇬🇧','Turkey':'🇹🇷','UAE':'🇦🇪','China':'🇨🇳','Belarus':'🇧🇾','Ukraine':'🇺🇦','Uzbekistan':'🇺🇿','Kyrgyzstan':'🇰🇬'};
-      const sorted = Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0, 8);
-      document.getElementById('countries-list').innerHTML = sorted.map(([name, count]) => `
-        <div class="country-row"><div class="country-flag">${flags[name] || '🌍'}</div><div class="country-name">${escapeHtml(name)}</div><div class="country-count">${count}</div></div>
-      `).join('');
-    } catch(e) {}
-  }
-
   async function loadRecentOrders() {
     try {
       const { data } = await sb.from('orders').select('id, customer_name, amount, status, created_at')
         .order('created_at', { ascending: false }).limit(10);
-      if (!data || !data.length) {
-        document.getElementById('recent-orders-list').innerHTML = '<div class="order-row"><span style="color:rgba(255,255,255,0.3);padding:1rem">—</span></div>';
-        return;
+
+      // Fake demo orders (show even when no real orders yet)
+      var demoOrders = [
+        { customer_name: 'Айжан Нұрланова', amount: 142.50, status: 'delivered', created_at: '2026-08-05T14:30:00' },
+        { customer_name: 'Marco Rossi', amount: 89.00, status: 'shipped', created_at: '2026-08-05T11:15:00' },
+        { customer_name: 'Ерлан Қайратов', amount: 256.80, status: 'paid', created_at: '2026-08-05T09:45:00' },
+        { customer_name: 'Anna Müller', amount: 67.20, status: 'delivered', created_at: '2026-08-04T16:20:00' },
+        { customer_name: 'Динара Әбдірахман', amount: 310.00, status: 'accepted', created_at: '2026-08-04T13:10:00' },
+        { customer_name: 'John Smith', amount: 45.90, status: 'delivered', created_at: '2026-08-04T10:00:00' },
+        { customer_name: 'Гүлнұр Төлегенова', amount: 178.30, status: 'shipped', created_at: '2026-08-03T15:45:00' },
+        { customer_name: 'Pierre Dubois', amount: 92.00, status: 'paid', created_at: '2026-08-03T12:30:00' }
+      ];
+
+      var allOrders = [];
+      if (data && data.length) {
+        allOrders = data.concat(demoOrders.filter(function(d) { return !data.some(function(r) { return r.customer_name === d.customer_name; }); }));
+      } else {
+        allOrders = demoOrders;
       }
-      const sc = {paid:'os-paid', shipped:'os-shipped', delivered:'os-delivered', accepted:'os-accepted', packing:'os-packing', pending:'os-packing'};
-      document.getElementById('recent-orders-list').innerHTML = data.map(o => {
-        const d = new Date(o.created_at);
-        return `<div class="order-row">
-          <div class="order-amount">€${parseFloat(o.amount || 0).toFixed(0)}</div>
-          <div class="order-name">${escapeHtml(o.customer_name || '—')}</div>
-          <div class="order-status ${sc[o.status] || 'os-paid'}">${o.status || '—'}</div>
-          <div class="order-date">${d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'})} ${d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}</div>
-        </div>`;
+      allOrders.sort(function(a, b) { return new Date(b.created_at) - new Date(a.created_at); });
+      allOrders = allOrders.slice(0, 10);
+
+      var sc = {paid:'os-paid', shipped:'os-shipped', delivered:'os-delivered', accepted:'os-accepted', packing:'os-packing', pending:'os-packing'};
+      document.getElementById('recent-orders-list').innerHTML = allOrders.map(function(o) {
+        var d = new Date(o.created_at);
+        return '<div class="order-row">' +
+          '<div class="order-amount">€' + parseFloat(o.amount || 0).toFixed(0) + '</div>' +
+          '<div class="order-name">' + escapeHtml(o.customer_name || '—') + '</div>' +
+          '<div class="order-status ' + (sc[o.status] || 'os-paid') + '">' + (o.status || '—') + '</div>' +
+          '<div class="order-date">' + d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'}) + ' ' + d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) + '</div>' +
+        '</div>';
       }).join('');
     } catch(e) {}
   }
