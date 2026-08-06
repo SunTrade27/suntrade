@@ -384,5 +384,7 @@
   "analytics_vip_monthly_gift": "Presente mensal",
   "analytics_vip_top3_gift_title": "Top 3 ganha um presente todo mês!",
   "analytics_vip_top3_gift_sub": "Ouro, Prata, Bronze — presentes especiais todo mês",
-  "analytics_vip_climb": "Suba de nível!"
+  "analytics_vip_climb": "Suba de nível!",
+  "analytics_vip_empty_title": "Seja nosso primeiro cliente VIP!",
+  "analytics_vip_empty_sub": "Os melhores compradores aparecerão aqui. Ouro, Prata, Bronze recebem presentes todo mês!"
 }

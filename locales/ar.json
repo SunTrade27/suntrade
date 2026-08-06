@@ -384,5 +384,7 @@
   "analytics_vip_monthly_gift": "هدية شهرية",
   "analytics_vip_top3_gift_title": "أفضل 3 يفوزون بهدية كل شهر!",
   "analytics_vip_top3_gift_sub": "ذهب، فضة، برونز — هدايا خاصة كل شهر",
-  "analytics_vip_climb": "اصعد!"
+  "analytics_vip_climb": "اصعد!",
+  "analytics_vip_empty_title": "كن أول عميل VIP لدينا!",
+  "analytics_vip_empty_sub": "أفضل المشترين سيظهرون هنا. ذهب، فضة، برونز \u2014 هدايا شهرية!"
 }

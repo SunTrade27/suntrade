@@ -487,6 +487,37 @@
   .vip-rank-n .vip-meta { color: rgba(255,255,255,0.5); }
   .vip-rank-n .vip-status-ico { color: #10B981; }
 
+  /* ----- Empty state (no real VIP customers yet) ----- */
+  .vip-empty {
+    grid-column: 1 / -1;
+    display: flex; flex-direction: column; align-items: center; gap: 0.8rem;
+    padding: 2.5rem 1.5rem;
+    border-radius: 16px;
+    background:
+      linear-gradient(135deg, rgba(255,215,0,0.05), rgba(255,107,0,0.03)),
+      rgba(11,22,40,0.45);
+    border: 1.5px dashed rgba(255,215,0,0.35);
+    text-align: center;
+    position: relative; z-index: 1;
+  }
+  .vip-empty-ico {
+    width: 54px; height: 54px;
+    color: rgba(255,215,0,0.7);
+    filter: drop-shadow(0 0 10px rgba(255,215,0,0.4));
+    margin-bottom: 0.25rem;
+  }
+  .vip-empty-title {
+    font-size: 1.15rem; font-weight: 800;
+    background: linear-gradient(135deg, #FFD700, #FF8C00, #FF6B00);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    letter-spacing: 0.3px;
+  }
+  .vip-empty-sub {
+    font-size: 0.85rem; color: rgba(255,255,255,0.6);
+    max-width: 420px;
+    line-height: 1.55;
+  }
+
   /* ----- Mobile / small screens ----- */
   @media (max-width: 480px) {
     .vip-customers { padding: 1.25rem 1rem; border-radius: 18px; }
@@ -626,198 +657,11 @@
         </div>
       </div>
 
-      <div class="vip-rank-grid">
-        <!-- #1 Gold -->
-        <div class="vip-rank-card vip-rank-gold">
-          <div class="vip-rank-medal">
-            <svg class="vip-rank-medal-icon"><use href="#icon-trophy"/></svg>
-            <span class="vip-rank-num">№1</span>
-            <span class="vip-rank-tier" data-i18n="analytics_vip_gold">Gold · Алтын</span>
-          </div>
-          <div class="vip-gift-pill">
-            <svg><use href="#icon-gift"/></svg>
-            <span data-i18n="analytics_vip_monthly_gift">Ай сайын сыйлық</span>
-          </div>
-          <div class="vip-rank-body">
-            <div class="vip-avatar vip-avatar-gold">МБ</div>
-            <div class="vip-info">
-              <div class="vip-name">Марат Бекжанов</div>
-              <div class="vip-meta">
-                <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
-                <span data-i18n="analytics_vip_top_buyer">Ең үлкен сатып алушы</span>
-              </div>
-            </div>
-            <div class="vip-amount-gold">€7300</div>
-          </div>
-        </div>
-
-        <!-- #2 Silver -->
-        <div class="vip-rank-card vip-rank-silver">
-          <div class="vip-rank-medal">
-            <svg class="vip-rank-medal-icon"><use href="#icon-medal"/></svg>
-            <span class="vip-rank-num">№2</span>
-            <span class="vip-rank-tier" data-i18n="analytics_vip_silver">Silver · Күміс</span>
-          </div>
-          <div class="vip-gift-pill">
-            <svg><use href="#icon-gift"/></svg>
-            <span data-i18n="analytics_vip_monthly_gift">Ай сайын сыйлық</span>
-          </div>
-          <div class="vip-rank-body">
-            <div class="vip-avatar vip-avatar-silver">ES</div>
-            <div class="vip-info">
-              <div class="vip-name">Emma Schneider</div>
-              <div class="vip-meta">
-                <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
-                <span data-i18n="analytics_vip_completed">Премиум заказ</span>
-              </div>
-            </div>
-            <div class="vip-amount-silver">€2000</div>
-          </div>
-        </div>
-
-        <!-- #3 Bronze -->
-        <div class="vip-rank-card vip-rank-bronze">
-          <div class="vip-rank-medal">
-            <svg class="vip-rank-medal-icon"><use href="#icon-medal"/></svg>
-            <span class="vip-rank-num">№3</span>
-            <span class="vip-rank-tier" data-i18n="analytics_vip_bronze">Bronze · Қола</span>
-          </div>
-          <div class="vip-gift-pill">
-            <svg><use href="#icon-gift"/></svg>
-            <span data-i18n="analytics_vip_monthly_gift">Ай сайын сыйлық</span>
-          </div>
-          <div class="vip-rank-body">
-            <div class="vip-avatar vip-avatar-bronze">HM</div>
-            <div class="vip-info">
-              <div class="vip-name">Hans Müller</div>
-              <div class="vip-meta">
-                <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
-                <span data-i18n="analytics_vip_completed">Премиум заказ</span>
-              </div>
-            </div>
-            <div class="vip-amount-bronze">€2000</div>
-          </div>
-        </div>
-
-        <!-- #4 -->
-        <div class="vip-rank-card vip-rank-n">
-          <div class="vip-rank-medal">
-            <svg class="vip-rank-medal-icon"><use href="#icon-trending-up"/></svg>
-            <span class="vip-rank-num">№4</span>
-            <span class="vip-rank-tier" data-i18n="analytics_vip_climb">Көтеріліңіз!</span>
-          </div>
-          <div class="vip-rank-body">
-            <div class="vip-avatar" style="background:linear-gradient(135deg,#06B6D4,#0891B2)">YD</div>
-            <div class="vip-info">
-              <div class="vip-name">Yusuf Demir</div>
-              <div class="vip-meta">
-                <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
-                <span data-i18n="analytics_vip_completed">Премиум заказ</span>
-              </div>
-            </div>
-            <div class="vip-amount-regular">€1850</div>
-          </div>
-        </div>
-
-        <!-- #5 -->
-        <div class="vip-rank-card vip-rank-n">
-          <div class="vip-rank-medal">
-            <svg class="vip-rank-medal-icon"><use href="#icon-trending-up"/></svg>
-            <span class="vip-rank-num">№5</span>
-            <span class="vip-rank-tier" data-i18n="analytics_vip_climb">Көтеріліңіз!</span>
-          </div>
-          <div class="vip-rank-body">
-            <div class="vip-avatar" style="background:linear-gradient(135deg,#EC4899,#BE185D)">MW</div>
-            <div class="vip-info">
-              <div class="vip-name">林美华</div>
-              <div class="vip-meta">
-                <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
-                <span data-i18n="analytics_vip_completed">Премиум заказ</span>
-              </div>
-            </div>
-            <div class="vip-amount-regular">€1450</div>
-          </div>
-        </div>
-
-        <!-- #6 -->
-        <div class="vip-rank-card vip-rank-n">
-          <div class="vip-rank-medal">
-            <svg class="vip-rank-medal-icon"><use href="#icon-trending-up"/></svg>
-            <span class="vip-rank-num">№6</span>
-            <span class="vip-rank-tier" data-i18n="analytics_vip_climb">Көтеріліңіз!</span>
-          </div>
-          <div class="vip-rank-body">
-            <div class="vip-avatar" style="background:linear-gradient(135deg,#14B8A6,#0D9488)">LS</div>
-            <div class="vip-info">
-              <div class="vip-name">Lukas Schmidt</div>
-              <div class="vip-meta">
-                <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
-                <span data-i18n="analytics_vip_completed">Премиум заказ</span>
-              </div>
-            </div>
-            <div class="vip-amount-regular">€1320</div>
-          </div>
-        </div>
-
-        <!-- #7 -->
-        <div class="vip-rank-card vip-rank-n">
-          <div class="vip-rank-medal">
-            <svg class="vip-rank-medal-icon"><use href="#icon-trending-up"/></svg>
-            <span class="vip-rank-num">№7</span>
-            <span class="vip-rank-tier" data-i18n="analytics_vip_climb">Көтеріліңіз!</span>
-          </div>
-          <div class="vip-rank-body">
-            <div class="vip-avatar" style="background:linear-gradient(135deg,#F59E0B,#D97706)">ГТ</div>
-            <div class="vip-info">
-              <div class="vip-name">Гульнара Тілеуова</div>
-              <div class="vip-meta">
-                <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
-                <span data-i18n="analytics_vip_completed">Премиум заказ</span>
-              </div>
-            </div>
-            <div class="vip-amount-regular">€1080</div>
-          </div>
-        </div>
-
-        <!-- #8 -->
-        <div class="vip-rank-card vip-rank-n">
-          <div class="vip-rank-medal">
-            <svg class="vip-rank-medal-icon"><use href="#icon-trending-up"/></svg>
-            <span class="vip-rank-num">№8</span>
-            <span class="vip-rank-tier" data-i18n="analytics_vip_climb">Көтеріліңіз!</span>
-          </div>
-          <div class="vip-rank-body">
-            <div class="vip-avatar" style="background:linear-gradient(135deg,#EF4444,#DC2626)">АИ</div>
-            <div class="vip-info">
-              <div class="vip-name">Александр Иванов</div>
-              <div class="vip-meta">
-                <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
-                <span data-i18n="analytics_vip_completed">Премиум заказ</span>
-              </div>
-            </div>
-            <div class="vip-amount-regular">€950</div>
-          </div>
-        </div>
-
-        <!-- #9 -->
-        <div class="vip-rank-card vip-rank-n">
-          <div class="vip-rank-medal">
-            <svg class="vip-rank-medal-icon"><use href="#icon-trending-up"/></svg>
-            <span class="vip-rank-num">№9</span>
-            <span class="vip-rank-tier" data-i18n="analytics_vip_climb">Көтеріліңіз!</span>
-          </div>
-          <div class="vip-rank-body">
-            <div class="vip-avatar" style="background:linear-gradient(135deg,#8B5CF6,#7C3AED)">SV</div>
-            <div class="vip-info">
-              <div class="vip-name">Sofia Volkov</div>
-              <div class="vip-meta">
-                <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
-                <span data-i18n="analytics_vip_completed">Премиум заказ</span>
-              </div>
-            </div>
-            <div class="vip-amount-regular">€820</div>
-          </div>
-        </div>
+      <!-- Premium comes purely from real Supabase data — no demo hacks, so
+           the list grows automatically as real customers place orders,
+           tomorrow or a year from now. JS populates this on load. -->
+      <div class="vip-rank-grid" id="vip-rank-list">
+        <div class="loading-shimmer" style="height:120px;border-radius:16px"></div>
       </div>
     </div>
 
@@ -834,7 +678,7 @@
   document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(async () => {
       if (!sb) return;
-      await Promise.all([loadStats(), loadOrderStatuses(), loadRecentOrders()]);
+      await Promise.all([loadStats(), loadOrderStatuses(), loadRecentOrders(), loadPremiumCustomers()]);
       applyTranslations();
       // Sync the live customer count into the localized subtitle so the
       // "Our {N} customers" sentence matches the counter exactly. We replace
@@ -1031,6 +875,142 @@
       var soEl = document.getElementById('s-orders');
       if (soEl) soEl.textContent = totalCustomers;
     } catch(e) {}
+  }
+
+  // ===== Premium Customers (real Supabase data only) =====
+  // Aggregates every real order the store has ever taken (amount > 0),
+  // groups by customer_name, sums totals, and ranks them. The list grows
+  // automatically as new real orders come in — no demo placeholders, so
+  // when real customers start buying tomorrow the algorithm stays honest.
+  async function loadPremiumCustomers() {
+    var listEl = document.getElementById('vip-rank-list');
+    if (!listEl) return;
+    try {
+      // Pull only completed-value orders (paid/shipped/delivered/accepted/
+      // packing) with amount > 0. This intentionally EXCLUDES the demo
+      // orders used in Recent Orders — Premium is meant to be real data.
+      const { data, error } = await sb.from('orders')
+        .select('customer_name, amount, created_at')
+        .gt('amount', 0)
+        .neq('status', 'pending')
+        .neq('status', 'cancelled')
+        .order('created_at', { ascending: false })
+        .limit(2000);
+      if (error) throw error;
+      // No real orders yet — show the friendly empty state.
+      if (!data || data.length === 0) {
+        renderVipEmpty(listEl);
+        return;
+      }
+      // Aggregate per customer: sum amount + count orders. Skip rows with
+      // empty customer_name (would map to an empty avatar — looks like a bug).
+      var totals = {};
+      data.forEach(function(o) {
+        var name = (o.customer_name || '').trim();
+        if (!name) return;
+        if (!totals[name]) totals[name] = { name: name, total: 0, count: 0 };
+        totals[name].total += parseFloat(o.amount) || 0;
+        totals[name].count += 1;
+      });
+      var customers = Object.values(totals);
+      if (customers.length === 0) {
+        renderVipEmpty(listEl);
+        return;
+      }
+      // Sort by total spent (DESC), break ties by order count.
+      customers.sort(function(a, b) {
+        if (b.total !== a.total) return b.total - a.total;
+        return b.count - a.count;
+      });
+      listEl.innerHTML = customers.map(function(c, idx) {
+        return renderVipCard(c, idx + 1);
+      }).join('');
+    } catch(e) {
+      renderVipEmpty(listEl);
+    }
+  }
+
+  function renderVipEmpty(listEl) {
+    listEl.innerHTML =
+      '<div class="vip-empty">' +
+        '<svg class="vip-empty-ico"><use href="#icon-trophy"/></svg>' +
+        '<div class="vip-empty-title" data-i18n="analytics_vip_empty_title">Be our first VIP!</div>' +
+        '<div class="vip-empty-sub" data-i18n="analytics_vip_empty_sub">Top buyers will appear here as real orders come in.</div>' +
+      '</div>';
+  }
+
+  // Render a single VIP card for a customer at the given rank. Top 3
+  // get gold/silver/bronze styling + a &quot;Monthly gift&quot; pill; the rest
+  // get a clean numbered card.
+  function renderVipCard(c, rank) {
+    var rankClass, amountClass, tierKey, tierFallback, iconId, giftPill;
+    if (rank === 1) {
+      rankClass = 'vip-rank-gold';
+      amountClass = 'vip-amount-gold';
+      tierKey = 'analytics_vip_gold';
+      tierFallback = 'Gold · Алтын';
+      iconId = 'icon-trophy';
+      giftPill = '<div class="vip-gift-pill">'
+        + '<svg><use href="#icon-gift"/></svg>'
+        + '<span data-i18n="analytics_vip_monthly_gift">' + (t('analytics_vip_monthly_gift') || 'Ай сайын сыйлық') + '</span>'
+        + '</div>';
+    } else if (rank === 2) {
+      rankClass = 'vip-rank-silver';
+      amountClass = 'vip-amount-silver';
+      tierKey = 'analytics_vip_silver';
+      tierFallback = 'Silver · Күміс';
+      iconId = 'icon-medal';
+      giftPill = '<div class="vip-gift-pill">'
+        + '<svg><use href="#icon-gift"/></svg>'
+        + '<span data-i18n="analytics_vip_monthly_gift">' + (t('analytics_vip_monthly_gift') || 'Ай сайын сыйлық') + '</span>'
+        + '</div>';
+    } else if (rank === 3) {
+      rankClass = 'vip-rank-bronze';
+      amountClass = 'vip-amount-bronze';
+      tierKey = 'analytics_vip_bronze';
+      tierFallback = 'Bronze · Қола';
+      iconId = 'icon-medal';
+      giftPill = '<div class="vip-gift-pill">'
+        + '<svg><use href="#icon-gift"/></svg>'
+        + '<span data-i18n="analytics_vip_monthly_gift">' + (t('analytics_vip_monthly_gift') || 'Ай сайын сыйлық') + '</span>'
+        + '</div>';
+    } else {
+      rankClass = 'vip-rank-n';
+      amountClass = 'vip-amount-regular';
+      tierKey = 'analytics_vip_climb';
+      tierFallback = 'Көтеріліңіз!';
+      iconId = 'icon-trending-up';
+      giftPill = '';
+    }
+    var avatarClass = (rank === 1) ? ' vip-avatar-gold'
+      : (rank === 2) ? ' vip-avatar-silver'
+      : (rank === 3) ? ' vip-avatar-bronze' : '';
+    var avatarStyle = (rank > 3) ? ' style="background:' + colorFromName(c.name) + '"' : '';
+    var ini = getInitials(c.name);
+    var amtStr = formatAmount(c.total);
+    var tierHtml = (typeof t === 'function' && t(tierKey) && t(tierKey) !== tierKey) ? t(tierKey) : tierFallback;
+    var metaHtml = (rank === 1)
+      ? '<span data-i18n="analytics_vip_top_buyer">' + (t('analytics_vip_top_buyer') || 'Ең үлкен сатып алушы') + '</span>'
+      : '<span data-i18n="analytics_vip_completed">' + (t('analytics_vip_completed') || 'Премиум заказ') + '</span>';
+    return '<div class="vip-rank-card ' + rankClass + '">'
+      + '<div class="vip-rank-medal">'
+        + '<svg class="vip-rank-medal-icon"><use href="#' + iconId + '"/></svg>'
+        + '<span class="vip-rank-num">' + rank + '</span>'
+        + '<span class="vip-rank-tier" data-i18n="' + tierKey + '">' + escapeHtml(tierHtml) + '</span>'
+      + '</div>'
+      + giftPill
+      + '<div class="vip-rank-body">'
+        + '<div class="vip-avatar' + avatarClass + '"' + avatarStyle + '>' + escapeHtml(ini) + '</div>'
+        + '<div class="vip-info">'
+          + '<div class="vip-name">' + escapeHtml(c.name) + '</div>'
+          + '<div class="vip-meta">'
+            + '<svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>'
+            + metaHtml
+          + '</div>'
+        + '</div>'
+        + '<div class="' + amountClass + '">€' + amtStr + '</div>'
+      + '</div>'
+    + '</div>';
   }
 
     // Reference baseline for demo fallback: 28 demo customers anchored here

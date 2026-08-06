@@ -429,5 +429,7 @@
   "analytics_vip_monthly_gift": "Ай сайын сыйлық",
   "analytics_vip_top3_gift_title": "Топ-3 ай сайын сыйлық алады!",
   "analytics_vip_top3_gift_sub": "Алтын, күміс, қола — ай сайын ерекше сыйлықтар",
-  "analytics_vip_climb": "Көтеріліңіз!"
+  "analytics_vip_climb": "Көтеріліңіз!",
+  "analytics_vip_empty_title": "Біздің алғашқы VIP клиент болыңыз!",
+  "analytics_vip_empty_sub": "Үздік сатып алушылар осында пайда болады. Алтын, күміс, қола ай сайын сыйлық алады!"
 }

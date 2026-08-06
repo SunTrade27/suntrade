@@ -384,5 +384,7 @@
   "analytics_vip_monthly_gift": "Cadeau mensuel",
   "analytics_vip_top3_gift_title": "Le Top 3 reçoit un cadeau chaque mois !",
   "analytics_vip_top3_gift_sub": "Or, Argent, Bronze — des cadeaux spéciaux chaque mois",
-  "analytics_vip_climb": "Grimpez !"
+  "analytics_vip_climb": "Grimpez !",
+  "analytics_vip_empty_title": "Soyez notre premier client VIP !",
+  "analytics_vip_empty_sub": "Les meilleurs acheteurs apparaîtront ici. Or, Argent, Bronze reçoivent des cadeaux chaque mois !"
 }
