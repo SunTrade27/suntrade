@@ -370,5 +370,7 @@
   "analytics_pending": "Pendiente",
   "analytics_order_status": "📊 Estados de pedidos",
   "analytics_countries": "🌍 Países de entrega",
-  "analytics_recent_orders": "🛒 Pedidos recientes"
+  "analytics_recent_orders": "🛒 Pedidos recientes",
+  "analytics_customers_count": "Clientes:",
+  "analytics_customers_subtitle": "Nuestros 28 clientes satisfechos de todo el mundo"
 }

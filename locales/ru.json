@@ -415,5 +415,7 @@
   "analytics_pending": "Ожидание",
   "analytics_order_status": "📊 Статусы заказов",
   "analytics_countries": "🌍 Страны доставки",
-  "analytics_recent_orders": "🛒 Последние заказы"
+  "analytics_recent_orders": "🛒 Последние заказы",
+  "analytics_customers_count": "Покупатели:",
+  "analytics_customers_subtitle": "Наши 28 довольных клиентов со всего мира"
 }

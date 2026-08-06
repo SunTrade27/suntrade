@@ -156,7 +156,8 @@
   .order-row:last-child { border-bottom: none; }
   .order-row:hover { background: rgba(255,255,255,0.03); }
   .order-amount { font-weight: 800; color: #FFD700; min-width: 70px; font-size: 0.85rem; }
-  .order-name { flex: 1; font-size: 0.85rem; color: rgba(255,255,255,0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .order-name { flex: 1; font-size: 0.85rem; color: rgba(255,255,255,0.85); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+  .order-avatar { width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: #fff; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.25); border: 1.5px solid rgba(255,255,255,0.1); }
   .order-status {
     padding: 3px 10px; border-radius: 50px; font-size: 0.65rem; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.3px;
@@ -167,7 +168,40 @@
   .os-accepted { background: rgba(255,215,0,0.15); color: #FFD700; }
   .os-packing { background: rgba(251,191,36,0.15); color: #FBBF24; }
   .order-date { font-size: 0.7rem; color: rgba(255,255,255,0.3); min-width: 70px; text-align: right; }
-  @media (max-width: 480px) { .order-amount { min-width: 55px; font-size: 0.75rem; } .order-name { font-size: 0.7rem; } .order-date { display: none; } }
+
+  .recent-orders-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }
+  .recent-orders-head h3 { margin-bottom: 0 !important; }
+  .customers-counter {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 5px 12px; border-radius: 50px;
+    background: linear-gradient(135deg, rgba(255,107,0,0.2), rgba(255,215,0,0.15));
+    border: 1px solid rgba(255,107,0,0.35);
+    font-size: 0.72rem; color: rgba(255,255,255,0.85); font-weight: 600;
+    box-shadow: 0 2px 10px rgba(255,107,0,0.15);
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .customers-counter strong { color: #FFD700; font-weight: 900; font-size: 0.95rem; }
+  .customers-counter-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #10B981;
+    box-shadow: 0 0 0 0 rgba(16,185,129,0.6);
+    animation: liveDot 2s ease-in-out infinite;
+  }
+  @keyframes liveDot {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.6); }
+    50% { box-shadow: 0 0 0 6px rgba(16,185,129,0); }
+  }
+  .customers-subtitle {
+    font-size: 0.75rem; color: rgba(255,255,255,0.45); margin-bottom: 0.9rem;
+    font-style: italic; padding-left: 0.5rem; border-left: 2px solid rgba(255,107,0,0.4);
+  }
+  @media (max-width: 480px) {
+    .order-amount { min-width: 55px; font-size: 0.75rem; }
+    .order-name { font-size: 0.72rem; }
+    .order-date { display: none; }
+    .order-avatar { width: 26px; height: 26px; font-size: 0.62rem; }
+    .customers-counter { font-size: 0.65rem; padding: 4px 9px; }
+    .customers-counter strong { font-size: 0.85rem; }
+  }
 
   .loading-shimmer {
     background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 75%);
@@ -187,8 +221,8 @@
     <ul class="nav-links" id="nav-links">
       <li><a href="/" data-i18n="nav_home">Басты бет</a></li>
       <li><a href="/catalog.html" data-i18n="nav_catalog">Каталог</a></li>
-      <li><a href="/cart.html" data-i18n="nav_cart">Себет</a></li>
       <li><a href="/analytics.html" class="active" data-i18n="nav_analytics">Анализ</a></li>
+      <li><a href="/cart.html" data-i18n="nav_cart">Себет</a></li>
     </ul>
     <div class="nav-right">
       <div class="lang-wrapper">
@@ -249,7 +283,15 @@
       </div>
 
     <div class="recent-orders">
-      <h3 data-i18n="analytics_recent_orders">🛒 Соңғы заказдар</h3>
+      <div class="recent-orders-head">
+        <h3 data-i18n="analytics_recent_orders">🛒 Соңғы заказдар</h3>
+        <div class="customers-counter">
+          <span class="customers-counter-dot"></span>
+          <span data-i18n="analytics_customers_count">Сатып алушылар:</span>
+          <strong id="customers-total">28</strong>
+        </div>
+      </div>
+      <p class="customers-subtitle" data-i18n="analytics_customers_subtitle">Біздің 28 қанағаттанған клиенттеріміз — әлемнің түкпір-түкпірінен</p>
       <div id="recent-orders-list">
         <div class="order-row"><div class="loading-shimmer" style="width:60px;height:14px"></div><div class="loading-shimmer" style="flex:1;height:14px"></div><div class="loading-shimmer" style="width:50px;height:14px"></div><div class="loading-shimmer" style="width:60px;height:14px"></div></div>
         <div class="order-row"><div class="loading-shimmer" style="width:60px;height:14px"></div><div class="loading-shimmer" style="flex:1;height:14px"></div><div class="loading-shimmer" style="width:50px;height:14px"></div><div class="loading-shimmer" style="width:60px;height:14px"></div></div>
@@ -290,10 +332,14 @@
   async function loadOrderStatuses() {
     try {
       const statuses = ['paid', 'shipped', 'delivered', 'accepted', 'packing'];
+      // Demo fallback counts (so bars aren't all zero on a freshly-empty DB while
+      // the page still advertises 28 satisfied customers)
+      const demoCounts = { paid: 4, shipped: 6, delivered: 12, accepted: 3, packing: 3 };
       const results = await Promise.all(statuses.map(s =>
         sb.from('orders').select('id', { count: 'exact', head: true }).eq('status', s)
       ));
-      const counts = results.map(r => (r && r.count) || 0);
+      // Add real counts on top of demo baseline so a young site still shows activity bars
+      const counts = results.map((r, i) => (demoCounts[statuses[i]] || 0) + ((r && r.count) || 0));
       const maxVal = Math.max(1, ...counts);
       statuses.forEach((s, i) => {
         setEl('bar-' + s + '-val', counts[i]);
@@ -306,44 +352,124 @@
   async function loadRecentOrders() {
     try {
       const { data } = await sb.from('orders').select('id, customer_name, amount, status, created_at')
-        .order('created_at', { ascending: false }).limit(10);
+        .order('created_at', { ascending: false }).limit(200);
+      const { count: realTotalCount } = await sb.from('orders').select('id', { count: 'exact', head: true });
 
-      // Fake demo orders (show even when no real orders yet)
+      // 28 demo customers (28 baseline) — international mix, includes required names:
+      // Emma Schneider (DE), Марат Бекжанов (KZ), Hans Müller (DE)
+      // Dates span the last 30 days. First 6 = delivered (most recent),
+      // then mixed: shipped, paid, packing, accepted. Real customers append on top.
       var demoOrders = [
-        { customer_name: 'Айжан Нұрланова', amount: 142.50, status: 'delivered', created_at: '2026-08-05T14:30:00' },
-        { customer_name: 'Marco Rossi', amount: 89.00, status: 'delivered', created_at: '2026-08-05T11:15:00' },
-        { customer_name: 'Ерлан Қайратов', amount: 256.80, status: 'delivered', created_at: '2026-08-05T09:45:00' },
-        { customer_name: 'Anna Müller', amount: 67.20, status: 'delivered', created_at: '2026-08-04T16:20:00' },
-        { customer_name: 'Динара Әбдірахман', amount: 310.00, status: 'delivered', created_at: '2026-08-04T13:10:00' },
-        { customer_name: 'John Smith', amount: 45.90, status: 'delivered', created_at: '2026-08-04T10:00:00' },
-        { customer_name: 'Гүлнұр Төлегенова', amount: 178.30, status: 'paid', created_at: '2026-08-03T15:45:00' },
-        { customer_name: 'Pierre Dubois', amount: 92.00, status: 'accepted', created_at: '2026-08-03T12:30:00' }
+        { customer_name: 'Emma Schneider',   amount: 142.50, status: 'delivered', created_at: '2026-08-06T16:30:00' },
+        { customer_name: 'Марат Бекжанов',     amount: 89.00,  status: 'delivered', created_at: '2026-08-06T11:15:00' },
+        { customer_name: 'Hans Müller',        amount: 256.80, status: 'delivered', created_at: '2026-08-05T09:45:00' },
+        { customer_name: 'Ayşe Yılmaz',        amount: 67.20,  status: 'delivered', created_at: '2026-08-05T18:20:00' },
+        { customer_name: 'София Иванова',      amount: 310.00, status: 'delivered', created_at: '2026-08-05T13:10:00' },
+        { customer_name: 'James Carter',       amount: 45.90,  status: 'delivered', created_at: '2026-08-04T10:00:00' },
+        { customer_name: 'Pierre Dubois',      amount: 178.30, status: 'shipped',   created_at: '2026-08-06T08:00:00' },
+        { customer_name: 'Marco Rossi',        amount: 92.00,  status: 'shipped',   created_at: '2026-08-05T15:30:00' },
+        { customer_name: 'Laura García',       amount: 215.40, status: 'shipped',   created_at: '2026-08-04T12:45:00' },
+        { customer_name: 'Әлия Мұратова',      amount: 134.00, status: 'paid',      created_at: '2026-08-06T14:20:00' },
+        { customer_name: 'Anna Kowalski',      amount: 76.50,  status: 'paid',      created_at: '2026-08-04T17:00:00' },
+        { customer_name: 'Thomas Becker',      amount: 198.90, status: 'packing',   created_at: '2026-08-06T10:15:00' },
+        { customer_name: 'Mei Lin',            amount: 54.20,  status: 'packing',   created_at: '2026-08-03T11:30:00' },
+        { customer_name: 'Lucas Oliveira',     amount: 162.00, status: 'accepted',  created_at: '2026-08-06T09:00:00' },
+        { customer_name: 'Ботагөз Қасымова',   amount: 88.75,  status: 'accepted',  created_at: '2026-08-02T14:00:00' },
+        { customer_name: 'Isabella Romano',    amount: 246.30, status: 'delivered', created_at: '2026-08-03T08:30:00' },
+        { customer_name: 'Інкәр Сембаева',     amount: 119.60, status: 'delivered', created_at: '2026-07-31T15:45:00' },
+        { customer_name: 'Olivia Smith',       amount: 73.40,  status: 'delivered', created_at: '2026-07-30T11:00:00' },
+        { customer_name: 'Ақмарал Жүнісова',   amount: 95.00,  status: 'shipped',   created_at: '2026-08-02T16:20:00' },
+        { customer_name: 'Yuki Tanaka',        amount: 187.20, status: 'shipped',   created_at: '2026-08-01T10:30:00' },
+        { customer_name: 'Fatima Al-Hassan',   amount: 64.80,  status: 'paid',      created_at: '2026-07-31T13:15:00' },
+        { customer_name: 'Виктор Петров',     amount: 221.00, status: 'delivered', created_at: '2026-07-29T09:00:00' },
+        { customer_name: 'Carlos Mendoza',     amount: 109.50, status: 'packing',   created_at: '2026-07-28T14:00:00' },
+        { customer_name: 'Willem de Vries',    amount: 156.70, status: 'delivered', created_at: '2026-07-27T11:30:00' },
+        { customer_name: 'Дарига Болатов',     amount: 82.30,  status: 'accepted',  created_at: '2026-07-26T16:00:00' },
+        { customer_name: 'Sophie Laurent',     amount: 268.90, status: 'delivered', created_at: '2026-07-25T12:45:00' },
+        { customer_name: 'Дмитрий Орлов',     amount: 99.50,  status: 'shipped',   created_at: '2026-07-24T15:30:00' },
+        { customer_name: 'Айгерім Сәрсенова',  amount: 124.40, status: 'paid',      created_at: '2026-07-23T10:00:00' }
       ];
 
       var allOrders = [];
       if (data && data.length) {
-        allOrders = data.concat(demoOrders.filter(function(d) { return !data.some(function(r) { return r.customer_name === d.customer_name; }); }));
+        // Real orders first (newest at top), then demos to fill up to 28 baseline
+        allOrders = data.concat(demoOrders.filter(function(d) {
+          return !data.some(function(r) { return r.customer_name === d.customer_name; });
+        }));
       } else {
         allOrders = demoOrders;
       }
       allOrders.sort(function(a, b) { return new Date(b.created_at) - new Date(a.created_at); });
-      allOrders = allOrders.slice(0, 10);
+      // Show top 28 in the list to match the baseline 28 customers
+      allOrders = allOrders.slice(0, 28);
 
-      var sc = {paid:'os-paid', shipped:'os-shipped', delivered:'os-delivered', accepted:'os-accepted', packing:'os-packing', pending:'os-packing'};
       document.getElementById('recent-orders-list').innerHTML = allOrders.map(function(o) {
         var d = new Date(o.created_at);
+        var nm = o.customer_name || '—';
+        var ini = getInitials(nm);
+        var avBg = colorFromName(nm);
+        var badgeCls = statusBadgeClass(o.status);
+        var badgeTxt = escapeHtml(statusLabel(o.status));
         return '<div class="order-row">' +
+          '<div class="order-avatar" style="background:' + avBg + '">' + escapeHtml(ini) + '</div>' +
           '<div class="order-amount">€' + parseFloat(o.amount || 0).toFixed(0) + '</div>' +
-          '<div class="order-name">' + escapeHtml(o.customer_name || '—') + '</div>' +
-          '<div class="order-status ' + (sc[o.status] || 'os-paid') + '">' + (o.status || '—') + '</div>' +
+          '<div class="order-name">' + escapeHtml(nm) + '</div>' +
+          '<div class="order-status ' + badgeCls + '">' + badgeTxt + '</div>' +
           '<div class="order-date">' + d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'}) + ' ' + d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) + '</div>' +
         '</div>';
       }).join('');
+
+      // Update customers total — 28 baseline + any real extra orders above 28.
+      // Use realTotalCount from Supabase (exact count) so the counter can grow past 28.
+      var totalCustomers = Math.max(realTotalCount || 0, baselineCount);
+      var ctEl = document.getElementById('customers-total');
+      if (ctEl) ctEl.textContent = totalCustomers;
+
+      // Update the s-orders stat card with same number (live)
+      var soEl = document.getElementById('s-orders');
+      if (soEl) soEl.textContent = totalCustomers;
     } catch(e) {}
   }
 
-  function setEl(id, val) { var el = document.getElementById(id); if (el) el.textContent = String(val); }
-  function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    // Reference baseline for demo fallback: 28 demo customers anchored here
+    var baselineCount = 28;
+
+    function setEl(id, val) { var el = document.getElementById(id); if (el) el.textContent = String(val); }
+    function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function getInitials(name) {
+      var parts = String(name).trim().split(/\s+/);
+      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+      return parts[0].slice(0, 2).toUpperCase();
+    }
+    var AVATAR_PALETTE = [
+      'linear-gradient(135deg,#FF6B00,#FF4500)',
+      'linear-gradient(135deg,#FFD700,#FF8C00)',
+      'linear-gradient(135deg,#10B981,#059669)',
+      'linear-gradient(135deg,#3B82F6,#2563EB)',
+      'linear-gradient(135deg,#8B5CF6,#7C3AED)',
+      'linear-gradient(135deg,#EC4899,#BE185D)',
+      'linear-gradient(135deg,#06B6D4,#0891B2)',
+      'linear-gradient(135deg,#F59E0B,#D97706)',
+      'linear-gradient(135deg,#EF4444,#DC2626)',
+      'linear-gradient(135deg,#14B8A6,#0D9488)'
+    ];
+    function colorFromName(name) {
+      var hash = 0;
+      for (var i = 0; i < name.length; i++) hash = (hash << 5) - hash + name.charCodeAt(i);
+      return AVATAR_PALETTE[Math.abs(hash) % AVATAR_PALETTE.length];
+    }
+    function statusBadgeClass(status) {
+      return {paid:'os-paid', shipped:'os-shipped', delivered:'os-delivered', accepted:'os-accepted', packing:'os-packing', pending:'os-packing'}[status] || 'os-paid';
+    }
+    function statusLabel(status) {
+      // Use i18n when available so badges localize with site language
+      if (typeof t === 'function') {
+        var k = 'order_status_' + status;
+        var v = t(k);
+        if (v && v !== k) return v;
+      }
+      return {paid:'Paid', shipped:'Shipped', delivered:'Delivered', accepted:'Accepted', packing:'Packing', pending:'Pending'}[status] || status;
+    }
 </script>
 </body>
 </html>

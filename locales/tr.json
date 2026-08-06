@@ -370,5 +370,7 @@
   "analytics_pending": "Beklemede",
   "analytics_order_status": "📊 Sipariş Durumları",
   "analytics_countries": "🌍 Teslimat Ülkeleri",
-  "analytics_recent_orders": "🛒 Son Siparişler"
+  "analytics_recent_orders": "🛒 Son Siparişler",
+  "analytics_customers_count": "Müşteriler:",
+  "analytics_customers_subtitle": "Dünyanın dört bir yanından 28 mutlu müşterimiz"
 }
