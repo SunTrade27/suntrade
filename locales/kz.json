@@ -417,5 +417,9 @@
   "analytics_countries": "🌍 Жеткізу елдері",
   "analytics_recent_orders": "Соңғы заказдар",
   "analytics_customers_count": "Сатып алушылар:",
-  "analytics_customers_subtitle": "Біздің 28 қанағаттанған клиенттеріміз — әлемнің түкпір-түкпірінен"
+  "analytics_customers_subtitle": "Біздің 28 қанағаттанған клиенттеріміз — әлемнің түкпір-түкпірінен",
+  "analytics_vip_title": "Премиум сатып алушылар",
+  "analytics_vip_subtitle": "Үлкен сомаға тауар алған VIP клиенттер",
+  "analytics_vip_top_buyer": "Ең үлкен сатып алушы",
+  "analytics_vip_completed": "Премиум заказ"
 }

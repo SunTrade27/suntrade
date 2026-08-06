@@ -372,5 +372,9 @@
   "analytics_countries": "🌍 Bezorglanden",
   "analytics_recent_orders": "Recente bestellingen",
   "analytics_customers_count": "Klanten:",
-  "analytics_customers_subtitle": "Onze 28 tevreden klanten van over de hele wereld"
+  "analytics_customers_subtitle": "Onze 28 tevreden klanten van over de hele wereld",
+  "analytics_vip_title": "Premium-klanten",
+  "analytics_vip_subtitle": "VIP-klanten met grote bestellingen",
+  "analytics_vip_top_buyer": "Topkoper",
+  "analytics_vip_completed": "Premium bestelling"
 }

@@ -417,5 +417,9 @@
   "analytics_countries": "🌍 Страны доставки",
   "analytics_recent_orders": "Последние заказы",
   "analytics_customers_count": "Покупатели:",
-  "analytics_customers_subtitle": "Наши 28 довольных клиентов со всего мира"
+  "analytics_customers_subtitle": "Наши 28 довольных клиентов со всего мира",
+  "analytics_vip_title": "Премиум покупатели",
+  "analytics_vip_subtitle": "VIP-клиенты с крупными заказами",
+  "analytics_vip_top_buyer": "Крупнейший покупатель",
+  "analytics_vip_completed": "Премиум заказ"
 }

@@ -372,5 +372,9 @@
   "analytics_countries": "🌍 دول التوصيل",
   "analytics_recent_orders": "أحدث الطلبات",
   "analytics_customers_count": "العملاء:",
-  "analytics_customers_subtitle": "28 عميل راضٍ من جميع أنحاء العالم"
+  "analytics_customers_subtitle": "28 عميل راضٍ من جميع أنحاء العالم",
+  "analytics_vip_title": "العملاء المميزون",
+  "analytics_vip_subtitle": "عملاء VIP بطلبات كبيرة",
+  "analytics_vip_top_buyer": "أكبر مشترٍ",
+  "analytics_vip_completed": "طلب مميز"
 }

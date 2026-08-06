@@ -372,5 +372,9 @@
   "analytics_countries": "🌍 Teslimat Ülkeleri",
   "analytics_recent_orders": "Son Siparişler",
   "analytics_customers_count": "Müşteriler:",
-  "analytics_customers_subtitle": "Dünyanın dört bir yanından 28 mutlu müşterimiz"
+  "analytics_customers_subtitle": "Dünyanın dört bir yanından 28 mutlu müşterimiz",
+  "analytics_vip_title": "Premium Müşteriler",
+  "analytics_vip_subtitle": "Büyük siparişli VIP müşteriler",
+  "analytics_vip_top_buyer": "En büyük alıcı",
+  "analytics_vip_completed": "Premium sipariş"
 }

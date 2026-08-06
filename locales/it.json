@@ -372,5 +372,9 @@
   "analytics_countries": "🌍 Paesi di consegna",
   "analytics_recent_orders": "Ordini recenti",
   "analytics_customers_count": "Clienti:",
-  "analytics_customers_subtitle": "I nostri 28 clienti soddisfatti da tutto il mondo"
+  "analytics_customers_subtitle": "I nostri 28 clienti soddisfatti da tutto il mondo",
+  "analytics_vip_title": "Clienti Premium",
+  "analytics_vip_subtitle": "Clienti VIP con ordini grandi",
+  "analytics_vip_top_buyer": "Miglior acquirente",
+  "analytics_vip_completed": "Ordine premium"
 }
