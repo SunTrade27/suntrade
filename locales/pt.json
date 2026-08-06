@@ -376,5 +376,12 @@
   "analytics_vip_title": "Clientes Premium",
   "analytics_vip_subtitle": "Clientes VIP com pedidos grandes",
   "analytics_vip_top_buyer": "Maior comprador",
-  "analytics_vip_completed": "Pedido premium"
+  "analytics_vip_completed": "Pedido premium",
+  "analytics_vip_gold": "Ouro",
+  "analytics_vip_silver": "Prata",
+  "analytics_vip_bronze": "Bronze",
+  "analytics_vip_monthly_gift": "Presente mensal",
+  "analytics_vip_top3_gift_title": "Top 3 ganha um presente todo mês!",
+  "analytics_vip_top3_gift_sub": "Ouro, Prata, Bronze — presentes especiais todo mês",
+  "analytics_vip_climb": "Suba de nível!"
 }

@@ -421,5 +421,12 @@
   "analytics_vip_title": "Премиум сатып алушылар",
   "analytics_vip_subtitle": "Үлкен сомаға тауар алған VIP клиенттер",
   "analytics_vip_top_buyer": "Ең үлкен сатып алушы",
-  "analytics_vip_completed": "Премиум заказ"
+  "analytics_vip_completed": "Премиум заказ",
+  "analytics_vip_gold": "Gold · Алтын",
+  "analytics_vip_silver": "Silver · Күміс",
+  "analytics_vip_bronze": "Bronze · Қола",
+  "analytics_vip_monthly_gift": "Ай сайын сыйлық",
+  "analytics_vip_top3_gift_title": "Топ-3 ай сайын сыйлық алады!",
+  "analytics_vip_top3_gift_sub": "Алтын, күміс, қола — ай сайын ерекше сыйлықтар",
+  "analytics_vip_climb": "Көтеріліңіз!"
 }

@@ -376,5 +376,12 @@
   "analytics_vip_title": "Premium-klanten",
   "analytics_vip_subtitle": "VIP-klanten met grote bestellingen",
   "analytics_vip_top_buyer": "Topkoper",
-  "analytics_vip_completed": "Premium bestelling"
+  "analytics_vip_completed": "Premium bestelling",
+  "analytics_vip_gold": "Goud",
+  "analytics_vip_silver": "Zilver",
+  "analytics_vip_bronze": "Brons",
+  "analytics_vip_monthly_gift": "Maandelijkse beloning",
+  "analytics_vip_top3_gift_title": "Top 3 wint elke maand een cadeau!",
+  "analytics_vip_top3_gift_sub": "Goud, Zilver, Brons — elke maand speciale cadeaus",
+  "analytics_vip_climb": "Klim omhoog!"
 }

@@ -376,5 +376,12 @@
   "analytics_vip_title": "العملاء المميزون",
   "analytics_vip_subtitle": "عملاء VIP بطلبات كبيرة",
   "analytics_vip_top_buyer": "أكبر مشترٍ",
-  "analytics_vip_completed": "طلب مميز"
+  "analytics_vip_completed": "طلب مميز",
+  "analytics_vip_gold": "ذهبي · Gold",
+  "analytics_vip_silver": "فضي · Silver",
+  "analytics_vip_bronze": "برونزي · Bronze",
+  "analytics_vip_monthly_gift": "هدية شهرية",
+  "analytics_vip_top3_gift_title": "أفضل 3 يفوزون بهدية كل شهر!",
+  "analytics_vip_top3_gift_sub": "ذهب، فضة، برونز — هدايا خاصة كل شهر",
+  "analytics_vip_climb": "اصعد!"
 }

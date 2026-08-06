@@ -245,7 +245,7 @@
   }
   .vip-head {
     display: flex; justify-content: space-between; align-items: flex-start;
-    flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1.25rem;
+    flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1.1rem;
     position: relative; z-index: 1;
   }
   .vip-head-title {
@@ -265,47 +265,109 @@
     background: rgba(255,215,0,0.08); padding: 5px 12px; border-radius: 50px;
     border: 1px solid rgba(255,215,0,0.25);
   }
-  .vip-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;
+
+  /* ----- Monthly-gift banner ----- */
+  .vip-gift-banner {
+    display: flex; align-items: center; gap: 0.85rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: 16px;
+    background:
+      linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,107,0,0.10)),
+      rgba(11,22,40,0.35);
+    border: 1.5px solid rgba(255,215,0,0.45);
+    margin-bottom: 1.25rem;
+    position: relative; z-index: 1;
+    box-shadow: 0 4px 18px rgba(255,180,0,0.15), inset 0 1px 0 rgba(255,255,255,0.06);
+    overflow: hidden;
+  }
+  .vip-gift-banner::after {
+    content: '';
+    position: absolute; top: -40%; right: -10%; width: 60%; height: 180%;
+    background: radial-gradient(ellipse at center, rgba(255,215,0,0.20) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .vip-gift-banner-icon {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: linear-gradient(135deg, #FFD700, #FF6B00);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(255,180,0,0.5), inset 0 1px 0 rgba(255,255,255,0.3);
+    animation: giftPulse 2.6s ease-in-out infinite;
+  }
+  .vip-gift-banner-icon svg { width: 22px; height: 22px; color: #0b1628; }
+  .vip-gift-banner-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; position: relative; z-index: 1; }
+  .vip-gift-banner-text strong {
+    font-size: 0.95rem; color: #FFD700;
+    font-weight: 800; letter-spacing: 0.3px;
+  }
+  .vip-gift-banner-text span {
+    font-size: 0.78rem; color: rgba(255,255,255,0.7);
+    font-weight: 500;
+  }
+  @keyframes giftPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 4px 14px rgba(255,180,0,0.5), inset 0 1px 0 rgba(255,255,255,0.3); }
+    50% { transform: scale(1.06); box-shadow: 0 6px 22px rgba(255,180,0,0.75), inset 0 1px 0 rgba(255,255,255,0.4); }
+  }
+
+  /* ----- 3-column rank grid (1 -> 9) ----- */
+  .vip-rank-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.85rem;
     position: relative; z-index: 1;
   }
-  @media (max-width: 768px) { .vip-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 768px) { .vip-rank-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .vip-rank-grid { grid-template-columns: 1fr; } }
 
-  .vip-card {
+  /* Base rank card */
+  .vip-rank-card {
+    display: flex; flex-direction: column; gap: 0.7rem;
+    padding: 0.95rem 1rem;
+    border-radius: 16px;
+    background: rgba(11,22,40,0.55);
+    border: 1px solid rgba(255,255,255,0.08);
+    position: relative; overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .vip-rank-card:hover {
+    border-color: rgba(255,215,0,0.45);
+    box-shadow: 0 8px 24px rgba(255,180,0,0.18);
+    transform: translateY(-3px);
+  }
+  .vip-rank-medal {
+    display: flex; align-items: center; gap: 0.4rem;
+    flex-wrap: wrap;
+    font-size: 0.78rem; font-weight: 800;
+    letter-spacing: 0.5px; text-transform: uppercase;
+    min-width: 0;
+  }
+  .vip-rank-medal-icon { width: 18px; height: 18px; flex-shrink: 0; }
+  .vip-rank-num {
+    font-weight: 900; font-size: 0.85rem;
+    padding: 3px 8px; border-radius: 7px;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+  .vip-rank-tier {
+    font-size: 0.7rem; font-weight: 800;
+    letter-spacing: 1.2px;
+    white-space: nowrap;
+  }
+  .vip-rank-body {
     display: grid;
     grid-template-columns: 44px 1fr auto;
     align-items: center; gap: 0.85rem;
-    padding: 0.85rem 1rem;
-    border-radius: 14px;
-    background: rgba(11,22,40,0.45);
-    border: 1px solid rgba(255,255,255,0.06);
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    position: relative;
-    overflow: hidden;
   }
-  .vip-card:hover {
-    transform: translateY(-3px);
-    border-color: rgba(255,215,0,0.4);
-    box-shadow: 0 8px 24px rgba(255,215,0,0.12);
+  .vip-gift-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 9px; border-radius: 50px;
+    font-size: 0.62rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.7px;
+    align-self: flex-start;
   }
-  .vip-card-top {
-    grid-column: 1 / -1;
-    grid-template-columns: 56px 1fr auto auto;
-    padding: 1.1rem 1.25rem;
-    background:
-      linear-gradient(135deg, rgba(255,215,0,0.10), rgba(255,107,0,0.08)),
-      rgba(11,22,40,0.55);
-    border: 1.5px solid rgba(255,215,0,0.45);
-    box-shadow: 0 8px 30px rgba(255,180,0,0.18), inset 0 1px 0 rgba(255,255,255,0.08);
-  }
-  .vip-rank {
-    position: absolute; top: 8px; right: 12px;
-    background: linear-gradient(135deg, #FFD700, #FF8C00);
-    color: #0b1628; font-size: 0.7rem; font-weight: 900;
-    padding: 3px 9px; border-radius: 50px;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(255,200,0,0.4);
-  }
+  .vip-gift-pill svg { width: 11px; height: 11px; flex-shrink: 0; }
+
+  /* ----- Shared name/avatar/meta ----- */
   .vip-avatar {
     width: 44px; height: 44px;
     border-radius: 50%;
@@ -315,41 +377,132 @@
     border: 2px solid rgba(255,255,255,0.18);
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   }
-  .vip-card-top .vip-avatar { width: 56px; height: 56px; font-size: 0.95rem; }
   .vip-info { min-width: 0; }
   .vip-name {
-    font-size: 0.95rem; font-weight: 700; color: rgba(255,255,255,0.95);
+    font-size: 0.92rem; font-weight: 700; color: rgba(255,255,255,0.96);
     line-height: 1.2; margin-bottom: 4px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-  .vip-card-top .vip-name { font-size: 1.1rem; }
   .vip-meta {
-    font-size: 0.7rem; color: rgba(255,215,0,0.75);
+    font-size: 0.68rem;
     display: inline-flex; align-items: center; gap: 4px;
-    text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600;
   }
-  .vip-status-ico { width: 11px; height: 11px; color: #10B981; }
-  .vip-amount {
+  .vip-status-ico { width: 11px; height: 11px; }
+  .vip-amount-regular {
     font-size: 1.15rem; font-weight: 800;
     background: linear-gradient(135deg, #FFD700, #FF8C00);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     white-space: nowrap; flex-shrink: 0;
   }
-  .vip-amount-top {
-    font-size: 1.85rem; font-weight: 900;
+
+  /* ----- #1 Gold ----- */
+  .vip-rank-gold {
+    background:
+      linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,107,0,0.10)),
+      rgba(11,22,40,0.6);
+    border: 1.5px solid rgba(255,215,0,0.6);
+    box-shadow: 0 8px 30px rgba(255,180,0,0.22), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  .vip-rank-gold .vip-rank-medal-icon { color: #FFD700; filter: drop-shadow(0 0 4px rgba(255,215,0,0.6)); }
+  .vip-rank-gold .vip-rank-num { background: linear-gradient(135deg, #FFD700, #FF8C00); color: #0b1628; }
+  .vip-rank-gold .vip-rank-tier { color: #FFD700; }
+  .vip-avatar-gold { background: linear-gradient(135deg, #FFD700, #FF6B00); color: #0b1628; border-color: rgba(255,215,0,0.6); }
+  .vip-rank-gold .vip-meta { color: rgba(255,215,0,0.85); }
+  .vip-rank-gold .vip-status-ico { color: #10B981; }
+  .vip-amount-gold {
+    font-size: 1.55rem; font-weight: 900;
     background: linear-gradient(135deg, #FFD700 0%, #FF8C00 50%, #FF4500 100%);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     white-space: nowrap; flex-shrink: 0;
-    text-shadow: 0 0 20px rgba(255,180,0,0.25);
+    text-shadow: 0 0 24px rgba(255,180,0,0.30);
   }
+  .vip-rank-gold .vip-gift-pill {
+    background: linear-gradient(135deg, rgba(255,215,0,0.30), rgba(255,107,0,0.18));
+    color: #FFD700;
+    border: 1px solid rgba(255,215,0,0.55);
+  }
+  .vip-rank-gold .vip-gift-pill svg { color: #FFD700; }
+
+  /* ----- #2 Silver ----- */
+  .vip-rank-silver {
+    background:
+      linear-gradient(135deg, rgba(220,228,238,0.16), rgba(168,184,200,0.08)),
+      rgba(11,22,40,0.6);
+    border: 1.5px solid rgba(192,199,208,0.5);
+    box-shadow: 0 6px 22px rgba(192,199,208,0.10), inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+  .vip-rank-silver .vip-rank-medal-icon { color: #DCE4EC; }
+  .vip-rank-silver .vip-rank-num { background: linear-gradient(135deg, #E5ECF2, #A8B8C8); color: #0b1628; }
+  .vip-rank-silver .vip-rank-tier { color: #DCE4EC; }
+  .vip-avatar-silver { background: linear-gradient(135deg, #E5ECF2, #A8B8C8); color: #0b1628; border-color: rgba(220,228,238,0.5); }
+  .vip-rank-silver .vip-meta { color: rgba(220,228,238,0.85); }
+  .vip-rank-silver .vip-status-ico { color: #10B981; }
+  .vip-amount-silver {
+    font-size: 1.55rem; font-weight: 900;
+    background: linear-gradient(135deg, #F0F4F8 0%, #C0C7D0 50%, #A8B8C8 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    white-space: nowrap; flex-shrink: 0;
+    text-shadow: 0 0 24px rgba(192,199,208,0.18);
+  }
+  .vip-rank-silver .vip-gift-pill {
+    background: linear-gradient(135deg, rgba(224,229,235,0.28), rgba(168,184,200,0.18));
+    color: #DCE4EC;
+    border: 1px solid rgba(192,199,208,0.5);
+  }
+  .vip-rank-silver .vip-gift-pill svg { color: #DCE4EC; }
+
+  /* ----- #3 Bronze ----- */
+  .vip-rank-bronze {
+    background:
+      linear-gradient(135deg, rgba(205,127,50,0.16), rgba(139,69,19,0.08)),
+      rgba(11,22,40,0.6);
+    border: 1.5px solid rgba(205,127,50,0.5);
+    box-shadow: 0 6px 22px rgba(205,127,50,0.10), inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+  .vip-rank-bronze .vip-rank-medal-icon { color: #CD7F32; }
+  .vip-rank-bronze .vip-rank-num { background: linear-gradient(135deg, #CD7F32, #8B4513); color: #fff; }
+  .vip-rank-bronze .vip-rank-tier { color: #CD7F32; }
+  .vip-avatar-bronze { background: linear-gradient(135deg, #CD7F32, #8B4513); color: #fff; border-color: rgba(205,127,50,0.5); }
+  .vip-rank-bronze .vip-meta { color: rgba(205,127,50,0.85); }
+  .vip-rank-bronze .vip-status-ico { color: #10B981; }
+  .vip-amount-bronze {
+    font-size: 1.55rem; font-weight: 900;
+    background: linear-gradient(135deg, #CD7F32 0%, #A55A28 50%, #8B4513 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    white-space: nowrap; flex-shrink: 0;
+    text-shadow: 0 0 24px rgba(205,127,50,0.20);
+  }
+  .vip-rank-bronze .vip-gift-pill {
+    background: linear-gradient(135deg, rgba(205,127,50,0.28), rgba(139,69,19,0.18));
+    color: #CD7F32;
+    border: 1px solid rgba(205,127,50,0.5);
+  }
+  .vip-rank-bronze .vip-gift-pill svg { color: #CD7F32; }
+
+  /* ----- #4-#9 generic ranks ----- */
+  .vip-rank-n .vip-rank-num { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.15); }
+  .vip-rank-n .vip-rank-tier { color: rgba(255,255,255,0.4); }
+  .vip-rank-n .vip-rank-medal-icon { color: rgba(255,255,255,0.45); }
+  .vip-rank-n .vip-meta { color: rgba(255,255,255,0.5); }
+  .vip-rank-n .vip-status-ico { color: #10B981; }
+
+  /* ----- Mobile / small screens ----- */
   @media (max-width: 480px) {
     .vip-customers { padding: 1.25rem 1rem; border-radius: 18px; }
-    .vip-card-top { grid-template-columns: 48px 1fr auto; gap: 0.75rem; padding: 1rem 1rem; }
-    .vip-amount-top { font-size: 1.45rem; }
-    .vip-amount { font-size: 1.05rem; }
-    .vip-name { font-size: 0.85rem; }
-    .vip-card-top .vip-name { font-size: 0.95rem; }
-    .vip-meta { font-size: 0.65rem; }
+    .vip-gift-banner { padding: 0.75rem 0.9rem; gap: 0.7rem; }
+    .vip-gift-banner-icon { width: 38px; height: 38px; }
+    .vip-gift-banner-icon svg { width: 18px; height: 18px; }
+    .vip-gift-banner-text strong { font-size: 0.85rem; }
+    .vip-gift-banner-text span { font-size: 0.72rem; }
+    .vip-rank-card { padding: 0.8rem 0.85rem; border-radius: 14px; }
+    .vip-rank-body { gap: 0.7rem; grid-template-columns: 38px 1fr auto; }
+    .vip-avatar { width: 38px; height: 38px; font-size: 0.7rem; border-width: 1.5px; }
+    .vip-name { font-size: 0.82rem; }
+    .vip-meta { font-size: 0.6rem; }
+    .vip-amount-gold, .vip-amount-silver, .vip-amount-bronze { font-size: 1.25rem; }
+    .vip-amount-regular { font-size: 1.05rem; }
+    .vip-rank-medal-icon { width: 16px; height: 16px; }
   }
 
   .analytics-footer { text-align: center; margin-top: 1rem; }
@@ -461,64 +614,209 @@
           <span data-i18n="analytics_vip_subtitle">Үлкен сомаға тауар алған VIP клиенттер</span>
         </div>
       </div>
-      <div class="vip-grid">
-        <!-- Top buyer highlighted -->
-        <div class="vip-card vip-card-top">
-          <div class="vip-rank">№1</div>
-          <div class="vip-avatar" style="background:linear-gradient(135deg,#FFD700,#FF6B00)">МБ</div>
-          <div class="vip-info">
-            <div class="vip-name">Марат Бекжанов</div>
-            <div class="vip-meta">
-              <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
-              <span data-i18n="analytics_vip_top_buyer">Ең үлкен сатып алушы</span>
-            </div>
-          </div>
-          <div class="vip-amount-top">€7300</div>
+
+      <!-- ----- Top-3 monthly gift banner ----- -->
+      <div class="vip-gift-banner">
+        <div class="vip-gift-banner-icon">
+          <svg><use href="#icon-gift"/></svg>
         </div>
-        <!-- 4 other €2000 buyers — required + 2 extras -->
-        <div class="vip-card">
-          <div class="vip-avatar" style="background:linear-gradient(135deg,#10B981,#059669)">ES</div>
-          <div class="vip-info">
-            <div class="vip-name">Emma Schneider</div>
-            <div class="vip-meta">
-              <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
-              <span data-i18n="analytics_vip_completed">Премиум заказ</span>
-            </div>
-          </div>
-          <div class="vip-amount">€2000</div>
+        <div class="vip-gift-banner-text">
+          <strong data-i18n="analytics_vip_top3_gift_title">Топ-3 ай сайын сыйлық алады!</strong>
+          <span data-i18n="analytics_vip_top3_gift_sub">Алтын, күміс, қола — ай сайын ерекше сыйлықтар</span>
         </div>
-        <div class="vip-card">
-          <div class="vip-avatar" style="background:linear-gradient(135deg,#3B82F6,#2563EB)">HM</div>
-          <div class="vip-info">
-            <div class="vip-name">Hans Müller</div>
-            <div class="vip-meta">
-              <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
-              <span data-i18n="analytics_vip_completed">Премиум заказ</span>
-            </div>
+      </div>
+
+      <div class="vip-rank-grid">
+        <!-- #1 Gold -->
+        <div class="vip-rank-card vip-rank-gold">
+          <div class="vip-rank-medal">
+            <svg class="vip-rank-medal-icon"><use href="#icon-trophy"/></svg>
+            <span class="vip-rank-num">№1</span>
+            <span class="vip-rank-tier" data-i18n="analytics_vip_gold">Gold · Алтын</span>
           </div>
-          <div class="vip-amount">€2000</div>
+          <div class="vip-gift-pill">
+            <svg><use href="#icon-gift"/></svg>
+            <span data-i18n="analytics_vip_monthly_gift">Ай сайын сыйлық</span>
+          </div>
+          <div class="vip-rank-body">
+            <div class="vip-avatar vip-avatar-gold">МБ</div>
+            <div class="vip-info">
+              <div class="vip-name">Марат Бекжанов</div>
+              <div class="vip-meta">
+                <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
+                <span data-i18n="analytics_vip_top_buyer">Ең үлкен сатып алушы</span>
+              </div>
+            </div>
+            <div class="vip-amount-gold">€7300</div>
+          </div>
         </div>
-        <div class="vip-card">
-          <div class="vip-avatar" style="background:linear-gradient(135deg,#8B5CF6,#7C3AED)">MI</div>
-          <div class="vip-info">
-            <div class="vip-name">Marica Ivanović</div>
-            <div class="vip-meta">
-              <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
-              <span data-i18n="analytics_vip_completed">Премиум заказ</span>
-            </div>
+
+        <!-- #2 Silver -->
+        <div class="vip-rank-card vip-rank-silver">
+          <div class="vip-rank-medal">
+            <svg class="vip-rank-medal-icon"><use href="#icon-medal"/></svg>
+            <span class="vip-rank-num">№2</span>
+            <span class="vip-rank-tier" data-i18n="analytics_vip_silver">Silver · Күміс</span>
           </div>
-          <div class="vip-amount">€2000</div>
+          <div class="vip-gift-pill">
+            <svg><use href="#icon-gift"/></svg>
+            <span data-i18n="analytics_vip_monthly_gift">Ай сайын сыйлық</span>
+          </div>
+          <div class="vip-rank-body">
+            <div class="vip-avatar vip-avatar-silver">ES</div>
+            <div class="vip-info">
+              <div class="vip-name">Emma Schneider</div>
+              <div class="vip-meta">
+                <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
+                <span data-i18n="analytics_vip_completed">Премиум заказ</span>
+              </div>
+            </div>
+            <div class="vip-amount-silver">€2000</div>
+          </div>
         </div>
-        <div class="vip-card">
-          <div class="vip-avatar" style="background:linear-gradient(135deg,#EC4899,#BE185D)">OC</div>
-          <div class="vip-info">
-            <div class="vip-name">Olivia Chen</div>
-            <div class="vip-meta">
-              <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
-              <span data-i18n="analytics_vip_completed">Премиум заказ</span>
-            </div>
+
+        <!-- #3 Bronze -->
+        <div class="vip-rank-card vip-rank-bronze">
+          <div class="vip-rank-medal">
+            <svg class="vip-rank-medal-icon"><use href="#icon-medal"/></svg>
+            <span class="vip-rank-num">№3</span>
+            <span class="vip-rank-tier" data-i18n="analytics_vip_bronze">Bronze · Қола</span>
           </div>
-          <div class="vip-amount">€2000</div>
+          <div class="vip-gift-pill">
+            <svg><use href="#icon-gift"/></svg>
+            <span data-i18n="analytics_vip_monthly_gift">Ай сайын сыйлық</span>
+          </div>
+          <div class="vip-rank-body">
+            <div class="vip-avatar vip-avatar-bronze">HM</div>
+            <div class="vip-info">
+              <div class="vip-name">Hans Müller</div>
+              <div class="vip-meta">
+                <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
+                <span data-i18n="analytics_vip_completed">Премиум заказ</span>
+              </div>
+            </div>
+            <div class="vip-amount-bronze">€2000</div>
+          </div>
+        </div>
+
+        <!-- #4 -->
+        <div class="vip-rank-card vip-rank-n">
+          <div class="vip-rank-medal">
+            <svg class="vip-rank-medal-icon"><use href="#icon-trending-up"/></svg>
+            <span class="vip-rank-num">№4</span>
+            <span class="vip-rank-tier" data-i18n="analytics_vip_climb">Көтеріліңіз!</span>
+          </div>
+          <div class="vip-rank-body">
+            <div class="vip-avatar" style="background:linear-gradient(135deg,#06B6D4,#0891B2)">YD</div>
+            <div class="vip-info">
+              <div class="vip-name">Yusuf Demir</div>
+              <div class="vip-meta">
+                <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
+                <span data-i18n="analytics_vip_completed">Премиум заказ</span>
+              </div>
+            </div>
+            <div class="vip-amount-regular">€1850</div>
+          </div>
+        </div>
+
+        <!-- #5 -->
+        <div class="vip-rank-card vip-rank-n">
+          <div class="vip-rank-medal">
+            <svg class="vip-rank-medal-icon"><use href="#icon-trending-up"/></svg>
+            <span class="vip-rank-num">№5</span>
+            <span class="vip-rank-tier" data-i18n="analytics_vip_climb">Көтеріліңіз!</span>
+          </div>
+          <div class="vip-rank-body">
+            <div class="vip-avatar" style="background:linear-gradient(135deg,#EC4899,#BE185D)">MW</div>
+            <div class="vip-info">
+              <div class="vip-name">林美华</div>
+              <div class="vip-meta">
+                <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
+                <span data-i18n="analytics_vip_completed">Премиум заказ</span>
+              </div>
+            </div>
+            <div class="vip-amount-regular">€1450</div>
+          </div>
+        </div>
+
+        <!-- #6 -->
+        <div class="vip-rank-card vip-rank-n">
+          <div class="vip-rank-medal">
+            <svg class="vip-rank-medal-icon"><use href="#icon-trending-up"/></svg>
+            <span class="vip-rank-num">№6</span>
+            <span class="vip-rank-tier" data-i18n="analytics_vip_climb">Көтеріліңіз!</span>
+          </div>
+          <div class="vip-rank-body">
+            <div class="vip-avatar" style="background:linear-gradient(135deg,#14B8A6,#0D9488)">LS</div>
+            <div class="vip-info">
+              <div class="vip-name">Lukas Schmidt</div>
+              <div class="vip-meta">
+                <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
+                <span data-i18n="analytics_vip_completed">Премиум заказ</span>
+              </div>
+            </div>
+            <div class="vip-amount-regular">€1320</div>
+          </div>
+        </div>
+
+        <!-- #7 -->
+        <div class="vip-rank-card vip-rank-n">
+          <div class="vip-rank-medal">
+            <svg class="vip-rank-medal-icon"><use href="#icon-trending-up"/></svg>
+            <span class="vip-rank-num">№7</span>
+            <span class="vip-rank-tier" data-i18n="analytics_vip_climb">Көтеріліңіз!</span>
+          </div>
+          <div class="vip-rank-body">
+            <div class="vip-avatar" style="background:linear-gradient(135deg,#F59E0B,#D97706)">ГТ</div>
+            <div class="vip-info">
+              <div class="vip-name">Гульнара Тілеуова</div>
+              <div class="vip-meta">
+                <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
+                <span data-i18n="analytics_vip_completed">Премиум заказ</span>
+              </div>
+            </div>
+            <div class="vip-amount-regular">€1080</div>
+          </div>
+        </div>
+
+        <!-- #8 -->
+        <div class="vip-rank-card vip-rank-n">
+          <div class="vip-rank-medal">
+            <svg class="vip-rank-medal-icon"><use href="#icon-trending-up"/></svg>
+            <span class="vip-rank-num">№8</span>
+            <span class="vip-rank-tier" data-i18n="analytics_vip_climb">Көтеріліңіз!</span>
+          </div>
+          <div class="vip-rank-body">
+            <div class="vip-avatar" style="background:linear-gradient(135deg,#EF4444,#DC2626)">АИ</div>
+            <div class="vip-info">
+              <div class="vip-name">Александр Иванов</div>
+              <div class="vip-meta">
+                <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
+                <span data-i18n="analytics_vip_completed">Премиум заказ</span>
+              </div>
+            </div>
+            <div class="vip-amount-regular">€950</div>
+          </div>
+        </div>
+
+        <!-- #9 -->
+        <div class="vip-rank-card vip-rank-n">
+          <div class="vip-rank-medal">
+            <svg class="vip-rank-medal-icon"><use href="#icon-trending-up"/></svg>
+            <span class="vip-rank-num">№9</span>
+            <span class="vip-rank-tier" data-i18n="analytics_vip_climb">Көтеріліңіз!</span>
+          </div>
+          <div class="vip-rank-body">
+            <div class="vip-avatar" style="background:linear-gradient(135deg,#8B5CF6,#7C3AED)">SV</div>
+            <div class="vip-info">
+              <div class="vip-name">Sofia Volkov</div>
+              <div class="vip-meta">
+                <svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>
+                <span data-i18n="analytics_vip_completed">Премиум заказ</span>
+              </div>
+            </div>
+            <div class="vip-amount-regular">€820</div>
+          </div>
         </div>
       </div>
     </div>
@@ -580,38 +878,64 @@
         .order('created_at', { ascending: false }).limit(200);
       const { count: realTotalCount } = await sb.from('orders').select('id', { count: 'exact', head: true });
 
-      // 28 demo customers — first one = Paid, second one = Packing, all the rest = Delivered.
-      // Required names are first three rows: Emma Schneider (DE), Марат Бекжанов (KZ), Hans Müller (DE — with ü).
-      // Dates are spread across the last 30 days. Real customer orders always merge on top, newest first.
+      // 28 demo customers, distributed realistically across the last ~25 days:
+      //   - Required big spenders (top of Recent Orders): Emma Schneider €2000 (PAID),
+      //     Marat Бекжанов €7300 (PACKING), Hans Müller €2000 (DELIVERED).
+      //   - Smaller purchases for the rest, with realistic specific amounts for
+      //     Marica Ivanović €221.40 and Olivia Chen €125.98 per product spec.
+      //   - Some days have 2 orders, some days have 1, and a few days have NO
+      //     orders — so the timeline feels lived-in, not auto-generated.
+      //   - PAID status always renders "now" (live current time). All other statuses
+      //     render the real created_at. Real Supabase orders merge on top, newest first.
       var demoOrders = [
-        { customer_name: 'Emma Schneider',   amount: 142.50, status: 'paid',      created_at: '2026-08-06T16:30:00' },
-        { customer_name: 'Марат Бекжанов',     amount: 89.00,  status: 'packing',   created_at: '2026-08-06T15:30:00' },
-        { customer_name: 'Hans Müller',        amount: 256.80, status: 'delivered', created_at: '2026-08-05T09:45:00' },
-        { customer_name: 'Ayşe Yılmaz',        amount: 67.20,  status: 'delivered', created_at: '2026-08-05T18:20:00' },
-        { customer_name: 'София Иванова',      amount: 310.00, status: 'delivered', created_at: '2026-08-05T13:10:00' },
-        { customer_name: 'James Carter',       amount: 45.90,  status: 'delivered', created_at: '2026-08-04T10:00:00' },
-        { customer_name: 'Pierre Dubois',      amount: 178.30, status: 'delivered', created_at: '2026-08-06T08:00:00' },
-        { customer_name: 'Marco Rossi',        amount: 92.00,  status: 'delivered', created_at: '2026-08-05T15:30:00' },
-        { customer_name: 'Laura García',       amount: 215.40, status: 'delivered', created_at: '2026-08-04T12:45:00' },
-        { customer_name: 'Әлия Мұратова',      amount: 134.00, status: 'delivered', created_at: '2026-08-06T14:20:00' },
-        { customer_name: 'Anna Kowalski',      amount: 76.50,  status: 'delivered', created_at: '2026-08-04T17:00:00' },
-        { customer_name: 'Thomas Becker',      amount: 198.90, status: 'delivered', created_at: '2026-08-06T10:15:00' },
-        { customer_name: 'Mei Lin',            amount: 54.20,  status: 'delivered', created_at: '2026-08-03T11:30:00' },
-        { customer_name: 'Lucas Oliveira',     amount: 162.00, status: 'delivered', created_at: '2026-08-06T09:00:00' },
-        { customer_name: 'Ботагөз Қасымова',   amount: 88.75,  status: 'delivered', created_at: '2026-08-02T14:00:00' },
-        { customer_name: 'Isabella Romano',    amount: 246.30, status: 'delivered', created_at: '2026-08-03T08:30:00' },
-        { customer_name: 'Інкәр Сембаева',     amount: 119.60, status: 'delivered', created_at: '2026-07-31T15:45:00' },
-        { customer_name: 'Olivia Smith',       amount: 73.40,  status: 'delivered', created_at: '2026-07-30T11:00:00' },
-        { customer_name: 'Ақмарал Жүнісова',   amount: 95.00,  status: 'delivered', created_at: '2026-08-02T16:20:00' },
-        { customer_name: 'Yuki Tanaka',        amount: 187.20, status: 'delivered', created_at: '2026-08-01T10:30:00' },
-        { customer_name: 'Fatima Al-Hassan',   amount: 64.80,  status: 'delivered', created_at: '2026-07-31T13:15:00' },
-        { customer_name: 'Виктор Петров',     amount: 221.00, status: 'delivered', created_at: '2026-07-29T09:00:00' },
-        { customer_name: 'Carlos Mendoza',     amount: 109.50, status: 'delivered', created_at: '2026-07-28T14:00:00' },
-        { customer_name: 'Willem de Vries',    amount: 156.70, status: 'delivered', created_at: '2026-07-27T11:30:00' },
-        { customer_name: 'Дарига Болатов',     amount: 82.30,  status: 'delivered', created_at: '2026-07-26T16:00:00' },
-        { customer_name: 'Sophie Laurent',     amount: 268.90, status: 'delivered', created_at: '2026-07-25T12:45:00' },
-        { customer_name: 'Дмитрий Орлов',     amount: 99.50,  status: 'delivered', created_at: '2026-07-24T15:30:00' },
-        { customer_name: 'Айгерім Сәрсенова',  amount: 124.40, status: 'delivered', created_at: '2026-07-23T10:00:00' }
+        // ---- Today (2026-08-06) — 3 orders ----
+        { customer_name: 'Emma Schneider',     amount: 2000.00, status: 'paid',      created_at: '2026-08-06T16:30:00' },
+        { customer_name: 'Марат Бекжанов',      amount: 7300.00, status: 'packing',   created_at: '2026-08-06T15:30:00' },
+        { customer_name: 'Әлия Мұратова',      amount: 134.00,  status: 'delivered', created_at: '2026-08-06T14:20:00' },
+        // ---- Yesterday (2026-08-05) — 2 orders ----
+        { customer_name: 'Hans Müller',        amount: 2000.00, status: 'delivered', created_at: '2026-08-05T18:30:00' },
+        { customer_name: 'Thomas Becker',      amount: 198.90,  status: 'delivered', created_at: '2026-08-05T10:15:00' },
+        // ---- 2026-08-04 — 2 orders ----
+        { customer_name: 'Ayşe Yılmaz',        amount: 67.20,   status: 'delivered', created_at: '2026-08-04T14:30:00' },
+        { customer_name: 'Pierre Dubois',      amount: 178.30,  status: 'shipped',   created_at: '2026-08-04T09:00:00' },
+        // ---- 2026-08-03 — 2 orders ----
+        { customer_name: 'Marica Ivanović',    amount: 221.40,  status: 'delivered', created_at: '2026-08-03T13:00:00' },
+        { customer_name: 'Lucas Oliveira',     amount: 162.00,  status: 'delivered', created_at: '2026-08-03T09:00:00' },
+        // ---- 2026-08-02 — 2 orders ----
+        { customer_name: 'Olivia Chen',        amount: 125.98,  status: 'delivered', created_at: '2026-08-02T16:45:00' },
+        { customer_name: 'Marco Rossi',        amount: 92.00,   status: 'delivered', created_at: '2026-08-02T08:45:00' },
+        // ---- GAP: 2026-08-01 (no orders) ----
+        // ---- 2026-07-31 — 2 orders ----
+        { customer_name: 'Mei Lin',            amount: 54.20,   status: 'delivered', created_at: '2026-07-31T15:45:00' },
+        { customer_name: 'Anna Kowalski',      amount: 76.50,   status: 'delivered', created_at: '2026-07-31T13:15:00' },
+        // ---- 2026-07-30 — 1 order ----
+        { customer_name: 'Isabella Romano',    amount: 246.30,  status: 'delivered', created_at: '2026-07-30T11:00:00' },
+        // ---- GAP: 2026-07-29 (no orders) ----
+        // ---- 2026-07-28 — 2 orders ----
+        { customer_name: 'Ақмарал Жүнісова',   amount: 95.00,   status: 'shipped',   created_at: '2026-07-28T16:20:00' },
+        { customer_name: 'Fatima Al-Hassan',   amount: 64.80,   status: 'delivered', created_at: '2026-07-28T11:00:00' },
+        // ---- 2026-07-26 — 1 order ----
+        { customer_name: 'Інкәр Сембаева',     amount: 119.60,  status: 'delivered', created_at: '2026-07-26T13:00:00' },
+        // ---- GAP: 2026-07-25 (no orders) ----
+        // ---- 2026-07-24 — 2 orders ----
+        { customer_name: 'Sophie Laurent',     amount: 268.90,  status: 'delivered', created_at: '2026-07-24T15:30:00' },
+        { customer_name: 'Дмитрий Орлов',     amount: 99.50,   status: 'delivered', created_at: '2026-07-24T09:00:00' },
+        // ---- 2026-07-22 — 2 orders ----
+        { customer_name: 'Айгерім Сәрсенова',  amount: 124.40,  status: 'delivered', created_at: '2026-07-22T13:00:00' },
+        { customer_name: 'Ботагөз Қасымова',   amount: 88.75,   status: 'delivered', created_at: '2026-07-22T10:00:00' },
+        // ---- GAP: 2026-07-19 to 2026-07-21 (no orders) ----
+        // ---- 2026-07-18 — 1 order ----
+        { customer_name: 'Дарига Болатов',     amount: 82.30,   status: 'delivered', created_at: '2026-07-18T16:00:00' },
+        // ---- 2026-07-17 — 2 orders ----
+        { customer_name: 'Carlos Mendoza',     amount: 109.50,  status: 'delivered', created_at: '2026-07-17T11:30:00' },
+        { customer_name: 'Willem de Vries',    amount: 156.70,  status: 'delivered', created_at: '2026-07-17T09:00:00' },
+        // ---- 2026-07-15 — 2 orders ----
+        { customer_name: 'Olivia Smith',       amount: 73.40,   status: 'delivered', created_at: '2026-07-15T14:00:00' },
+        { customer_name: 'Yuki Tanaka',        amount: 187.20,  status: 'delivered', created_at: '2026-07-15T11:00:00' },
+        // ---- 2026-07-13 — 1 order ----
+        { customer_name: 'София Иванова',      amount: 310.00,  status: 'delivered', created_at: '2026-07-13T18:00:00' },
+        // ---- 2026-07-11 — 1 order (single day, fills to 28 baseline customers) ----
+        { customer_name: 'Mehmet Yıldız',      amount: 142.00,  status: 'delivered', created_at: '2026-07-11T13:30:00' }
       ];
 
       var allOrders = [];
@@ -628,16 +952,24 @@
       allOrders = allOrders.slice(0, 28);
 
       document.getElementById('recent-orders-list').innerHTML = allOrders.map(function(o) {
-        var d = new Date(o.created_at);
+        // PAID status always renders "now" (live current time) — this matches the
+        // product rule "only PAID shows today's current time, others show their
+        // real created_at". To keep historical Supabase PAID orders honest, we
+        // only force "now" when the order was created within the last 60 minutes;
+        // any older PAID row falls through to its real created_at timestamp.
+        var isPaid = String(o.status || '').toLowerCase() === 'paid';
+        var ageMs = o.created_at ? (Date.now() - new Date(o.created_at).getTime()) : Infinity;
+        var d = (isPaid && ageMs >= 0 && ageMs < 60 * 60 * 1000) ? new Date() : new Date(o.created_at);
         var nm = o.customer_name || '—';
         var ini = getInitials(nm);
         var avBg = colorFromName(nm);
         var badgeCls = statusBadgeClass(o.status);
         var badgeTxt = escapeHtml(statusLabel(o.status));
         var iconId = escapeHtml(statusIcon(o.status));
+        var amtStr = formatAmount(o.amount);
         return '<div class="order-row">' +
           '<div class="order-avatar" style="background:' + avBg + '">' + escapeHtml(ini) + '</div>' +
-          '<div class="order-amount">€' + parseFloat(o.amount || 0).toFixed(0) + '</div>' +
+          '<div class="order-amount">€' + amtStr + '</div>' +
           '<div class="order-name">' + escapeHtml(nm) + '</div>' +
           '<div class="order-status ' + badgeCls + '">' +
             '<svg class="status-ico"><use href="#icon-' + iconId + '"/></svg>' +
@@ -664,6 +996,15 @@
 
     function setEl(id, val) { var el = document.getElementById(id); if (el) el.textContent = String(val); }
     function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    // Format a numeric amount preserving cents only when present.
+    // €2000 → "2000", €221.40 → "221.40", €125.98 → "125.98", €142.50 → "142.50"
+    function formatAmount(a) {
+      var f = parseFloat(a || 0);
+      if (!isFinite(f)) return '0';
+      var n2 = f.toFixed(2);
+      var n0 = f.toFixed(0);
+      return (n2 === n0 + '.00') ? n0 : n2;
+    }
     function getInitials(name) {
       var parts = String(name).trim().split(/\s+/);
       if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();

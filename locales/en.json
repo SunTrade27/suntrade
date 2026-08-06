@@ -421,5 +421,12 @@
   "analytics_vip_title": "Premium Customers",
   "analytics_vip_subtitle": "VIP clients with large orders",
   "analytics_vip_top_buyer": "Top Buyer",
-  "analytics_vip_completed": "Premium Order"
+  "analytics_vip_completed": "Premium Order",
+  "analytics_vip_gold": "Gold",
+  "analytics_vip_silver": "Silver",
+  "analytics_vip_bronze": "Bronze",
+  "analytics_vip_monthly_gift": "Monthly gift",
+  "analytics_vip_top3_gift_title": "Top 3 win a gift every month!",
+  "analytics_vip_top3_gift_sub": "Gold, Silver, Bronze — special gifts every month",
+  "analytics_vip_climb": "Climb up!"
 }

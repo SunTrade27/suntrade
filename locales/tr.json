@@ -376,5 +376,12 @@
   "analytics_vip_title": "Premium Müşteriler",
   "analytics_vip_subtitle": "Büyük siparişli VIP müşteriler",
   "analytics_vip_top_buyer": "En büyük alıcı",
-  "analytics_vip_completed": "Premium sipariş"
+  "analytics_vip_completed": "Premium sipariş",
+  "analytics_vip_gold": "Gold · Altın",
+  "analytics_vip_silver": "Silver · Gümüş",
+  "analytics_vip_bronze": "Bronze · Bronz",
+  "analytics_vip_monthly_gift": "Aylık hediye",
+  "analytics_vip_top3_gift_title": "İlk 3 her ay hediye kazanır!",
+  "analytics_vip_top3_gift_sub": "Altın, Gümüş, Bronz — her ay özel hediyeler",
+  "analytics_vip_climb": "Yüksel!"
 }

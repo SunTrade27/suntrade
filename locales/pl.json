@@ -376,5 +376,12 @@
   "analytics_vip_title": "Klienci Premium",
   "analytics_vip_subtitle": "Klienci VIP z dużymi zamówieniami",
   "analytics_vip_top_buyer": "Największy kupujący",
-  "analytics_vip_completed": "Zamówienie premium"
+  "analytics_vip_completed": "Zamówienie premium",
+  "analytics_vip_gold": "Złoto",
+  "analytics_vip_silver": "Srebro",
+  "analytics_vip_bronze": "Brąz",
+  "analytics_vip_monthly_gift": "Nagroda co miesiąc",
+  "analytics_vip_top3_gift_title": "Top 3 otrzymuje prezent co miesiąc!",
+  "analytics_vip_top3_gift_sub": "Złoto, Srebro, Brąz — specjalne nagrody co miesiąc",
+  "analytics_vip_climb": "Wspinaj się!"
 }
