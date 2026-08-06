@@ -470,5 +470,6 @@
   "return_contact_li_wa": "WhatsApp: <a href=\"https://wa.me/77021379248\" style=\"color:var(--primary);\" target=\"_blank\" rel=\"noopener\">+7 702 137 9248</a>",
   "return_more_info": "Толық шарттар мен талаптар үшін біздің <a href=\"/terms.html\" style=\"color:var(--primary);\">Қолдану шарттарын</a> қараңыз.",
   "footer_return": "Қайтару саясаты",
-  "terms_s7_return_intro": "Толық мәліметтер үшін біздің <a href=\"/return-policy.html\" style=\"color:var(--primary);\">Қайтару саясатын</a> қараңыз."
+  "terms_s7_return_intro": "Толық мәліметтер үшін біздің <a href=\"/return-policy.html\" style=\"color:var(--primary);\">Қайтару саясатын</a> қараңыз.",
+  "admin_product_images_reorder_hint": "Суреттерді ретін ауыстыру үшін сүйреңіз — бірінші сурет негізгі."
 }

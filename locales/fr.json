@@ -425,5 +425,6 @@
   "return_contact_li_wa": "WhatsApp : <a href=\"https://wa.me/77021379248\" style=\"color:var(--primary);\" target=\"_blank\" rel=\"noopener\">+7 702 137 9248</a>",
   "return_more_info": "Pour les conditions complètes, consultez nos <a href=\"/terms.html\" style=\"color:var(--primary);\">Conditions d'utilisation</a>.",
   "footer_return": "Politique de retour",
-  "terms_s7_return_intro": "Pour plus de détails, consultez notre <a href=\"/return-policy.html\" style=\"color:var(--primary);\">Politique de retour</a>."
+  "terms_s7_return_intro": "Pour plus de détails, consultez notre <a href=\"/return-policy.html\" style=\"color:var(--primary);\">Politique de retour</a>.",
+  "admin_product_images_reorder_hint": "Glissez les miniatures pour réorganiser — la première image est l’image principale."
 }

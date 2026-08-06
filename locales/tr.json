@@ -425,5 +425,6 @@
   "return_contact_li_wa": "WhatsApp: <a href=\"https://wa.me/77021379248\" style=\"color:var(--primary);\" target=\"_blank\" rel=\"noopener\">+7 702 137 9248</a>",
   "return_more_info": "Tam şartlar ve koşullar için <a href=\"/terms.html\" style=\"color:var(--primary);\">Hizmet Şartlarımıza</a> bakın.",
   "footer_return": "İade Politikası",
-  "terms_s7_return_intro": "Tüm ayrıntılar için <a href=\"/return-policy.html\" style=\"color:var(--primary);\">İade Politikamıza</a> bakın."
+  "terms_s7_return_intro": "Tüm ayrıntılar için <a href=\"/return-policy.html\" style=\"color:var(--primary);\">İade Politikamıza</a> bakın.",
+  "admin_product_images_reorder_hint": "Sıralamayı değiştirmek için küçük resimleri sürükleyin — ilk resim ana resimdir."
 }
