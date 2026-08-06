@@ -433,5 +433,13 @@
   "analytics_vip_monthly_gift": "Подарок каждый месяц",
   "analytics_vip_top3_gift_title": "Топ-3 получают подарок каждый месяц!",
   "analytics_vip_top3_gift_sub": "Золото, серебро, бронза — особые подарки каждый месяц",
-  "analytics_vip_climb": "Поднимитесь выше!"
+  "analytics_vip_climb": "Поднимитесь выше!",
+  "admin_product_option_groups": "Группы опций (Цвет, Вилка, Напряжение, ...)",
+  "admin_product_add_option_group": "+ Добавить группу опций (Цвет, Вилка, Размер, ...)",
+  "admin_product_option_groups_hint": "Примеры: \"Цвет: Чёрный, Белый, Розовый\" · \"Вилка: EU, AU, UK, US\" · \"Напряжение: 110V, 220-240V\"",
+  "admin_product_group_name": "напр. Цвет, Вилка, Размер",
+  "admin_product_add_option": "+ Добавить опцию",
+  "admin_product_option_label": "напр. Чёрный",
+  "admin_product_remove_option": "Удалить опцию",
+  "admin_product_remove_group": "Удалить группу"
 }

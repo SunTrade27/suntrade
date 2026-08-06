@@ -388,5 +388,13 @@
   "admin_product_variants": "Variantes do produto (Tipo 1, Tipo 2, ...)",
   "admin_product_add_variant": "+ Adicionar variante (Tipo 2, Tipo 3, ...)",
   "admin_product_remove_variant": "Remover variante",
-  "admin_product_min_one_variant": "É necessária pelo menos uma variante"
+  "admin_product_min_one_variant": "É necessária pelo menos uma variante",
+  "admin_product_option_groups": "Grupos de opções (Cor, Tomada, Voltagem, ...)",
+  "admin_product_add_option_group": "+ Adicionar grupo de opções (Cor, Tomada, Tamanho, ...)",
+  "admin_product_option_groups_hint": "Exemplos: \"Cor: Preto, Branco, Rosa\" · \"Tomada: EU, AU, UK, US\" · \"Voltagem: 110V, 220-240V\"",
+  "admin_product_group_name": "ex. Cor, Tomada, Tamanho",
+  "admin_product_add_option": "+ Adicionar opção",
+  "admin_product_option_label": "ex. Preto",
+  "admin_product_remove_option": "Remover opção",
+  "admin_product_remove_group": "Remover grupo"
 }

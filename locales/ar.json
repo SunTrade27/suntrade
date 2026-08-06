@@ -388,5 +388,13 @@
   "admin_product_variants": "أنواع المنتج (النوع 1، النوع 2، ...)",
   "admin_product_add_variant": "+ إضافة نوع (النوع 2، النوع 3، ...)",
   "admin_product_remove_variant": "إزالة النوع",
-  "admin_product_min_one_variant": "يجب إدخال نوع واحد على الأقل"
+  "admin_product_min_one_variant": "يجب إدخال نوع واحد على الأقل",
+  "admin_product_option_groups": "مجموعات الخيارات (اللون, القابس, الجهد, ...)",
+  "admin_product_add_option_group": "+ إضافة مجموعة خيارات (اللون, القابس, الحجم, ...)",
+  "admin_product_option_groups_hint": "أمثلة: \"اللون: أسود, أبيض, وردي\" · \"القابس: EU, AU, UK, US\" · \"الجهد: 110V, 220-240V\"",
+  "admin_product_group_name": "مثل اللون, القابس, الحجم",
+  "admin_product_add_option": "+ إضافة خيار",
+  "admin_product_option_label": "مثل أسود",
+  "admin_product_remove_option": "حذف الخيار",
+  "admin_product_remove_group": "حذف المجموعة"
 }

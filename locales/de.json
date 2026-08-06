@@ -388,5 +388,13 @@
   "admin_product_variants": "Produktvarianten (Typ 1, Typ 2, ...)",
   "admin_product_add_variant": "+ Variante hinzufügen (Typ 2, Typ 3, ...)",
   "admin_product_remove_variant": "Variante entfernen",
-  "admin_product_min_one_variant": "Mindestens eine Produktvariante ist erforderlich"
+  "admin_product_min_one_variant": "Mindestens eine Produktvariante ist erforderlich",
+  "admin_product_option_groups": "Optionsgruppen (Farbe, Stecker, Spannung, ...)",
+  "admin_product_add_option_group": "+ Optionsgruppe hinzufügen (Farbe, Stecker, Größe, ...)",
+  "admin_product_option_groups_hint": "Beispiele: \"Farbe: Schwarz, Weiß, Rosa\" · \"Stecker: EU, AU, UK, US\" · \"Spannung: 110V, 220-240V\"",
+  "admin_product_group_name": "z.B. Farbe, Stecker, Größe",
+  "admin_product_add_option": "+ Option hinzufügen",
+  "admin_product_option_label": "z.B. Schwarz",
+  "admin_product_remove_option": "Option entfernen",
+  "admin_product_remove_group": "Gruppe entfernen"
 }

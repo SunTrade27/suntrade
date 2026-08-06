@@ -433,5 +433,13 @@
   "analytics_vip_monthly_gift": "Monthly gift",
   "analytics_vip_top3_gift_title": "Top 3 win a gift every month!",
   "analytics_vip_top3_gift_sub": "Gold, Silver, Bronze — special gifts every month",
-  "analytics_vip_climb": "Climb up!"
+  "analytics_vip_climb": "Climb up!",
+  "admin_product_option_groups": "Option groups (Color, Plug, Voltage, ...)",
+  "admin_product_add_option_group": "+ Add option group (Color, Plug, Size, ...)",
+  "admin_product_option_groups_hint": "Examples: \"Color: Black, White, Pink\" · \"Plug: EU, AU, UK, US\" · \"Voltage: 110V, 220-240V\"",
+  "admin_product_group_name": "e.g. Color, Plug, Size",
+  "admin_product_add_option": "+ Add option",
+  "admin_product_option_label": "e.g. Black",
+  "admin_product_remove_option": "Remove option",
+  "admin_product_remove_group": "Remove group"
 }

@@ -388,5 +388,13 @@
   "admin_product_variants": "Variantes du produit (Type 1, Type 2, ...)",
   "admin_product_add_variant": "+ Ajouter une variante (Type 2, Type 3, ...)",
   "admin_product_remove_variant": "Supprimer la variante",
-  "admin_product_min_one_variant": "Au moins une variante est requise"
+  "admin_product_min_one_variant": "Au moins une variante est requise",
+  "admin_product_option_groups": "Groupes d'options (Couleur, Prise, Tension, ...)",
+  "admin_product_add_option_group": "+ Ajouter un groupe (Couleur, Prise, Taille, ...)",
+  "admin_product_option_groups_hint": "Exemples: \"Couleur: Noir, Blanc, Rose\" · \"Prise: EU, AU, UK, US\" · \"Tension: 110V, 220-240V\"",
+  "admin_product_group_name": "ex. Couleur, Prise, Taille",
+  "admin_product_add_option": "+ Ajouter une option",
+  "admin_product_option_label": "ex. Noir",
+  "admin_product_remove_option": "Supprimer l'option",
+  "admin_product_remove_group": "Supprimer le groupe"
 }

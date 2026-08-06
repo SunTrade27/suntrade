@@ -500,6 +500,144 @@
   }
 }
 
+/* ===== Option groups editor (Alibaba-style: Color -> Black/White) ===== */
+.option-groups-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+.option-group-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.7rem 0.8rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  transition: border-color 0.18s, background 0.18s;
+}
+.option-group-card:hover {
+  border-color: rgba(255,107,0,0.4);
+  background: rgba(255,107,0,0.04);
+}
+.option-group-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.option-group-head input.og-name {
+  flex: 1 1 160px;
+  min-width: 140px;
+  padding: 6px 10px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.95);
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+}
+.option-group-head input.og-name:focus {
+  outline: none;
+  border-color: rgba(255,107,0,0.65);
+}
+.option-group-head select.og-type {
+  padding: 6px 8px;
+  font-size: 0.78rem;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.9);
+  font-weight: 600;
+}
+.option-group-head .remove-group-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid rgba(239,68,68,0.4);
+  background: rgba(239,68,68,0.10);
+  color: #EF4444;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.18s;
+}
+.option-group-head .remove-group-btn:hover {
+  background: rgba(239,68,68,0.22);
+  border-color: rgba(239,68,68,0.7);
+}
+.option-row {
+  display: grid;
+  grid-template-columns: minmax(110px, 1.4fr) minmax(60px, 0.6fr) minmax(110px, 0.9fr) auto;
+  gap: 0.4rem;
+  align-items: center;
+}
+.option-row input.opt-label,
+.option-row input.opt-pricemod,
+.option-row input.opt-hex {
+  width: 100%;
+  padding: 5px 8px;
+  font-size: 0.78rem;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 6px;
+  color: rgba(255,255,255,0.9);
+}
+.option-row input:focus {
+  outline: none;
+  border-color: rgba(255,107,0,0.6);
+}
+.option-row input[type=color] {
+  padding: 1px;
+  height: 30px;
+  width: 36px;
+  cursor: pointer;
+}
+.option-row .opt-pricemod {
+  text-align: right;
+}
+.option-row .opt-remove {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid rgba(239,68,68,0.35);
+  background: rgba(239,68,68,0.08);
+  color: #EF4444;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.option-row .opt-remove:hover {
+  background: rgba(239,68,68,0.20);
+}
+.option-group-card .add-option-row-btn {
+  align-self: flex-start;
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 50px;
+  border: 1px solid rgba(255,107,0,0.45);
+  background: rgba(255,107,0,0.06);
+  color: #FF6B00;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.option-group-card .add-option-row-btn:hover {
+  background: rgba(255,107,0,0.12);
+}
+@media (max-width: 640px) {
+  .option-row {
+    grid-template-columns: 1fr 1fr auto;
+  }
+  .option-row .opt-hex-wrap { grid-column: 1 / -1; }
+}
+
 </style>
   <!-- Vercel Speed Insights -->
   <script>
@@ -760,6 +898,32 @@
           <summary style="cursor:pointer;font-size:0.85rem;color:var(--text-light);">Or add image URLs manually</summary>
           <textarea id="pimages" rows="2" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:var(--radius-sm);resize:vertical;margin-top:0.5rem;" placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"></textarea>
         </details>
+      </div>
+
+      <!-- ===== Option groups (Alibaba-style) =====.
+           Each group is a named bucket like "Color" or "Plug" and holds
+           multiple options like "Black", "White", "EU", "UK". The buyer
+           selects one option per group. Each option can carry a small
+           price modifier. Two arrays are kept side-by-side:
+             types[]        -> legacy variants [{label, price, stock}, ...]
+             option_groups[] -> AliExpress buckets [{name, type, options:[{label, price_mod, color_hex, image?}, ...]}, ...]
+           The variants list stays for the simple "this SKU has 3 simple
+           variants" case; the option groups list is what powers
+           multi-dimensional selectors like "Color × Plug × Voltage".
+      -->
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:0.4rem;">
+          <svg class="icon icon-sm" style="color:var(--primary);"><use href="#icon-sliders"/></svg>
+          <span data-i18n="admin_product_option_groups">Option groups (Color, Plug, Voltage, ...)</span>
+        </label>
+        <div id="option-groups-list" class="option-groups-list"></div>
+        <button type="button" class="btn-sm btn-outline" onclick="addOptionGroupRow()" style="margin-top:0.6rem;border:1px dashed rgba(255,107,0,0.55);color:#FF6B00;background:rgba(255,107,0,0.06);font-weight:700;justify-content:center;width:100%;display:flex;align-items:center;gap:0.4rem;">
+          <svg class="icon icon-sm"><use href="#icon-plus"/></svg>
+          <span data-i18n="admin_product_add_option_group">+ Add option group (Color, Plug, Size, ...)</span>
+        </button>
+        <p style="font-size:0.72rem;color:var(--text-light);margin:0.4rem 0 0 0;line-height:1.4;" data-i18n="admin_product_option_groups_hint">
+          Examples: "Color: Black, White, Pink" · "Plug: EU, AU, UK, US" · "Voltage: 110V, 220-240V"
+        </p>
       </div>
       <div class="form-group">
         <label><input type="checkbox" id="pactive" checked> Active</label>
@@ -1650,6 +1814,8 @@
         ? product.types
         : [{ label: product.type || 'Default', price: product.price, stock: product.stock }];
       loadProductTypes(variants);
+      // Option groups (Alibaba-style) — load from product.option_groups if present.
+      loadOptionGroups(product.option_groups);
     } else {
       document.getElementById('modal-title').textContent = t('admin_add_product');
       document.getElementById('product-form').reset();
@@ -1661,6 +1827,8 @@
       // New products start with one blank Type 1 row so the form is
       // immediately usable without the admin having to click +.
       loadProductTypes([{ label: '', price: '', stock: '' }]);
+      // And one blank option group row.
+      loadOptionGroups([{ name: '', type: 'text', options: [{ label: '', price_mod: 0, color_hex: '' }] }]);
     }
     switchLangTab('en');
   }
@@ -1770,6 +1938,156 @@
   // Tiny attr-escape so a stray quote in the placeholder doesn't break the row.
   function escapeAttr(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  // ===== Option groups editor (Alibaba-style) =====
+  // Each group: name + type (color|text) + options List (label / price_mod
+  // / optional color_hex). Saved verbatim into products.option_groups as
+  // a JSONB array so the buyer-side variant selector can render any
+  // combination: Color × Plug × Voltage with per-option price shifts.
+  function addOptionGroupRow(prefill) {
+    prefill = prefill || { name: '', type: 'text', options: [] };
+    var list = document.getElementById('option-groups-list');
+    if (!list) return;
+    var card = document.createElement('div');
+    card.className = 'option-group-card';
+    card.innerHTML =
+      '<div class="option-group-head">' +
+        '<input type="text" class="og-name" placeholder="' + escapeAttr(typeof t === 'function' ? (t('admin_product_group_name') || 'e.g. Color, Plug, Size') : 'e.g. Color, Plug, Size') + '" value="' + escapeAttr(prefill.name || '') + '">' +
+        '<select class="og-type">' +
+          '<option value="text"' + (prefill.type === 'text' ? ' selected' : '') + '>text</option>' +
+          '<option value="color"' + (prefill.type === 'color' ? ' selected' : '') + '>color</option>' +
+        '</select>' +
+        '<button type="button" class="remove-group-btn" onclick="removeOptionGroupRow(this)" title="' + escapeAttr(typeof t === 'function' ? (t('admin_product_remove_group') || 'Remove group') : 'Remove group') + '" aria-label="Remove group">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" class="icon icon-sm"><path d="M6 6l12 12M18 6L6 18"/></svg>' +
+        '</button>' +
+      '</div>' +
+      '<div class="og-options-list"></div>' +
+      '<button type="button" class="add-option-row-btn" onclick="addOptionRow(this)">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" class="icon icon-sm"><path d="M12 5v14M5 12h14"/></svg>' +
+        '<span data-i18n="admin_product_add_option">+ Add option</span>' +
+      '</button>';
+    list.appendChild(card);
+    // Pre-populate options if provided
+    var optionsList = card.querySelector('.og-options-list');
+    var opts = (prefill.options && prefill.options.length) ? prefill.options : [{ label: '', price_mod: 0, color_hex: '' }];
+    opts.forEach(function(o) {
+      addOptionRow(card.querySelector('.add-option-row-btn'), o);
+    });
+    refreshApplyI18n();
+  }
+
+  function removeOptionGroupRow(btn) {
+    var card = btn.closest('.option-group-card');
+    if (!card) return;
+    var list = document.getElementById('option-groups-list');
+    // Always leave at least one empty card so the form remains usable.
+    if (list && list.children.length <= 1) {
+      card.querySelectorAll('input').forEach(function(inp) { if (inp.type !== 'color') inp.value = ''; });
+      card.querySelectorAll('.option-row').forEach(function(r) { r.remove(); });
+      var btnAdd = card.querySelector('.add-option-row-btn');
+      if (btnAdd) {
+        addOptionRow(btnAdd, { label: '', price_mod: 0, color_hex: '' });
+      }
+      return;
+    }
+    card.remove();
+  }
+
+  function addOptionRow(triggerBtn, prefill) {
+    prefill = prefill || {};
+    var card = triggerBtn.closest('.option-group-card');
+    if (!card) return;
+    var list = card.querySelector('.og-options-list');
+    if (!list) return;
+    var row = document.createElement('div');
+    row.className = 'option-row';
+    row.innerHTML =
+      '<input type="text" class="opt-label" placeholder="' + escapeAttr(typeof t === 'function' ? (t('admin_product_option_label') || 'e.g. Black') : 'e.g. Black') + '" value="' + escapeAttr(prefill.label || '') + '">' +
+      '<input type="number" step="0.01" class="opt-pricemod" placeholder="±0.00" value="' + escapeAttr(prefill.price_mod == null || prefill.price_mod === '' ? 0 : prefill.price_mod) + '">' +
+      '<div class="opt-hex-wrap" style="display:flex;align-items:center;gap:0.4rem;min-width:0;">' +
+        '<input type="color" class="opt-hex" value="' + escapeAttr(prefill.color_hex || '#888888') + '" title="Color swatch (optional)">' +
+        '<input type="text" class="opt-hexhex" placeholder="#hex" value="' + escapeAttr(prefill.color_hex || '') + '" style="flex:1;min-width:0;font-size:0.72rem;padding:5px 8px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.10);border-radius:6px;color:rgba(255,255,255,0.85);">' +
+      '</div>' +
+      '<button type="button" class="opt-remove" onclick="removeOptionRow(this)" title="' + escapeAttr(typeof t === 'function' ? (t('admin_product_remove_option') || 'Remove option') : 'Remove option') + '" aria-label="Remove option">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="width:14px;height:14px;"><path d="M6 6l12 12M18 6L6 18"/></svg>' +
+      '</button>';
+    list.appendChild(row);
+    // Wire hex <-> hex text two-way sync
+    var colorPicker = row.querySelector('input.opt-hex');
+    var hexText = row.querySelector('input.opt-hexhex');
+    colorPicker.addEventListener('input', function() { hexText.value = colorPicker.value; });
+    hexText.addEventListener('change', function() {
+      var v = hexText.value.trim();
+      if (/^#?[0-9a-fA-F]{6}$/.test(v)) {
+        colorPicker.value = v.startsWith('#') ? v : '#' + v;
+      }
+    });
+    refreshApplyI18n();
+  }
+
+  function removeOptionRow(btn) {
+    var row = btn.closest('.option-row');
+    var list = row && row.parentElement;
+    // Keep at least one option row.
+    if (list && list.children.length <= 1) {
+      row.querySelectorAll('input').forEach(function(inp) { if (inp.type !== 'color') inp.value = ''; });
+      return;
+    }
+    if (row) row.remove();
+  }
+
+  function collectOptionGroups() {
+    var list = document.getElementById('option-groups-list');
+    if (!list) return [];
+    var out = [];
+    Array.from(list.querySelectorAll('.option-group-card')).forEach(function(card) {
+      var name = (card.querySelector('.og-name')?.value || '').trim();
+      var type = (card.querySelector('.og-type')?.value || 'text');
+      var options = [];
+      Array.from(card.querySelectorAll('.og-options-list .option-row')).forEach(function(row) {
+        var label = (row.querySelector('.opt-label')?.value || '').trim();
+        var rawPrice = row.querySelector('.opt-pricemod')?.value;
+        var colorHex = ((row.querySelector('.opt-hexhex')?.value) || (row.querySelector('.opt-hex')?.value) || '').trim();
+        var priceMod = parseFloat(rawPrice);
+        // Skip fully blank rows so empty placeholders don't pollute the saved array.
+        if (!label && !rawPrice && !colorHex) return;
+        options.push({
+          label: label || '',
+          price_mod: isFinite(priceMod) ? priceMod : 0,
+          color_hex: colorHex || null
+        });
+      });
+      // Skip fully blank groups
+      if (!name && !options.length) return;
+      out.push({ name: name || 'Group', type: type, options: options });
+    });
+    return out;
+  }
+
+  function loadOptionGroups(groups) {
+    var list = document.getElementById('option-groups-list');
+    if (!list) return;
+    list.innerHTML = '';
+    if (!Array.isArray(groups) || !groups.length) {
+      addOptionGroupRow({ name: '', type: 'text', options: [{ label: '', price_mod: 0, color_hex: '' }] });
+      return;
+    }
+    groups.forEach(function(g) {
+      addOptionGroupRow({
+        name: g.name || '',
+        type: g.type === 'color' ? 'color' : 'text',
+        options: Array.isArray(g.options) && g.options.length ? g.options : [{ label: '', price_mod: 0, color_hex: '' }]
+      });
+    });
+  }
+
+  // Re-run i18n on the freshly added buttons so data-i18n="..." labels
+  // pick up the current locale text immediately.
+  function refreshApplyI18n() {
+    if (typeof applyTranslations === 'function') {
+      try { applyTranslations(); } catch (e) { /* ignore */ }
+    }
   }
 
   // Close sidebar when clicking backdrop on mobile
@@ -1942,14 +2260,70 @@
   }
 
   async function uploadAllDataImagesIn(tempRoot) {
+    // Walks every <img> in the pasted HTML and re-hosts anything we don't
+    // already own, so the product description on the buyer-side page has
+    // images that survive even if the original page goes down.
+    //
+    // The flow:
+    //   1. <img> without src / empty src => remove entirely (a 1x1
+    //      tracking pixel is meaningless to buyers).
+    //   2. <img> whose src points at our own domain or our own Supabase
+    //      storage bucket => leave alone.
+    //   3. <img> src is a data:image/... base64 blob (typical "copy/
+    //      paste image from clipboard" or screenshot tool) =>
+    //      re-host to Supabase Storage so the saved HTML is small.
+    //   4. <img> src is an https URL on a third party => try to fetch
+    //      and re-host. If the third party CORS-blocks us we fall back
+    //      to leaving the original URL in place and warn in console.
     const imgs = Array.from(tempRoot.querySelectorAll('img'));
     for (const img of imgs) {
       const src = img.getAttribute('src') || '';
-      if (src.startsWith('data:image/')) {
-        const uploaded = await uploadPastedDataImage(src);
-        if (uploaded) img.setAttribute('src', uploaded);
+      if (!src || src.trim() === '') {
+        img.remove();
+        continue;
+      }
+      // Already on our stack — leave alone.
+      if (src.startsWith(window.location.origin) ||
+          src.startsWith('data:') === false && src.indexOf('supabase.co') > 0) {
+        continue;
+      }
+      let uploaded = null;
+      try {
+        if (src.startsWith('data:image/')) {
+          uploaded = await uploadPastedDataImage(src);
+        } else if (/^https?:\/\//i.test(src)) {
+          uploaded = await uploadPastedExternalImage(src);
+        }
+      } catch (err) {
+        console.warn('Paste image re-host failed for', src.slice(0, 80), err.message);
+      }
+      if (uploaded) {
+        img.setAttribute('src', uploaded);
+        // Also remember it in the gallery preview list so the saved
+        // product.images[] array matches what the description shows.
+        if (typeof uploadedImageUrls !== 'undefined' && Array.isArray(uploadedImageUrls)
+            && !uploadedImageUrls.includes(uploaded)) {
+          uploadedImageUrls.push(uploaded);
+          if (typeof updateImagePreview === 'function') updateImagePreview();
+        }
       }
     }
+  }
+
+  async function uploadPastedExternalImage(url) {
+    // Fetch the third-party image as a Blob and re-upload it to the
+    // product-images bucket. CORS may block this for some sites; we
+    // surface the failure to the caller and keep the original URL.
+    const resp = await fetch(url, { mode: 'cors', credentials: 'omit' });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const blob = await resp.blob();
+    if (!blob || !blob.type || !blob.type.startsWith('image/')) {
+      throw new Error('Not an image: ' + (blob && blob.type));
+    }
+    const ext = (blob.type.split('/')[1] || 'png').split(';')[0];
+    const safeName = ('paste_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8) + '.' + ext).replace(/[^a-zA-Z0-9._-]/g, '_');
+    if (typeof uploadImage !== 'function') throw new Error('uploadImage helper missing');
+    return await uploadImage(new File([blob], safeName, { type: blob.type }));
   }
 
   async function handleRichPaste(e) {
@@ -2493,12 +2867,18 @@
     document.getElementById('pstock').value = first.stock;
     document.getElementById('ptype').value = first.label;
 
+    // ===== Option groups (Alibaba-style) =====.
+    // Collect whatever the admin set up; an empty list is a valid state
+    // (no buyer-side selector rendered).
+    const optionGroups = collectOptionGroups();
+
     // ===== САҚТАУ =====
     const product = {
       price: parseFloat(first.price) || 0,
       type: first.label,
       stock: parseInt(first.stock, 10) || 0,
       types: variants,
+      option_groups: optionGroups,
       category_id: document.getElementById('pcategory').value || null,
       active: document.getElementById('pactive').checked,
       // Use uploadedImageUrls (the single source of truth) so removed images stay removed

@@ -388,5 +388,13 @@
   "admin_product_variants": "Productvarianten (Type 1, Type 2, ...)",
   "admin_product_add_variant": "+ Variant toevoegen (Type 2, Type 3, ...)",
   "admin_product_remove_variant": "Variant verwijderen",
-  "admin_product_min_one_variant": "Minstens één productvariant is vereist"
+  "admin_product_min_one_variant": "Minstens één productvariant is vereist",
+  "admin_product_option_groups": "Optiegroepen (Kleur, Stekker, Spanning, ...)",
+  "admin_product_add_option_group": "+ Optiegroep toevoegen (Kleur, Stekker, Maat, ...)",
+  "admin_product_option_groups_hint": "Voorbeelden: \"Kleur: Zwart, Wit, Roze\" · \"Stekker: EU, AU, UK, US\" · \"Spanning: 110V, 220-240V\"",
+  "admin_product_group_name": "bijv. Kleur, Stekker, Maat",
+  "admin_product_add_option": "+ Optie toevoegen",
+  "admin_product_option_label": "bijv. Zwart",
+  "admin_product_remove_option": "Optie verwijderen",
+  "admin_product_remove_group": "Groep verwijderen"
 }

@@ -433,5 +433,13 @@
   "analytics_vip_monthly_gift": "Ай сайын сыйлық",
   "analytics_vip_top3_gift_title": "Топ-3 ай сайын сыйлық алады!",
   "analytics_vip_top3_gift_sub": "Алтын, күміс, қола — ай сайын ерекше сыйлықтар",
-  "analytics_vip_climb": "Көтеріліңіз!"
+  "analytics_vip_climb": "Көтеріліңіз!",
+  "admin_product_option_groups": "Опция топтары (Түс, Plug, Кернеу, ...)",
+  "admin_product_add_option_group": "+ Опция тобын қосу (Түс, Plug, Өлшем, ...)",
+  "admin_product_option_groups_hint": "Мысалы: \"Түс: Қара, Ақ, Қызғылт\" · \"Plug: EU, AU, UK, US\" · \"Кернеу: 110V, 220-240V\"",
+  "admin_product_group_name": "мысалы Түс, Plug, Өлшем",
+  "admin_product_add_option": "+ Опция қосу",
+  "admin_product_option_label": "мысалы Қара",
+  "admin_product_remove_option": "Опцияны алып тастау",
+  "admin_product_remove_group": "Топты алып тастау"
 }

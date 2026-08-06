@@ -388,5 +388,13 @@
   "admin_product_variants": "Warianty produktu (Typ 1, Typ 2, ...)",
   "admin_product_add_variant": "+ Dodaj wariant (Typ 2, Typ 3, ...)",
   "admin_product_remove_variant": "Usuń wariant",
-  "admin_product_min_one_variant": "Wymagany jest co najmniej jeden wariant"
+  "admin_product_min_one_variant": "Wymagany jest co najmniej jeden wariant",
+  "admin_product_option_groups": "Grupy opcji (Kolor, Wtyczka, Napięcie, ...)",
+  "admin_product_add_option_group": "+ Dodaj grupę opcji (Kolor, Wtyczka, Rozmiar, ...)",
+  "admin_product_option_groups_hint": "Przykłady: \"Kolor: Czarny, Biały, Różowy\" · \"Wtyczka: EU, AU, UK, US\" · \"Napięcie: 110V, 220-240V\"",
+  "admin_product_group_name": "np. Kolor, Wtyczka, Rozmiar",
+  "admin_product_add_option": "+ Dodaj opcję",
+  "admin_product_option_label": "np. Czarny",
+  "admin_product_remove_option": "Usuń opcję",
+  "admin_product_remove_group": "Usuń grupę"
 }

@@ -388,5 +388,13 @@
   "admin_product_variants": "Ürün varyantları (Tip 1, Tip 2, ...)",
   "admin_product_add_variant": "+ Varyant ekle (Tip 2, Tip 3, ...)",
   "admin_product_remove_variant": "Varyantı kaldır",
-  "admin_product_min_one_variant": "En az bir varyant gerekli"
+  "admin_product_min_one_variant": "En az bir varyant gerekli",
+  "admin_product_option_groups": "Seçenek grupları (Renk, Fiş, Voltaj, ...)",
+  "admin_product_add_option_group": "+ Seçenek grubu ekle (Renk, Fiş, Beden, ...)",
+  "admin_product_option_groups_hint": "Örnekler: \"Renk: Siyah, Beyaz, Pembe\" · \"Fiş: EU, AU, UK, US\" · \"Voltaj: 110V, 220-240V\"",
+  "admin_product_group_name": "örn. Renk, Fiş, Beden",
+  "admin_product_add_option": "+ Seçenek ekle",
+  "admin_product_option_label": "örn. Siyah",
+  "admin_product_remove_option": "Seçeneği kaldır",
+  "admin_product_remove_group": "Grubu kaldır"
 }

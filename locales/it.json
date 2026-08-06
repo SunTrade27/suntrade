@@ -388,5 +388,13 @@
   "admin_product_variants": "Varianti del prodotto (Tipo 1, Tipo 2, ...)",
   "admin_product_add_variant": "+ Aggiungi variante (Tipo 2, Tipo 3, ...)",
   "admin_product_remove_variant": "Rimuovi variante",
-  "admin_product_min_one_variant": "È richiesta almeno una variante"
+  "admin_product_min_one_variant": "È richiesta almeno una variante",
+  "admin_product_option_groups": "Gruppi di opzioni (Colore, Spina, Voltaggio, ...)",
+  "admin_product_add_option_group": "+ Aggiungi gruppo di opzioni (Colore, Spina, Taglia, ...)",
+  "admin_product_option_groups_hint": "Esempi: \"Colore: Nero, Bianco, Rosa\" · \"Spina: EU, AU, UK, US\" · \"Voltaggio: 110V, 220-240V\"",
+  "admin_product_group_name": "es. Colore, Spina, Taglia",
+  "admin_product_add_option": "+ Aggiungi opzione",
+  "admin_product_option_label": "es. Nero",
+  "admin_product_remove_option": "Rimuovi opzione",
+  "admin_product_remove_group": "Rimuovi gruppo"
 }
