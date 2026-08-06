@@ -834,8 +834,7 @@
   document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(async () => {
       if (!sb) return;
-      await Promise.all([loadStats(), loadOrderStatuses(), loadRecentOrders()]);
-      applyTranslations();
+      await Promise.all([loadStats(), loadOrderStatuses(), loadRecentOrders(), loadExtraPremium()]);
       // Sync the live customer count into the localized subtitle so the
       // "Our {N} customers" sentence matches the counter exactly. We replace
       // the first arabic-number token in the translated text (post-i18n) so
@@ -862,6 +861,82 @@
     } catch(e) {}
   }
 
+  // ===== Premium Customers — ranks #10+ from real Supabase data =====
+  // The 9 founding VIP cards (#1-#9) above are hardcoded so the section
+  // looks alive even when the DB has zero paying customers. This function
+  // then appends however many additional real customers exist — ranked
+  // #10, #11, #12… — so the list keeps growing instead of stopping at 9.
+  async function loadExtraPremium() {
+    var grid = document.querySelector('.vip-customers .vip-rank-grid');
+    if (!grid) return;
+    try {
+      const adminEmails = ['serjanyelemesov@gmail.com', 'sundetofficial@gmail.com'];
+      const { data } = await sb.from('orders')
+        .select('customer_name, amount, created_at')
+        .gt('amount', 0)
+        .neq('status', 'pending')
+        .neq('status', 'cancelled')
+        .not('customer_email', 'in', '(' + adminEmails.join(',') + ')')
+        .not('customer_name', 'ilike', '%serzhan%')
+        .not('customer_name', 'ilike', '%sundetofficial%')
+        .not('customer_name', 'ilike', '%test%')
+        .order('created_at', { ascending: false })
+        .limit(2000);
+      if (!data || data.length === 0) return;
+      // Aggregate per customer: sum amount, count orders.
+      var totals = {};
+      data.forEach(function(o) {
+        var name = String(o.customer_name || '').trim();
+        if (!name) return;
+        if (!totals[name]) totals[name] = { name: name, total: 0, count: 0 };
+        totals[name].total += parseFloat(o.amount) || 0;
+        totals[name].count += 1;
+      });
+      var customers = Object.values(totals);
+      if (customers.length === 0) return;
+      // Sort by total spent (DESC), break ties by order count.
+      customers.sort(function(a, b) {
+        if (b.total !== a.total) return b.total - a.total;
+        return b.count - a.count;
+      });
+      // Render the first 9 as pills we treat as #10, #11, … so the existing
+      // founding #1-#9 cards stay visually on top and only real customers
+      // extend the list below them.
+      customers.slice(0, 60).forEach(function(c, idx) {
+        var rank = idx + 10;
+        grid.insertAdjacentHTML('beforeend', renderExtraPremiumCard(c, rank));
+      });
+      // Re-run i18n on the freshly inserted nodes so data-i18n fills in.
+      if (typeof applyTranslations === 'function') applyTranslations();
+    } catch(e) {}
+  }
+
+  function renderExtraPremiumCard(c, rank) {
+    var ini = getInitials(c.name);
+    var avBg = colorFromName(c.name);
+    var amtStr = formatAmount(c.total);
+    var tierText = (typeof t === 'function' && t('analytics_vip_climb') && t('analytics_vip_climb') !== 'analytics_vip_climb') ? t('analytics_vip_climb') : 'Көтеріліңіз!';
+    var metaText = (typeof t === 'function' && t('analytics_vip_completed') && t('analytics_vip_completed') !== 'analytics_vip_completed') ? t('analytics_vip_completed') : 'Премиум заказ';
+    return '<div class="vip-rank-card vip-rank-n">'
+      + '<div class="vip-rank-medal">'
+        + '<svg class="vip-rank-medal-icon"><use href="#icon-trending-up"/></svg>'
+        + '<span class="vip-rank-num">№' + rank + '</span>'
+        + '<span class="vip-rank-tier" data-i18n="analytics_vip_climb">' + escapeHtml(tierText) + '</span>'
+      + '</div>'
+      + '<div class="vip-rank-body">'
+        + '<div class="vip-avatar" style="background:' + avBg + '">' + escapeHtml(ini) + '</div>'
+        + '<div class="vip-info">'
+          + '<div class="vip-name">' + escapeHtml(c.name) + '</div>'
+          + '<div class="vip-meta">'
+            + '<svg class="vip-status-ico"><use href="#icon-check-circle"/></svg>'
+            + '<span data-i18n="analytics_vip_completed">' + escapeHtml(metaText) + '</span>'
+          + '</div>'
+        + '</div>'
+        + '<div class="vip-amount-regular">€' + amtStr + '</div>'
+      + '</div>'
+    + '</div>';
+  }
+
   async function loadOrderStatuses() {
     try {
       const statuses = ['paid', 'shipped', 'delivered', 'accepted', 'packing'];
@@ -876,10 +951,15 @@
       // supabase-schema.sql signup trigger + js/supabase-client.js admin guard.
       const adminEmails = ['serjanyelemesov@gmail.com', 'sundetofficial@gmail.com'];
       // Real DB counts filtered to amount > 0 — and not from an admin account.
+      // We also exclude rows whose customer_name looks like a developer test
+      // (in case someone ordered without the matching admin email attached).
       const results = await Promise.all(statuses.map(s =>
-        sb.from('orders').select('id, amount, customer_email', { count: 'exact', head: true })
+        sb.from('orders').select('id, amount, customer_email, customer_name', { count: 'exact', head: true })
           .eq('status', s).gt('amount', 0)
           .not('customer_email', 'in', '(' + adminEmails.join(',') + ')')
+          .not('customer_name', 'ilike', '%serzhan%')
+          .not('customer_name', 'ilike', '%sundetofficial%')
+          .not('customer_name', 'ilike', '%test%')
       ));
       // Add real counts on top of demo baseline so a young site still shows activity bars
       const counts = results.map((r, i) => (demoCounts[statuses[i]] || 0) + ((r && r.count) || 0));
@@ -906,6 +986,14 @@
         .neq('status', 'pending')
         .not('customer_email', 'in', '(' + adminEmails.join(',') + ')')
         .order('created_at', { ascending: false }).limit(500);
+      // Belt-and-suspenders: filter out any row whose customer_name looks
+      // like a developer test (SERZHAN YELEMESSOV et al.) even if the email
+      // somehow slipped past. Applies to both the listed rows below and the
+      // duplicate-name dedupe against demo orders.
+      function isAdminName(n) {
+        return /serzhan|yelemessov|sundetofficial|^test/i.test(String(n || '').trim());
+      }
+      var realOrders = (data || []).filter(function(o) { return !isAdminName(o.customer_name); });
 
       // 28 demo customers, distributed realistically across the last ~7 weeks:
       //   - Status cascade: PAID at the very top (live "now" time), then PACKING
@@ -980,7 +1068,7 @@
         { customer_name: 'Марат Бекжанов',      amount: 7300.00, status: 'delivered', created_at: '2026-06-15T11:00:00' }
       ];
 
-      var realOrders = (data && data.length) ? data : [];
+      // realOrders is already declared above (filtered by admin email + name).
       // Filter out demos whose name matches a real order — those would be
       // duplicates side-by-side. The remaining 28 demos stay anchored at
       // the bottom so founders like Marat Bekzhanov are never pushed out.
