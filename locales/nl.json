@@ -277,6 +277,7 @@
   "order_status_packing": "Inpakken",
   "order_status_shipped": "Verzonden",
   "order_status_delivered": "Bezorgd",
+  "order_status_paid": "Betaald",
   "review_approved": "Goedgekeurd",
   "review_pending": "In afwachting",
   "delete_review_confirm": "Deze review verwijderen?",

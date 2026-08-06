@@ -573,11 +573,11 @@
           <span data-i18n="analytics_order_status">Заказ статустары</span>
         </h3>
         <div class="bar-chart" id="status-chart">
-          <div class="bar-col"><div class="bar-val" id="bar-paid-val">0</div><div class="bar-fill" id="bar-paid" style="height:0%"></div><div class="bar-label">Paid</div></div>
-          <div class="bar-col"><div class="bar-val" id="bar-shipped-val">0</div><div class="bar-fill" id="bar-shipped" style="height:0%;background:linear-gradient(180deg,#FF6B00,#FF4500)"></div><div class="bar-label">Shipped</div></div>
-          <div class="bar-col"><div class="bar-val" id="bar-delivered-val">0</div><div class="bar-fill" id="bar-delivered" style="height:0%;background:linear-gradient(180deg,#10B981,#059669)"></div><div class="bar-label">Delivered</div></div>
-          <div class="bar-col"><div class="bar-val" id="bar-accepted-val">0</div><div class="bar-fill" id="bar-accepted" style="height:0%;background:linear-gradient(180deg,#3B82F6,#2563EB)"></div><div class="bar-label">Accepted</div></div>
-          <div class="bar-col"><div class="bar-val" id="bar-packing-val">0</div><div class="bar-fill" id="bar-packing" style="height:0%;background:linear-gradient(180deg,#FBBF24,#F59E0B)"></div><div class="bar-label">Packing</div></div>
+          <div class="bar-col"><div class="bar-val" id="bar-paid-val">0</div><div class="bar-fill" id="bar-paid" style="height:0%"></div><div class="bar-label" data-i18n="order_status_paid">Paid</div></div>
+          <div class="bar-col"><div class="bar-val" id="bar-shipped-val">0</div><div class="bar-fill" id="bar-shipped" style="height:0%;background:linear-gradient(180deg,#FF6B00,#FF4500)"></div><div class="bar-label" data-i18n="order_status_shipped">Shipped</div></div>
+          <div class="bar-col"><div class="bar-val" id="bar-delivered-val">0</div><div class="bar-fill" id="bar-delivered" style="height:0%;background:linear-gradient(180deg,#10B981,#059669)"></div><div class="bar-label" data-i18n="order_status_delivered">Delivered</div></div>
+          <div class="bar-col"><div class="bar-val" id="bar-accepted-val">0</div><div class="bar-fill" id="bar-accepted" style="height:0%;background:linear-gradient(180deg,#3B82F6,#2563EB)"></div><div class="bar-label" data-i18n="order_status_accepted">Accepted</div></div>
+          <div class="bar-col"><div class="bar-val" id="bar-packing-val">0</div><div class="bar-fill" id="bar-packing" style="height:0%;background:linear-gradient(180deg,#FBBF24,#F59E0B)"></div><div class="bar-label" data-i18n="order_status_packing">Packing</div></div>
         </div>
       </div>
 
@@ -836,6 +836,16 @@
       if (!sb) return;
       await Promise.all([loadStats(), loadOrderStatuses(), loadRecentOrders()]);
       applyTranslations();
+      // Sync the live customer count into the localized subtitle so the
+      // "Our {N} customers" sentence matches the counter exactly. We replace
+      // the first arabic-number token in the translated text (post-i18n) so
+      // each of the 12 languages keeps its native phrasing.
+      var totalNow = parseInt((document.getElementById('customers-total') || {}).textContent || '0', 10);
+      if (totalNow > 0) {
+        document.querySelectorAll('[data-i18n="analytics_customers_subtitle"]').forEach(function(el) {
+          el.textContent = el.textContent.replace(/\d+/, totalNow);
+        });
+      }
     }, 300);
   });
 
@@ -859,8 +869,11 @@
       // 1 Packing right after, the other 26 all Delivered. This keeps the bar
       // chart consistent with the visible order rows on a freshly-empty DB.
       const demoCounts = { paid: 1, shipped: 0, delivered: 26, accepted: 0, packing: 1 };
+      // Real DB counts filtered to amount > 0 — so €0 placeholders or admin
+      // test rows don't inflate the chart and stay aligned with Recent Orders.
       const results = await Promise.all(statuses.map(s =>
-        sb.from('orders').select('id', { count: 'exact', head: true }).eq('status', s)
+        sb.from('orders').select('id, amount', { count: 'exact', head: true })
+          .eq('status', s).gt('amount', 0)
       ));
       // Add real counts on top of demo baseline so a young site still shows activity bars
       const counts = results.map((r, i) => (demoCounts[statuses[i]] || 0) + ((r && r.count) || 0));
@@ -875,9 +888,15 @@
 
   async function loadRecentOrders() {
     try {
-      const { data } = await sb.from('orders').select('id, customer_name, amount, status, created_at')
-        .order('created_at', { ascending: false }).limit(200);
-      const { count: realTotalCount } = await sb.from('orders').select('id', { count: 'exact', head: true });
+      // Pull only real orders that visitors would recognize — amount > 0
+      // and not 'pending'. Pending rows with €0 are filtered so the timeline
+      // stays consistent with what the chart counts (the algorithm is linked
+      // end-to-end: same conditions → same rows everywhere).
+      const { data } = await sb.from('orders')
+        .select('id, customer_name, amount, status, created_at')
+        .gt('amount', 0)
+        .neq('status', 'pending')
+        .order('created_at', { ascending: false }).limit(500);
 
       // 28 demo customers, distributed realistically across the last ~7 weeks:
       //   - Status cascade: PAID at the very top (live "now" time), then PACKING
@@ -952,18 +971,25 @@
         { customer_name: 'Марат Бекжанов',      amount: 7300.00, status: 'delivered', created_at: '2026-06-15T11:00:00' }
       ];
 
-      var allOrders = [];
-      if (data && data.length) {
-        // Real orders first (newest at top), then demos to fill up to 28 baseline
-        allOrders = data.concat(demoOrders.filter(function(d) {
-          return !data.some(function(r) { return r.customer_name === d.customer_name; });
-        }));
-      } else {
-        allOrders = demoOrders;
-      }
+      var realOrders = (data && data.length) ? data : [];
+      // Filter out demos whose name matches a real order — those would be
+      // duplicates side-by-side. The remaining 28 demos stay anchored at
+      // the bottom so founders like Marat Bekzhanov are never pushed out.
+      var demoFiltered = demoOrders.filter(function(d) {
+        return !realOrders.some(function(r) { return r.customer_name === d.customer_name; });
+      });
+      // Real orders first (already DESC), then filtered demos — re-sort the
+      // merged list chronologically DESC so the visible timeline always
+      // reads newest → oldest.
+      var allOrders = realOrders.concat(demoFiltered);
       allOrders.sort(function(a, b) { return new Date(b.created_at) - new Date(a.created_at); });
-      // Show top 28 in the list to match the baseline 28 customers
-      allOrders = allOrders.slice(0, 28);
+      // Show baselineCount + realOrders.length: any real order simply pushes
+      // the count up but every demo entry (including Marat at the very
+      // bottom) stays visible. This is the linked "baseline + real" model
+      // the analytics page uses everywhere.
+      var displayCount = baselineCount + realOrders.length;
+      if (displayCount > allOrders.length) displayCount = allOrders.length;
+      allOrders = allOrders.slice(0, displayCount);
 
       document.getElementById('recent-orders-list').innerHTML = allOrders.map(function(o) {
         // PAID status always renders "now" (live current time) — this matches the
@@ -993,9 +1019,11 @@
         '</div>';
       }).join('');
 
-      // Update customers total — 28 baseline + any real extra orders above 28.
-      // Use realTotalCount from Supabase (exact count) so the counter can grow past 28.
-      var totalCustomers = Math.max(realTotalCount || 0, baselineCount);
+      // Update customers counter — matches exactly what is on screen
+      // (baseline 28 + every real order we just counted). This keeps
+      // Recent Orders rows and the customer total pointing at the same
+      // set of people, so visitors see one consistent number.
+      var totalCustomers = displayCount;
       var ctEl = document.getElementById('customers-total');
       if (ctEl) ctEl.textContent = totalCustomers;
 

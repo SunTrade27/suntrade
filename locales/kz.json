@@ -327,6 +327,7 @@
   "order_status_packing": "Жиналуда",
   "order_status_shipped": "Жолға шықты",
   "order_status_delivered": "Жеткізілді",
+  "order_status_paid": "Төленді",
   "review_approved": "Мақұлданды",
   "review_pending": "Күтілуде",
   "delete_review_confirm": "Бұл пікірді жою керек пе?",

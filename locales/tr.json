@@ -277,6 +277,7 @@
   "order_status_packing": "Paketleniyor",
   "order_status_shipped": "Gönderildi",
   "order_status_delivered": "Teslim edildi",
+  "order_status_paid": "Ödendi",
   "review_approved": "Onaylandı",
   "review_pending": "Bekliyor",
   "delete_review_confirm": "Bu yorumu sil?",

@@ -277,6 +277,7 @@
   "order_status_packing": "En cours d'emballage",
   "order_status_shipped": "Expédié",
   "order_status_delivered": "Livré",
+  "order_status_paid": "Payé",
   "review_approved": "Approuvé",
   "review_pending": "En attente",
   "delete_review_confirm": "Supprimer cet avis?",

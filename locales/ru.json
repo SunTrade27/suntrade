@@ -327,6 +327,7 @@
   "order_status_packing": "Упаковывается",
   "order_status_shipped": "Отправлено",
   "order_status_delivered": "Доставлено",
+  "order_status_paid": "Оплачен",
   "review_approved": "Одобрено",
   "review_pending": "Ожидание",
   "delete_review_confirm": "Удалить этот отзыв?",

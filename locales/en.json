@@ -327,6 +327,7 @@
   "order_status_packing": "Packing",
   "order_status_shipped": "Shipped",
   "order_status_delivered": "Delivered",
+  "order_status_paid": "Paid",
   "review_approved": "Approved",
   "review_pending": "Pending",
   "delete_review_confirm": "Delete this review?",

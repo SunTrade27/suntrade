@@ -277,6 +277,7 @@
   "order_status_packing": "Wird verpackt",
   "order_status_shipped": "Versendet",
   "order_status_delivered": "Zugestellt",
+  "order_status_paid": "Bezahlt",
   "review_approved": "Genehmigt",
   "review_pending": "Ausstehend",
   "delete_review_confirm": "Diese Bewertung löschen?",

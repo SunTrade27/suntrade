@@ -277,6 +277,7 @@
   "order_status_packing": "Empacando",
   "order_status_shipped": "Enviado",
   "order_status_delivered": "Entregado",
+  "order_status_paid": "Pagado",
   "review_approved": "Aprobado",
   "review_pending": "Pendiente",
   "delete_review_confirm": "¿Eliminar esta reseña?",

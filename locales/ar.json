@@ -277,6 +277,7 @@
   "order_status_packing": "قيد التغليف",
   "order_status_shipped": "تم الشحن",
   "order_status_delivered": "تم التسليم",
+  "order_status_paid": "مدفوع",
   "review_approved": "موافق عليه",
   "review_pending": "قيد الانتظار",
   "delete_review_confirm": "حذف هذا التقييم؟",
