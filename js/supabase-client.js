@@ -148,15 +148,46 @@ async function adminSaveProduct(product) {
     'option_groups'];
   const row = {};
   fields.forEach(f => { if (product[f] !== undefined) row[f] = product[f]; });
-  if (product.id) {
-    const { data, error } = await sb.from('products').update(row).eq('id', product.id).select().single();
-    if (error) throw error;
-    return data;
-  } else {
-    const { data, error } = await sb.from('products').insert(row).select().single();
-    if (error) throw error;
-    return data;
+
+  // Self-heal: if the PostgREST schema cache complains that a column doesn't
+  // exist on the products table (because the corresponding fix-*.sql migration
+  // wasn't run on Supabase yet, or the schema cache is stale), strip that
+  // column and retry so the save still succeeds. PostgREST error PGRST204
+  // has the form:
+  //   "Could not find the 'option_groups' column of 'products' in the schema cache"
+  // Strip up to 5 columns per save to handle a chain of new fields at once.
+  const missing = new Set();
+  const payload = { ...row };
+  // First try + up to 5 self-healing retries (= 6 attempts total).
+  for (let i = 0; i < 6; i++) {
+    try {
+      if (product.id) {
+        const { data, error } = await sb.from('products').update(payload).eq('id', product.id).select().single();
+        if (error) throw error;
+        return data;
+      } else {
+        const { data, error } = await sb.from('products').insert(payload).select().single();
+        if (error) throw error;
+        return data;
+      }
+    } catch (e) {
+      const msg = (e && e.message) || '';
+      const m = msg.match(/Could not find the '([^']+)' column of '([^']+)' in the schema cache/);
+      if (!m) throw e;
+      const col = m[1];
+      if (missing.has(col) || payload[col] === undefined) throw e;
+      missing.add(col);
+      console.warn(
+        `[adminSaveProduct] column "${col}" not found in products schema — ` +
+        `retrying save without it. Run the matching fix-*.sql migration on Supabase ` +
+        `(e.g. fix-add-option-groups.sql for "${col}") and then ` +
+        `NOTIFY pgrst, 'reload schema'; to enable the field.`
+      );
+      delete payload[col];
+    }
   }
+  throw new Error('adminSaveProduct: too many missing columns in schema cache: ' +
+    [...missing].join(', '));
 }
 
 async function adminDeleteProduct(id) {
