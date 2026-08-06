@@ -384,5 +384,9 @@
   "analytics_vip_monthly_gift": "هدية شهرية",
   "analytics_vip_top3_gift_title": "أفضل 3 يفوزون بهدية كل شهر!",
   "analytics_vip_top3_gift_sub": "ذهب، فضة، برونز — هدايا خاصة كل شهر",
-  "analytics_vip_climb": "اصعد!"
+  "analytics_vip_climb": "اصعد!",
+  "admin_product_variants": "أنواع المنتج (النوع 1، النوع 2، ...)",
+  "admin_product_add_variant": "+ إضافة نوع (النوع 2، النوع 3، ...)",
+  "admin_product_remove_variant": "إزالة النوع",
+  "admin_product_min_one_variant": "يجب إدخال نوع واحد على الأقل"
 }

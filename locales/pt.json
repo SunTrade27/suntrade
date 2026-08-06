@@ -384,5 +384,9 @@
   "analytics_vip_monthly_gift": "Presente mensal",
   "analytics_vip_top3_gift_title": "Top 3 ganha um presente todo mês!",
   "analytics_vip_top3_gift_sub": "Ouro, Prata, Bronze — presentes especiais todo mês",
-  "analytics_vip_climb": "Suba de nível!"
+  "analytics_vip_climb": "Suba de nível!",
+  "admin_product_variants": "Variantes do produto (Tipo 1, Tipo 2, ...)",
+  "admin_product_add_variant": "+ Adicionar variante (Tipo 2, Tipo 3, ...)",
+  "admin_product_remove_variant": "Remover variante",
+  "admin_product_min_one_variant": "É necessária pelo menos uma variante"
 }

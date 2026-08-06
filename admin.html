@@ -396,6 +396,110 @@
   }
 }
 
+/* ===== Product variants editor (Type 1, Type 2, ...) =====
+   Each row is a flex container with three labeled inputs plus a
+   remove button. On narrow screens it stacks vertically so price
+   and stock fields don't disappear behind a long label. */
+.product-types-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.product-type-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1.2fr) minmax(120px, 1fr) minmax(90px, 0.8fr) auto;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.55rem 0.6rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  transition: border-color 0.18s, background 0.18s;
+}
+.product-type-row:hover {
+  border-color: rgba(255,107,0,0.4);
+  background: rgba(255,107,0,0.04);
+}
+.product-type-row.type-row-number {
+  display: inline-flex;
+  padding: 0.18rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.4px;
+  background: linear-gradient(135deg, rgba(255,107,0,0.18), rgba(255,215,0,0.10));
+  border: 1px solid rgba(255,107,0,0.35);
+  border-radius: 50px;
+  margin-right: 0.15rem;
+  flex-shrink: 0;
+}
+.product-type-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+.product-type-field label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: rgba(255,255,255,0.45);
+  font-weight: 700;
+  margin: 0;
+}
+.product-type-field input {
+  width: 100%;
+  margin: 0;
+  padding: 6px 9px;
+  font-size: 0.85rem;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.95);
+}
+.product-type-field input:focus {
+  outline: none;
+  border-color: rgba(255,107,0,0.65);
+  background: rgba(0,0,0,0.35);
+}
+.product-type-row .remove-type-btn {
+  align-self: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(239,68,68,0.4);
+  background: rgba(239,68,68,0.10);
+  color: #EF4444;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s;
+  flex-shrink: 0;
+}
+.product-type-row .remove-type-btn:hover {
+  background: rgba(239,68,68,0.22);
+  border-color: rgba(239,68,68,0.7);
+}
+.product-type-row .remove-type-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+@media (max-width: 640px) {
+  .product-type-row {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+  .product-type-row .remove-type-btn {
+    align-self: flex-end;
+    width: auto;
+    height: auto;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.72rem;
+  }
+}
+
 </style>
   <!-- Vercel Speed Insights -->
   <script>
@@ -605,21 +709,30 @@
         <textarea id="pdesc-pl-raw"></textarea><textarea id="pdesc-ar-raw"></textarea>
       </div>
 
-      <!-- Common product fields (always visible, outside #lang-fields) -->
-      <div class="form-row product-fields-row">
-        <div class="form-group">
-          <label data-i18n="admin_product_price">Price (EUR)</label>
-          <input type="number" id="pprice" step="0.01" min="0" required>
-        </div>
-        <div class="form-group">
-          <label data-i18n="admin_product_type">Type</label>
-          <input type="text" id="ptype" placeholder="e.g. Size, Color">
-        </div>
-        <div class="form-group">
-          <label data-i18n="admin_product_stock">Stock</label>
-          <input type="number" id="pstock" min="0" required>
-        </div>
+      <!-- Common product fields (always visible, outside #lang-fields).
+           Each variant (Type 1, Type 2, ...) carries its own label,
+           price, and stock. The +/- buttons let the admin add or drop
+           variants on the fly. The first variant's values still mirror
+           into the legacy ptype / pprice / pstock hidden fields so
+           catalog, product, cart, and checkout keep reading them. -->
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:0.4rem;">
+          <svg class="icon icon-sm" style="color:var(--primary);"><use href="#icon-package"/></svg>
+          <span data-i18n="admin_product_variants">Product variants (Type 1, Type 2, ...)</span>
+        </label>
+        <div id="product-types-list" class="product-types-list"></div>
+        <button type="button" class="btn-sm btn-outline" id="add-type-row-btn" onclick="addProductTypeRow()" style="margin-top:0.6rem;border:1px dashed rgba(255,107,0,0.55);color:#FF6B00;background:rgba(255,107,0,0.06);font-weight:700;justify-content:center;width:100%;display:flex;align-items:center;gap:0.4rem;">
+          <svg class="icon icon-sm"><use href="#icon-plus"/></svg>
+          <span data-i18n="admin_product_add_variant">+ Add variant (Type 2, Type 3, ...)</span>
+        </button>
       </div>
+      <!-- Hidden legacy fields. Kept for backward compatibility so existing
+           catalog / product / cart / checkout code can still read product.type,
+           product.price, and product.stock without any DB migration. JS
+           mirrors the first variant row in here before save. -->
+      <input type="hidden" id="pprice">
+      <input type="hidden" id="pstock">
+      <input type="hidden" id="ptype">
       <div class="form-group">
         <label data-i18n="admin_product_category">Category</label>
         <select id="pcategory"></select>
@@ -1501,9 +1614,7 @@
     } catch (err) {
       alert(t('error') + ': ' + err.message);
     }
-  }
-
-  async function openProductModal(product) {
+  }  async function openProductModal(product) {
     const modal = document.getElementById('product-modal');
     modal.style.display = 'flex';
     uploadedImageUrls = [];
@@ -1513,14 +1624,11 @@
     const categories = await getCategories();
     const catSelect = document.getElementById('pcategory');
     catSelect.innerHTML = '<option value="">Select category</option>' +
-      categories.map(c => `<option value="${c.id}" ${product && product.category_id == c.id ? 'selected' : ''}>${c['name_' + currentLang] || c.name_en}</option>`).join('');
+      categories.map(c => `<option value="${c.id}" ${product && product.category_id == c.id ? 'selected':''}>${c['name_' + currentLang] || c.name_en}</option>`).join('');
 
     if (product) {
       document.getElementById('modal-title').textContent = t('admin_edit_product');
       document.getElementById('product-id').value = product.id;
-      document.getElementById('pprice').value = product.price;
-      document.getElementById('ptype').value = product.type || '';
-      document.getElementById('pstock').value = product.stock;
       document.getElementById('pactive').checked = product.active;
       // uploadedImageUrls is the single source of truth for all product images
       // (whether they came from the original product or were newly uploaded).
@@ -1535,16 +1643,133 @@
         if (nameEl) nameEl.value = product['name_' + lang] || '';
         if (descRaw) descRaw.value = product['desc_' + lang] || '';
       });
-  } else {
-    document.getElementById('modal-title').textContent = t('admin_add_product');
-    document.getElementById('product-form').reset();
-    document.getElementById('product-id').value = '';
-    document.getElementById('pactive').checked = true;
-    uploadedImageUrls = [];
-    document.getElementById('pimages').value = '';
-    updateImagePreview();
-  }
+      // Prefer the new types[] array; if it's empty (legacy product) we
+      // manufacture one row from the existing flat price/stock/type
+      // columns so the admin still sees a usable editor.
+      const variants = (Array.isArray(product.types) && product.types.length)
+        ? product.types
+        : [{ label: product.type || 'Default', price: product.price, stock: product.stock }];
+      loadProductTypes(variants);
+    } else {
+      document.getElementById('modal-title').textContent = t('admin_add_product');
+      document.getElementById('product-form').reset();
+      document.getElementById('product-id').value = '';
+      document.getElementById('pactive').checked = true;
+      uploadedImageUrls = [];
+      document.getElementById('pimages').value = '';
+      updateImagePreview();
+      // New products start with one blank Type 1 row so the form is
+      // immediately usable without the admin having to click +.
+      loadProductTypes([{ label: '', price: '', stock: '' }]);
+    }
     switchLangTab('en');
+  }
+
+  // ===== Product variants editor (Type 1, Type 2, ...) =====
+  // The list is a flex column of rows. Each row: label / price / stock
+  // inputs + a remove button. Save flow compactifies whatever the
+  // admin produces in collectProductTypes() back into the
+  // products.types JSONB column (and mirrors #1 into the legacy flat
+  // columns so catalog/cart/checkout still work).
+  function addProductTypeRow(prefill) {
+    prefill = prefill || { label: '', price: '', stock: '' };
+    const list = document.getElementById('product-types-list');
+    if (!list) return;
+    const idx = list.children.length + 1;
+    const row = document.createElement('div');
+    row.className = 'product-type-row';
+    row.dataset.idx = idx;
+    row.innerHTML =
+      '<span class="type-row-number" title="Variant #' + idx + '">TYP ' + idx + '</span>' +
+      '<div class="product-type-field">' +
+        '<label data-i18n="admin_product_type">Type</label>' +
+        '<input type="text" class="ptype-input" placeholder="e.g. Size, Color" value="' + escapeAttr(prefill.label || '') + '">' +
+      '</div>' +
+      '<div class="product-type-field">' +
+        '<label data-i18n="admin_product_price">Price (EUR)</label>' +
+        '<input type="number" class="pprice-input" step="0.01" min="0" value="' + escapeAttr(prefill.price === '' || prefill.price == null ? '' : prefill.price) + '">' +
+      '</div>' +
+      '<div class="product-type-field">' +
+        '<label data-i18n="admin_product_stock">Stock</label>' +
+        '<input type="number" class="pstock-input" min="0" value="' + escapeAttr(prefill.stock === '' || prefill.stock == null ? '' : prefill.stock) + '">' +
+      '</div>' +
+      '<button type="button" class="remove-type-btn" onclick="removeProductTypeRow(this)" title="' + escapeAttr(typeof t === 'function' ? (t('admin_product_remove_variant') || 'Remove variant') : 'Remove variant') + '" aria-label="Remove variant">' +
+        '<svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M12 5v14"/></svg>' +
+      '</button>';
+    list.appendChild(row);
+    refreshVariantNumbering();
+  }
+
+  function removeProductTypeRow(btn) {
+    const list = document.getElementById('product-types-list');
+    if (!list) return;
+    const row = btn.closest('.product-type-row');
+    // Always keep at least one row so the form stays usable.
+    if (list.children.length <= 1) {
+      // Soft clear instead of removing the last row.
+      row.querySelectorAll('input').forEach(function(inp) { inp.value = ''; });
+      return;
+    }
+    row.remove();
+    refreshVariantNumbering();
+  }
+
+  function refreshVariantNumbering() {
+    const list = document.getElementById('product-types-list');
+    if (!list) return;
+    Array.from(list.children).forEach(function(row, i) {
+      row.dataset.idx = i + 1;
+      const tag = row.querySelector('.type-row-number');
+      if (tag) tag.textContent = 'TYP ' + (i + 1);
+    });
+    // Disable the remove button on the last remaining row so the form
+    // never collapses to zero entries.
+    const last = list.lastElementChild;
+    if (last) {
+      const btn = last.querySelector('.remove-type-btn');
+      if (btn && list.children.length === 1) {
+        btn.setAttribute('disabled', 'disabled');
+        btn.title = (typeof t === 'function' ? (t('admin_product_min_one_variant') || 'At least one variant is required') : 'At least one variant is required');
+      } else if (btn) {
+        btn.removeAttribute('disabled');
+        btn.title = (typeof t === 'function' ? (t('admin_product_remove_variant') || 'Remove variant') : 'Remove variant');
+      }
+    }
+  }
+
+  function collectProductTypes() {
+    const list = document.getElementById('product-types-list');
+    if (!list) return [];
+    const out = [];
+    Array.from(list.querySelectorAll('.product-type-row')).forEach(function(row) {
+      const label = row.querySelector('.ptype-input')?.value.trim() || '';
+      const priceRaw = row.querySelector('.pprice-input')?.value;
+      const stockRaw = row.querySelector('.pstock-input')?.value;
+      const price = parseFloat(priceRaw);
+      const stock = parseInt(stockRaw, 10);
+      out.push({
+        label: label || 'Type ' + (out.length + 1),
+        price: isFinite(price) && price >= 0 ? price : 0,
+        stock: isFinite(stock) && stock >= 0 ? stock : 0
+      });
+    });
+    return out;
+  }
+
+  function loadProductTypes(types) {
+    const list = document.getElementById('product-types-list');
+    if (!list) return;
+    list.innerHTML = '';
+    if (!Array.isArray(types) || !types.length) {
+      addProductTypeRow({ label: '', price: '', stock: '' });
+      return;
+    }
+    types.forEach(function(v) { addProductTypeRow(v); });
+  }
+
+  // Tiny attr-escape so a stray quote in the placeholder doesn't break the row.
+  function escapeAttr(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
   // Close sidebar when clicking backdrop on mobile
@@ -2251,11 +2476,29 @@
       }
     }
 
+    // ===== Variants (Type 1, Type 2, ...) =====
+    // Collect rows from the dynamic editor and reflect them back into the
+    // hidden legacy fields so the rest of the site (catalog, product,
+    // cart, checkout) keeps reading product.type / .price / .stock
+    // without having to look at the new JSONB column. The first row's
+    // values become the "canonical" variant for any page that hasn't
+    // been updated to render the full array yet.
+    const variants = collectProductTypes();
+    if (!variants.length) {
+      alert(t('error') + ': ' + (typeof t === 'function' ? (t('admin_product_min_one_variant') || 'At least one product variant is required') : 'At least one product variant is required'));
+      return;
+    }
+    const first = variants[0];
+    document.getElementById('pprice').value = first.price;
+    document.getElementById('pstock').value = first.stock;
+    document.getElementById('ptype').value = first.label;
+
     // ===== САҚТАУ =====
     const product = {
-      price: parseFloat(document.getElementById('pprice').value),
-      type: document.getElementById('ptype').value,
-      stock: parseInt(document.getElementById('pstock').value),
+      price: parseFloat(first.price) || 0,
+      type: first.label,
+      stock: parseInt(first.stock, 10) || 0,
+      types: variants,
       category_id: document.getElementById('pcategory').value || null,
       active: document.getElementById('pactive').checked,
       // Use uploadedImageUrls (the single source of truth) so removed images stay removed

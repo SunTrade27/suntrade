@@ -384,5 +384,9 @@
   "analytics_vip_monthly_gift": "Maandelijkse beloning",
   "analytics_vip_top3_gift_title": "Top 3 wint elke maand een cadeau!",
   "analytics_vip_top3_gift_sub": "Goud, Zilver, Brons — elke maand speciale cadeaus",
-  "analytics_vip_climb": "Klim omhoog!"
+  "analytics_vip_climb": "Klim omhoog!",
+  "admin_product_variants": "Productvarianten (Type 1, Type 2, ...)",
+  "admin_product_add_variant": "+ Variant toevoegen (Type 2, Type 3, ...)",
+  "admin_product_remove_variant": "Variant verwijderen",
+  "admin_product_min_one_variant": "Minstens één productvariant is vereist"
 }

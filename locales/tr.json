@@ -384,5 +384,9 @@
   "analytics_vip_monthly_gift": "Aylık hediye",
   "analytics_vip_top3_gift_title": "İlk 3 her ay hediye kazanır!",
   "analytics_vip_top3_gift_sub": "Altın, Gümüş, Bronz — her ay özel hediyeler",
-  "analytics_vip_climb": "Yüksel!"
+  "analytics_vip_climb": "Yüksel!",
+  "admin_product_variants": "Ürün varyantları (Tip 1, Tip 2, ...)",
+  "admin_product_add_variant": "+ Varyant ekle (Tip 2, Tip 3, ...)",
+  "admin_product_remove_variant": "Varyantı kaldır",
+  "admin_product_min_one_variant": "En az bir varyant gerekli"
 }

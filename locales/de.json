@@ -384,5 +384,9 @@
   "analytics_vip_monthly_gift": "Monatliche Belohnung",
   "analytics_vip_top3_gift_title": "Top 3 erhalten jeden Monat ein Geschenk!",
   "analytics_vip_top3_gift_sub": "Gold, Silber, Bronze — jeden Monat besondere Geschenke",
-  "analytics_vip_climb": "Aufsteigen!"
+  "analytics_vip_climb": "Aufsteigen!",
+  "admin_product_variants": "Produktvarianten (Typ 1, Typ 2, ...)",
+  "admin_product_add_variant": "+ Variante hinzufügen (Typ 2, Typ 3, ...)",
+  "admin_product_remove_variant": "Variante entfernen",
+  "admin_product_min_one_variant": "Mindestens eine Produktvariante ist erforderlich"
 }

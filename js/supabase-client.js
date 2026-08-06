@@ -141,7 +141,10 @@ async function adminSaveProduct(product) {
   const fields = ['name_en', 'name_kz', 'name_ru', 'name_de', 'name_fr', 'name_es', 'name_it', 'name_tr', 'name_pt', 'name_nl', 'name_pl', 'name_ar',
     'desc_en', 'desc_kz', 'desc_ru', 'desc_de', 'desc_fr', 'desc_es', 'desc_it', 'desc_tr', 'desc_pt', 'desc_nl', 'desc_pl', 'desc_ar',
     'price', 'stock', 'category_id', 'images', 'active', 'type', 'type2', 'type3', 'type4', 'type5',
-    'type_image', 'type_image2', 'type_image3', 'type_image4', 'type_image5'];
+    'type_image', 'type_image2', 'type_image3', 'type_image4', 'type_image5',
+    // New: variants JSONB array. Empty array is also persisted (means
+    // "no variants" — the legacy columns still carry the first one).
+    'types'];
   const row = {};
   fields.forEach(f => { if (product[f] !== undefined) row[f] = product[f]; });
   if (product.id) {
