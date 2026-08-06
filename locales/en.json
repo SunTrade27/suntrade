@@ -441,5 +441,8 @@
   "admin_product_add_option": "+ Add option",
   "admin_product_option_label": "e.g. Black",
   "admin_product_remove_option": "Remove option",
-  "admin_product_remove_group": "Remove group"
+  "admin_product_remove_group": "Remove group",
+  "checkout_turnstile_required": "Please complete the verification to continue",
+  "checkout_turnstile_expired": "Verification expired — please check again",
+  "checkout_turnstile_error": "Verification failed — please try again"
 }

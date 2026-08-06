@@ -15,6 +15,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://js.stripe.com/v3/"></script>
   <script src="/js/icons.js"></script>
+  <!-- Cloudflare Turnstile (bot protection) -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad" async defer></script>
   <!-- Vercel Speed Insights -->
   <script>
     window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
@@ -85,6 +87,22 @@
       <svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-truck"/></svg> <span data-i18n="checkout_shipping_note">Shipping address will be collected by Stripe on the next step</span>
     </p>
 
+    <!-- Cloudflare Turnstile anti-bot verification -->
+    <div id="turnstile-container" style="margin: 1.5rem 0; min-height: 65px; position: relative;">
+      <div class="cf-turnstile"
+           data-sitekey="0x4AAAAAAEId_i7BLHt4apyg"
+           data-callback="onTurnstileSuccess"
+           data-expired-callback="onTurnstileExpired"
+           data-error-callback="onTurnstileError"
+           data-theme="auto"
+           data-language="auto"></div>
+      <p id="turnstile-status" role="alert" aria-live="polite"
+         style="display:none;color:#EF4444;font-size:0.85rem;margin-top:0.5rem;">
+        <svg class="icon icon-sm" style="vertical-align:middle;color:#EF4444;"><use href="#icon-alert"/></svg>
+        <span data-i18n="checkout_turnstile_required">Please complete the verification to continue</span>
+      </p>
+    </div>
+
     <button type="submit" class="btn-pay" id="pay-btn">
       <span data-i18n="checkout_pay">Pay with Stripe</span> - <span id="pay-amount">€0.00</span>
     </button>
@@ -136,6 +154,73 @@
 <script src="/js/cart.js"></script>
 <script src="/js/supabase-client.js"></script>
 <script>
+  // ===== Cloudflare Turnstile =====
+  let turnstileToken = null;
+  let turnstileReady = false;
+
+  // api.js жүктелгенде шақырылады (data-onload арқылы)
+  window.onTurnstileLoad = function () {
+    turnstileReady = true;
+  };
+
+  // Adblock/network failure fallback: 6 секундтан кейін Turnstile скрипті
+  // әлі жүктелмесе — қолданушыға хабарлама көрсету (challenges.cloudflare.com
+  // adblock-тар арқылы бұғатталады).
+  setTimeout(function () {
+    if (turnstileReady) return;
+    const widget = document.querySelector('.cf-turnstile');
+    if (widget && widget.children.length === 0) {
+      const status = document.getElementById('turnstile-status');
+      if (status) {
+        status.innerHTML =
+          '<svg class="icon icon-sm" style="vertical-align:middle;color:#EF4444;"><use href="#icon-alert"/></svg> ' +
+          (window.t ? window.t('checkout_turnstile_blocked') : null) ||
+          'Verification widget could not load. Please disable ad-blocker or try a different network.';
+        status.style.display = 'block';
+      }
+    }
+  }, 6000);
+
+  window.onTurnstileSuccess = function (token) {
+    turnstileToken = token;
+    const status = document.getElementById('turnstile-status');
+    if (status) status.style.display = 'none';
+  };
+
+  window.onTurnstileExpired = function () {
+    turnstileToken = null;
+    const status = document.getElementById('turnstile-status');
+    if (status) {
+      status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;color:#EF4444;"><use href="#icon-alert"/></svg> ' +
+        (t('checkout_turnstile_expired') || 'Verification expired — please check again');
+      status.style.display = 'block';
+    }
+  };
+
+  window.onTurnstileError = function () {
+    turnstileToken = null;
+    const status = document.getElementById('turnstile-status');
+    if (status) {
+      status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;color:#EF4444;"><use href="#icon-alert"/></svg> ' +
+        (t('checkout_turnstile_error') || 'Verification failed — please try again');
+      status.style.display = 'block';
+    }
+  };
+
+  function requireTurnstile() {
+    if (turnstileToken) return true;
+    const status = document.getElementById('turnstile-status');
+    if (status) {
+      status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;color:#EF4444;"><use href="#icon-alert"/></svg> ' +
+        (t('checkout_turnstile_required') || 'Please complete the verification to continue');
+      status.style.display = 'block';
+      // Виджетке назар аударту
+      const widget = document.querySelector('.cf-turnstile');
+      if (widget) widget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return false;
+  }
+
   document.addEventListener('DOMContentLoaded', async () => {
     renderCheckoutItems();
     // Pre-fill user data if logged in
@@ -228,11 +313,22 @@
       }
     } catch (e) { /* guest checkout — user_id жоқ */ }
 
+    // Turnstile verification (bot protection) — токен жоқ болса, тоқтатамыз
+    if (!requireTurnstile()) {
+      btn.disabled = false;
+      btn.innerHTML = '<span data-i18n="checkout_pay">' + t('checkout_pay') + '</span> - <span id="pay-amount">' + payAmount.textContent + '</span>';
+      return;
+    }
+
     try {
       const response = await fetch('/api/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: checkoutItems, customer: customerData })
+        body: JSON.stringify({
+          items: checkoutItems,
+          customer: customerData,
+          turnstileToken: turnstileToken  // Cloudflare Turnstile токені
+        })
       });
 
       const data = await response.json();
@@ -256,9 +352,23 @@
           window.location.href = '/cart.html';
           return;
         }
+      } else if (err.message && (err.message.includes('verification') || err.message.includes('bot') || err.message.includes('Turnstile'))) {
+        // Бот тексеру сәтсіз — Turnstile виджетін қайта жүктеу
+        alert(t('checkout_error_prefix') + ': ' + err.message);
+        if (typeof turnstile !== 'undefined' && turnstile.reset) {
+          turnstile.reset();
+          turnstileToken = null;
+        }
       } else {
         alert(t('checkout_error_prefix') + ': ' + err.message);
       }
+      // Токен жарамсыз болуы мүмкін — Turnstile виджетін қайта жүктеу
+      try {
+        if (typeof turnstile !== 'undefined' && turnstile.reset) {
+          turnstile.reset();
+        }
+      } catch (e) {}
+      turnstileToken = null;
       const retryTotal = checkoutItems.reduce((s, i) => s + i.price * i.qty, 0);
       btn.disabled = false;
       btn.innerHTML = '<span data-i18n="checkout_pay">' + t('checkout_pay') + '</span> - <span id="pay-amount">€' + (parseFloat(retryTotal) || 0).toFixed(2) + '</span>';

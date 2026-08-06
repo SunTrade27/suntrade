@@ -396,5 +396,8 @@
   "admin_product_add_option": "+ Aggiungi opzione",
   "admin_product_option_label": "es. Nero",
   "admin_product_remove_option": "Rimuovi opzione",
-  "admin_product_remove_group": "Rimuovi gruppo"
+  "admin_product_remove_group": "Rimuovi gruppo",
+  "checkout_turnstile_required": "Please complete the verification to continue",
+  "checkout_turnstile_expired": "Verification expired — please check again",
+  "checkout_turnstile_error": "Verification failed — please try again"
 }

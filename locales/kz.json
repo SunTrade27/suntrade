@@ -441,5 +441,8 @@
   "admin_product_add_option": "+ Опция қосу",
   "admin_product_option_label": "мысалы Қара",
   "admin_product_remove_option": "Опцияны алып тастау",
-  "admin_product_remove_group": "Топты алып тастау"
+  "admin_product_remove_group": "Топты алып тастау",
+  "checkout_turnstile_required": "Жалғастыру үшін тексеруді аяқтаңыз",
+  "checkout_turnstile_expired": "Тексеру мерзімі аяқталды — қайтадан тексеріңіз",
+  "checkout_turnstile_error": "Тексеру сәтсіз аяқталды — қайтадан көріңіз"
 }

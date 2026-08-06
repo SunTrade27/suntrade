@@ -396,5 +396,8 @@
   "admin_product_add_option": "+ Ajouter une option",
   "admin_product_option_label": "ex. Noir",
   "admin_product_remove_option": "Supprimer l'option",
-  "admin_product_remove_group": "Supprimer le groupe"
+  "admin_product_remove_group": "Supprimer le groupe",
+  "checkout_turnstile_required": "Please complete the verification to continue",
+  "checkout_turnstile_expired": "Verification expired — please check again",
+  "checkout_turnstile_error": "Verification failed — please try again"
 }
