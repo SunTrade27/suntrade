@@ -195,12 +195,31 @@
     font-style: italic; padding-left: 0.5rem; border-left: 2px solid rgba(255,107,0,0.4);
   }
   @media (max-width: 480px) {
-    .order-amount { min-width: 55px; font-size: 0.75rem; }
-    .order-name { font-size: 0.72rem; }
+    /* Tighten the row so customer names stay fully readable on phones.
+       Summary accounting: avatar 26 + gap 12 + amount 48 + gap 12 +
+       name flex (the rest) + gap 12 + status ~64 + padding 12+12 =
+       about 200px reserved; the remaining ~160px goes to the name on a
+       360px-wide viewport so "Thomas Becker" or "林美华" fits. */
+    .order-amount { min-width: 48px; font-size: 0.75rem; flex-shrink: 0; }
+    .order-name { font-size: 0.78rem; flex: 1 1 auto; min-width: 0; }
     .order-date { display: none; }
-    .order-avatar { width: 26px; height: 26px; font-size: 0.62rem; }
+    .order-avatar { width: 28px; height: 28px; font-size: 0.65rem; flex-shrink: 0; }
+    .order-status {
+      padding: 2px 6px; font-size: 0.55rem; letter-spacing: 0;
+      gap: 2px; flex-shrink: 0; max-width: 70px;
+      text-overflow: ellipsis; overflow: hidden;
+    }
+    .order-status .status-ico { width: 10px; height: 10px; }
     .customers-counter { font-size: 0.65rem; padding: 4px 9px; }
     .customers-counter strong { font-size: 0.85rem; }
+  }
+  @media (max-width: 360px) {
+    /* Ultra-narrow phones: status text collapses to the icon alone.
+       Keep the tinted background so the color-coded icon dot stays
+       readable. */
+    .order-status span { display: none; }
+    .order-status { padding: 3px; gap: 0; }
+    .order-status .status-ico { width: 13px; height: 13px; stroke-width: 2.4; }
   }
 
   .loading-shimmer {
