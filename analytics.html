@@ -869,11 +869,17 @@
       // 1 Packing right after, the other 26 all Delivered. This keeps the bar
       // chart consistent with the visible order rows on a freshly-empty DB.
       const demoCounts = { paid: 1, shipped: 0, delivered: 26, accepted: 0, packing: 1 };
-      // Real DB counts filtered to amount > 0 — so €0 placeholders or admin
-      // test rows don't inflate the chart and stay aligned with Recent Orders.
+      // Site admin accounts (SERZHAN YELEMESSOV et al.) place real test orders
+      // while developing the storefront. Those test purchases are now excluded
+      // from visitor-visible analytics so the page only reflects real customer
+      // activity. The admin emails below must match the allowlist in the
+      // supabase-schema.sql signup trigger + js/supabase-client.js admin guard.
+      const adminEmails = ['serjanyelemesov@gmail.com', 'sundetofficial@gmail.com'];
+      // Real DB counts filtered to amount > 0 — and not from an admin account.
       const results = await Promise.all(statuses.map(s =>
-        sb.from('orders').select('id, amount', { count: 'exact', head: true })
+        sb.from('orders').select('id, amount, customer_email', { count: 'exact', head: true })
           .eq('status', s).gt('amount', 0)
+          .not('customer_email', 'in', '(' + adminEmails.join(',') + ')')
       ));
       // Add real counts on top of demo baseline so a young site still shows activity bars
       const counts = results.map((r, i) => (demoCounts[statuses[i]] || 0) + ((r && r.count) || 0));
@@ -888,14 +894,17 @@
 
   async function loadRecentOrders() {
     try {
-      // Pull only real orders that visitors would recognize — amount > 0
-      // and not 'pending'. Pending rows with €0 are filtered so the timeline
-      // stays consistent with what the chart counts (the algorithm is linked
-      // end-to-end: same conditions → same rows everywhere).
+      // Pull only real customer orders that visitors would recognize:
+      //   - amount > 0 and not 'pending' (filters out the €0 placeholders)
+      //   - customer_email not in the admin allowlist (hides the developer's
+      //     own test purchases — e.g. SERZHAN YELEMESSOV — so the analytics
+      //     page never shows admin-only data to public visitors).
+      const adminEmails = ['serjanyelemesov@gmail.com', 'sundetofficial@gmail.com'];
       const { data } = await sb.from('orders')
         .select('id, customer_name, amount, status, created_at')
         .gt('amount', 0)
         .neq('status', 'pending')
+        .not('customer_email', 'in', '(' + adminEmails.join(',') + ')')
         .order('created_at', { ascending: false }).limit(500);
 
       // 28 demo customers, distributed realistically across the last ~7 weeks:
