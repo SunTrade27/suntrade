@@ -40,6 +40,13 @@
     width: 100%;
     height: auto;
     pointer-events: none;
+    /* Keep sharp upscaling in both directions. Without these hints the
+       browser accepts whichever interpolation it picks for the lens /
+       thumbnail / main image, and on a 1080p+ photo of a product the
+       edges of the kettle / cable / body blur out as soon as the
+       container is wider than the source. */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
   }
   .magnifier-lens {
     position: absolute;
@@ -57,6 +64,14 @@
     background-color: #fff;
     transition: width 0.15s, height 0.15s;
     will-change: transform, left, top;
+    /* The lens zooms 2.5x via background-size which is NOT a real
+       CSS image-render-able surface; modern Chromium supports
+       -webkit-optimize-contrast on background images to keep edges
+       crisp. Without this the lens image looks noticeably soft
+       compared to the surrounding photo. */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
   }
   .magnifier-lens::after {
     content: '';
@@ -517,7 +532,15 @@
         </button>
         <div class="gallery-main">
           <div class="img-magnifier-container" id="magnifier-container">
-            <img id="main-image" src="${images[0]}" alt="${name}" draggable="false">
+            <img id="main-image"
+                 src="${images[0]}"
+                 alt="${name}"
+                 loading="eager"
+                 decoding="sync"
+                 fetchpriority="high"
+                 width="900"
+                 height="900"
+                 draggable="false">
             <div class="magnifier-hint">× 2.5 Hover to zoom</div>
           </div>
         </div>
