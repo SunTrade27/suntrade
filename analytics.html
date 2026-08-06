@@ -879,62 +879,73 @@
       //     feel lived-in, not auto-generated.
       //   - PAID status renders "now" only when the order was created within the
       //     last 60 minutes (so old real Supabase PAID orders stay honest).
-      var demoOrders = [
-        // ---- Today (2026-08-06) — 1 Paid + 1 Packing ----
-        { customer_name: 'Әлия Мұратова',       amount: 134.00,  status: 'paid',      created_at: '2026-08-06T16:30:00' },
-        { customer_name: 'Thomas Becker',      amount: 198.90,  status: 'packing',   created_at: '2026-08-06T10:15:00' },
-        // ---- Yesterday (2026-08-05) — 2 orders ----
-        { customer_name: 'Marica Ivanović',    amount: 221.40,  status: 'delivered', created_at: '2026-08-05T14:30:00' },
-        { customer_name: 'Olivia Chen',        amount: 125.98,  status: 'delivered', created_at: '2026-08-05T11:00:00' },
-        // ---- 2026-08-04 — 2 orders (also Premium #4-#9 buyers) ----
-        { customer_name: 'Yusuf Demir',        amount: 1850.00, status: 'delivered', created_at: '2026-08-04T10:00:00' },
-        { customer_name: '林美华',              amount: 1450.00, status: 'delivered', created_at: '2026-08-04T15:20:00' },
-        // ---- 2026-08-03 — 2 orders ----
-        { customer_name: 'Lukas Schmidt',      amount: 1320.00, status: 'delivered', created_at: '2026-08-03T16:45:00' },
-        { customer_name: 'Sofia Volkov',       amount: 820.00,  status: 'delivered', created_at: '2026-08-03T09:30:00' },
-        // ---- 2026-08-02 — 2 orders ----
-        { customer_name: 'Гульнара Тілеуова',   amount: 1080.00, status: 'delivered', created_at: '2026-08-02T14:00:00' },
-        { customer_name: 'Александр Иванов',   amount: 950.00,  status: 'delivered', created_at: '2026-08-02T11:30:00' },
-        // ---- GAP: 2026-08-01 (no orders) ----
-        // ---- 2026-07-31 — 2 orders ----
-        { customer_name: 'Ayşe Yılmaz',        amount: 67.20,   status: 'delivered', created_at: '2026-07-31T16:00:00' },
-        { customer_name: 'Pierre Dubois',      amount: 178.30,  status: 'delivered', created_at: '2026-07-31T13:30:00' },
-        // ---- 2026-07-30 — 1 order ----
-        { customer_name: 'Anna Kowalski',      amount: 76.50,   status: 'delivered', created_at: '2026-07-30T11:00:00' },
-        // ---- GAP: 2026-07-29 (no orders) ----
-        // ---- 2026-07-28 — 2 orders ----
-        { customer_name: 'Mei Lin',            amount: 54.20,   status: 'delivered', created_at: '2026-07-28T16:20:00' },
-        { customer_name: 'Ботагөз Қасымова',   amount: 88.75,   status: 'delivered', created_at: '2026-07-28T11:00:00' },
-        // ---- 2026-07-27 — 1 order ----
-        { customer_name: 'Olivia Smith',       amount: 73.40,   status: 'delivered', created_at: '2026-07-27T10:00:00' },
-        // ---- GAP: 2026-07-26 (no orders) ----
-        // ---- 2026-07-24 — 2 orders ----
-        { customer_name: 'Isabella Romano',    amount: 246.30,  status: 'delivered', created_at: '2026-07-24T15:30:00' },
-        { customer_name: 'Sophie Laurent',     amount: 268.90,  status: 'delivered', created_at: '2026-07-24T09:00:00' },
-        // ---- GAP: 2026-07-23 (no orders) ----
-        // ---- 2026-07-22 — 2 orders ----
-        { customer_name: 'Ақмарал Жүнісова',   amount: 95.00,   status: 'delivered', created_at: '2026-07-22T16:20:00' },
-        { customer_name: 'Дмитрий Орлов',      amount: 99.50,   status: 'delivered', created_at: '2026-07-22T10:00:00' },
-        // ---- GAP: 2026-07-21 (no orders) ----
-        // ---- 2026-07-19 — 1 order ----
-        { customer_name: 'Інкәр Сембаева',     amount: 119.60,  status: 'delivered', created_at: '2026-07-19T13:00:00' },
-        // ---- 2026-07-17 — 1 order ----
-        { customer_name: 'Yuki Tanaka',        amount: 187.20,  status: 'delivered', created_at: '2026-07-17T11:00:00' },
-        // ---- 2026-07-15 — 1 order ----
-        { customer_name: 'Дарига Болатов',     amount: 82.30,   status: 'delivered', created_at: '2026-07-15T16:00:00' },
-        // ---- 2026-07-14 — 1 order ----
-        { customer_name: 'Nazgul Yergalieva',  amount: 110.50,  status: 'delivered', created_at: '2026-07-14T10:00:00' },
-        // ---- GAP: 2026-07-13 (no orders) ----
-        // ---- 2026-07-10 — 1 order ----
-        { customer_name: 'Виктор Петров',      amount: 86.20,   status: 'delivered', created_at: '2026-07-10T14:00:00' },
-        // ---- EARLIEST BIG BUYERS — bottom 3 (positions 26-28) are the founders
-        //      of today's Premium leaderboard. Their amounts match the Premium
-        //      cards exactly, so every name and amount is consistent across
-        //      Recent Orders and Premium Customers. ----
-        { customer_name: 'Hans Müller',        amount: 2000.00, status: 'delivered', created_at: '2026-07-05T18:00:00' },
-        { customer_name: 'Emma Schneider',     amount: 2000.00, status: 'delivered', created_at: '2026-06-28T14:30:00' },
-        { customer_name: 'Марат Бекжанов',      amount: 7300.00, status: 'delivered', created_at: '2026-06-15T11:00:00' }
+      // demoOrders uses relative offsets (daysAgo) so the timeline stays
+      // realistic in any month the page is visited. Realistic shipping
+      // model:
+      //   - "paid" (Сатушы қабылдады): today, current local time. The
+      //     buyer's Stripe payment just cleared, the seller is logging
+      //     it in the admin dashboard.
+      //   - "packing" (Жиналуда): ~3 days ago, factory in China has
+      //     QC'd and boxed the item, not yet handed to courier.
+      //   - "delivered": minimum ~15 days ago, with widely spaced gaps
+      //     (some 16, some 19, some 22 … some 78). That range covers
+      //     the China→Europe / China→USA shipping window of ~15-25
+      //     days, plus longer gaps for the founding big-spenders at
+      //     the bottom (Hans / Emma / Marat) who placed their biggest
+      //     purchases months earlier. The gaps are intentionally
+      //     irregular so visitors don't see a manufactured "one per
+      //     day" cadence.
+      function _buildDemoStamp(daysAgo, hour, minute) {
+        var d = new Date();
+        d.setDate(d.getDate() - daysAgo);
+        d.setHours(hour, minute, 0, 0);
+        return d.toISOString();
+      }
+      function _stampDemo(row) {
+        return { customer_name: row.customer_name, amount: row.amount, status: row.status,
+                 created_at: _buildDemoStamp(row.daysAgo, row.hour, row.minute) };
+      }
+      var demoOrdersRaw = [
+        // Top — today & 3 days ago
+        { customer_name: 'Әлия Мұратова',     amount: 134.00,  status: 'paid',      daysAgo: 0,  hour: 16, minute: 30 },
+        { customer_name: 'Thomas Becker',    amount: 198.90,  status: 'packing',   daysAgo: 3,  hour: 10, minute: 15 },
+        // Premium buyers #4-#9 — China→EU/USA, 15-30 days back, gaps of 2-4 days
+        { customer_name: 'Marica Ivanović',  amount: 221.40,  status: 'delivered', daysAgo: 15, hour: 14, minute: 30 },
+        { customer_name: 'Olivia Chen',      amount: 125.98,  status: 'delivered', daysAgo: 17, hour: 11, minute: 00 },
+        { customer_name: '林美华',            amount: 1450.00, status: 'delivered', daysAgo: 20, hour: 15, minute: 20 },
+        { customer_name: 'Yusuf Demir',      amount: 1850.00, status: 'delivered', daysAgo: 22, hour: 10, minute: 00 },
+        { customer_name: 'Lukas Schmidt',    amount: 1320.00, status: 'delivered', daysAgo: 25, hour: 16, minute: 45 },
+        { customer_name: 'Sofia Volkov',     amount: 820.00,  status: 'delivered', daysAgo: 28, hour: 9,  minute: 30 },
+        { customer_name: 'Гульнара Тілеуова', amount: 1080.00, status: 'delivered', daysAgo: 32, hour: 14, minute: 0 },
+        { customer_name: 'Александр Иванов', amount: 950.00,  status: 'delivered', daysAgo: 36, hour: 11, minute: 30 },
+        // Mid-tier — 30-50 days, gaps of 3-5 days
+        { customer_name: 'Ayşe Yılmaz',      amount: 67.20,   status: 'delivered', daysAgo: 40, hour: 16, minute: 0 },
+        { customer_name: 'Pierre Dubois',    amount: 178.30,  status: 'delivered', daysAgo: 43, hour: 13, minute: 30 },
+        { customer_name: 'Anna Kowalski',    amount: 76.50,   status: 'delivered', daysAgo: 47, hour: 11, minute: 0 },
+        { customer_name: 'Mei Lin',          amount: 54.20,   status: 'delivered', daysAgo: 51, hour: 16, minute: 20 },
+        { customer_name: 'Ботагөз Қасымова', amount: 88.75,   status: 'delivered', daysAgo: 54, hour: 11, minute: 0 },
+        { customer_name: 'Olivia Smith',     amount: 73.40,   status: 'delivered', daysAgo: 58, hour: 10, minute: 0 },
+        { customer_name: 'Isabella Romano',  amount: 246.30,  status: 'delivered', daysAgo: 62, hour: 15, minute: 30 },
+        { customer_name: 'Sophie Laurent',   amount: 268.90,  status: 'delivered', daysAgo: 65, hour: 9,  minute: 0 },
+        { customer_name: 'Ақмарал Жүнісова', amount: 95.00,   status: 'delivered', daysAgo: 68, hour: 16, minute: 20 },
+        { customer_name: 'Дмитрий Орлов',    amount: 99.50,   status: 'delivered', daysAgo: 71, hour: 10, minute: 0 },
+        { customer_name: 'Інкәр Сембаева',   amount: 119.60,  status: 'delivered', daysAgo: 74, hour: 13, minute: 0 },
+        { customer_name: 'Yuki Tanaka',      amount: 187.20,  status: 'delivered', daysAgo: 77, hour: 11, minute: 0 },
+        { customer_name: 'Дарига Болатов',   amount: 82.30,   status: 'delivered', daysAgo: 80, hour: 16, minute: 0 },
+        { customer_name: 'Nazgul Yergalieva',amount: 110.50,  status: 'delivered', daysAgo: 83, hour: 10, minute: 0 },
+        { customer_name: 'Виктор Петров',    amount: 86.20,   status: 'delivered', daysAgo: 86, hour: 14, minute: 0 },
+        // EARLIEST BIG BUYERS — bottom 3 (positions 26-28) are the founders
+        // of today's Premium leaderboard. Their amounts match the Premium
+        // cards exactly, so every name and amount is consistent across
+        // Recent Orders and Premium Customers. They sit at the very
+        // bottom of the timeline because they placed their founding
+        // orders weeks or months earlier — which is why Marat Bekzhanov
+        // never gets pushed out, even after 95 days.
+        { customer_name: 'Hans Müller',      amount: 2000.00, status: 'delivered', daysAgo: 90, hour: 18, minute: 0 },
+        { customer_name: 'Emma Schneider',   amount: 2000.00, status: 'delivered', daysAgo: 96, hour: 14, minute: 30 },
+        { customer_name: 'Марат Бекжанов',    amount: 7300.00, status: 'delivered', daysAgo: 102, hour: 11, minute: 0 }
       ];
+      var demoOrders = demoOrdersRaw.map(_stampDemo);
 
       // realOrders is already declared above (filtered by admin email + name).
       // Filter out demos whose name matches a real order — those would be
