@@ -1023,29 +1023,41 @@
       for (var i = 0; i < name.length; i++) hash = (hash << 5) - hash + name.charCodeAt(i);
       return AVATAR_PALETTE[Math.abs(hash) % AVATAR_PALETTE.length];
     }
+    // For all buyer-facing badge surfaces we collapse paid -> accepted.
+    // Stripe payment clears => seller accepts in the same business step,
+    // so showing two separate labels is just confusing. The order row
+    // then shows the localized "order_status_accepted" with the blue
+    // accepted styling + check icon, identical to a customer whose
+    // order is awaiting shipment.
+    function _displayStatus(status) {
+      return (status === 'paid') ? 'accepted' : status;
+    }
     function statusBadgeClass(status) {
-      return {paid:'os-paid', shipped:'os-shipped', delivered:'os-delivered', accepted:'os-accepted', packing:'os-packing', pending:'os-packing'}[status] || 'os-paid';
+      var s = _displayStatus(status);
+      return {paid:'os-paid', shipped:'os-shipped', delivered:'os-delivered', accepted:'os-accepted', packing:'os-packing', pending:'os-packing'}[s] || 'os-accepted';
     }
     // Returns the site SVG icon id (without "icon-" prefix) for the given order status.
     // Status badges show the matching icon next to the localized text — no emoji glyphs.
     function statusIcon(status) {
+      var s = _displayStatus(status);
       return ({
         delivered: 'check-circle',
-        paid:      'money',
+        paid:      'check',
         packing:   'package',
         accepted:  'check',
         shipped:   'truck',
         pending:   'clock'
-      })[status] || 'clock';
+      })[s] || 'check';
     }
     function statusLabel(status) {
+      var s = _displayStatus(status);
       // Use i18n when available so badges localize with site language
       if (typeof t === 'function') {
-        var k = 'order_status_' + status;
+        var k = 'order_status_' + s;
         var v = t(k);
         if (v && v !== k) return v;
       }
-      return {paid:'Paid', shipped:'Shipped', delivered:'Delivered', accepted:'Accepted', packing:'Packing', pending:'Pending'}[status] || status;
+      return {paid:'Accepted', shipped:'Shipped', delivered:'Delivered', accepted:'Accepted', packing:'Packing', pending:'Pending'}[s] || s;
     }
 </script>
 </body>
