@@ -7,6 +7,10 @@
     {
       "source": "/admin/:path*",
       "destination": "/admin.html"
+    },
+    {
+      "source": "/return-policy",
+      "destination": "/return-policy.html"
     }
   ]
 }
