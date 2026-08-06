@@ -573,10 +573,13 @@
           <span data-i18n="analytics_order_status">Заказ статустары</span>
         </h3>
         <div class="bar-chart" id="status-chart">
-          <div class="bar-col"><div class="bar-val" id="bar-paid-val">0</div><div class="bar-fill" id="bar-paid" style="height:0%"></div><div class="bar-label" data-i18n="order_status_paid">Paid</div></div>
+          <!-- "Paid" merged into "Сатушы қабылдады" (accepted) — every
+               paid order has already been accepted by the seller almost
+               instantly, so visitors see a single &quot;Accepted&quot; bar that
+               adds the two counts together. -->
+          <div class="bar-col"><div class="bar-val" id="bar-accepted-val">0</div><div class="bar-fill" id="bar-accepted" style="height:0%;background:linear-gradient(180deg,#3B82F6,#2563EB)"></div><div class="bar-label" data-i18n="order_status_accepted">Accepted</div></div>
           <div class="bar-col"><div class="bar-val" id="bar-shipped-val">0</div><div class="bar-fill" id="bar-shipped" style="height:0%;background:linear-gradient(180deg,#FF6B00,#FF4500)"></div><div class="bar-label" data-i18n="order_status_shipped">Shipped</div></div>
           <div class="bar-col"><div class="bar-val" id="bar-delivered-val">0</div><div class="bar-fill" id="bar-delivered" style="height:0%;background:linear-gradient(180deg,#10B981,#059669)"></div><div class="bar-label" data-i18n="order_status_delivered">Delivered</div></div>
-          <div class="bar-col"><div class="bar-val" id="bar-accepted-val">0</div><div class="bar-fill" id="bar-accepted" style="height:0%;background:linear-gradient(180deg,#3B82F6,#2563EB)"></div><div class="bar-label" data-i18n="order_status_accepted">Accepted</div></div>
           <div class="bar-col"><div class="bar-val" id="bar-packing-val">0</div><div class="bar-fill" id="bar-packing" style="height:0%;background:linear-gradient(180deg,#FBBF24,#F59E0B)"></div><div class="bar-label" data-i18n="order_status_packing">Packing</div></div>
         </div>
       </div>
@@ -775,35 +778,45 @@
 
   async function loadOrderStatuses() {
     try {
-      const statuses = ['paid', 'shipped', 'delivered', 'accepted', 'packing'];
-      // Demo baseline mirrors the Recent Orders status mix: 1 Paid at the top,
-      // 1 Packing right after, the other 26 all Delivered. This keeps the bar
-      // chart consistent with the visible order rows on a freshly-empty DB.
-      const demoCounts = { paid: 1, shipped: 0, delivered: 26, accepted: 0, packing: 1 };
-      // Site admin accounts (SERZHAN YELEMESSOV et al.) place real test orders
-      // while developing the storefront. Those test purchases are now excluded
-      // from visitor-visible analytics so the page only reflects real customer
-      // activity. The admin emails below must match the allowlist in the
-      // supabase-schema.sql signup trigger + js/supabase-client.js admin guard.
+      // Visible bars in the chart. "Paid" is intentionally merged into
+      // "accepted" so visitors see one combined "Сатушы қабылдады" column.
+      const statuses = ['accepted', 'shipped', 'delivered', 'packing'];
+      // Demo baseline mirrors Recent Orders: 1 paid (rolled into accepted),
+      // 1 packing, the other 26 delivered. The paid-only column is gone.
+      const demoCounts = { accepted: 1, shipped: 0, delivered: 26, packing: 1 };
+      // Site admin accounts (SERZHAN YELEMESSOV et al.) place real test
+      // orders while developing the storefront. Those test purchases are
+      // excluded from visitor-visible analytics so the page only reflects
+      // real customer activity. The allowlist mirrors the admin guard in
+      // supabase-schema.sql and js/supabase-client.js.
       const adminEmails = ['serjanyelemesov@gmail.com', 'sundetofficial@gmail.com'];
-      // Real DB counts filtered to amount > 0 — and not from an admin account.
-      // We also exclude rows whose customer_name looks like a developer test
-      // (in case someone ordered without the matching admin email attached).
-      const results = await Promise.all(statuses.map(s =>
-        sb.from('orders').select('id, amount, customer_email, customer_name', { count: 'exact', head: true })
+      function adminFilter(q, s) {
+        return q.select('id, amount, customer_email, customer_name', { count: 'exact', head: true })
           .eq('status', s).gt('amount', 0)
           .not('customer_email', 'in', '(' + adminEmails.join(',') + ')')
           .not('customer_name', 'ilike', '%serzhan%')
           .not('customer_name', 'ilike', '%sundetofficial%')
-          .not('customer_name', 'ilike', '%test%')
-      ));
-      // Add real counts on top of demo baseline so a young site still shows activity bars
-      const counts = results.map((r, i) => (demoCounts[statuses[i]] || 0) + ((r && r.count) || 0));
-      const maxVal = Math.max(1, ...counts);
-      statuses.forEach((s, i) => {
-        setEl('bar-' + s + '-val', counts[i]);
+          .not('customer_name', 'ilike', '%test%');
+      }
+      // Query every status we still care about — including paid, which is
+      // merged in below into the "accepted" column.
+      const queryStatuses = ['accepted', 'paid', 'shipped', 'delivered', 'packing'];
+      const results = await Promise.all(queryStatuses.map(s => adminFilter(sb.from('orders'), s)));
+      const realCounts = {};
+      queryStatuses.forEach((s, i) => { realCounts[s] = (results[i] && results[i].count) || 0; });
+      // Roll "paid" into "accepted" for the combined &quot;Сатушы қабылдады&quot;
+      // column.
+      const counts = {
+        accepted: (demoCounts.accepted || 0) + (realCounts.accepted || 0) + (realCounts.paid || 0),
+        shipped:  (demoCounts.shipped  || 0) + (realCounts.shipped  || 0),
+        delivered:(demoCounts.delivered|| 0) + (realCounts.delivered|| 0),
+        packing:  (demoCounts.packing  || 0) + (realCounts.packing  || 0)
+      };
+      const maxVal = Math.max(1, counts.accepted, counts.shipped, counts.delivered, counts.packing);
+      statuses.forEach(s => {
+        setEl('bar-' + s + '-val', counts[s]);
         const bar = document.getElementById('bar-' + s);
-        if (bar) bar.style.height = (counts[i] / maxVal * 100) + '%';
+        if (bar) bar.style.height = (counts[s] / maxVal * 100) + '%';
       });
     } catch(e) {}
   }
