@@ -209,6 +209,19 @@
   }
   @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
+  /* Chart heading icon — site SVG, kept small enough to sit inline with the uppercase title */
+  .icon-chart-heading { width: 14px; height: 14px; vertical-align: -2px; color: rgba(255,107,0,0.85); margin-right: 0.4rem; flex-shrink: 0; }
+  .chart-card h3, .recent-orders-head h3 {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+  }
+
+  /* Status badge icon — site SVG used inline next to the localized status text */
+  .order-status { display: inline-flex; align-items: center; gap: 4px; }
+  .order-status .status-ico { width: 11px; height: 11px; stroke-width: 2.6; flex-shrink: 0; }
+
+  /* Recent-orders hero headline icon + counter symbols — site SVG, no emojis anywhere */
+  .recent-orders-head .customers-counter .counter-ico { width: 13px; height: 13px; color: #FF6B00; flex-shrink: 0; }
+
   .analytics-footer { text-align: center; margin-top: 1rem; }
 </style>
 </head><body>
@@ -272,7 +285,10 @@
 
     <div class="charts-grid">
       <div class="chart-card">
-        <h3 data-i18n="analytics_order_status">📊 Заказ статустары</h3>
+        <h3>
+          <svg class="icon-chart-heading"><use href="#icon-grid"/></svg>
+          <span data-i18n="analytics_order_status">Заказ статустары</span>
+        </h3>
         <div class="bar-chart" id="status-chart">
           <div class="bar-col"><div class="bar-val" id="bar-paid-val">0</div><div class="bar-fill" id="bar-paid" style="height:0%"></div><div class="bar-label">Paid</div></div>
           <div class="bar-col"><div class="bar-val" id="bar-shipped-val">0</div><div class="bar-fill" id="bar-shipped" style="height:0%;background:linear-gradient(180deg,#FF6B00,#FF4500)"></div><div class="bar-label">Shipped</div></div>
@@ -284,9 +300,12 @@
 
     <div class="recent-orders">
       <div class="recent-orders-head">
-        <h3 data-i18n="analytics_recent_orders">🛒 Соңғы заказдар</h3>
+        <h3>
+          <svg class="icon-chart-heading"><use href="#icon-cart"/></svg>
+          <span data-i18n="analytics_recent_orders">Соңғы заказдар</span>
+        </h3>
         <div class="customers-counter">
-          <span class="customers-counter-dot"></span>
+          <svg class="counter-ico"><use href="#icon-user"/></svg>
           <span data-i18n="analytics_customers_count">Сатып алушылар:</span>
           <strong id="customers-total">28</strong>
         </div>
@@ -355,39 +374,38 @@
         .order('created_at', { ascending: false }).limit(200);
       const { count: realTotalCount } = await sb.from('orders').select('id', { count: 'exact', head: true });
 
-      // 28 demo customers (28 baseline) — international mix, includes required names:
-      // Emma Schneider (DE), Марат Бекжанов (KZ), Hans Müller (DE)
-      // Dates span the last 30 days. First 6 = delivered (most recent),
-      // then mixed: shipped, paid, packing, accepted. Real customers append on top.
+      // 28 demo customers — first one = Paid, second one = Packing, all the rest = Delivered.
+      // Required names are first three rows: Emma Schneider (DE), Марат Бекжанов (KZ), Hans Müller (DE — with ü).
+      // Dates are spread across the last 30 days. Real customer orders always merge on top, newest first.
       var demoOrders = [
-        { customer_name: 'Emma Schneider',   amount: 142.50, status: 'delivered', created_at: '2026-08-06T16:30:00' },
-        { customer_name: 'Марат Бекжанов',     amount: 89.00,  status: 'delivered', created_at: '2026-08-06T11:15:00' },
+        { customer_name: 'Emma Schneider',   amount: 142.50, status: 'paid',      created_at: '2026-08-06T16:30:00' },
+        { customer_name: 'Марат Бекжанов',     amount: 89.00,  status: 'packing',   created_at: '2026-08-06T15:30:00' },
         { customer_name: 'Hans Müller',        amount: 256.80, status: 'delivered', created_at: '2026-08-05T09:45:00' },
         { customer_name: 'Ayşe Yılmaz',        amount: 67.20,  status: 'delivered', created_at: '2026-08-05T18:20:00' },
         { customer_name: 'София Иванова',      amount: 310.00, status: 'delivered', created_at: '2026-08-05T13:10:00' },
         { customer_name: 'James Carter',       amount: 45.90,  status: 'delivered', created_at: '2026-08-04T10:00:00' },
-        { customer_name: 'Pierre Dubois',      amount: 178.30, status: 'shipped',   created_at: '2026-08-06T08:00:00' },
-        { customer_name: 'Marco Rossi',        amount: 92.00,  status: 'shipped',   created_at: '2026-08-05T15:30:00' },
-        { customer_name: 'Laura García',       amount: 215.40, status: 'shipped',   created_at: '2026-08-04T12:45:00' },
-        { customer_name: 'Әлия Мұратова',      amount: 134.00, status: 'paid',      created_at: '2026-08-06T14:20:00' },
-        { customer_name: 'Anna Kowalski',      amount: 76.50,  status: 'paid',      created_at: '2026-08-04T17:00:00' },
-        { customer_name: 'Thomas Becker',      amount: 198.90, status: 'packing',   created_at: '2026-08-06T10:15:00' },
-        { customer_name: 'Mei Lin',            amount: 54.20,  status: 'packing',   created_at: '2026-08-03T11:30:00' },
-        { customer_name: 'Lucas Oliveira',     amount: 162.00, status: 'accepted',  created_at: '2026-08-06T09:00:00' },
-        { customer_name: 'Ботагөз Қасымова',   amount: 88.75,  status: 'accepted',  created_at: '2026-08-02T14:00:00' },
+        { customer_name: 'Pierre Dubois',      amount: 178.30, status: 'delivered', created_at: '2026-08-06T08:00:00' },
+        { customer_name: 'Marco Rossi',        amount: 92.00,  status: 'delivered', created_at: '2026-08-05T15:30:00' },
+        { customer_name: 'Laura García',       amount: 215.40, status: 'delivered', created_at: '2026-08-04T12:45:00' },
+        { customer_name: 'Әлия Мұратова',      amount: 134.00, status: 'delivered', created_at: '2026-08-06T14:20:00' },
+        { customer_name: 'Anna Kowalski',      amount: 76.50,  status: 'delivered', created_at: '2026-08-04T17:00:00' },
+        { customer_name: 'Thomas Becker',      amount: 198.90, status: 'delivered', created_at: '2026-08-06T10:15:00' },
+        { customer_name: 'Mei Lin',            amount: 54.20,  status: 'delivered', created_at: '2026-08-03T11:30:00' },
+        { customer_name: 'Lucas Oliveira',     amount: 162.00, status: 'delivered', created_at: '2026-08-06T09:00:00' },
+        { customer_name: 'Ботагөз Қасымова',   amount: 88.75,  status: 'delivered', created_at: '2026-08-02T14:00:00' },
         { customer_name: 'Isabella Romano',    amount: 246.30, status: 'delivered', created_at: '2026-08-03T08:30:00' },
         { customer_name: 'Інкәр Сембаева',     amount: 119.60, status: 'delivered', created_at: '2026-07-31T15:45:00' },
         { customer_name: 'Olivia Smith',       amount: 73.40,  status: 'delivered', created_at: '2026-07-30T11:00:00' },
-        { customer_name: 'Ақмарал Жүнісова',   amount: 95.00,  status: 'shipped',   created_at: '2026-08-02T16:20:00' },
-        { customer_name: 'Yuki Tanaka',        amount: 187.20, status: 'shipped',   created_at: '2026-08-01T10:30:00' },
-        { customer_name: 'Fatima Al-Hassan',   amount: 64.80,  status: 'paid',      created_at: '2026-07-31T13:15:00' },
+        { customer_name: 'Ақмарал Жүнісова',   amount: 95.00,  status: 'delivered', created_at: '2026-08-02T16:20:00' },
+        { customer_name: 'Yuki Tanaka',        amount: 187.20, status: 'delivered', created_at: '2026-08-01T10:30:00' },
+        { customer_name: 'Fatima Al-Hassan',   amount: 64.80,  status: 'delivered', created_at: '2026-07-31T13:15:00' },
         { customer_name: 'Виктор Петров',     amount: 221.00, status: 'delivered', created_at: '2026-07-29T09:00:00' },
-        { customer_name: 'Carlos Mendoza',     amount: 109.50, status: 'packing',   created_at: '2026-07-28T14:00:00' },
+        { customer_name: 'Carlos Mendoza',     amount: 109.50, status: 'delivered', created_at: '2026-07-28T14:00:00' },
         { customer_name: 'Willem de Vries',    amount: 156.70, status: 'delivered', created_at: '2026-07-27T11:30:00' },
-        { customer_name: 'Дарига Болатов',     amount: 82.30,  status: 'accepted',  created_at: '2026-07-26T16:00:00' },
+        { customer_name: 'Дарига Болатов',     amount: 82.30,  status: 'delivered', created_at: '2026-07-26T16:00:00' },
         { customer_name: 'Sophie Laurent',     amount: 268.90, status: 'delivered', created_at: '2026-07-25T12:45:00' },
-        { customer_name: 'Дмитрий Орлов',     amount: 99.50,  status: 'shipped',   created_at: '2026-07-24T15:30:00' },
-        { customer_name: 'Айгерім Сәрсенова',  amount: 124.40, status: 'paid',      created_at: '2026-07-23T10:00:00' }
+        { customer_name: 'Дмитрий Орлов',     amount: 99.50,  status: 'delivered', created_at: '2026-07-24T15:30:00' },
+        { customer_name: 'Айгерім Сәрсенова',  amount: 124.40, status: 'delivered', created_at: '2026-07-23T10:00:00' }
       ];
 
       var allOrders = [];
@@ -410,11 +428,15 @@
         var avBg = colorFromName(nm);
         var badgeCls = statusBadgeClass(o.status);
         var badgeTxt = escapeHtml(statusLabel(o.status));
+        var iconId = escapeHtml(statusIcon(o.status));
         return '<div class="order-row">' +
           '<div class="order-avatar" style="background:' + avBg + '">' + escapeHtml(ini) + '</div>' +
           '<div class="order-amount">€' + parseFloat(o.amount || 0).toFixed(0) + '</div>' +
           '<div class="order-name">' + escapeHtml(nm) + '</div>' +
-          '<div class="order-status ' + badgeCls + '">' + badgeTxt + '</div>' +
+          '<div class="order-status ' + badgeCls + '">' +
+            '<svg class="status-ico"><use href="#icon-' + iconId + '"/></svg>' +
+            '<span>' + badgeTxt + '</span>' +
+          '</div>' +
           '<div class="order-date">' + d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'}) + ' ' + d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) + '</div>' +
         '</div>';
       }).join('');
@@ -460,6 +482,18 @@
     }
     function statusBadgeClass(status) {
       return {paid:'os-paid', shipped:'os-shipped', delivered:'os-delivered', accepted:'os-accepted', packing:'os-packing', pending:'os-packing'}[status] || 'os-paid';
+    }
+    // Returns the site SVG icon id (without "icon-" prefix) for the given order status.
+    // Status badges show the matching icon next to the localized text — no emoji glyphs.
+    function statusIcon(status) {
+      return ({
+        delivered: 'check-circle',
+        paid:      'money',
+        packing:   'package',
+        accepted:  'check',
+        shipped:   'truck',
+        pending:   'clock'
+      })[status] || 'clock';
     }
     function statusLabel(status) {
       // Use i18n when available so badges localize with site language

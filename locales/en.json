@@ -413,9 +413,9 @@
   "trust_shipping_sub": "Worldwide shipping",
   "analytics_subtitle": "SunTrade Statistics — Real-time",
   "analytics_pending": "Pending",
-  "analytics_order_status": "📊 Order Statuses",
+  "analytics_order_status": "Order Statuses",
   "analytics_countries": "🌍 Delivery Countries",
-  "analytics_recent_orders": "🛒 Recent Orders",
+  "analytics_recent_orders": "Recent Orders",
   "analytics_customers_count": "Customers:",
   "analytics_customers_subtitle": "Our 28 satisfied customers from around the world"
 }

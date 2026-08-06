@@ -413,9 +413,9 @@
   "trust_shipping_sub": "Әлемдік жеткізу",
   "analytics_subtitle": "SunTrade статистикасы — нақты уақытта",
   "analytics_pending": "Күтілуде",
-  "analytics_order_status": "📊 Заказ статустары",
+  "analytics_order_status": "Заказ статустары",
   "analytics_countries": "🌍 Жеткізу елдері",
-  "analytics_recent_orders": "🛒 Соңғы заказдар",
+  "analytics_recent_orders": "Соңғы заказдар",
   "analytics_customers_count": "Сатып алушылар:",
   "analytics_customers_subtitle": "Біздің 28 қанағаттанған клиенттеріміз — әлемнің түкпір-түкпірінен"
 }
