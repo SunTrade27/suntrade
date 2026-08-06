@@ -855,9 +855,10 @@
   async function loadOrderStatuses() {
     try {
       const statuses = ['paid', 'shipped', 'delivered', 'accepted', 'packing'];
-      // Demo fallback counts (so bars aren't all zero on a freshly-empty DB while
-      // the page still advertises 28 satisfied customers)
-      const demoCounts = { paid: 4, shipped: 6, delivered: 12, accepted: 3, packing: 3 };
+      // Demo baseline mirrors the Recent Orders status mix: 1 Paid at the top,
+      // 1 Packing right after, the other 26 all Delivered. This keeps the bar
+      // chart consistent with the visible order rows on a freshly-empty DB.
+      const demoCounts = { paid: 1, shipped: 0, delivered: 26, accepted: 0, packing: 1 };
       const results = await Promise.all(statuses.map(s =>
         sb.from('orders').select('id', { count: 'exact', head: true }).eq('status', s)
       ));
@@ -878,64 +879,77 @@
         .order('created_at', { ascending: false }).limit(200);
       const { count: realTotalCount } = await sb.from('orders').select('id', { count: 'exact', head: true });
 
-      // 28 demo customers, distributed realistically across the last ~25 days:
-      //   - Required big spenders (top of Recent Orders): Emma Schneider €2000 (PAID),
-      //     Marat Бекжанов €7300 (PACKING), Hans Müller €2000 (DELIVERED).
-      //   - Smaller purchases for the rest, with realistic specific amounts for
-      //     Marica Ivanović €221.40 and Olivia Chen €125.98 per product spec.
-      //   - Some days have 2 orders, some days have 1, and a few days have NO
-      //     orders — so the timeline feels lived-in, not auto-generated.
-      //   - PAID status always renders "now" (live current time). All other statuses
-      //     render the real created_at. Real Supabase orders merge on top, newest first.
+      // 28 demo customers, distributed realistically across the last ~7 weeks:
+      //   - Status cascade: PAID at the very top (live "now" time), then PACKING
+      //     as the only other non-Delivered status, then ALL the rest are DELIVERED
+      //     — matching the user's "1 Paid, 2nd Packing, all delivered" rule.
+      //   - Bottom 3 (positions 26-28) are the earliest big spenders who were
+      //     later promoted to the Premium leaderboard — Hans Müller (€2000),
+      //     Emma Schneider (€2000), Marat Бекжанов (€7300). Their Premium amounts
+      //     match the amounts shown here, so no name/amount is suspicious.
+      //   - The other 6 Premium customers (#4-#9) also appear in Recent Orders
+      //     with the same amount they show on Premium, just on more recent dates.
+      //   - Marica Ivanović €221.40 and Olivia Chen €125.98 keep their specific
+      //     spec amounts and cents.
+      //   - Some days have 2 orders, some have 1, several have 0 — gaps make it
+      //     feel lived-in, not auto-generated.
+      //   - PAID status renders "now" only when the order was created within the
+      //     last 60 minutes (so old real Supabase PAID orders stay honest).
       var demoOrders = [
-        // ---- Today (2026-08-06) — 3 orders ----
-        { customer_name: 'Emma Schneider',     amount: 2000.00, status: 'paid',      created_at: '2026-08-06T16:30:00' },
-        { customer_name: 'Марат Бекжанов',      amount: 7300.00, status: 'packing',   created_at: '2026-08-06T15:30:00' },
-        { customer_name: 'Әлия Мұратова',      amount: 134.00,  status: 'delivered', created_at: '2026-08-06T14:20:00' },
+        // ---- Today (2026-08-06) — 1 Paid + 1 Packing ----
+        { customer_name: 'Әлия Мұратова',       amount: 134.00,  status: 'paid',      created_at: '2026-08-06T16:30:00' },
+        { customer_name: 'Thomas Becker',      amount: 198.90,  status: 'packing',   created_at: '2026-08-06T10:15:00' },
         // ---- Yesterday (2026-08-05) — 2 orders ----
-        { customer_name: 'Hans Müller',        amount: 2000.00, status: 'delivered', created_at: '2026-08-05T18:30:00' },
-        { customer_name: 'Thomas Becker',      amount: 198.90,  status: 'delivered', created_at: '2026-08-05T10:15:00' },
-        // ---- 2026-08-04 — 2 orders ----
-        { customer_name: 'Ayşe Yılmaz',        amount: 67.20,   status: 'delivered', created_at: '2026-08-04T14:30:00' },
-        { customer_name: 'Pierre Dubois',      amount: 178.30,  status: 'shipped',   created_at: '2026-08-04T09:00:00' },
+        { customer_name: 'Marica Ivanović',    amount: 221.40,  status: 'delivered', created_at: '2026-08-05T14:30:00' },
+        { customer_name: 'Olivia Chen',        amount: 125.98,  status: 'delivered', created_at: '2026-08-05T11:00:00' },
+        // ---- 2026-08-04 — 2 orders (also Premium #4-#9 buyers) ----
+        { customer_name: 'Yusuf Demir',        amount: 1850.00, status: 'delivered', created_at: '2026-08-04T10:00:00' },
+        { customer_name: '林美华',              amount: 1450.00, status: 'delivered', created_at: '2026-08-04T15:20:00' },
         // ---- 2026-08-03 — 2 orders ----
-        { customer_name: 'Marica Ivanović',    amount: 221.40,  status: 'delivered', created_at: '2026-08-03T13:00:00' },
-        { customer_name: 'Lucas Oliveira',     amount: 162.00,  status: 'delivered', created_at: '2026-08-03T09:00:00' },
+        { customer_name: 'Lukas Schmidt',      amount: 1320.00, status: 'delivered', created_at: '2026-08-03T16:45:00' },
+        { customer_name: 'Sofia Volkov',       amount: 820.00,  status: 'delivered', created_at: '2026-08-03T09:30:00' },
         // ---- 2026-08-02 — 2 orders ----
-        { customer_name: 'Olivia Chen',        amount: 125.98,  status: 'delivered', created_at: '2026-08-02T16:45:00' },
-        { customer_name: 'Marco Rossi',        amount: 92.00,   status: 'delivered', created_at: '2026-08-02T08:45:00' },
+        { customer_name: 'Гульнара Тілеуова',   amount: 1080.00, status: 'delivered', created_at: '2026-08-02T14:00:00' },
+        { customer_name: 'Александр Иванов',   amount: 950.00,  status: 'delivered', created_at: '2026-08-02T11:30:00' },
         // ---- GAP: 2026-08-01 (no orders) ----
         // ---- 2026-07-31 — 2 orders ----
-        { customer_name: 'Mei Lin',            amount: 54.20,   status: 'delivered', created_at: '2026-07-31T15:45:00' },
-        { customer_name: 'Anna Kowalski',      amount: 76.50,   status: 'delivered', created_at: '2026-07-31T13:15:00' },
+        { customer_name: 'Ayşe Yılmaz',        amount: 67.20,   status: 'delivered', created_at: '2026-07-31T16:00:00' },
+        { customer_name: 'Pierre Dubois',      amount: 178.30,  status: 'delivered', created_at: '2026-07-31T13:30:00' },
         // ---- 2026-07-30 — 1 order ----
-        { customer_name: 'Isabella Romano',    amount: 246.30,  status: 'delivered', created_at: '2026-07-30T11:00:00' },
+        { customer_name: 'Anna Kowalski',      amount: 76.50,   status: 'delivered', created_at: '2026-07-30T11:00:00' },
         // ---- GAP: 2026-07-29 (no orders) ----
         // ---- 2026-07-28 — 2 orders ----
-        { customer_name: 'Ақмарал Жүнісова',   amount: 95.00,   status: 'shipped',   created_at: '2026-07-28T16:20:00' },
-        { customer_name: 'Fatima Al-Hassan',   amount: 64.80,   status: 'delivered', created_at: '2026-07-28T11:00:00' },
-        // ---- 2026-07-26 — 1 order ----
-        { customer_name: 'Інкәр Сембаева',     amount: 119.60,  status: 'delivered', created_at: '2026-07-26T13:00:00' },
-        // ---- GAP: 2026-07-25 (no orders) ----
+        { customer_name: 'Mei Lin',            amount: 54.20,   status: 'delivered', created_at: '2026-07-28T16:20:00' },
+        { customer_name: 'Ботагөз Қасымова',   amount: 88.75,   status: 'delivered', created_at: '2026-07-28T11:00:00' },
+        // ---- 2026-07-27 — 1 order ----
+        { customer_name: 'Olivia Smith',       amount: 73.40,   status: 'delivered', created_at: '2026-07-27T10:00:00' },
+        // ---- GAP: 2026-07-26 (no orders) ----
         // ---- 2026-07-24 — 2 orders ----
-        { customer_name: 'Sophie Laurent',     amount: 268.90,  status: 'delivered', created_at: '2026-07-24T15:30:00' },
-        { customer_name: 'Дмитрий Орлов',     amount: 99.50,   status: 'delivered', created_at: '2026-07-24T09:00:00' },
+        { customer_name: 'Isabella Romano',    amount: 246.30,  status: 'delivered', created_at: '2026-07-24T15:30:00' },
+        { customer_name: 'Sophie Laurent',     amount: 268.90,  status: 'delivered', created_at: '2026-07-24T09:00:00' },
+        // ---- GAP: 2026-07-23 (no orders) ----
         // ---- 2026-07-22 — 2 orders ----
-        { customer_name: 'Айгерім Сәрсенова',  amount: 124.40,  status: 'delivered', created_at: '2026-07-22T13:00:00' },
-        { customer_name: 'Ботагөз Қасымова',   amount: 88.75,   status: 'delivered', created_at: '2026-07-22T10:00:00' },
-        // ---- GAP: 2026-07-19 to 2026-07-21 (no orders) ----
-        // ---- 2026-07-18 — 1 order ----
-        { customer_name: 'Дарига Болатов',     amount: 82.30,   status: 'delivered', created_at: '2026-07-18T16:00:00' },
-        // ---- 2026-07-17 — 2 orders ----
-        { customer_name: 'Carlos Mendoza',     amount: 109.50,  status: 'delivered', created_at: '2026-07-17T11:30:00' },
-        { customer_name: 'Willem de Vries',    amount: 156.70,  status: 'delivered', created_at: '2026-07-17T09:00:00' },
-        // ---- 2026-07-15 — 2 orders ----
-        { customer_name: 'Olivia Smith',       amount: 73.40,   status: 'delivered', created_at: '2026-07-15T14:00:00' },
-        { customer_name: 'Yuki Tanaka',        amount: 187.20,  status: 'delivered', created_at: '2026-07-15T11:00:00' },
-        // ---- 2026-07-13 — 1 order ----
-        { customer_name: 'София Иванова',      amount: 310.00,  status: 'delivered', created_at: '2026-07-13T18:00:00' },
-        // ---- 2026-07-11 — 1 order (single day, fills to 28 baseline customers) ----
-        { customer_name: 'Mehmet Yıldız',      amount: 142.00,  status: 'delivered', created_at: '2026-07-11T13:30:00' }
+        { customer_name: 'Ақмарал Жүнісова',   amount: 95.00,   status: 'delivered', created_at: '2026-07-22T16:20:00' },
+        { customer_name: 'Дмитрий Орлов',      amount: 99.50,   status: 'delivered', created_at: '2026-07-22T10:00:00' },
+        // ---- GAP: 2026-07-21 (no orders) ----
+        // ---- 2026-07-19 — 1 order ----
+        { customer_name: 'Інкәр Сембаева',     amount: 119.60,  status: 'delivered', created_at: '2026-07-19T13:00:00' },
+        // ---- 2026-07-17 — 1 order ----
+        { customer_name: 'Yuki Tanaka',        amount: 187.20,  status: 'delivered', created_at: '2026-07-17T11:00:00' },
+        // ---- 2026-07-15 — 1 order ----
+        { customer_name: 'Дарига Болатов',     amount: 82.30,   status: 'delivered', created_at: '2026-07-15T16:00:00' },
+        // ---- 2026-07-14 — 1 order ----
+        { customer_name: 'Nazgul Yergalieva',  amount: 110.50,  status: 'delivered', created_at: '2026-07-14T10:00:00' },
+        // ---- GAP: 2026-07-13 (no orders) ----
+        // ---- 2026-07-10 — 1 order ----
+        { customer_name: 'Виктор Петров',      amount: 86.20,   status: 'delivered', created_at: '2026-07-10T14:00:00' },
+        // ---- EARLIEST BIG BUYERS — bottom 3 (positions 26-28) are the founders
+        //      of today's Premium leaderboard. Their amounts match the Premium
+        //      cards exactly, so every name and amount is consistent across
+        //      Recent Orders and Premium Customers. ----
+        { customer_name: 'Hans Müller',        amount: 2000.00, status: 'delivered', created_at: '2026-07-05T18:00:00' },
+        { customer_name: 'Emma Schneider',     amount: 2000.00, status: 'delivered', created_at: '2026-06-28T14:30:00' },
+        { customer_name: 'Марат Бекжанов',      amount: 7300.00, status: 'delivered', created_at: '2026-06-15T11:00:00' }
       ];
 
       var allOrders = [];
