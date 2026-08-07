@@ -809,14 +809,18 @@
     // Don't set up magnifier on small touch screens (pinch-zoom handles them)
     if (window.innerWidth <= 480) return;
 
-    zoom = zoom || 2.5;
-    // Zoom that reveals the source's native pixels when possible — the lens
-    // background is capped at the uploaded resolution below, so a high-res
-    // photo shows its real pixels instead of a mushy CSS upscale.
+    zoom = zoom || 3;
+    // Strong, predictable lens: at least 3x of the displayed image, up to
+    // 4x for high-resolution sources. We deliberately do NOT cap the lens
+    // background at the source size — for low-res uploads (e.g. a 447px
+    // photo) that cap made the lens show the whole unzoomed image, which
+    // looked completely broken. A slight upscale for tiny sources is fine;
+    // high-res sources stay sharp anyway because rect.width * zoom stays
+    // below naturalWidth and the browser uses high-quality resampling.
     if (img.naturalWidth > 0) {
       const rect = container.getBoundingClientRect();
       if (rect.width > 0) {
-        zoom = Math.max(2, Math.min(4, img.naturalWidth / rect.width));
+        zoom = Math.max(3, Math.min(4, img.naturalWidth / rect.width));
       }
     }
 
@@ -860,13 +864,8 @@
       lens.style.display = 'block';
 
       // Background position: map the lens position to the zoomed image.
-      // The background is capped at the SOURCE resolution so the zoom
-      // always shows real pixels from the uploaded image — never a
-      // browser upscale that would look soft.
-      const natW = img.naturalWidth || (rect.width * zoom);
-      const natH = img.naturalHeight || (rect.height * zoom);
-      const bgW = Math.min(rect.width * zoom, natW);
-      const bgH = Math.min(rect.height * zoom, natH);
+      const bgW = rect.width * zoom;
+      const bgH = rect.height * zoom;
       const bgX = -(clampedX * zoom - lw / 2);
       const bgY = -(clampedY * zoom - lh / 2);
 
