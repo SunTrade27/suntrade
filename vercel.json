@@ -12,5 +12,11 @@
       "source": "/return-policy",
       "destination": "/return-policy.html"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron-translate",
+      "schedule": "0 5 * * *"
+    }
   ]
 }

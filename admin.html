@@ -2696,17 +2696,50 @@
   }
 
   // ===== Batch Translate All Existing Products =====
+  // Smarter version: skips products whose 11-language columns are already
+  // filled, retries on 429 / parse errors with exponential backoff,
+  // spaces requests at ~4s (=15 RPM safe under free tier), shows a live
+  // progress count, and offers a "Retry failed" button at the end so the
+  // admin can finish any stragglers without re-running the whole batch.
+
+  // Small HTML escape helper used by the failed-products summary list
+  // (so product names containing < > & don't break the markup).
+  function escHtml(s) {
+    return (s == null ? '' : String(s))
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
   async function batchTranslateAll() {
-    if (!confirm('Барлық тауарларды 11 тілге аудару? Бұл біраз уақыт алуы мүмкін.\n\nTranslate ALL existing products to 11 languages? This may take a while.')) return;
+    if (!confirm('Барлық тауарларды 11 тілге аудару?\n\n• Дайын аудармасы бар өнімдер ӨТКІЗІЛЕДІ (квота үнемделеді)\n• Тек қажетті өнімдер аударылады\n• Gemini 15 RPM-де жұмыс істейді\n\nTranslate products that are missing translations? Already-translated products are SKIPPED.')) return;
 
     const btn = document.getElementById('batch-translate-btn');
     const statusEl = document.getElementById('batch-translate-status');
+    const stopFlag = { stopped: false };
     btn.disabled = true;
-    btn.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Translating...';
+    btn.innerHTML = '⏹ Stop';
+    btn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); stopFlag.stopped = true; };
+
     statusEl.style.display = 'block';
     statusEl.style.background = '#FEF3C7';
     statusEl.style.color = '#92400E';
     statusEl.textContent = 'Loading products...';
+
+    const allLangs = ['kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'];
+
+    // We treat a product as "fully translated" if every non-EN language
+    // has both a non-empty name AND a non-empty desc. If it's missing even
+    // one, we add it to the work queue and let the API translate all 11
+    // again. The function also re-translates equalized names which is
+    // cheap; the bigger win is that products already done spend zero quota.
+    function needsTranslate(p) {
+      if (!p.name_en || !p.name_en.trim()) return false;
+      for (const lang of allLangs) {
+        const n = (p['name_' + lang] || '').trim();
+        const d = (p['desc_' + lang] || '').trim();
+        if (!n || !d) return true;
+      }
+      return false;
+    }
 
     try {
       const products = await adminGetProducts();
@@ -2718,60 +2751,108 @@
         return;
       }
 
-      let successCount = 0;
-      let skipCount = 0;
-      let errorCount = 0;
-      const total = products.length;
+      const todo = products.filter(needsTranslate);
+      const skipped = products.length - todo.length;
 
-      for (let i = 0; i < products.length; i++) {
-        const p = products[i];
-        const name = p.name_en || '';
-        if (!name) { skipCount++; continue; }
+      statusEl.innerHTML = `<strong>📊 ${todo.length} өнім аудару керек</strong>, ${skipped} дайын. Gemini ≈ ${todo.length} шақыру. Уақыт: ~${Math.ceil(todo.length * 4 / 60)} мин.`;
 
-        statusEl.innerHTML = `<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> [${i + 1}/${total}] Translating: ${name.substring(0, 40)}...`;
-
-        // Check if already has translations (at least Kazakh filled)
-        if (p.name_kz && p.name_kz.trim()) {
-          skipCount++;
-          continue;
-        }
-
-        try {
-          const descEn = p.desc_en || '';
-          const resp = await fetch('/api/translate-product', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name_en: name, desc_en: descEn })
-          });
-          const result = await resp.json();
-
-          if (result.success && result.translations) {
-            const updateFields = {};
-            for (const [lang, data] of Object.entries(result.translations)) {
-              updateFields['name_' + lang] = data.name || '';
-              updateFields['desc_' + lang] = data.desc || '';
-            }
-            // Update product in Supabase directly
-            const { error } = await sb.from('products').update(updateFields).eq('id', p.id);
-            if (error) throw error;
-            successCount++;
-          } else {
-            errorCount++;
-          }
-        } catch (err) {
-          console.error('Batch translate error for', p.id, err);
-          errorCount++;
-        }
-
-        // Small delay to avoid rate limiting
-        await new Promise(r => setTimeout(r, 300));
+      if (todo.length === 0) {
+        statusEl.innerHTML = '🎉 Барлық өнімдер 11 тілге аударылған! Квота: 0 шақыру.';
+        statusEl.style.background = '#D1FAE5';
+        statusEl.style.color = '#065F46';
+        setTimeout(() => { statusEl.style.display = 'none'; }, 6000);
+        return;
       }
 
-      statusEl.style.background = successCount > 0 ? '#D1FAE5' : '#FEF3C7';
-      statusEl.style.color = successCount > 0 ? '#065F46' : '#92400E';
-      statusEl.innerHTML = `<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#22C55E;"><use href="#icon-check-circle"/></svg> Done! ${successCount} translated, ${skipCount} skipped (already have translations), ${errorCount} errors.`;
+      let translated = 0;
+      let errors = 0;
+      const failed = []; // {id, name, err}
+      const MAX_RETRIES = 3;
+      const MS_PER_CALL = 4200; // ~14 RPM, stays under Gemini free-tier 15 RPM
 
-      // Reload products list
+      for (let i = 0; i < todo.length; i++) {
+        if (stopFlag.stopped) break;
+        const p = todo[i];
+        const name = p.name_en || 'unnamed';
+
+        let attempt = 0;
+        let ok = false;
+        while (attempt < MAX_RETRIES && !ok && !stopFlag.stopped) {
+          attempt++;
+          try {
+            const resp = await fetch('/api/translate-product', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name_en: name, desc_en: p.desc_en || '' })
+            });
+            const result = await resp.json().catch(() => ({ success: false }));
+
+            if (result.success && result.translations && Object.keys(result.translations).length > 0) {
+              const updateFields = {};
+              for (const [lang, data] of Object.entries(result.translations)) {
+                const tName = (data && data.name) || '';
+                const tDesc = (data && data.desc) || '';
+                if (tName) updateFields['name_' + lang] = tName;
+                if (tDesc) updateFields['desc_' + lang] = tDesc;
+              }
+              if (Object.keys(updateFields).length === 0) {
+                throw new Error('empty translations');
+              }
+              const { error: upErr } = await sb.from('products').update(updateFields).eq('id', p.id);
+              if (upErr) throw upErr;
+              ok = true;
+            } else if (/429|quota|rate/i.test(JSON.stringify(result))) {
+              // rate-limited; back off longer and retry
+              console.warn(`Rate limited on ${p.id}, attempt ${attempt}`);
+              await new Promise(r => setTimeout(r, 4000 * attempt));
+              continue;
+            } else {
+              throw new Error(result.error || 'parse/no-translations');
+            }
+          } catch (err) {
+            console.warn(`[${attempt}/${MAX_RETRIES}] ${p.id} (${name}):`, err.message || err);
+            if (attempt >= MAX_RETRIES) {
+              errors++;
+              failed.push({ id: p.id, name: name.substring(0, 60), err: err.message || String(err) });
+            } else {
+              await new Promise(r => setTimeout(r, 1500 * attempt));
+            }
+          }
+        }
+        if (ok) translated++;
+
+        statusEl.innerHTML = `<strong>[${i + 1}/${todo.length}]</strong> "${name.substring(0, 32)}..." <span style="color:#22C55E;">✓ ${translated}</span> <span style="color:#EF4444;">✗ ${errors}</span> <span style="color:#6B7280;">⏭ ${skipped} дайын</span>${stopFlag.stopped ? ' <strong>⏹ тоқтатылды</strong>' : ''}`;
+
+        if (i < todo.length - 1) {
+          await new Promise(r => setTimeout(r, MS_PER_CALL));
+        }
+      }
+
+      // ===== Final summary =====
+      const success = (translated === todo.length && errors === 0);
+      const stopped = stopFlag.stopped;
+      if (stopped) {
+        statusEl.style.background = '#DBEAFE';
+        statusEl.style.color = '#1E40AF';
+      } else if (success) {
+        statusEl.style.background = '#D1FAE5';
+        statusEl.style.color = '#065F46';
+      } else {
+        statusEl.style.background = errors > 0 ? '#FEE2E2' : '#FEF3C7';
+        statusEl.style.color = errors > 0 ? '#991B1B' : '#92400E';
+      }
+      let html = `<strong>${success ? '🎉' : stopped ? '⏹' : '✅'} ${stopped ? 'Тоқтатылды' : success ? 'Бәрі сәтті!' : 'Аяқталды'}</strong>: ✓ ${translated}, ✗ ${errors}, ⏭ ${skipped} дайын.`;
+      if (failed.length) {
+        html += `<details style="margin-top:6px;text-align:left;font-size:0.78rem;"><summary style="cursor:pointer;color:#DC2626;font-weight:600;">❌ ${failed.length} қателік</summary><ul style="margin:6px 0 0 1rem;padding:0;">`;
+        for (const f of failed.slice(0, 8)) {
+          html += `<li><code style="font-size:0.72rem;">${f.id.slice(0,8)}</code> ${escHtml(f.name)} — <span style="color:#991B1B;">${escHtml(f.err)}</span></li>`;
+        }
+        if (failed.length > 8) html += `<li>... +${failed.length - 8} көбірек</li>`;
+        html += `</ul><button onclick="batchTranslateAll()" style="margin-top:8px;padding:6px 14px;background:#FF6B00;color:white;border:none;border-radius:6px;font-size:0.8rem;cursor:pointer;">🔁 Retry Failed</button></details>`;
+      }
+      statusEl.innerHTML = html;
+      statusEl.style.display = 'block';
+
       loadProducts();
     } catch (err) {
       console.error('Batch translate error:', err);
@@ -2781,7 +2862,8 @@
     } finally {
       btn.disabled = false;
       btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> <svg class="icon icon-sm" style="vertical-align:middle"><use href="#icon-globe"/></svg> Batch Translate All';
-      setTimeout(() => { statusEl.style.display = 'none'; }, 8000);
+      btn.setAttribute('onclick', 'batchTranslateAll()');
+      setTimeout(() => { statusEl.style.display = 'none'; }, 30000);
     }
   }
 
