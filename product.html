@@ -488,11 +488,20 @@
     // when it arrives — no flicker, no blocking.
     const hasNameInLang = !!(p['name_' + currentLang] || '').trim();
     const hasDescInLang = !!(p['desc_' + currentLang] || '').trim();
+    // A non-empty name_XX / desc_XX may still be an English copy left behind
+    // by earlier write-backs (desc_kz was historically written back as
+    // verbatim English). Treat those as "not translated" so the on-demand
+    // translator re-translates them — the server endpoint also detects this
+    // and skips its DB cache.
+    const nameLooksEnglish = hasNameInLang && typeof isEnglishCopy === 'function' &&
+      isEnglishCopy(p['name_' + currentLang], p.name_en);
+    const descLooksEnglish = hasDescInLang && typeof isEnglishCopy === 'function' &&
+      isEnglishCopy(p['desc_' + currentLang], p.desc_en);
     const needsOnDemandTranslate =
       currentLang !== 'en' &&
       !!p.id &&
       !!p.name_en &&
-      (!hasNameInLang || !hasDescInLang) &&
+      (!hasNameInLang || !hasDescInLang || nameLooksEnglish || descLooksEnglish) &&
       typeof ensureProductTranslation === 'function';
     const desc = applyAlternatingFloats(cleanDescriptionHtml(rawDesc));
     const images = p.images && p.images.length ? p.images : ['/images/placeholder.jpg'];
@@ -626,8 +635,8 @@
           </button>
         </div>
         <div class="product-actions">
-          <button class="btn-add-cart" onclick="addProductToCart()" data-i18n="product_add_cart">Add to Cart</button>
-          <button class="btn-buy-now" onclick="buyNow()" data-i18n="product_buy_now">Buy Now</button>
+          <button class="btn-add-cart" onclick="addProductToCart()" data-i18n="product_add_cart">${(typeof t === 'function' && translations && translations.product_add_cart) ? t('product_add_cart') : 'Add to Cart'}</button>
+          <button class="btn-buy-now" onclick="buyNow()" data-i18n="product_buy_now">${(typeof t === 'function' && translations && translations.product_buy_now) ? t('product_buy_now') : 'Buy Now'}</button>
         </div>
         ` : ''}
         <!-- Trust badges: build buyer confidence. Shown both in stock and out of stock. -->

@@ -23,7 +23,14 @@
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://wmznfdngucpsmjbxiwzn.supabase.co';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
+// The anon key is public (it ships in js/supabase-client.js) and is needed to
+// READ product rows for on-demand translation. Previously the hardcoded value
+// was removed, which silently broke every free-mode request whenever the
+// SUPABASE_ANON_KEY env var wasn't set on Vercel (reads then failed with
+// "Product not found or no Supabase credentials"). Falling back to the public
+// key keeps reads working out of the box; WRITES still require the service-role
+// key and are skipped otherwise.
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtem5mZG5ndWNwc21qYnhpd3puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1Nzk1NDAsImV4cCI6MjA5NTE1NTU0MH0.DaYcIF7uaU0FSWbB9Mlq4YVVYm2EleOSz6ACtwyHjsI';
 
 const FREE_SUPPORTED_LANGS = ['en', 'kz', 'ru', 'de', 'fr', 'es', 'it', 'tr', 'pt', 'nl', 'pl', 'ar'];
 // ISO 639-1 codes used by both MyMemory and LibreTranslate. SunTrade uses
@@ -67,6 +74,13 @@ function freeReadBody(req) {
 // b) the output written back to desc_XX is full of the same junk, which then
 // re-renders in the page on every visit. Stripping first gives a much smaller,
 // faster, cleaner translation AND a clean cache write-back.
+// Strip HTML tags and collapse whitespace so two differently-formatted
+// versions of the same English text can be compared (used to detect
+// "English source copied into a target column").
+function stripText(s) {
+  return String(s || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
 function freePreCleanHtml(html) {
   if (!html || typeof html !== 'string') return html || '';
   return html
@@ -321,33 +335,83 @@ async function callGemini(prompt, systemInstruction, config = {}) {
   const GEMINI_KEY = process.env.GEMINI_API_KEY;
   if (!GEMINI_KEY) throw new Error('GEMINI_API_KEY not configured');
 
-  for (const model of GEMINI_MODELS) {
-    try {
-      const resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            system_instruction: { parts: [{ text: systemInstruction }] },
-            contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            generationConfig: { maxOutputTokens: config.maxTokens || 4000, temperature: config.temperature ?? 0.2 }
-          })
+  const retries = Math.max(1, config.retries || 2);
+  for (let attempt = 0; attempt < retries; attempt++) {
+    if (attempt > 0) await new Promise(r => setTimeout(r, 600 * attempt));
+    for (const model of GEMINI_MODELS) {
+      try {
+        const resp = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              system_instruction: { parts: [{ text: systemInstruction }] },
+              contents: [{ role: 'user', parts: [{ text: prompt }] }],
+              generationConfig: { maxOutputTokens: config.maxTokens || 4000, temperature: config.temperature ?? 0.2 }
+            })
+          }
+        );
+        if (resp.ok) {
+          const data = await resp.json();
+          const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          if (text) return { model, text };
+          // 200 but no usable candidates — try the next model.
+        } else {
+          const errBody = await resp.text().catch(() => '');
+          console.warn(`Gemini model ${model} failed (${resp.status}), trying next...`);
+          // Rate-limited / transient server errors: brief backoff before the
+          // next model so a burst of calls doesn't fail all at once.
+          if (resp.status === 429 || resp.status >= 500) {
+            await new Promise(r => setTimeout(r, 400));
+          }
         }
-      );
-      if (resp.ok) {
-        const data = await resp.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        if (text) return { model, text };
-      } else {
-        const errBody = await resp.text().catch(() => '');
-        console.warn(`Gemini model ${model} failed (${resp.status}), trying next...`);
+      } catch (e) {
+        console.warn(`Gemini model ${model} error:`, e.message);
       }
-    } catch (e) {
-      console.warn(`Gemini model ${model} error:`, e.message);
     }
   }
   return { model: '', text: '' };
+}
+
+// Gemini single-language translate for the on-demand (free) mode: one call
+// returns both the translated name and the (HTML-preserving) description.
+// Returns null when the model had no usable output so the caller can fall
+// back to MyMemory / LibreTranslate.
+async function aiTranslateOne(nameEn, descEn, langCode) {
+  const langNames = {
+    kz: 'Kazakh', ru: 'Russian', de: 'German', fr: 'French', es: 'Spanish',
+    it: 'Italian', tr: 'Turkish', pt: 'Portuguese', nl: 'Dutch', pl: 'Polish', ar: 'Arabic'
+  };
+  const langName = langNames[langCode] || langCode;
+  const prompt = `You are a professional translator for an e-commerce store. Translate the following product information from English to ${langName}.
+
+Product Name: "${nameEn}"
+Product Description: "${descEn || ''}"
+
+Rules:
+1. Translate naturally and accurately — do NOT add or remove information
+2. Keep HTML tags in the description intact (e.g., <b>, <i>, <img>, <ul>, <li>, <br>, <p>, <div>, <table>)
+3. Do NOT translate brand names, model numbers, or prices
+4. Reply ONLY in valid JSON format: {"name": "translated_name", "desc": "translated_description"}
+5. The "desc" field should preserve any HTML formatting exactly as in the original
+6. If the description is empty, return an empty string for "desc"`;
+  const result = await callGemini(prompt, `You are a professional e-commerce translator. Translate from English to ${langName}. Reply ONLY with valid JSON.`, {
+    maxTokens: 4000, temperature: 0.2
+  });
+  if (!result.text) return null;
+  const jsonStr = (result.text.match(/\{[\s\S]*\}/) || [result.text])[0];
+  try {
+    const parsed = JSON.parse(jsonStr);
+    if (!parsed || typeof parsed.name !== 'string' || !parsed.name.trim()) return null;
+    // Partial output (e.g. desc missing) — fall back entirely rather than
+    // returning the English descEn as if it were a translation.
+    if (typeof parsed.desc !== 'string') return null;
+    return { name: parsed.name, desc: parsed.desc };
+  } catch (e) {
+    console.warn('[translate-product:free] Gemini JSON parse failed:', e.message);
+    return null;
+  }
 }
 
 // ===== Handler =====
@@ -417,10 +481,18 @@ module.exports = async function handler(req, res) {
       const existingIsEnglishCopy = !!(existingName.trim() &&
         sourceName.trim() &&
         existingName.trim().toLowerCase() === sourceName.trim().toLowerCase());
+      // Compare the VISIBLE text (tags stripped) so an English copy stored
+      // with different formatting (cleaned vs raw HTML, whitespace, etc.)
+      // is still recognized as untranslated. Substring containment is used
+      // because freePreCleanHtml() may strip leading headings from the
+      // source (e.g. an <h1>Features</h1>) that the stored copy still has.
+      const srcV = stripText(sourceDesc);
+      const exV = stripText(existingDesc);
       const existingDescIsEnglishCopy = !!(existingDesc.trim() &&
         sourceDesc.trim() &&
-        existingDesc.trim().toLowerCase().slice(0, 200) ===
-        sourceDesc.trim().toLowerCase().slice(0, 200));
+        (exV === srcV ||
+         exV.includes(srcV.slice(0, 200)) ||
+         srcV.includes(exV.slice(0, 200))));
       if (existingName.trim() &&
           (sourceDesc.trim() === '' || existingDesc.trim()) &&
           !existingIsEnglishCopy && !existingDescIsEnglishCopy) {
@@ -431,11 +503,29 @@ module.exports = async function handler(req, res) {
         });
       }
 
-      // Translate both in parallel.
-      const [translatedName, translatedDesc] = await Promise.all([
-        freeTranslateText(sourceName.substring(0, 5000), targetLang),
-        sourceDesc ? freeTranslateText(sourceDesc.substring(0, 5000), targetLang) : Promise.resolve('')
-      ]);
+      // Translate name + description.
+      // When a GEMINI_API_KEY is configured we prefer one AI call: it handles
+      // long HTML descriptions reliably in a single request and has no
+      // per-minute anonymous rate limits (the reason MyMemory / LibreTranslate
+      // only ever managed the first few products of a grid). Free APIs remain
+      // the fallback when the key is missing or the AI call produced nothing.
+      let translatedName = '';
+      let translatedDesc = '';
+      if (process.env.GEMINI_API_KEY) {
+        const ai = await aiTranslateOne(sourceName, sourceDesc, targetLang);
+        if (ai && ai.name) {
+          translatedName = ai.name;
+          translatedDesc = ai.desc || '';
+        }
+      }
+      if (!translatedName) {
+        const [fn, fd] = await Promise.all([
+          freeTranslateText(sourceName.substring(0, 5000), targetLang),
+          sourceDesc ? freeTranslateText(sourceDesc.substring(0, 5000), targetLang) : Promise.resolve('')
+        ]);
+        translatedName = fn;
+        translatedDesc = fd;
+      }
 
       const failed = translatedName === sourceName && translatedDesc === sourceDesc;
 

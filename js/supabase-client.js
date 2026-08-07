@@ -583,6 +583,33 @@ async function ensureProductTranslation(productId, targetLang) {
   return p;
 }
 
+// True when `value` is just the English source copied into a target-language
+// column (a known legacy data problem: desc_kz etc. were written back as
+// verbatim English). Used by grids and product pages to decide whether an
+// on-demand translation is actually needed.
+function isEnglishCopy(value, sourceEn) {
+  if (!value || !sourceEn) return false;
+  const a = String(value).toLowerCase().trim();
+  const b = String(sourceEn).toLowerCase().trim();
+  if (!a || !b) return false;
+  // Exact copy — the reliable signal for plain-text names.
+  if (a === b) return true;
+  // For HTML descriptions, compare the visible text (tags stripped) by
+  // prefix — different formatting/whitespace between the raw stored copy
+  // and the source would otherwise hide an exact English copy. Only applied
+  // when the value looks like markup, so brand names with a translated
+  // suffix (e.g. "iPhone Case Black" → "iPhone Case Black қорап") are
+  // never misflagged as English copies.
+  if (String(value).includes('<') && String(sourceEn).includes('<')) {
+    const strip = (s) => s.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    const va = strip(a), vb = strip(b);
+    if (!va || !vb) return false;
+    const n = Math.min(120, va.length, vb.length);
+    return va.slice(0, n) === vb.slice(0, n);
+  }
+  return false;
+}
+
 // Helper for grids/catalogs: translate a list of products sequentially based
 // on the user's current language. Mutates each product's name_XX / desc_XX
 // in place so subsequent renders show the translated copy.
@@ -606,11 +633,14 @@ async function ensureProductsTranslated(products, targetLang, opts) {
   for (let i = 0; i < products.length; i++) {
     const p = products[i];
     if (!p || !p.id || !p.name_en) continue;
-    // NOTE: we no longer skip when p['name_'+targetLang] is non-empty.
-    // A leftover "English-text" copy in the target column should still be
-    // re-translated — the server endpoint now detects English-copy rows as
-    // not-cached and replaces them with a real translation. This avoids
-    // rendering stale English-after-language-switch rows.
+    // Skip products that already carry a REAL translation in the target
+    // column — they render instantly from the DB row and don't need a
+    // server round-trip. English-copy rows (leftover source text written
+    // into the target column by earlier bugs) are NOT skipped: the server
+    // detects them as not-cached and returns a fresh translation, which
+    // avoids rendering stale English-after-language-switch rows.
+    const existingName = p['name_' + targetLang];
+    if (existingName && !isEnglishCopy(existingName, p.name_en)) continue;
     const t = await ensureProductTranslation(p.id, targetLang);
     if (t && t.name) {
       p['name_' + targetLang] = t.name;

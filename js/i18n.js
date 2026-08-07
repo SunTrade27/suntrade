@@ -39,6 +39,26 @@ function t(key) {
 }
 
 function applyTranslations() {
+  // Re-render dynamic content that uses t() in JS FIRST. If we translated
+  // first, the re-render (e.g. renderFeaturedProducts rebuilding product
+  // cards) would clobber the translated text with fresh English defaults
+  // and the data-i18n pass below would never see the new elements.
+  // Wrapped in try/catch so a failing re-render can never block the
+  // data-i18n pass below.
+  try {
+    if (typeof renderCheckoutItems === 'function') renderCheckoutItems();
+    if (typeof renderCartPage === 'function') renderCartPage();
+    if (typeof renderFeaturedProducts === 'function') renderFeaturedProducts();
+    if (typeof loadProducts === 'function' && document.getElementById('products-grid')) loadProducts();
+    // Note: Individual pages handle re-rendering via their own
+    // langChanged event listeners (e.g. renderProduct in product.html,
+    // renderCategories + renderFeaturedProducts in index.html, etc.)
+    if (typeof loadHomepageReviews === 'function') loadHomepageReviews();
+    if (typeof doHeroSearch === 'function' && document.getElementById('hero-search-input')?.value) doHeroSearch();
+  } catch (e) {
+    console.warn('applyTranslations re-render error:', e);
+  }
+
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     if (translations[key]) {
@@ -62,17 +82,6 @@ function applyTranslations() {
   if (titleEl) titleEl.textContent = t(titleEl.getAttribute('data-i18n'));
   const metaDesc = document.querySelector('meta[name="description"][data-i18n]');
   if (metaDesc) metaDesc.content = t(metaDesc.getAttribute('data-i18n'));
-
-  // Re-render dynamic content that uses t() in JS
-  if (typeof renderCheckoutItems === 'function') renderCheckoutItems();
-  if (typeof renderCartPage === 'function') renderCartPage();
-  if (typeof renderFeaturedProducts === 'function') renderFeaturedProducts();
-  if (typeof loadProducts === 'function' && document.getElementById('products-grid')) loadProducts();
-  // Note: Individual pages handle re-rendering via their own
-  // langChanged event listeners (e.g. renderProduct in product.html,
-  // renderCategories + renderFeaturedProducts in index.html, etc.)
-  if (typeof loadHomepageReviews === 'function') loadHomepageReviews();
-  if (typeof doHeroSearch === 'function' && document.getElementById('hero-search-input')?.value) doHeroSearch();
 }
 
 function updateLangSwitcher() {
