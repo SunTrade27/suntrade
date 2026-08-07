@@ -612,6 +612,12 @@ input, textarea, select { font-family: inherit; }
   padding: 8px;
   box-sizing: border-box;
 }
+/* Sharp upscaling hint for product card images.
+   Browsers default to a soft bilinear scaling algorithm when displaying
+   a smaller source inside a larger container. The two declarations below
+   opt out of smoothing on Webkit/Blink and ask specifically for a higher
+   quality interpolation — together they keep small source photos (often
+   500–1000 px) legible when stretched into a 1080p+ card. */
 .product-card-img {
   max-width: 100%;
   max-height: 100%;
@@ -622,6 +628,8 @@ input, textarea, select { font-family: inherit; }
   display: block;
   margin: auto;
   flex-shrink: 0;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 /* Body grows to fill card; button pinned to the bottom so all cards align */
 .product-card-body {

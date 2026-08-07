@@ -1160,12 +1160,33 @@
   // could carry executable content (script/iframe/object/embed/base) — these
   // are dangerous whether the source was admin-pasted or returned by an
   // on-demand free translation API that we don't fully trust.
+  //
+  // Aggressive cleanup focuses on the Alibaba/1688/Taobao HTML paste style:
+  //   - <!--StartFragment-->...<!--EndFragment--> wrapper comments
+  //   - <h1> with inline Tailwind `style="--tw-*..."` (e.g. the pink/orange
+  //     "About this item" highlight box the user kept seeing)
+  //   - data-spm-anchor-id and dozens of other data-* tracking attrs
+  //   - Inline style attributes (we re-apply our own minimal CSS rules)
+  //
+  // We strip h1-h6 wholesale (supplier boilerplate like "About this item",
+  // "Product Overview", "Features") — our page already renders an h3
+  // "Description" header above this block. Real content is in <p>, <ul>,
+  // <ol>, <table>, <strong>, <em>, <img>, <br>.
   function cleanDescriptionHtml(html) {
     if (!html || typeof html !== 'string') return '';
     let cleaned = html
-      // Strip <script>, <style>, <iframe>, <object>, <embed>, <base> blocks.
-      // Iframes are the most common XSS vector after inline scripts — a
-      // hostile description could embed a page that phones home.
+      // 1) HTML comments. Alibaba markup wraps their content in
+      //    <!--StartFragment--> ... <!--EndFragment--> which leaves
+      //    `<!` artifacts visible if we don't strip them first.
+      .replace(/<!--[\s\S]*?-->/g, '')
+      // 2) Drop all <h1>-<h6> — these are supplier boilerplate
+      //    ("About this item", "Product Overview", "Features") and we
+      //    render our own h3 "Description" header above this block.
+      //    Real product content lives in <p>/<ul>/<table>/<strong>.
+      .replace(/<h[1-6]\b[^>]*>[\s\S]*?<\/h[1-6]>/gi, '')
+      // 3) Self-closing h1-h6 too (<h2/> pattern used by some exporters).
+      .replace(/<h[1-6]\b[^>]*\/?>/gi, '')
+      // 4) Strip <script>, <style>, <iframe>, <object>, <embed>, <base> blocks.
       .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
       .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
       .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
@@ -1176,48 +1197,56 @@
       .replace(/<input\b[^>]*\/?>/gi, '')
       .replace(/<select\b[^<]*(?:(?!<\/select>)<[^<]*)*<\/select>/gi, '')
       .replace(/<textarea\b[^<]*(?:(?!<\/textarea>)<[^<]*)*<\/textarea>/gi, '')
-      // Drop SVG entirely — <use> can reference external resources and
-      // legacy SVG muzzles could carry scripts. We don't render SVG in
-      // product descriptions anyway.
+      // 5) Drop SVG entirely.
       .replace(/<svg\b[^<]*(?:(?!<\/svg>)<[^<]*)*<\/svg>/gi, '')
-      // Strip inline event handlers (onclick, onload, etc.)
+      // 6) Drop ALL inline style="..." attributes. They almost always
+      //    carry Tailwind CSS variables (--tw-*, color, font-size) that
+      //    don't apply on our page and would create the "pink box"
+      //    effect. We re-apply our own minimal styles via CSS rules.
+      .replace(/\s+style\s*=\s*"[^"]*"/gi, '')
+      .replace(/\s+style\s*=\s*'[^']*'/gi, '')
+      // 7) Strip all data-* attributes (tracking: data-spm-, data-track-,
+      //    data-module-, etc.) — they're noise on the page.
+      .replace(/\s+data-[a-z0-9-]+\s*=\s*"[^"]*"/gi, '')
+      .replace(/\s+data-[a-z0-9-]+\s*=\s*'[^']*'/gi, '')
+      // 8) Strip aria-* attributes (some Alibaba templates use
+      //    aria-hidden container divs to hide old UI shells).
+      .replace(/\s+aria-[a-z-]+\s*=\s*"[^"]*"/gi, '')
+      // 9) Inline event handlers (onclick, onload, etc.)
       .replace(/\s+on[a-z]+\s*=\s*"[^"]*"/gi, '')
       .replace(/\s+on[a-z]+\s*=\s*'[^']*'/gi, '')
-      // Neutralize javascript: links
+      // 10) Neutralize javascript: hrefs / non-image data: URIs
       .replace(/(href|src)\s*=\s*["']\s*javascript:[^"']*["']/gi, '$1="#"')
-      // Neutralize data: URIs that could carry executable content. Allow
-      // them for img only (data:image/...) — that's the common case for
-      // product images and is non-executable.
       .replace(/(href|action|formaction)\s*=\s*["']\s*data:[^"']*["']/gi, '$1="#"')
       .replace(/src\s*=\s*["']\s*data:(?!image\/)[^"']*["']/gi, 'src="#"')
-      // Remove links pointing to supplier sites (Alibaba, 1688, Taobao, etc.)
+      // 11) Strip supplier-host links (`<a href="alibaba.com/...">...</a>`)
       .replace(/<a\b[^>]*?\bhref\s*=\s*["'][^"']*(?:alibaba|aliexpress|1688|taobao|tmall|alipay|alicdn|alicompany)[^"']*["'][^>]*>[\s\S]*?<\/a>/gi, '')
-      // Remove plain text references to supplier sites inside link text
       .replace(/<a\b[^>]*>[\s\S]*?(?:alibaba|aliexpress|1688|taobao|tmall|alipay|supplier|manufacturer)[\s\S]*?<\/a>/gi, '')
-      // Remove common UI artifacts (buttons, forms, inputs, selects)
+      // 12) Buttons / forms / selects / textareas inside description
       .replace(/<button\b[^>]*>[\s\S]*?<\/button>/gi, '')
+      .replace(/<button\b[^>]*\/?>/gi, '')
       .replace(/<input\b[^>]*\/?>/gi, '')
       .replace(/<form\b[^>]*>[\s\S]*?<\/form>/gi, '')
       .replace(/<select\b[^>]*>[\s\S]*?<\/select>/gi, '')
       .replace(/<textarea\b[^>]*>[\s\S]*?<\/textarea>/gi, '')
-      // Remove divs that are clearly navigation / UI artifacts
-      .replace(/<div\b[^>]*?\bclass\s*=\s*["'][^"']*(?:breadcrumb|nav-|menu|header|footer|sidebar|cookie|banner|popup|modal|overlay|toolbar|tab|filter|action-?bar|button-?bar|review-?list|related-?product|recommend|sku-?info|vendor|supplier|seller)[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, '')
-      // Remove divs whose data-* attribute hints at supplier sites
-      .replace(/<div\b[^>]*?\bdata-?(?:scene|module|source|spm|track)[^>]*>[\s\S]*?<\/div>/gi, '')
-      // Strip supplier-specific class/id names
-      .replace(/\sclass\s*=\s*"[^"]*(?:alibaba|1688|taobao|aliexpress|supplier|alicdn)[^"]*"/gi, '')
+      // 13) UI-shell divs (breadcrumb, nav, menu, sidebar, footer, banner,
+      //     popup, modal, etc.) — create empty space and visual bugs.
+      .replace(/<div\b[^>]*?\bclass\s*=\s*["'][^"']*(?:breadcrumb|nav-|menu|header|footer|sidebar|cookie|banner|popup|modal|overlay|toolbar|tab-?|filter-?bar|action-?bar|button-?bar|review-?list|related-?product|recommend|sku-?info|vendor|supplier|seller|highlight|callout|chip)[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, '')
+      // 14) Strip supplier-specific class/id names entirely (better safe
+      //     than rendering random CSS class names into our page).
+      .replace(/\sclass\s*=\s*"[^"]*(?:alibaba|1688|taobao|aliexpress|supplier|alicdn|sc-|tm-)[^"]*"/gi, '')
       .replace(/\sid\s*=\s*"[^"]*(?:alibaba|1688|taobao|aliexpress|supplier|alicdn)[^"]*"/gi, '')
-      // Remove "Powered by", "Copyright", "All rights reserved" footers
+      // 15) "Powered by", "Copyright", "All rights reserved" footers
       .replace(/<div\b[^>]*>[\s\S]*?(?:powered by|copyright|all rights reserved)[\s\S]*?<\/div>/gi, '')
-      // Remove tracking pixels and placeholder images
+      // 16) Tracking pixels and placeholder images
       .replace(/<img\b[^>]*?\bsrc\s*=\s*["'][^"']*(?:spacer|blank|1x1|tracking|pixel|transparent|loading\.|placeholder)[^"']*["'][^>]*\/?>/gi, '')
-      // Remove fixed width/height that breaks responsive layout
+      // 17) Fixed width/height on images breaks responsive layout
       .replace(/\swidth\s*=\s*"\d+"/gi, '')
-      .replace(/\sheight\s*=\s*"\d+"/gi, '')
-      // Drop the style attributes with fixed widths/heights
-      .replace(/style\s*=\s*"[^"]*(?:\bwidth\s*:\s*\d+|\bheight\s*:\s*\d+)[^"]*"/gi, '');
+      .replace(/\sheight\s*=\s*"\d+"/gi, '');
 
-    // Ensure images have lazy loading and responsive styling
+    // Apply lazy-loading + responsive style to remaining images. Done
+    // AFTER class stripping so our `.desc-img-float-*` classes (added by
+    // applyAlternatingFloats) aren't accidentally nuked above.
     cleaned = cleaned.replace(/<img\b(?![^>]*\bloading=)([^>]*)>/gi, '<img loading="lazy"$1>');
     cleaned = cleaned.replace(/<img\b(?![^>]*\bstyle=)([^>]*)>/gi, '<img$1 style="max-width:100%;height:auto;">');
 

@@ -59,11 +59,63 @@ function freeReadBody(req) {
   try { return JSON.parse(req.body); } catch { return {}; }
 }
 
+// Pre-clean the HTML description BEFORE handing it to MyMemory / LibreTranslate.
+// Why: Alibaba / 1688 / Taobao / AliExpress descriptions are full of UI shells
+// (<!--StartFragment-->…<!--EndFragment-->, inline `style="--tw-…"`, data-spm
+// tracking attrs, decorative <h1>/<h2> section headers). Translators preserve
+// every visible tag, which means a) the user pays for translating CSS garbage,
+// b) the output written back to desc_XX is full of the same junk, which then
+// re-renders in the page on every visit. Stripping first gives a much smaller,
+// faster, cleaner translation AND a clean cache write-back.
+function freePreCleanHtml(html) {
+  if (!html || typeof html !== 'string') return html || '';
+  return html
+    // HTML comments first — wrapper comments in particular
+    .replace(/<!--[\s\S]*?-->/g, '')
+    // Supplier boilerplate headers — we render our own h3 above the description
+    .replace(/<h[1-6]\b[^>]*>[\s\S]*?<\/h[1-6]>/gi, '')
+    .replace(/<h[1-6]\b[^>]*\/?>/gi, '')
+    // Inline style + data- tracking attributes translate to garbage; drop them
+    .replace(/\s+style\s*=\s*"[^"]*"/gi, '')
+    .replace(/\s+style\s*=\s*'[^']*'/gi, '')
+    .replace(/\s+data-[a-z0-9-]+\s*=\s*"[^"]*"/gi, '')
+    .replace(/\s+data-[a-z0-9-]+\s*=\s*'[^']*'/gi, '')
+    // aria-* rarely carries meaning in product descriptions
+    .replace(/\s+aria-[a-z-]+\s*=\s*"[^"]*"/gi, '')
+    // Event handlers + javascript: hrefs
+    .replace(/\s+on[a-z]+\s*=\s*"[^"]*"/gi, '')
+    .replace(/\s+on[a-z]+\s*=\s*'[^']*'/gi, '')
+    .replace(/(href|src)\s*=\s*["']\s*javascript:[^"']*["']/gi, '$1="#"')
+    // Supplier UI shells
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+    .replace(/<svg\b[^<]*(?:(?!<\/svg>)<[^<]*)*<\/svg>/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/<button\b[^>]*>[\s\S]*?<\/button>/gi, '')
+    .replace(/<button\b[^>]*\/?>/gi, '')
+    .replace(/<form\b[^<]*(?:(?!<\/form>)<[^<]*)*<\/form>/gi, '')
+    .replace(/<div\b[^>]*?\bclass\s*=\s*["'][^"']*(?:breadcrumb|nav-|menu|sidebar|footer|cookie|banner|popup|modal|overlay|tab-?|filter|action-?bar|button-?bar|related-?product|recommend|sku|highlight|callout)[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, '')
+    // Trim class attributes that are pure-supplier (we let friendly class names through)
+    .replace(/\sclass\s*=\s*"[^"]*(?:alibaba|1688|taobao|aliexpress|supplier|alicdn|sc-|tm-)[^"]*"/gi, '')
+    .trim();
+}
+
 // Translate one piece of plain text. HTML in markup mode is preserved by
 // passing it through as-is (translators are character-agnostic — they
 // leave <b>, <ul>, etc. untouched). LibreTranslate gets format='html'
 // when the input looks like markup so it doesn't re-flow whitespace
 // around tags; MyMemory is character-agnostic and ignores the flag.
+//
+// For LONG inputs the strategy is to chunk into ~480-char paragraphs
+// (splitting at <p>, <li>, <tr> boundaries for HTML, or sentence boundaries
+// for plain text). Each chunk is translated independently and reassembled.
+// This is far more reliable than a single mega-request because:
+//   - MyMemory's anonymous per-request limit is ~500 chars/day/IP, and a
+//     5 KB single request gets 403 BUT still counts against the daily
+//     quota. Chunking keeps each call under the limit so we actually get
+//     answers back.
+//   - LibreTranslate public mirrors all rate-limit at request count, not
+//     just total chars; chunking also gets us better coverage there.
 async function freeTranslateText(text, targetLang) {
   if (!text || !text.trim()) return text || '';
   if (targetLang === 'en') return text;
@@ -75,34 +127,47 @@ async function freeTranslateText(text, targetLang) {
 
   const code = ISO_CODES[targetLang];
 
-  // For inputs above the MyMemory anonymous per-request limit, skip
-  // MyMemory entirely. Submitting a 5000-char string to MyMemory anonymous
-  // gets a 403 that still counts against the daily 5k char quota — better
-  // to spend that quota on a translation that will actually return.
-  // LibreTranslate's per-request limit is much higher and gets format='html'
-  // for markup preservation.
-  const MM_SAFE_LIMIT = 480;
-  const isLong = text.length > MM_SAFE_LIMIT;
+  // Chunking strategy. We split into chunks ≤ MM_CHUNK_SIZE so we stay
+  // well under MyMemory's anonymous per-request limit (with a safety
+  // margin). We split at HTML paragraph boundaries when markup is
+  // detected, otherwise at sentence boundaries.
+  const MM_CHUNK_SIZE = 450;
+  const chunks = looksLikeHtml ? htmlChunks(text, MM_CHUNK_SIZE) : sentenceChunks(text, MM_CHUNK_SIZE);
+  if (chunks.length === 0) return text;
 
-  if (!isLong) {
-    // 1) MyMemory — primary because it's faster and has a generous free tier.
-    try {
-      const mmUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${code}`;
-      const resp = await fetch(mmUrl, { headers: { 'User-Agent': 'SunTrade/1.0 (+suntrade.store)' } });
-      if (resp.ok) {
-        const data = await resp.json();
-        if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
-          const out = data.responseData.translatedText;
-          lcSet(cacheKey, out);
-          return out;
-        }
-      }
-    } catch (e) {
-      console.warn('[translate-product:free] MyMemory threw:', e.message);
+  // Translate chunks sequentially. Free APIs are rate-limited per-minute,
+  // and a small per-chunk delay keeps us under the radar without making
+  // a 30-locale grid take forever.
+  const out = [];
+  for (let i = 0; i < chunks.length; i++) {
+    const c = chunks[i];
+    const translated = await freeTranslateChunk(c, code, looksLikeHtml);
+    out.push(translated);
+    // Throttle: ~250 ms between chunks keeps us under most anonymous
+    // rate limits (MyMemory ≅5 req/min, LibreTranslate ≅20 req/min).
+    if (i < chunks.length - 1) {
+      await new Promise(r => setTimeout(r, 250));
     }
   }
+  const joined = out.join(looksLikeHtml ? '' : ' ');
+  lcSet(cacheKey, joined);
+  return joined;
+}
 
-  // 2) LibreTranslate — fallback (also used directly for long text).
+async function freeTranslateChunk(text, code, looksLikeHtml) {
+  // 1) MyMemory — primary because it's faster and has a generous free tier.
+  try {
+    const mmUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${code}`;
+    const resp = await fetch(mmUrl, { headers: { 'User-Agent': 'SunTrade/1.0 (+suntrade.store)' } });
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
+        return data.responseData.translatedText;
+      }
+    }
+  } catch (e) { /* fall through */ }
+
+  // 2) LibreTranslate — fallback.
   for (const base of LT_INSTANCES) {
     try {
       const resp = await fetch(`${base}/translate`, {
@@ -118,16 +183,83 @@ async function freeTranslateText(text, targetLang) {
       if (!resp.ok) continue;
       const data = await resp.json();
       if (data && typeof data.translatedText === 'string' && data.translatedText.trim()) {
-        lcSet(cacheKey, data.translatedText);
         return data.translatedText;
       }
-    } catch (e) {
-      console.warn('[translate-product:free] LibreTranslate instance failed:', base, e.message);
+    } catch (e) { /* try next instance */ }
+  }
+  // Both failed; return the source chunk verbatim. The caller is already
+  // doing best-effort so we'll have whatever MyMemory/LibreTranslate
+  // managed, with English in the gaps.
+  return text;
+}
+
+// Split HTML into ≤maxSize chunks at </p>, </li>, </tr>, <br>, <h1-6>
+// boundaries. This preserves sentence/paragraph structure instead of
+// cutting mid-word, which both translators handle much more reliably.
+function htmlChunks(html, maxSize) {
+  if (html.length <= maxSize) return [html];
+  const out = [];
+  // Split on common block-level closers, keeping the closer appended
+  // to the chunk it belongs to so the output re-concatenates cleanly.
+  const parts = html.split(/(?=<p\b|<li\b|<tr\b|<br\b|<h[1-6]\b|<\/p>|<\/li>|<\/tr>|<\/h[1-6]>)/i);
+  let buf = '';
+  for (const p of parts) {
+    if ((buf + p).length > maxSize && buf) {
+      out.push(buf);
+      buf = p;
+    } else {
+      buf += p;
     }
   }
+  if (buf) out.push(buf);
+  // If for some reason no boundary matched (e.g. one giant <pre> block),
+  // hard-split at maxSize and emit the remainder.
+  if (out.length === 0) {
+    for (let i = 0; i < html.length; i += maxSize) out.push(html.slice(i, i + maxSize));
+  }
+  // Hard-cap any single chunk that's still over maxSize (single huge <li>).
+  const finalChunks = [];
+  for (const c of out) {
+    if (c.length <= maxSize) { finalChunks.push(c); continue; }
+    for (let i = 0; i < c.length; i += maxSize) finalChunks.push(c.slice(i, i + maxSize));
+  }
+  return finalChunks;
+}
 
-  console.error('[translate-product:free] All free translators failed for lang', targetLang);
-  return text; // fallback to English
+// Split plain text into ≤maxSize chunks at sentence boundaries (. ! ? + space)
+// then word boundaries if needed. Keeps punctuation attached to the token.
+function sentenceChunks(text, maxSize) {
+  if (text.length <= maxSize) return [text];
+  const out = [];
+  let buf = '';
+  // First split on sentence boundaries.
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  for (const s of sentences) {
+    if ((buf + ' ' + s).trim().length > maxSize && buf) {
+      out.push(buf.trim());
+      buf = s;
+    } else {
+      buf = (buf ? buf + ' ' : '') + s;
+    }
+  }
+  if (buf.trim()) out.push(buf.trim());
+  // If any single sentence is still > maxSize, hard-split on word boundary.
+  const finalChunks = [];
+  for (const c of out) {
+    if (c.length <= maxSize) { finalChunks.push(c); continue; }
+    const words = c.split(/\s+/);
+    let b = '';
+    for (const w of words) {
+      if ((b + ' ' + w).trim().length > maxSize && b) {
+        finalChunks.push(b.trim());
+        b = w;
+      } else {
+        b = (b ? b + ' ' : '') + w;
+      }
+    }
+    if (b.trim()) finalChunks.push(b.trim());
+  }
+  return finalChunks;
 }
 
 function freeReadKey() {
@@ -268,13 +400,13 @@ module.exports = async function handler(req, res) {
           });
         }
         sourceName = product.name_en;
-        sourceDesc = product.desc_en || '';
+        sourceDesc = freePreCleanHtml(product.desc_en || '');
         existingName = product[`name_${targetLang}`] || '';
         existingDesc = product[`desc_${targetLang}`] || '';
       } else {
         if (!body.name_en) return res.status(400).json({ error: 'name_en or product_id required' });
         sourceName = body.name_en;
-        sourceDesc = body.desc_en || '';
+        sourceDesc = freePreCleanHtml(body.desc_en || '');
       }
 
       // DB cache hit?
