@@ -606,7 +606,11 @@ async function ensureProductsTranslated(products, targetLang, opts) {
   for (let i = 0; i < products.length; i++) {
     const p = products[i];
     if (!p || !p.id || !p.name_en) continue;
-    if ((p['name_' + targetLang] || '').trim()) continue; // already cached
+    // NOTE: we no longer skip when p['name_'+targetLang] is non-empty.
+    // A leftover "English-text" copy in the target column should still be
+    // re-translated — the server endpoint now detects English-copy rows as
+    // not-cached and replaces them with a real translation. This avoids
+    // rendering stale English-after-language-switch rows.
     const t = await ensureProductTranslation(p.id, targetLang);
     if (t && t.name) {
       p['name_' + targetLang] = t.name;

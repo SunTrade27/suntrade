@@ -278,7 +278,20 @@ module.exports = async function handler(req, res) {
       }
 
       // DB cache hit?
-      if (existingName.trim() && (sourceDesc.trim() === '' || existingDesc.trim())) {
+      // Real cache hit requires: target column has actual translated content,
+      // not just the English source mirrored into target. A leftover "English"
+      // value in name_kz (from prior admins or cron failures) should NOT be
+      // treated as cached — we want a fresh translation instead.
+      const existingIsEnglishCopy = !!(existingName.trim() &&
+        sourceName.trim() &&
+        existingName.trim().toLowerCase() === sourceName.trim().toLowerCase());
+      const existingDescIsEnglishCopy = !!(existingDesc.trim() &&
+        sourceDesc.trim() &&
+        existingDesc.trim().toLowerCase().slice(0, 200) ===
+        sourceDesc.trim().toLowerCase().slice(0, 200));
+      if (existingName.trim() &&
+          (sourceDesc.trim() === '' || existingDesc.trim()) &&
+          !existingIsEnglishCopy && !existingDescIsEnglishCopy) {
         return res.status(200).json({
           success: true,
           cached: true,
