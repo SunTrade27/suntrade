@@ -328,56 +328,6 @@
     .price-total-value { font-size: 1.5rem; }
     .price-discount-badge { font-size: 0.7rem; padding: 2px 8px; }
   }
-
-  /* ===== On-Demand Translate Indicator =====
-     Shown next to the Description heading while client-side AI
-     translation is fetching a missing desc_<lang> from Gemini.
-     Visitors whose browser language is not English almost always see
-     this on legacy products because the database desc_<lang> columns
-     are empty. The spinner fades out and a brief green check pulses
-     in once the translated text is rendered. */
-  .desc-translate-indicator {
-    display: none;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--primary);
-    padding: 5px 12px;
-    background: rgba(255,107,0,0.08);
-    border: 1px solid rgba(255,107,0,0.2);
-    border-radius: 50px;
-    margin: 8px 0 4px 0;
-    width: fit-content;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-  }
-  .desc-translate-indicator.show {
-    display: inline-flex;
-    animation: indicatorIn 0.3s ease;
-  }
-  @keyframes indicatorIn {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .desc-translate-indicator svg.spinner-icon {
-    width: 14px;
-    height: 14px;
-    animation: indicatorSpin 1.4s linear infinite;
-  }
-  @keyframes indicatorSpin {
-    from { transform: rotate(0); }
-    to   { transform: rotate(360deg); }
-  }
-  .desc-translate-indicator.done {
-    color: #10B981;
-    background: rgba(16,185,129,0.08);
-    border-color: rgba(16,185,129,0.2);
-    display: inline-flex;
-  }
-  .desc-translate-indicator.done svg.spinner-icon {
-    animation: none;
-  }
 </style>
 </head>
 <body>
@@ -506,10 +456,7 @@
 
   // Listen for language changes
   window.addEventListener('langChanged', () => {
-    if (currentProduct) {
-      renderProduct();
-      translateMissingFields(currentProduct);
-    }
+    if (currentProduct) renderProduct();
   });
 
   document.addEventListener('DOMContentLoaded', async () => {
@@ -525,7 +472,6 @@
         return;
       }
       renderProduct();
-      translateMissingFields(currentProduct);
     }, 500);
   });
 
@@ -712,10 +658,6 @@
       </div>
       <div class="product-desc">
         <h3 data-i18n="product_description">Description</h3>
-        <span class="desc-translate-indicator" id="desc-translate-indicator" role="status" aria-live="polite">
-          <svg class="spinner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-          <span data-i18n="auto_translating">Auto-translating…</span>
-        </span>
         <div class="product-desc-content">${desc || t('no_description')}</div>
       </div>
     `;
@@ -776,111 +718,6 @@
         });
       }
     }
-  }
-
-  // ===== Client-side on-demand translation =====
-  // Many existing products in the DB only have desc_en / name_en filled —
-  // the other 11 language columns are NULL. Without this fallback every
-  // non-English visitor would just see English under a localized heading.
-  //
-  // flow: when currentLang !== 'en' and the localized field is empty,
-  //   1. check localStorage cache (TTL 7 days, keyed by product+lang)
-  //   2. if cache miss, POST {name_en, desc_en} + target_lang to
-  //      /api/translate-on-demand which calls Gemini
-  //   3. on success, patch p['name_<lang>'] / p['desc_<lang>'] and
-  //      re-run renderProduct() so title/description swap to the
-  //      visitor's language
-  //   failures are silent: the visitor simply keeps seeing English,
-  //   which matches what the page would show without this feature
-  async function translateMissingFields(p) {
-    if (!p) return;
-    if (typeof currentLang === 'undefined' || currentLang === 'en') return;
-
-    const targetName = (p['name_' + currentLang] || '').trim();
-    const targetDesc = (p['desc_' + currentLang] || '').trim();
-    const sourceName = (p.name_en || '').trim();
-    const sourceDesc = (p.desc_en || '').trim();
-
-    const needName = !targetName && !!sourceName;
-    const needDesc = !targetDesc && !!sourceDesc;
-    if (!needName && !needDesc) {
-      hideTranslateIndicator();
-      return;
-    }
-
-    // localStorage cache: 7-day TTL so a visitor who switches languages
-    // back and forth doesn't trigger a fresh API call every time, and
-    // so repeat visitors on the same product see instant translations.
-    const cacheKey = '__suntrade_tr_' + p.id + '_' + currentLang;
-    try {
-      const cachedRaw = localStorage.getItem(cacheKey);
-      if (cachedRaw) {
-        const cached = JSON.parse(cachedRaw);
-        const age = (Date.now() - (cached._ts || 0)) / 1000;
-        if (age < 7 * 24 * 3600 && cached._ok) {
-          if (needName && cached.name) p['name_' + currentLang] = cached.name;
-          if (needDesc && cached.desc) p['desc_' + currentLang] = cached.desc;
-          renderProduct();
-          return;
-        }
-      }
-    } catch (e) { /* localStorage disabled / parse error */ }
-
-    showTranslateIndicator('start');
-
-    try {
-      const ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
-      const timeoutId = ctrl ? setTimeout(() => ctrl.abort(), 30000) : null;
-      const resp = await fetch('/api/translate-on-demand', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          texts: { name: sourceName, desc: sourceDesc },
-          target_lang: currentLang
-        }),
-        signal: ctrl ? ctrl.signal : undefined
-      });
-      if (timeoutId) clearTimeout(timeoutId);
-      const result = await resp.json().catch(() => ({ success: false }));
-      if (result && result.success && result.translations) {
-        const tr = result.translations;
-        if (needName && tr.name) p['name_' + currentLang] = tr.name;
-        if (needDesc && tr.desc) p['desc_' + currentLang] = tr.desc;
-        try {
-          localStorage.setItem(cacheKey, JSON.stringify({
-            _ok: true,
-            _ts: Date.now(),
-            name: tr.name || sourceName,
-            desc: tr.desc || sourceDesc
-          }));
-        } catch (e) { /* quota / disabled */ }
-        showTranslateIndicator('done');
-        renderProduct();
-      } else {
-        hideTranslateIndicator();
-      }
-    } catch (e) {
-      console.warn('On-demand translate failed:', e && e.message);
-      hideTranslateIndicator();
-    }
-  }
-
-  function showTranslateIndicator(state) {
-    const el = document.getElementById('desc-translate-indicator');
-    if (!el) return;
-    if (state === 'start') {
-      el.classList.remove('done');
-      el.classList.add('show');
-    } else if (state === 'done') {
-      el.classList.remove('show');
-      el.classList.add('done');
-      setTimeout(() => { el.classList.remove('done'); }, 2500);
-    }
-  }
-  function hideTranslateIndicator() {
-    const el = document.getElementById('desc-translate-indicator');
-    if (!el) return;
-    el.classList.remove('show', 'done');
   }
 
   // ===== Image Magnifier / Lens Zoom =====
