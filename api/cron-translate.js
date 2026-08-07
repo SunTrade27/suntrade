@@ -1,42 +1,57 @@
 // Vercel Cron: daily background translate of products still missing
 // non-EN columns. Runs at 05:00 UTC every day via vercel.json#crons.
 //
-// Security: If CRON_SECRET env var is set, the request must pass
-// `?secret=...` OR an `Authorization: Bearer ...` header that matches.
-// Vercel always sends cron requests to the registered path on schedule,
-// regardless of auth — this is just to keep random visitors from
-// triggering expensive work.
+// Required environment variables on Vercel:
+//   SUPABASE_URL            (e.g. https://xxx.supabase.co)
+//   SUPABASE_SERVICE_ROLE_KEY  (so we can bypass RLS and write without
+//                              a logged-in admin user; the anon key alone
+//                              cannot write)
+//   GEMINI_API_KEY          (whatever /api/translate-product already needs;
+//                              we never invoke Gemini ourselves — we just
+//                              re-use the existing translation endpoint)
+// Optional:
+//   CRON_SECRET             gate requests with a secret token; otherwise
+//                            we accept only Vercel's cron user-agent
+//   TRANSLATE_CRON_RUN=1    enable real translations. Without this the
+//                            endpoint runs in DRY-RUN mode and only
+//                            reports what it would translate.
 //
-// Behaviour:
-//   1. Reads all active products from Supabase
-//   2. For each product with name_en filled but ANY of the 11 non-EN
-//      name_<lang> or desc_<lang> columns empty, queues it
-//   3. Calls /api/translate-product (existing endpoint) which translates
-//      all 11 languages in one POST and writes the result back via
-//      adminSaveProduct-style field merge
-//   4. Paces requests at ~4200 ms (=14 RPM) so we stay under Gemini
-//      free-tier 15 RPM even if a chat visitor or a manual batch is
-//      running at the same minute.
-//
-// GET /api/cron-translate        ?secret=CRON_SECRET (env)
-// Authorization: Bearer CRON_SECRET
-// Response: { ok, scanned, todo, translated, errors, failed, note }
+// Security default: we refuse any request whose user-agent doesn't look
+// like Vercel-Cron when CRON_SECRET is unset. That keeps random browsers
+// and crawlers from triggering the (expensive) scan.
 //
 // Schedule is configured in vercel.json:
 //   { "crons": [{ "path": "/api/cron-translate", "schedule": "0 5 * * *" }] }
 
-const SUPABASE_URL = 'https://wmznfdngucpsmjbxiwzn.supabase.co';
-// Service-role key would write through RLS, but RLS already lets admins
-// pass. We use the anon key + the same flow adminSaveProduct() uses; if
-// the cron is called from server-side Vercel with no admin session we
-// fall back to the SERVICE_ROLE env var. Otherwise the cron simply skips
-// "ready" work to a manual admin batch trigger.
-const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtem5mZG5ndWNwc21qYnhpd3puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1Nzk1NDAsImV4cCI6MjA5NTE1NTU0MH0.DaYcIF7uaU0FSWbB9Mlq4YVVYm2EleOSz6ACtwyHjsI';
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://wmznfdngucpsmjbxiwzn.supabase.co';
+if (!process.env.SUPABASE_URL) {
+  console.warn('[cron-translate] SUPABASE_URL env var is missing — falling back to the project default. Set it on Vercel for clarity.');
+}
 
 const TARGET_LANGS = ['kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'];
 
-function supabaseHeaders() {
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || ANON_KEY;
+function supabaseHeadersRead() {
+  // Reads use the service-role key when available, fall back to anon
+  // for dry-runs so we can at least SCAN without env vars set up.
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+  if (!key) {
+    throw new Error('SUPABASE_SERVICE_ROLE_KEY or SUPABASE_ANON_KEY env var must be set to read products.');
+  }
+  return {
+    apikey: key,
+    Authorization: `Bearer ${key}`,
+    'Content-Type': 'application/json'
+  };
+}
+
+function supabaseHeadersWrite() {
+  // Writes REQUIRE the service-role key — anon would fail RLS for
+  // updates and we never want to silently fall back to a read-only
+  // failure here.
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!key) {
+    throw new Error('SUPABASE_SERVICE_ROLE_KEY env var must be set to write product translations.');
+  }
   return {
     apikey: key,
     Authorization: `Bearer ${key}`,
@@ -62,7 +77,7 @@ async function fetchProducts() {
   // for an e-commerce catalog with hundreds of products that's fine.
   // If you grow past 1000, page by id ranges instead.
   const url = `${SUPABASE_URL}/rest/v1/products?select=id,name_en,name_kz,name_ru,name_de,name_fr,name_es,name_it,name_tr,name_pt,name_nl,name_pl,name_ar,desc_en,desc_kz,desc_ru,desc_de,desc_fr,desc_es,desc_it,desc_tr,desc_pt,desc_nl,desc_pl,desc_ar,active&active=eq.true&limit=1000`;
-  const resp = await fetch(url, { headers: supabaseHeaders() });
+  const resp = await fetch(url, { headers: supabaseHeadersRead() });
   if (!resp.ok) {
     const txt = await resp.text().catch(() => '');
     throw new Error(`Supabase fetch failed: ${resp.status} ${txt.slice(0, 200)}`);
@@ -74,7 +89,7 @@ async function updateProduct(id, fields) {
   const url = `${SUPABASE_URL}/rest/v1/products?id=eq.${encodeURIComponent(id)}`;
   const resp = await fetch(url, {
     method: 'PATCH',
-    headers: { ...supabaseHeaders(), Prefer: 'return=minimal' },
+    headers: { ...supabaseHeadersWrite(), Prefer: 'return=minimal' },
     body: JSON.stringify(fields)
   });
   if (!resp.ok) {
