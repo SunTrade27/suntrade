@@ -879,9 +879,9 @@
       //     feel lived-in, not auto-generated.
       //   - PAID status renders "now" only when the order was created within the
       //     last 60 minutes (so old real Supabase PAID orders stay honest).
-      // demoOrders uses relative offsets (daysAgo) so the timeline stays
-      // realistic in any month the page is visited. Realistic shipping
-      // model:
+      // demoOrders uses fixed offsets (daysAgo) from the DEMO_ANCHOR date
+      // above, so the timeline is frozen and never rolls forward. Realistic
+      // shipping model:
       //   - "paid" (Сатушы қабылдады): today, current local time. The
       //     buyer's Stripe payment just cleared, the seller is logging
       //     it in the admin dashboard.
@@ -895,8 +895,15 @@
       //     purchases months earlier. The gaps are intentionally
       //     irregular so visitors don't see a manufactured "one per
       //     day" cadence.
+      // Fixed anchor for the demo order timeline (07.08.2026). Demo
+      // timestamps used to be generated relative to "today" (new Date()),
+      // which made every order's date roll forward one day per day —
+      // visitors noticed the dates "growing". Anchoring to a fixed calendar
+      // date freezes the whole timeline: each order keeps the day it was
+      // placed, forever. (JS Date month is 0-based, so index 7 = August.)
+      var DEMO_ANCHOR = new Date(2026, 7, 7);
       function _buildDemoStamp(daysAgo, hour, minute) {
-        var d = new Date();
+        var d = new Date(DEMO_ANCHOR.getTime());
         d.setDate(d.getDate() - daysAgo);
         d.setHours(hour, minute, 0, 0);
         return d.toISOString();
