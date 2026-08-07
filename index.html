@@ -1311,6 +1311,35 @@
     const prodGrid = document.getElementById('featured-products');
     if (prodGrid && cachedFeatured.length) {
       prodGrid.innerHTML = cachedFeatured.map(p => renderProductCard(p)).join('');
+
+      // ===== On-demand free translation (no AI / no LLM) =====
+      // If user is on a non-English locale and any featured product is
+      // missing a name_XX column, kick off the translator in the background.
+      // Each card's text gets patched in place when translation arrives —
+      // the first time around the user sees English names briefly, then
+      // their language fills in over a few seconds. The server endpoint
+      // /api/translate-product (mode: free) — internally MyMemory → LibreTranslate
+      // (no AI / no LLM) — writes the
+      // result back to Supabase so subsequent visitors see them instantly.
+      if (typeof ensureProductsTranslated === 'function' && currentLang !== 'en') {
+        ensureProductsTranslated(cachedFeatured, currentLang, {
+          staggerMs: 800,
+          onUpdate: (p, t) => {
+            if (!t || !t.name) return;
+            const card = prodGrid.querySelector(
+              '.wishlist-btn[data-product-id="' + p.id + '"]'
+            )?.closest('.product-card');
+            if (!card) return;
+            const newName = t.name;
+            const nameEl = card.querySelector('.product-card-name');
+            if (nameEl) nameEl.textContent = newName;
+            const imgEl = card.querySelector('img.product-card-img');
+            if (imgEl) imgEl.alt = newName;
+            const linkEl = card.querySelector('.product-card-link');
+            if (linkEl) linkEl.setAttribute('aria-label', newName);
+          }
+        });
+      }
     }
   }
 
@@ -1380,6 +1409,30 @@
       if (prodGrid && products.length) {
         prodGrid.innerHTML = products.map(p => renderProductCard(p)).join('');
         applyTranslations();
+        // On-demand free translation for any featured product missing
+        // a name_XX column. Patches DOM in place as translations arrive.
+        // (See renderFeaturedProducts() for the same logic used on
+        // language swaps.) The server endpoint writes results back to
+        // Supabase so subsequent visitors hit the row cache directly.
+        if (typeof ensureProductsTranslated === 'function' && currentLang !== 'en') {
+          ensureProductsTranslated(products, currentLang, {
+            staggerMs: 800,
+            onUpdate: (p, t) => {
+              if (!t || !t.name) return;
+              const card = prodGrid.querySelector(
+                '.wishlist-btn[data-product-id="' + p.id + '"]'
+              )?.closest('.product-card');
+              if (!card) return;
+              const newName = t.name;
+              const nameEl = card.querySelector('.product-card-name');
+              if (nameEl) nameEl.textContent = newName;
+              const imgEl = card.querySelector('img.product-card-img');
+              if (imgEl) imgEl.alt = newName;
+              const linkEl = card.querySelector('.product-card-link');
+              if (linkEl) linkEl.setAttribute('aria-label', newName);
+            }
+          });
+        }
       }
 
       // Homepage reviews

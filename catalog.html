@@ -242,6 +242,37 @@
 
     if (countEl) countEl.textContent = products.length + ' products';
 
+    // ===== On-demand free translation (no AI / no LLM) =====
+    // Catalog product names default to English on products that don't yet have
+    // a name_XX column. After the page paints we kick off a sequential
+    // background translation through /api/translate-product (mode: free)
+    // — driven by MyMemory → LibreTranslate under the hood (no AI / no LLM).
+    // LibreTranslate). Each translation is also written back to Supabase
+    // server-side, so subsequent visitors get an instant hit from cache.
+    // The list is processed one-by-one with an 800 ms stagger so a grid of
+    // 30 products stays well under the free APIs' rate limits.
+    if (typeof ensureProductsTranslated === 'function' && currentLang !== 'en') {
+      ensureProductsTranslated(products, currentLang, {
+        staggerMs: 800,
+        onUpdate: (p, t) => {
+          if (!t || !t.name) return;
+          // Patch the DOM card for this product in place — no re-render,
+          // no scroll reset, no image reflow.
+          const card = grid.querySelector(
+            '.wishlist-btn[data-product-id="' + p.id + '"]'
+          )?.closest('.product-card');
+          if (!card) return;
+          const newName = t.name;
+          const nameEl = card.querySelector('.product-card-name');
+          if (nameEl) nameEl.textContent = newName;
+          const imgEl = card.querySelector('img.product-card-img');
+          if (imgEl) imgEl.alt = newName;
+          const linkEl = card.querySelector('.product-card-link');
+          if (linkEl) linkEl.setAttribute('aria-label', newName);
+        }
+      });
+    }
+
     grid.innerHTML = products.map(p => {
       const name = p['name_' + currentLang] || p.name_en || 'Product';
       const safeName = name.replace(/'/g, "&#39;");

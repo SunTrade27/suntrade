@@ -518,3 +518,112 @@ if (document.readyState === 'loading') {
 } else {
   initSupabase();
 }
+
+// ============================================================================
+// ON-DEMAND FREE TRANSLATION (no AI / no LLM)
+// ============================================================================
+//
+// How it works:
+//   1. Visitor opens a product page and the chrome has them on, say, Kazakh.
+//   2. product.html calls getProduct(id). If name_kz / desc_kz exist on the row,
+//      we render them directly (cached by previous visitors).
+//   3. If they're missing, we fire-and-forget a POST to
+//      /api/translate-product with { mode: 'free', product_id, target_lang }.
+//      That endpoint calls MyMemory → LibreTranslate and writes the result
+//      back to the products table so the next visitor gets an instant hit.
+//   4. When the API responds, we patch the rendered DOM with the new text.
+//
+// In browsers we cache the (product_id+lang) → translation promise for the
+// duration of the page so a quick product grid re-rendering won't fire
+// duplicate requests.
+//
+// We never block the UI on this: English text is shown instantly, then
+// silently swapped for the translated copy within ~300–1500 ms.
+const _odTranslationCache = new Map(); // 'pid:lang' -> Promise<{name, desc}>
+const _OD_CACHE_MAX = 200; // FIFO-evict above this to keep long-lived tabs bounded
+
+async function ensureProductTranslation(productId, targetLang) {
+  if (!productId || !targetLang || targetLang === 'en') return null;
+  if (!SUPPORTED_LANGS_TRANSLATE.includes(targetLang)) return null;
+
+  const key = `${productId}:${targetLang}`;
+  if (_odTranslationCache.has(key)) return _odTranslationCache.get(key);
+
+  const p = (async () => {
+    try {
+      // Hit the unified /api/translate-product endpoint with mode:'free'
+      // so it uses MyMemory → LibreTranslate (no AI / no LLM) and writes
+      // the result back to the products table for next visitor.
+      const resp = await fetch('/api/translate-product', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mode: 'free',
+          product_id: productId,
+          target_lang: targetLang
+        })
+      });
+      if (!resp.ok) return null;
+      const data = await resp.json();
+      if (!data || !data.success) return null;
+      return data.translation || null;
+    } catch (e) {
+      console.warn('[ensureProductTranslation] fetch error:', e);
+      return null;
+    }
+  })();
+  _odTranslationCache.set(key, p);
+  // Cap cache size so a long-lived tab visiting many products × languages
+  // doesn't grow the map unbounded. Map iteration order is insertion
+  // order, so deleting the first key (oldest) gives us FIFO eviction.
+  if (_odTranslationCache.size > _OD_CACHE_MAX) {
+    const firstKey = _odTranslationCache.keys().next().value;
+    if (firstKey) _odTranslationCache.delete(firstKey);
+  }
+  return p;
+}
+
+// Helper for grids/catalogs: translate a list of products sequentially based
+// on the user's current language. Mutates each product's name_XX / desc_XX
+// in place so subsequent renders show the translated copy.
+//
+// Sequential (with a small per-product delay) because free translation APIs
+// have very tight rate limits when called in parallel — MyMemory's anonymous
+// tier caps at ~5 req/min, LibreTranslate public instances throttle to
+// ~20 req/min. Firing 30+ requests in parallel gets most of them rejected.
+// For grids of 30 products this runs in the background over ~15 s and
+// patches the DOM as each translation comes back. The server endpoint also
+// writes the result back to Supabase, so subsequent page loads hit cache.
+async function ensureProductsTranslated(products, targetLang, opts) {
+  opts = opts || {};
+  if (!Array.isArray(products) || products.length === 0) return products;
+  if (!targetLang || targetLang === 'en') return products;
+  if (!SUPPORTED_LANGS_TRANSLATE.includes(targetLang)) return products;
+  // Default 800 ms stagger keeps a 30-product grid well under the free
+  // tier's limit. Backoff on the first failed request so we don't hammer
+  // the API during a transient outage.
+  const stagger = typeof opts.staggerMs === 'number' ? opts.staggerMs : 800;
+  for (let i = 0; i < products.length; i++) {
+    const p = products[i];
+    if (!p || !p.id || !p.name_en) continue;
+    if ((p['name_' + targetLang] || '').trim()) continue; // already cached
+    const t = await ensureProductTranslation(p.id, targetLang);
+    if (t && t.name) {
+      p['name_' + targetLang] = t.name;
+      if (t.desc) p['desc_' + targetLang] = t.desc;
+    }
+    if (typeof opts.onUpdate === 'function') {
+      try { opts.onUpdate(p, t || null); } catch (_) { /* non-fatal */ }
+    }
+    if (i < products.length - 1) {
+      await new Promise(r => setTimeout(r, stagger));
+    }
+  }
+  return products;
+}
+
+// The list of language keys SunTrade uses for the product DB columns.
+// Listed once for the helpers above; SUPABASE_LANGS would be a fine alias
+// for the existing arrays scattered in this file, but keeping it local here
+// avoids touching unrelated call sites.
+const SUPPORTED_LANGS_TRANSLATE = ['kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'];

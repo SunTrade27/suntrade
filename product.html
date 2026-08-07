@@ -480,6 +480,20 @@
     const name = p['name_' + currentLang] || p.name_en || 'Product';
     // Clean description HTML to remove Alibaba/1688/Taobao UI junk before rendering
     const rawDesc = p['desc_' + currentLang] || p.desc_en || '';
+    // On-demand free translation: if the current language has no row
+    // for this product yet, ask /api/translate-product (mode: 'free') to fetch one
+    // from MyMemory / LibreTranslate (no AI/LLM). The API also writes the
+    // result back to Supabase so future visitors get an instant hit.
+    // We render English immediately and quietly swap in the translation
+    // when it arrives — no flicker, no blocking.
+    const hasNameInLang = !!(p['name_' + currentLang] || '').trim();
+    const hasDescInLang = !!(p['desc_' + currentLang] || '').trim();
+    const needsOnDemandTranslate =
+      currentLang !== 'en' &&
+      !!p.id &&
+      !!p.name_en &&
+      (!hasNameInLang || !hasDescInLang) &&
+      typeof ensureProductTranslation === 'function';
     const desc = applyAlternatingFloats(cleanDescriptionHtml(rawDesc));
     const images = p.images && p.images.length ? p.images : ['/images/placeholder.jpg'];
     const inStock = p.stock > 0;
@@ -671,6 +685,69 @@
 
     // Translate new dynamic content
     applyTranslations();
+
+    // === On-demand free translation ============================================
+    // If this product has no name / desc in currentLang, ask the server endpoint
+    // /api/translate-product (mode: 'free') to translate via MyMemory / LibreTranslate
+    // (no AI / no LLM). The server also writes the result back to Supabase so
+    // subsequent visitors see it instantly from the cache. We swap the rendered
+    // text silently when the API responds — English reads first, then the
+    // visitor's language replaces it within ~300–1500 ms.
+    if (needsOnDemandTranslate) {
+      // Tiny invisible-to-most, visible-on-mismatch indicator near the title.
+      // Only added when we'll likely need it so we don't litter product cards.
+      const nameEl = document.getElementById('product-name');
+      if (nameEl && !document.getElementById('od-translating-badge')) {
+        const badge = document.createElement('span');
+        badge.id = 'od-translating-badge';
+        badge.className = 'od-translating-badge';
+        badge.title = 'Auto-translating from English';
+        // Inline SVG icon (globe + spinner ring) — keeps this snippet self-
+        // contained, doesn't depend on a CSS file we may forget to load.
+        badge.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;opacity:0.45;margin-left:6px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="40" stroke-dashoffset="20"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1.2s" repeatCount="indefinite"/></circle></svg>';
+        nameEl.appendChild(badge);
+      }
+      ensureProductTranslation(p.id, currentLang).then(translation => {
+        if (!translation || !translation.name) return;
+        // Cache on the in-memory product so a langChanged rerender won't
+        // re-trigger the network call.
+        p['name_' + currentLang] = translation.name;
+        if (translation.desc) p['desc_' + currentLang] = translation.desc;
+
+        // Swap DOM text — textContent is safer than innerHTML for the name
+        // (no allow-listed markup expected there). Description may carry HTML
+        // such as <b>/<ul>/<img>, so we re-run the same junk-cleaner the
+        // first render used to keep parity.
+        const titleEl = document.getElementById('product-name');
+        if (titleEl) {
+          // Preserve the spinner badge we just inserted; only replace text.
+          const badge = titleEl.querySelector('#od-translating-badge');
+          titleEl.textContent = translation.name;
+          if (badge) titleEl.appendChild(badge);
+        }
+        const descEl = document.querySelector('.product-desc-content');
+        if (descEl && translation.desc) {
+          const cleanDesc = typeof applyAlternatingFloats === 'function' && typeof cleanDescriptionHtml === 'function'
+            ? applyAlternatingFloats(cleanDescriptionHtml(translation.desc))
+            : translation.desc;
+          descEl.innerHTML = cleanDesc || (typeof t === 'function' ? t('no_description') : '');
+        }
+        // Page <title> for the browser tab and proper share copy
+        document.title = translation.name + ' - SunTrade';
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc && translation.desc) {
+          metaDesc.content = translation.desc.replace(/<[^>]*>/g, '').substring(0, 160);
+        }
+        // Remove the spinner once we've swapped. Tiny fade so it feels
+        // intentional rather than abrupt.
+        const spinner = document.getElementById('od-translating-badge');
+        if (spinner) {
+          spinner.style.transition = 'opacity 0.4s';
+          spinner.style.opacity = '0';
+          setTimeout(() => spinner.remove(), 450);
+        }
+      }).catch(err => console.warn('[product.html] on-demand translation failed', err));
+    }
 
     // Setup image magnifier lens (desktop hover zoom)
     setupMagnifier('main-image', 'magnifier-container', 2.5);
@@ -1079,18 +1156,40 @@
   // Reviews
   // ===== Product description cleaner =====
   // Removes supplier-site UI junk (Alibaba/1688/Taobao/Aliexpress/Tmall) so the
-  // description renders cleanly. Used to keep pasted descriptions beautiful.
+  // description renders cleanly. Also strips HTML elements and protocols that
+  // could carry executable content (script/iframe/object/embed/base) — these
+  // are dangerous whether the source was admin-pasted or returned by an
+  // on-demand free translation API that we don't fully trust.
   function cleanDescriptionHtml(html) {
     if (!html || typeof html !== 'string') return '';
     let cleaned = html
-      // Strip <script> and <style> blocks (and their contents)
+      // Strip <script>, <style>, <iframe>, <object>, <embed>, <base> blocks.
+      // Iframes are the most common XSS vector after inline scripts — a
+      // hostile description could embed a page that phones home.
       .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
       .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+      .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+      .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
+      .replace(/<embed\b[^>]*(?:\/>|>[\s\S]*?<\/embed>)/gi, '')
+      .replace(/<base\b[^>]*\/?>/gi, '')
+      .replace(/<form\b[^<]*(?:(?!<\/form>)<[^<]*)*<\/form>/gi, '')
+      .replace(/<input\b[^>]*\/?>/gi, '')
+      .replace(/<select\b[^<]*(?:(?!<\/select>)<[^<]*)*<\/select>/gi, '')
+      .replace(/<textarea\b[^<]*(?:(?!<\/textarea>)<[^<]*)*<\/textarea>/gi, '')
+      // Drop SVG entirely — <use> can reference external resources and
+      // legacy SVG muzzles could carry scripts. We don't render SVG in
+      // product descriptions anyway.
+      .replace(/<svg\b[^<]*(?:(?!<\/svg>)<[^<]*)*<\/svg>/gi, '')
       // Strip inline event handlers (onclick, onload, etc.)
       .replace(/\s+on[a-z]+\s*=\s*"[^"]*"/gi, '')
       .replace(/\s+on[a-z]+\s*=\s*'[^']*'/gi, '')
       // Neutralize javascript: links
       .replace(/(href|src)\s*=\s*["']\s*javascript:[^"']*["']/gi, '$1="#"')
+      // Neutralize data: URIs that could carry executable content. Allow
+      // them for img only (data:image/...) — that's the common case for
+      // product images and is non-executable.
+      .replace(/(href|action|formaction)\s*=\s*["']\s*data:[^"']*["']/gi, '$1="#"')
+      .replace(/src\s*=\s*["']\s*data:(?!image\/)[^"']*["']/gi, 'src="#"')
       // Remove links pointing to supplier sites (Alibaba, 1688, Taobao, etc.)
       .replace(/<a\b[^>]*?\bhref\s*=\s*["'][^"']*(?:alibaba|aliexpress|1688|taobao|tmall|alipay|alicdn|alicompany)[^"']*["'][^>]*>[\s\S]*?<\/a>/gi, '')
       // Remove plain text references to supplier sites inside link text
