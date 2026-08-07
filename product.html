@@ -40,13 +40,14 @@
     width: 100%;
     height: auto;
     pointer-events: none;
-    /* Keep sharp upscaling in both directions. Without these hints the
-       browser accepts whichever interpolation it picks for the lens /
-       thumbnail / main image, and on a 1080p+ photo of a product the
-       edges of the kettle / cable / body blur out as soon as the
-       container is wider than the source. */
+    /* High-quality rendering: -webkit-optimize-contrast keeps downscaled
+       photos sharp, while plain `auto` gives browsers the default smooth
+       interpolation. `crisp-edges` was REMOVED on purpose — it forces
+       nearest-neighbour upscaling, which pixelates product photos the
+       moment the source is smaller than the container. Order matters:
+       the standard value first, the WebKit hint last so WebKit wins. */
+    image-rendering: auto;
     image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
   }
   .magnifier-lens {
     position: absolute;
@@ -69,9 +70,8 @@
        -webkit-optimize-contrast on background images to keep edges
        crisp. Without this the lens image looks noticeably soft
        compared to the surrounding photo. */
+    image-rendering: auto;
     image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-    image-rendering: high-quality;
   }
   .magnifier-lens::after {
     content: '';
@@ -565,7 +565,7 @@
                  width="900"
                  height="900"
                  draggable="false">
-            <div class="magnifier-hint">× 2.5 Hover to zoom</div>
+            <div class="magnifier-hint">Hover to zoom</div>
           </div>
         </div>
         ${images.length > 1 ? `
@@ -779,31 +779,12 @@
       });
     }
 
-    // On small touch screens fall back to click-to-zoom
-    if (window.innerWidth <= 480) {
-      const mainImg = document.getElementById('main-image');
-      if (mainImg) {
-        mainImg.style.cursor = 'zoom-in';
-        mainImg.addEventListener('click', function zoomToggle() {
-          const container = document.getElementById('magnifier-container');
-          if (!container) return;
-          const isZoomed = container.classList.toggle('zoomed');
-          if (isZoomed) {
-            mainImg.style.transform = 'scale(2)';
-            mainImg.style.transformOrigin = 'center center';
-            mainImg.style.cursor = 'zoom-out';
-            container.style.overflow = 'auto';
-          } else {
-            mainImg.style.transform = 'scale(1)';
-            mainImg.style.cursor = 'zoom-in';
-            container.style.overflow = 'hidden';
-            container.scrollLeft = 0;
-            container.scrollTop = 0;
-          }
-          mainImg.style.transition = 'transform 0.25s ease';
-        });
-      }
-    }
+    // Mobile: pinch / double-tap / drag to zoom the IMAGE itself — the page
+    // never zooms (touch-action on the container blocks the browser gesture).
+    setupMobileImageZoom(
+      document.getElementById('main-image'),
+      document.getElementById('magnifier-container')
+    );
   }
 
   // ===== Image Magnifier / Lens Zoom =====
@@ -825,10 +806,19 @@
     const oldLens = container.querySelector('.magnifier-lens');
     if (oldLens) oldLens.remove();
 
-    // Don't set up magnifier on small touch screens
+    // Don't set up magnifier on small touch screens (pinch-zoom handles them)
     if (window.innerWidth <= 480) return;
 
     zoom = zoom || 2.5;
+    // Zoom that reveals the source's native pixels when possible — the lens
+    // background is capped at the uploaded resolution below, so a high-res
+    // photo shows its real pixels instead of a mushy CSS upscale.
+    if (img.naturalWidth > 0) {
+      const rect = container.getBoundingClientRect();
+      if (rect.width > 0) {
+        zoom = Math.max(2, Math.min(4, img.naturalWidth / rect.width));
+      }
+    }
 
     // Create lens element
     const lens = document.createElement('div');
@@ -869,9 +859,14 @@
       lens.style.top = lensY + 'px';
       lens.style.display = 'block';
 
-      // Background position: map the lens position to the zoomed image
-      const bgW = rect.width * zoom;
-      const bgH = rect.height * zoom;
+      // Background position: map the lens position to the zoomed image.
+      // The background is capped at the SOURCE resolution so the zoom
+      // always shows real pixels from the uploaded image — never a
+      // browser upscale that would look soft.
+      const natW = img.naturalWidth || (rect.width * zoom);
+      const natH = img.naturalHeight || (rect.height * zoom);
+      const bgW = Math.min(rect.width * zoom, natW);
+      const bgH = Math.min(rect.height * zoom, natH);
       const bgX = -(clampedX * zoom - lw / 2);
       const bgY = -(clampedY * zoom - lh / 2);
 
@@ -916,12 +911,149 @@
     }
   }
 
+  // ===== Mobile Image Pinch-Zoom (image only — the page never zooms) =====
+  // Replaces the old clunky click-to-zoom on phones:
+  //   - two-finger pinch zooms the IMAGE (1x..4x); touch-action on the
+  //     container blocks the browser's page-level pinch gesture
+  //   - double-tap toggles a 2.5x zoom centered on the tapped spot
+  //   - while zoomed, drag with one finger to pan; the image is clamped
+  //     inside its own bounds
+  //   - touch-action stays 'pan-x pan-y' at 1x so normal page scrolling
+  //     over the image still works, and flips to 'none' while zoomed so
+  //     the single-finger drag pans the image instead of scrolling
+  //   - tapping once while zoomed returns to 1x
+  function setupMobileImageZoom(imgEl, containerEl) {
+    if (!imgEl || !containerEl) return;
+    if (window.innerWidth > 480) return; // phones only — desktop uses the lens
+
+    const MIN = 1, MAX = 4;
+    let scale = 1, tx = 0, ty = 0;
+    let startDist = 0, startScale = 1;
+    let lastTouch = null;
+    let wasPinching = false; // suppress the synthetic click after a pinch
+
+    function apply(animate) {
+      imgEl.style.transition = animate ? 'transform 0.25s ease' : 'none';
+      imgEl.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + scale + ')';
+    }
+    function clampPan() {
+      const cw = containerEl.clientWidth, ch = containerEl.clientHeight;
+      const iw = imgEl.offsetWidth * scale, ih = imgEl.offsetHeight * scale;
+      const mx = Math.max(0, (iw - cw) / 2);
+      const my = Math.max(0, (ih - ch) / 2);
+      tx = Math.max(-mx, Math.min(mx, tx));
+      ty = Math.max(-my, Math.min(my, ty));
+    }
+    function dist2(t) {
+      return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+    }
+    function resetZoom() {
+      scale = 1; tx = 0; ty = 0;
+      containerEl.style.touchAction = 'pan-x pan-y';
+      imgEl.style.cursor = 'zoom-in';
+      apply(true);
+    }
+
+    // Allow the caller (setMainImage / selectType) to reset after a src swap
+    containerEl._resetMobileZoom = resetZoom;
+
+    containerEl.style.touchAction = 'pan-x pan-y';
+    containerEl.style.cursor = 'zoom-in';
+
+    containerEl.addEventListener('touchstart', function(e) {
+      if (e.touches.length === 2) {
+        startDist = dist2(e.touches);
+        startScale = scale;
+        wasPinching = true;
+      } else if (e.touches.length === 1) {
+        lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+    }, { passive: true });
+
+    containerEl.addEventListener('touchmove', function(e) {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const d = dist2(e.touches);
+        if (startDist > 0) {
+          const ns = Math.max(MIN, Math.min(MAX, startScale * (d / startDist)));
+          const rect = containerEl.getBoundingClientRect();
+          const cx = rect.width / 2, cy = rect.height / 2;
+          // Scale around the container centre so the pinch feels anchored.
+          const imgX = (cx - tx) / scale;
+          const imgY = (cy - ty) / scale;
+          scale = ns;
+          tx = cx - imgX * scale;
+          ty = cy - imgY * scale;
+          clampPan();
+          containerEl.style.touchAction = (scale > 1) ? 'none' : 'pan-x pan-y';
+          imgEl.style.cursor = (scale > 1) ? 'zoom-out' : 'zoom-in';
+          apply(false);
+        }
+      } else if (e.touches.length === 1 && scale > 1 && lastTouch) {
+        e.preventDefault();
+        const dx = e.touches[0].clientX - lastTouch.x;
+        const dy = e.touches[0].clientY - lastTouch.y;
+        lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        tx += dx; ty += dy;
+        clampPan();
+        apply(false);
+      }
+    }, { passive: false });
+
+    containerEl.addEventListener('touchend', function(e) {
+      if (e.touches.length < 2) startDist = 0;
+      if (e.touches.length === 0) {
+        // Clear the pinch flag a moment later so the synthetic click (if any)
+        // is suppressed without blocking a genuine double-tap.
+        setTimeout(function() { wasPinching = false; }, 300);
+      }
+    }, { passive: true });
+
+    // Double-tap toggles zoom on the tapped point; single tap while zoomed exits
+    let lastTap = 0, tapTimer = null;
+    containerEl.addEventListener('click', function(e) {
+      if (wasPinching) return;
+      const now = Date.now();
+      if (now - lastTap < 320) {
+        if (tapTimer) { clearTimeout(tapTimer); tapTimer = null; }
+        lastTap = 0;
+        if (scale > 1) {
+          resetZoom();
+        } else {
+          const rect = containerEl.getBoundingClientRect();
+          const px = (e.clientX - rect.left) / rect.width;
+          const py = (e.clientY - rect.top) / rect.height;
+          const iw = imgEl.offsetWidth, ih = imgEl.offsetHeight;
+          scale = 2.5;
+          // Anchor the tapped point under the finger: translate by
+          // (0.5 - px) * iw * (scale - 1), NOT * scale — with transform-
+          // origin at the image centre this puts the tapped spot on the
+          // tap coordinates.
+          tx = (0.5 - px) * iw * (scale - 1);
+          ty = (0.5 - py) * ih * (scale - 1);
+          clampPan();
+          containerEl.style.touchAction = 'none';
+          imgEl.style.cursor = 'zoom-out';
+          apply(true);
+        }
+        return;
+      }
+      lastTap = now;
+      if (scale > 1) {
+        tapTimer = setTimeout(function() { resetZoom(); tapTimer = null; }, 350);
+      }
+    });
+  }
+
   function setMainImage(index) {
     const images = currentProduct.images || [];
     const mainImg = document.getElementById('main-image');
     if (mainImg) mainImg.src = images[index];
     document.querySelectorAll('.gallery-thumb').forEach((t, i) => t.classList.toggle('active', i === index));
     currentImageIndex = index;
+    // Reset any mobile pinch-zoom state for the freshly swapped image
+    const container = document.getElementById('magnifier-container');
+    if (container && container._resetMobileZoom) container._resetMobileZoom();
     // Re-init magnifier for the new image
     destroyMagnifier('main-image', 'magnifier-container');
     setupMagnifier('main-image', 'magnifier-container', 2.5);
@@ -949,6 +1081,9 @@
       } else if (images[0]) {
         mainImg.src = images[0];
       }
+      // Reset any mobile pinch-zoom state for the freshly swapped image
+      const container = document.getElementById('magnifier-container');
+      if (container && container._resetMobileZoom) container._resetMobileZoom();
       // Re-init magnifier for the new image
       destroyMagnifier('main-image', 'magnifier-container');
       setupMagnifier('main-image', 'magnifier-container', 2.5);

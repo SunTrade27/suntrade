@@ -628,8 +628,9 @@ input, textarea, select { font-family: inherit; }
   display: block;
   margin: auto;
   flex-shrink: 0;
+  /* High-quality photo rendering — no nearest-neighbour pixelation. */
+  image-rendering: auto;
   image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
 }
 /* Body grows to fill card; button pinned to the bottom so all cards align */
 .product-card-body {
@@ -822,12 +823,12 @@ input, textarea, select { font-family: inherit; }
     cursor: zoom-in;
     display: block;
     margin: auto;
-    /* Preserve source sharpness on hi-DPI screens. The mag lens
-       applies a 2.5x background-scale; without explicitly opting
-       out of the default bilinear interpolation the kettle outline
-       comes out soft. */
+    /* High-quality rendering: -webkit-optimize-contrast keeps downscaled
+       photos sharp, plain `auto` is the smooth default. `crisp-edges` was
+       REMOVED — it forces nearest-neighbour upscaling which pixelates
+       product photos when the source is smaller than the container. */
+    image-rendering: auto;
     image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
   }
 .gallery-thumbs {
   display: flex;
@@ -853,10 +854,10 @@ input, textarea, select { font-family: inherit; }
     height: 100%;
     object-fit: cover;
     object-position: center;
-    /* Thumbnails are 80x80 but the source is 2-4k px wide; ask the
-       browser NOT to smooth so the thumb stays crisp at zoom-in. */
+    /* Smooth, sharp downscaling for thumbs (crisp-edges aliases badly
+       when shrinking a 2-4k source into an 80px box). */
+    image-rendering: auto;
     image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
   }
 .product-info {
   min-width: 0;
