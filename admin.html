@@ -3609,11 +3609,21 @@
     const optionGroups = collectOptionGroups();
 
     // ===== САҚТАУ =====
-    // All images are in uploadedImageUrls — first is the main product photo,
-    // the rest follow in the order the admin arranged them.
-    const orderedGalleryImages = uploadedImageUrls
+    // Build the gallery order: option group images come first (in group
+    // order), then any remaining uploaded images that aren't already listed.
+    // This ensures the buyer sees the correct image when selecting an option.
+    const optionImageUrls = [];
+    for (const group of optionGroups) {
+      for (const opt of (group.options || [])) {
+        const url = String(opt.image || '').trim();
+        if (url && !optionImageUrls.includes(url)) optionImageUrls.push(url);
+      }
+    }
+    const optionImageSet = new Set(optionImageUrls);
+    const extraImages = uploadedImageUrls
       .map(url => String(url || '').trim())
-      .filter(Boolean);
+      .filter(url => url && !optionImageSet.has(url));
+    const orderedGalleryImages = [...optionImageUrls, ...extraImages];
 
     const product = {
       price: parseFloat(first.price) || 0,
