@@ -352,19 +352,18 @@
   .product-option-groups {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    margin: 0.4rem 0 0.3rem;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--border-light, #f3f4f6);
+    gap: 0.4rem;
+    margin: 0.3rem 0 0.5rem;
+    padding: 0.4rem 0;
   }
   .product-option-group {
     display: flex;
     flex-direction: column;
-    gap: 0.45rem;
+    gap: 0.3rem;
   }
   .product-option-group-title {
     color: var(--text-muted, #6b7280);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.3px;
@@ -372,7 +371,7 @@
   .product-option-values {
     display: flex;
     align-items: center;
-    gap: 0.45rem;
+    gap: 0.5rem;
     flex-wrap: wrap;
   }
   .product-option-value {
@@ -1081,21 +1080,11 @@
       </div>
       <div class="product-info">
         <h1 id="product-name">${name}</h1>
-        <!-- Store badge: builds trust, shows this is SunTrade's own store -->
-        <div class="product-store-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l1.5-5h15L21 9M4 9h16v11a1 1 0 01-1 1H5a1 1 0 01-1-1V9z"/><path d="M9 13h6"/></svg>
-          <span>Suntrade.store</span>
-          <span class="product-store-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
-        </div>
+        <!-- Price display: big, bold, immediately below title -->
         <div class="product-price-block" id="product-price-block">
           <div class="product-price-unit-wrap">
             <span class="product-price-detail" id="product-price-display">&euro;${(parseFloat(p.price) * 0.9).toFixed(2)}</span>
             <span class="product-price-per-unit" data-i18n="product_price">Price</span>
-          </div>
-          <div class="product-price-total" id="product-price-total">
-            <span class="price-total-label" data-i18n="product_total">Total:</span>
-            <span class="price-total-value" id="price-total-value">&euro;${(parseFloat(p.price) * 0.9).toFixed(2)}</span>
-            <span class="price-discount-badge" id="price-discount-badge">-10%</span>
           </div>
         </div>
         ${/* Legacy types selector hidden — option groups below replaces it */''}

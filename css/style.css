@@ -1088,10 +1088,11 @@ html[data-theme="dark"] .admin-main [style*="background:#F3F4F6"] { background: 
   word-wrap: break-word;
 }
 .product-price-detail {
-  font-size: 2.5rem;
-  font-weight: 800;
+  font-size: 3rem;
+  font-weight: 900;
   color: var(--primary);
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.3rem;
+  letter-spacing: -0.5px;
 }
 .product-stock {
   display: inline-block;
@@ -2444,7 +2445,7 @@ h1, h2, h3, h4 {
   .section-title { font-size: 1.15rem !important; margin-bottom: 0.75rem !important; }
 
   .product-info h1 { font-size: 1.25rem; margin-bottom: 0.5rem; }
-  .product-price-detail { font-size: 1.6rem; margin-bottom: 0.6rem; }
+  .product-price-detail { font-size: 2rem; margin-bottom: 0.3rem; }
   .product-stock { font-size: 0.8rem; margin-bottom: 0.75rem; }
   .product-qty { margin-bottom: 0.75rem; }
   .product-qty label { font-size: 0.85rem; }
@@ -2660,7 +2661,7 @@ h1, h2, h3, h4 {
   .reviews-carousel > div { min-width: 240px; max-width: 240px; padding: 1.25rem; }
 
   .product-info h1 { font-size: 1.1rem; }
-  .product-price-detail { font-size: 1.4rem; }
+  .product-price-detail { font-size: 1.8rem; }
 
   .footer-inner { padding: 0 0.5rem; gap: 1.5rem; }
   .footer-col { padding: 0; }
