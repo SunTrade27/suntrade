@@ -4971,9 +4971,9 @@ html[data-theme="dark"] .mobile-admin-panel {
 .trust-badges {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.6rem;
-  margin: 0.25rem 0 1.5rem;
-  padding: 0.85rem;
+  gap: 0.5rem;
+  margin: 0.25rem 0 0.6rem;
+  padding: 0.7rem;
   background: linear-gradient(135deg, #F0F9FF 0%, #FFFFFF 70%);
   border: 1px solid var(--border);
   border-radius: var(--radius);
