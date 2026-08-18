@@ -670,10 +670,8 @@
       .filter(Boolean);
   }
 
-  // Type images are the SKU's canonical photos: Type 1 is gallery slot 1,
-  // Type 2 is slot 2, and so on. Ordinary product/gallery images follow them.
-  // Older saves may contain type images inside p.images in a different order,
-  // so remove duplicates without discarding the first ordinary gallery image.
+  // Gallery images in order: first image is the main product photo,
+  // followed by option/type images and any extra gallery images.
   function getProductGalleryImages(p) {
     p = p || {};
     const urls = [];
@@ -681,32 +679,39 @@
       const url = safeImageUrl(value);
       if (url && !urls.includes(url)) urls.push(url);
     };
-    const typeImages = getProductTypes(p)
-      .map(type => type && (type.image || type.image_url))
-      .map(safeImageUrl)
-      .filter(Boolean);
-    const typeImageSet = new Set(typeImages);
-    typeImages.forEach(add);
-    (Array.isArray(p.images) ? p.images : [])
-      .filter(image => !typeImageSet.has(safeImageUrl(image)))
-      .forEach(add);
+    // First add all option group images (in group order)
+    const groups = Array.isArray(p.option_groups) ? p.option_groups : [];
+    const optionImageSet = new Set();
+    for (const group of groups) {
+      for (const option of (Array.isArray(group.options) ? group.options : [])) {
+        const url = safeImageUrl(option.image);
+        if (url && !optionImageSet.has(url)) {
+          optionImageSet.add(url);
+        }
+      }
+    }
+    // Use product.images as the authoritative ordered list (first = main photo)
+    (Array.isArray(p.images) ? p.images : []).forEach(add);
+    // Add any option images that aren't already in the gallery
+    optionImageSet.forEach(url => { if (!urls.includes(url)) urls.push(url); });
     return urls.length ? urls : ['/images/placeholder.jpg'];
   }
 
   function getSelectedProductImage() {
     const p = currentProduct || {};
-    // A directly selected Type is the primary SKU choice. Option groups are
-    // used when that type has no image (or for products without type rows).
-    const type = getProductTypes(p)[selectedTypeIndex];
-    if (type && safeImageUrl(type.image)) return type.image;
-    const legacy = [p.type_image, p.type_image2, p.type_image3, p.type_image4, p.type_image5][selectedTypeIndex];
-    if (safeImageUrl(legacy)) return legacy;
+    // Option groups are the primary selector now. If the buyer has picked
+    // an option with an image, show that image as the main product photo.
     const groups = Array.isArray(p.option_groups) ? p.option_groups : [];
     for (const group of groups) {
       const selected = selectedOptionValues[group.name];
       const option = Array.isArray(group.options) && group.options.find(o => o.label === selected);
       if (option && safeImageUrl(option.image)) return option.image;
     }
+    // Fallback: legacy type images (Type 1 → gallery slot 1, etc.).
+    const type = getProductTypes(p)[selectedTypeIndex];
+    if (type && safeImageUrl(type.image)) return type.image;
+    const legacy = [p.type_image, p.type_image2, p.type_image3, p.type_image4, p.type_image5][selectedTypeIndex];
+    if (safeImageUrl(legacy)) return legacy;
     return getProductGalleryImages(p)[0] || '/images/placeholder.jpg';
   }
 
