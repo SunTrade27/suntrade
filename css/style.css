@@ -5045,13 +5045,14 @@ html[data-theme="dark"] .mobile-admin-panel {
 }
 .pm-badge svg {
   display: block;
-  height: 28px;
+  height: 30px;
   width: auto;
-  max-width: 52px;
+  max-width: 56px;
 }
 @media (max-width: 480px) {
-  .payment-methods { gap: 0.35rem; }
-  .pm-badge svg { width: 36px; height: 24px; }
+  .payment-methods { gap: 0.3rem; flex-wrap: wrap; }
+  .pm-badge svg { height: 24px; max-width: 44px; }
+  .pm-badge { padding: 2px 3px; }
 }
 html[data-theme="dark"] .pm-badge {
   background: #182338;
