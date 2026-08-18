@@ -740,17 +740,17 @@
   }
 
   const BUILTIN_VARIANT_LABELS = {
-    kz: { black: 'Қара', white: 'Ақ', red: 'Қызыл', blue: 'Көк', green: 'Жасыл', yellow: 'Сары', gold: 'Алтын', silver: 'Күміс', 'rose gold': 'Алтын раушан', color: 'Түс', colour: 'Түс', size: 'Өлшем', type: 'Түрі' },
-    ru: { black: 'Чёрный', white: 'Белый', gold: 'Золотой', silver: 'Серебряный', 'rose gold': 'Розовое золото', color: 'Цвет', size: 'Размер', type: 'Тип' },
-    de: { black: 'Schwarz', white: 'Weiß', gold: 'Gold', silver: 'Silber', 'rose gold': 'Roségold', color: 'Farbe', size: 'Größe', type: 'Typ' },
-    fr: { black: 'Noir', white: 'Blanc', gold: 'Or', silver: 'Argent', 'rose gold': 'Or rose', color: 'Couleur', size: 'Taille', type: 'Type' },
-    es: { black: 'Negro', white: 'Blanco', gold: 'Dorado', silver: 'Plateado', 'rose gold': 'Oro rosa', color: 'Color', size: 'Talla', type: 'Tipo' },
-    it: { black: 'Nero', white: 'Bianco', gold: 'Oro', silver: 'Argento', 'rose gold': 'Oro rosa', color: 'Colore', size: 'Taglia', type: 'Tipo' },
-    tr: { black: 'Siyah', white: 'Beyaz', gold: 'Altın', silver: 'Gümüş', 'rose gold': 'Rose altın', color: 'Renk', size: 'Beden', type: 'Tür' },
-    pt: { black: 'Preto', white: 'Branco', gold: 'Dourado', silver: 'Prateado', 'rose gold': 'Ouro rosé', color: 'Cor', size: 'Tamanho', type: 'Tipo' },
-    nl: { black: 'Zwart', white: 'Wit', gold: 'Goud', silver: 'Zilver', 'rose gold': 'Roségoud', color: 'Kleur', size: 'Maat', type: 'Type' },
-    pl: { black: 'Czarny', white: 'Biały', gold: 'Złoty', silver: 'Srebrny', 'rose gold': 'Różowe złoto', color: 'Kolor', size: 'Rozmiar', type: 'Typ' },
-    ar: { black: 'أسود', white: 'أبيض', gold: 'ذهبي', silver: 'فضي', 'rose gold': 'ذهبي وردي', color: 'اللون', size: 'المقاس', type: 'النوع' }
+    kz: { black: 'Қара', white: 'Ақ', red: 'Қызыл', blue: 'Көк', green: 'Жасыл', yellow: 'Сары', gold: 'Алтын', silver: 'Күміс', gray: 'Сұр', grey: 'Сұр', 'rose gold': 'Алтын раушан', color: 'Түс', colour: 'Түс', size: 'Өлшем', type: 'Түрі' },
+    ru: { black: 'Чёрный', white: 'Белый', red: 'Красный', blue: 'Синий', green: 'Зелёный', yellow: 'Жёлтый', gold: 'Золотой', silver: 'Серебряный', gray: 'Серый', grey: 'Серый', 'rose gold': 'Розовое золото', color: 'Цвет', size: 'Размер', type: 'Тип' },
+    de: { black: 'Schwarz', white: 'Weiß', red: 'Rot', blue: 'Blau', green: 'Grün', yellow: 'Gelb', gold: 'Gold', silver: 'Silber', gray: 'Grau', grey: 'Grau', 'rose gold': 'Roségold', color: 'Farbe', size: 'Größe', type: 'Typ' },
+    fr: { black: 'Noir', white: 'Blanc', red: 'Rouge', blue: 'Bleu', green: 'Vert', yellow: 'Jaune', gold: 'Or', silver: 'Argent', gray: 'Gris', grey: 'Gris', 'rose gold': 'Or rose', color: 'Couleur', size: 'Taille', type: 'Type' },
+    es: { black: 'Negro', white: 'Blanco', red: 'Rojo', blue: 'Azul', green: 'Verde', yellow: 'Amarillo', gold: 'Dorado', silver: 'Plateado', gray: 'Gris', grey: 'Gris', 'rose gold': 'Oro rosa', color: 'Color', size: 'Talla', type: 'Tipo' },
+    it: { black: 'Nero', white: 'Bianco', red: 'Rosso', blue: 'Blu', green: 'Verde', yellow: 'Giallo', gold: 'Oro', silver: 'Argento', gray: 'Grigio', grey: 'Grigio', 'rose gold': 'Oro rosa', color: 'Colore', size: 'Taglia', type: 'Tipo' },
+    tr: { black: 'Siyah', white: 'Beyaz', red: 'Kırmızı', blue: 'Mavi', green: 'Yeşil', yellow: 'Sarı', gold: 'Altın', silver: 'Gümüş', gray: 'Gri', grey: 'Gri', 'rose gold': 'Rose altın', color: 'Renk', size: 'Beden', type: 'Tür' },
+    pt: { black: 'Preto', white: 'Branco', red: 'Vermelho', blue: 'Azul', green: 'Verde', yellow: 'Amarelo', gold: 'Dourado', silver: 'Prateado', gray: 'Cinza', grey: 'Cinza', 'rose gold': 'Ouro rosé', color: 'Cor', size: 'Tamanho', type: 'Tipo' },
+    nl: { black: 'Zwart', white: 'Wit', red: 'Rood', blue: 'Blauw', green: 'Groen', yellow: 'Geel', gold: 'Goud', silver: 'Zilver', gray: 'Grijs', grey: 'Grijs', 'rose gold': 'Roségoud', color: 'Kleur', size: 'Maat', type: 'Type' },
+    pl: { black: 'Czarny', white: 'Biały', red: 'Czerwony', blue: 'Niebieski', green: 'Zielony', yellow: 'Żółty', gold: 'Złoty', silver: 'Srebrny', gray: 'Szary', grey: 'Szary', 'rose gold': 'Różowe złoto', color: 'Kolor', size: 'Rozmiar', type: 'Typ' },
+    ar: { black: 'أسود', white: 'أبيض', red: 'أحمر', blue: 'أزرق', green: 'أخضر', yellow: 'أصفر', gold: 'ذهبي', silver: 'فضي', gray: 'رمادي', grey: 'رمادي', 'rose gold': 'ذهبي وردي', color: 'اللون', size: 'المقاس', type: 'النوع' }
   };
 
   function getBuiltinVariantLabels(labels, lang) {

@@ -484,6 +484,8 @@ const KAZAKH_LABEL_OVERRIDES = {
   'yellow': 'Сары',
   'gold': 'Алтын',
   'silver': 'Күміс',
+  'gray': 'Сұр',
+  'grey': 'Сұр',
   'rose gold': 'Алтын раушан',
   'color': 'Түс',
   'colour': 'Түс',
