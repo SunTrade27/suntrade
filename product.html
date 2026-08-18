@@ -1093,12 +1093,7 @@
             <span class="price-discount-badge" id="price-discount-badge">-10%</span>
           </div>
         </div>
-        ${productTypes.length ? `
-        <div class="product-types">
-          <strong><span data-i18n="product_type_label">Type:</span></strong>
-          ${productTypes.map((v, i) => v.label ? `<span class="type-value${i === 0 ? ' active' : ''}${safeImageUrl(v.image) ? ' has-option-image' : ''}" data-type-index="${i}" onclick="selectType(${i})">${safeImageUrl(v.image) ? `<img src="${escHtml(safeImageUrl(v.image))}" alt="">` : ''}<span data-variant-label-key="${escHtml(v.label)}">${escHtml(v.label)}</span></span>` : '').join('')}
-        </div>
-        ` : ''}
+        ${/* Legacy types selector hidden — option groups below replaces it */''}
         ${Array.isArray(p.option_groups) && p.option_groups.some(g => Array.isArray(g.options) && g.options.some(o => o.label)) ? `
         <div class="product-option-groups">
           ${p.option_groups.map((group, groupIndex) => {
