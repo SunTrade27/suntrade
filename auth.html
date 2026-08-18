@@ -11,6 +11,7 @@
   <link rel="alternate" hreflang="kk" href="https://www.suntrade.store/auth.html" />
   <link rel="alternate" hreflang="x-default" href="https://www.suntrade.store/auth.html" />
   <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/theme.js"></script>
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/icons.js"></script>
@@ -31,13 +32,14 @@
       <li><a href="/catalog.html" data-i18n="nav_catalog">Catalog</a></li>
       <li><a href="/analytics.html" data-i18n="nav_analytics">Analytics</a></li>
       <li><a href="/cart.html" data-i18n="nav_cart">Cart</a></li>
+      <li class="theme-menu-item"><button type="button" class="theme-toggle" aria-pressed="false"><svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="theme-toggle-label">Dark mode</span></button></li>
     </ul>
     <div class="nav-right">
       <div class="lang-wrapper">
         <button id="lang-toggle"><svg class="icon icon-md" style="vertical-align:middle"><use href="#icon-globe"/></svg> EN</button>
         <div id="lang-dropdown"></div>
       </div>
-      <a href="/cart.html" class="cart-link">
+      <a href="/cart.html" class="cart-link top-nav-cart">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
         <span id="cart-badge">0</span>
       </a>
@@ -45,7 +47,8 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
       </a>
       <div id="user-menu-container"></div>
-      <button class="mobile-menu-btn" onclick="document.getElementById('nav-links').classList.toggle('show')">
+      <button type="button" class="theme-toggle theme-toggle-desktop" aria-pressed="false" aria-label="Switch to dark mode" title="Switch to dark mode"><svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="theme-toggle-label">Dark mode</span></button>
+      <button class="mobile-menu-btn" aria-expanded="false" onclick="var n=document.getElementById('nav-links'); var open=n.classList.toggle('show'); this.setAttribute('aria-expanded', String(open));">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
     </div>

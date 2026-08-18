@@ -12,11 +12,17 @@ const LANG_FLAGS = {
 
 let currentLang = localStorage.getItem('suntrade_lang') || 'en';
 let translations = {};
+let languageLoadVersion = 0;
 
 async function loadTranslations(lang) {
+  const loadVersion = ++languageLoadVersion;
   try {
     const response = await fetch(`/locales/${lang}.json`);
-    translations = await response.json();
+    const nextTranslations = await response.json();
+    // A slower response from an older selection must not roll the site back
+    // after the visitor has already selected another language.
+    if (loadVersion !== languageLoadVersion) return;
+    translations = nextTranslations;
     currentLang = lang;
     localStorage.setItem('suntrade_lang', lang);
     document.documentElement.lang = lang;
@@ -91,6 +97,8 @@ function updateLangSwitcher() {
   const toggle = document.getElementById('lang-toggle');
   if (toggle) {
     toggle.innerHTML = '<svg class="icon icon-md" style="vertical-align:middle"><use href="#icon-globe"/></svg> ' + currentLang.toUpperCase();
+    toggle.setAttribute('aria-label', 'Change language');
+    toggle.setAttribute('title', LANG_NAMES[currentLang] || 'Change language');
   }
 }
 

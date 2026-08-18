@@ -1,0 +1,32 @@
+/* ===== Homepage theme refinements =====
+   The image frame is deliberately neutral so colorful product photography stays
+   readable in both themes. Section headings use solid text in dark mode rather
+   than the low-contrast homepage gradient. */
+
+.product-card-img-wrap {
+  background: #E5E7EB !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+html[data-theme="dark"] .product-card-img-wrap {
+  background: #252B36 !important;
+  border-bottom-color: rgba(255,255,255,0.12);
+}
+
+html[data-theme="dark"] .section-title,
+html[data-theme="dark"] .testimonials-header .section-title {
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: #F8FAFC !important;
+  color: #F8FAFC !important;
+  text-shadow: 0 1px 14px rgba(255,255,255,0.08);
+}
+
+html[data-theme="dark"] .category-name {
+  color: #F8FAFC !important;
+}
+
+html[data-theme="dark"] .product-card-img-wrap img.product-card-img {
+  background: transparent !important;
+}

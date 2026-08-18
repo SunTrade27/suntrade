@@ -26,6 +26,15 @@
     return id;
   }
 
+  function getChatToken() {
+    try { return localStorage.getItem('suntrade_chat_token') || ''; } catch (e) { return ''; }
+  }
+
+  function saveChatToken(token) {
+    if (!token) return;
+    try { localStorage.setItem('suntrade_chat_token', token); } catch (e) {}
+  }
+
   // Detect a sensible default language (site lang > browser lang > 'en')
   function getDefaultLang() {
     try { if (localStorage.getItem('suntrade_lang')) return localStorage.getItem('suntrade_lang'); } catch (e) {}
@@ -235,7 +244,7 @@
   // Load message history
   async function loadHistory() {
     try {
-      const resp = await fetch(`${API_BASE}/api/chat?action=messages&customerId=${customerId}`);
+      const resp = await fetch(`${API_BASE}/api/chat?action=messages&customerId=${encodeURIComponent(customerId)}&chatToken=${encodeURIComponent(getChatToken())}`);
       if (!resp.ok) return;
       const data = await resp.json();
       if (!data.messages || !data.messages.length) return;
@@ -329,10 +338,11 @@
       const resp = await fetch(`${API_BASE}/api/chat?action=message`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customerId, message })
+        body: JSON.stringify({ customerId, message, chatToken: getChatToken() })
       });
 
       const data = await resp.json();
+      saveChatToken(data.chatToken);
       showTyping(false);
 
       if (data.fallback) {
@@ -428,7 +438,7 @@
     pollInterval = setInterval(async () => {
       if (!isOpen) return;
       try {
-        const resp = await fetch(`${API_BASE}/api/chat?action=messages&customerId=${customerId}`);
+        const resp = await fetch(`${API_BASE}/api/chat?action=messages&customerId=${encodeURIComponent(customerId)}&chatToken=${encodeURIComponent(getChatToken())}`);
         if (!resp.ok) return;
         const data = await resp.json();
         if (data.messages && data.messages.length > lastMessageCount) {

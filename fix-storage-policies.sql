@@ -10,7 +10,7 @@
 -- In Supabase, buckets are in storage.buckets table.
 
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-VALUES ('product-images', 'product-images', true, 10485760, ARRAY['image/png','image/jpeg','image/jpg','image/webp','image/gif'])
+VALUES ('product-images', 'product-images', true, 10485760, ARRAY['image/png','image/jpeg','image/jpg','image/webp','image/gif','image/avif'])
 ON CONFLICT (id) DO UPDATE SET public = EXCLUDED.public, file_size_limit = EXCLUDED.file_size_limit, allowed_mime_types = EXCLUDED.allowed_mime_types;
 
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)

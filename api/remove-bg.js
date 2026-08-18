@@ -19,8 +19,14 @@ module.exports = async function handler(req, res) {
 
     if (imageBase64) {
       const buffer = Buffer.from(imageBase64, 'base64');
-      const blob = new Blob([buffer], { type: 'image/png' });
-      form.append('image_file', blob, 'image.png');
+      // Keep the source MIME when the client provides it. AVIF bytes must not
+      // be mislabeled as PNG before sending them to remove.bg.
+      const imageMime = req.body.imageMime || 'image/png';
+      const safeMime = /^image\/(png|jpeg|jpg|webp|gif|avif)$/i.test(imageMime)
+        ? imageMime.toLowerCase() : 'image/png';
+      const extension = safeMime.split('/')[1] === 'jpeg' ? 'jpg' : safeMime.split('/')[1];
+      const blob = new Blob([buffer], { type: safeMime });
+      form.append('image_file', blob, 'image.' + extension);
     } else if (imageUrl) {
       form.append('image_url', imageUrl);
     } else {

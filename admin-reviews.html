@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Reviews - SunTrade</title>
   <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/theme.js"></script>
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/icons.js"></script>
@@ -46,7 +47,8 @@
 <div id="admin-panel" style="display:none;max-width:1200px;margin:0 auto;padding:1rem;">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;">
     <h1>Пікірлерді басқару</h1>
-    <div style="display:flex;gap:0.5rem;">
+    <div style="display:flex;gap:0.5rem;align-items:center;">
+      <button type="button" class="theme-toggle admin-theme-toggle" aria-pressed="false" aria-label="Switch to dark mode" title="Switch to dark mode"><svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="theme-toggle-label">Dark mode</span></button>
       <a href="/admin.html" class="btn-sm btn-outline">← Артқа</a>
       <button onclick="handleLogout()" class="btn-sm btn-outline">Шығу</button>
     </div>
@@ -104,6 +106,7 @@
         if (session) {
           const admin = await isUserAdmin();
           if (admin) {
+            await requireAdminMfa();
             showAdminPanel();
           } else {
             document.getElementById('login-page').style.display = 'flex';
@@ -130,6 +133,7 @@
       );
       const admin = await isUserAdmin();
       if (admin) {
+        await requireAdminMfa();
         showAdminPanel();
       } else {
         await adminLogout();

@@ -145,7 +145,11 @@ async function adminSaveProduct(product) {
     // Variants (legacy flat array [{label, price, stock}, ...]).
     'types',
     // Alibaba-style option groups: [{name, type, options:[{label, price_mod, color_hex, image?}, ...]}, ...].
-    'option_groups'];
+    'option_groups',
+    // Optional product video (YouTube / Vimeo / MP4). Added by
+    // fix-add-video-url.sql; the admin save helper self-heals if the migration
+    // has not yet been applied.
+    'video_url'];
   const row = {};
   fields.forEach(f => { if (product[f] !== undefined) row[f] = product[f]; });
 
@@ -223,6 +227,33 @@ async function adminLogout() {
 async function getAdminSession() {
   const { data: { session } } = await sb.auth.getSession();
   return session;
+}
+
+// Require an already-enrolled TOTP factor for privileged admin sessions.
+// First-time admins are not locked out: they can enroll from the Supabase
+// dashboard, after which every admin login must complete the 6-digit challenge.
+async function requireAdminMfa() {
+  if (!sb?.auth?.mfa) return true;
+  const { data: factors, error: factorsError } = await sb.auth.mfa.listFactors();
+  if (factorsError) throw factorsError;
+  const factor = (factors?.totp || []).find(item => item.status === 'verified');
+  if (!factor) return true;
+
+  const { data: sessionData } = await sb.auth.getSession();
+  const aal = sessionData?.session?.user?.aal || sessionData?.session?.user?.app_metadata?.aal;
+  if (aal === 'aal2') return true;
+
+  const { data: challenge, error: challengeError } = await sb.auth.mfa.challenge({ factorId: factor.id });
+  if (challengeError) throw challengeError;
+  const code = window.prompt('Қауіпсіздік коды / Enter your 6-digit authenticator code:');
+  if (!/^\\d{6}$/.test(String(code || '').trim())) throw new Error('MFA code required');
+  const { error: verifyError } = await sb.auth.mfa.verify({
+    factorId: factor.id,
+    challengeId: challenge.id,
+    code: String(code).trim()
+  });
+  if (verifyError) throw verifyError;
+  return true;
 }
 
 // Auth - User
@@ -343,11 +374,93 @@ async function getUserOrders() {
 }
 
 // Upload image to Supabase Storage
+function getImageContentType(file) {
+  const type = String(file?.type || '').toLowerCase();
+  if (type.startsWith('image/') && type !== 'image/avif') return type;
+  const name = String(file?.name || '').toLowerCase();
+  if (type === 'image/avif' || /\.avif$/i.test(name)) return 'image/avif';
+  return type.startsWith('image/') ? type : 'application/octet-stream';
+}
+
+function isAvifFile(file) {
+  return getImageContentType(file) === 'image/avif' || /\.avif$/i.test(String(file?.name || ''));
+}
+
+// Older Supabase buckets may still reject image/avif until their allowed MIME
+// list is updated. In that case, decode the AVIF in the browser and upload a
+// PNG fallback so the admin can still save the Type/Option image immediately.
+// When the bucket allows AVIF, the original file is uploaded unchanged.
+async function convertAvifToPng(file) {
+  let bitmap = null;
+  let objectUrl = '';
+  try {
+    if (typeof createImageBitmap === 'function') {
+      bitmap = await createImageBitmap(file);
+      const canvas = document.createElement('canvas');
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      canvas.getContext('2d').drawImage(bitmap, 0, 0);
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      if (!blob) throw new Error('Browser could not convert AVIF');
+      return new File([blob], String(file.name || 'image').replace(/\.avif$/i, '') + '.png', { type: 'image/png' });
+    }
+
+    objectUrl = URL.createObjectURL(file);
+    const image = await new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('Browser cannot decode AVIF'));
+      img.src = objectUrl;
+    });
+    const canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    canvas.getContext('2d').drawImage(image, 0, 0);
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    if (!blob) throw new Error('Browser could not convert AVIF');
+    return new File([blob], String(file.name || 'image').replace(/\.avif$/i, '') + '.png', { type: 'image/png' });
+  } finally {
+    if (bitmap && typeof bitmap.close === 'function') bitmap.close();
+    if (objectUrl) URL.revokeObjectURL(objectUrl);
+  }
+}
+
 async function uploadImage(file) {
-  const fileName = `${Date.now()}_${file.name}`;
-  const { data, error } = await sb.storage.from('product-images').upload(fileName, file);
+  const originalName = String(file?.name || 'image').replace(/[^a-zA-Z0-9._-]/g, '_');
+  const fileName = `${Date.now()}_${originalName}`;
+  const uploadOptions = { contentType: getImageContentType(file) };
+  let { data, error } = await sb.storage.from('product-images').upload(fileName, file, uploadOptions);
+
+  if (error && isAvifFile(file)) {
+    try {
+      const fallbackFile = await convertAvifToPng(file);
+      const fallbackName = `${Date.now()}_${String(fallbackFile.name).replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+      const fallback = await sb.storage.from('product-images').upload(fallbackName, fallbackFile, { contentType: 'image/png' });
+      data = fallback.data;
+      error = fallback.error;
+    } catch (conversionError) {
+      throw new Error('AVIF upload failed and browser conversion was unavailable: ' + conversionError.message);
+    }
+  }
+
   if (error) throw error;
-  const { data: { publicUrl } } = sb.storage.from('product-images').getPublicUrl(fileName);
+  const publicPath = data?.path || fileName;
+  const { data: { publicUrl } } = sb.storage.from('product-images').getPublicUrl(publicPath);
+  return publicUrl;
+}
+
+/**
+ * Upload a product video to the product-videos bucket. Returns the public URL
+ * that the product page can use for its <video> player.
+ */
+async function uploadVideo(file) {
+  const originalName = String(file?.name || 'video').replace(/[^a-zA-Z0-9._-]/g, '_');
+  const fileName = `${Date.now()}_${originalName}`;
+  const contentType = file.type || 'video/mp4';
+  const { data, error } = await sb.storage.from('product-videos').upload(fileName, file, { contentType });
+  if (error) throw new Error(error.message || 'Video upload failed');
+  const publicPath = data?.path || fileName;
+  const { data: { publicUrl } } = sb.storage.from('product-videos').getPublicUrl(publicPath);
   return publicUrl;
 }
 
@@ -542,11 +655,42 @@ if (document.readyState === 'loading') {
 const _odTranslationCache = new Map(); // 'pid:lang' -> Promise<{name, desc}>
 const _OD_CACHE_MAX = 200; // FIFO-evict above this to keep long-lived tabs bounded
 
-async function ensureProductTranslation(productId, targetLang) {
+const _variantLabelTranslationCache = new Map();
+
+async function ensureProductLabelTranslations(productId, targetLang, labels) {
+  if (!productId || !targetLang || targetLang === 'en' || !labels || !Object.keys(labels).length) return {};
+  const labelEntries = Object.entries(labels).filter(([, value]) => String(value || '').trim()).slice(0, 100);
+  if (!labelEntries.length) return {};
+  const key = `${productId}:${targetLang}:${JSON.stringify(labelEntries)}`;
+  if (_variantLabelTranslationCache.has(key)) return _variantLabelTranslationCache.get(key);
+  const promise = (async () => {
+    try {
+      const resp = await fetch('/api/translate-product', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'free', target_lang: targetLang, labels: Object.fromEntries(labelEntries) })
+      });
+      if (!resp.ok) return {};
+      const data = await resp.json();
+      return data && data.success && data.labels ? data.labels : {};
+    } catch (e) {
+      console.warn('[ensureProductLabelTranslations] fetch error:', e);
+      return {};
+    }
+  })();
+  _variantLabelTranslationCache.set(key, promise);
+  return promise;
+}
+
+async function ensureProductTranslation(productId, targetLang, sourceDesc, options) {
+  options = options || {};
+  const nameOnly = options.nameOnly === true;
   if (!productId || !targetLang || targetLang === 'en') return null;
   if (!SUPPORTED_LANGS_TRANSLATE.includes(targetLang)) return null;
 
-  const key = `${productId}:${targetLang}`;
+  // Keep the fast title request separate from the full name+description
+  // request. A long supplier description must never delay a product title.
+  const key = `${productId}:${targetLang}${nameOnly ? ':name' : ''}`;
   if (_odTranslationCache.has(key)) return _odTranslationCache.get(key);
 
   const p = (async () => {
@@ -560,14 +704,36 @@ async function ensureProductTranslation(productId, targetLang) {
         body: JSON.stringify({
           mode: 'free',
           product_id: productId,
-          target_lang: targetLang
+          target_lang: targetLang,
+          ...(nameOnly ? { name_only: true } : {})
         })
       });
-      if (!resp.ok) return null;
+      // A transient gateway/provider failure must not poison the in-page cache.
+      // Otherwise switching kz/ru again keeps returning the same rejected
+      // promise until the whole tab is reloaded.
+      if (!resp.ok) {
+        _odTranslationCache.delete(key);
+        return null;
+      }
       const data = await resp.json();
-      if (!data || !data.success) return null;
-      return data.translation || null;
+      if (!data || !data.success) {
+        _odTranslationCache.delete(key);
+        return null;
+      }
+      const translation = data.translation || null;
+      // Do not permanently cache a partial result. Name and description need
+      // independent retries: a free provider may return one field while the
+      // other is rate-limited or echoed in English.
+      const missingName = !translation || !String(translation.name || '').trim();
+      const missingDesc = !nameOnly && String(sourceDesc || '').trim() &&
+        (!translation || !String(translation.desc || '').trim() ||
+         isEnglishCopy(translation.desc, sourceDesc));
+      if (missingName || missingDesc) _odTranslationCache.delete(key);
+      return translation;
     } catch (e) {
+      // Network timeouts must be retryable as well as HTTP failures. Do not
+      // leave a null promise in the per-tab cache for this language.
+      _odTranslationCache.delete(key);
       console.warn('[ensureProductTranslation] fetch error:', e);
       return null;
     }
@@ -581,6 +747,12 @@ async function ensureProductTranslation(productId, targetLang) {
     if (firstKey) _odTranslationCache.delete(firstKey);
   }
   return p;
+}
+
+// Fast title-only translation used by product cards and the product heading.
+// It deliberately does not wait for the potentially long HTML description.
+async function ensureProductNameTranslation(productId, targetLang) {
+  return ensureProductTranslation(productId, targetLang, '', { nameOnly: true });
 }
 
 // True when `value` is just the English source copied into a target-language
@@ -640,14 +812,38 @@ async function ensureProductsTranslated(products, targetLang, opts) {
     // detects them as not-cached and returns a fresh translation, which
     // avoids rendering stale English-after-language-switch rows.
     const existingName = p['name_' + targetLang];
-    if (existingName && !isEnglishCopy(existingName, p.name_en)) continue;
-    const t = await ensureProductTranslation(p.id, targetLang);
-    if (t && t.name) {
-      p['name_' + targetLang] = t.name;
-      if (t.desc) p['desc_' + targetLang] = t.desc;
+    const existingDesc = p['desc_' + targetLang];
+    const hasTranslatedName = !!String(existingName || '').trim() &&
+      !isEnglishCopy(existingName, p.name_en);
+    const hasTranslatedDesc = !String(p.desc_en || '').trim() ||
+      (!!String(existingDesc || '').trim() && !isEnglishCopy(existingDesc, p.desc_en));
+    // Translate the title independently first. This keeps cards responsive
+    // even when the description contains many HTML chunks or a provider is
+    // slow on description requests.
+    let t = null;
+    if (!hasTranslatedName) {
+      t = await ensureProductNameTranslation(p.id, targetLang);
+      if (t && t.name && !isEnglishCopy(t.name, p.name_en)) {
+        p['name_' + targetLang] = t.name;
+      }
+      if (typeof opts.onUpdate === 'function' && t && t.name) {
+        try { opts.onUpdate(p, { name: t.name, desc: '' }); } catch (_) { /* non-fatal */ }
+      }
     }
-    if (typeof opts.onUpdate === 'function') {
-      try { opts.onUpdate(p, t || null); } catch (_) { /* non-fatal */ }
+
+    // Description translation remains independent and can continue in the
+    // background. If the title was already cached, this is the only request.
+    if (!hasTranslatedDesc) {
+      t = await ensureProductTranslation(p.id, targetLang, p.desc_en);
+      if (t && t.name && !isEnglishCopy(t.name, p.name_en)) {
+        p['name_' + targetLang] = t.name;
+      }
+      if (t && t.desc && !isEnglishCopy(t.desc, p.desc_en)) {
+        p['desc_' + targetLang] = t.desc;
+      }
+    }
+    if (typeof opts.onUpdate === 'function' && t && (t.name || t.desc)) {
+      try { opts.onUpdate(p, t); } catch (_) { /* non-fatal */ }
     }
     if (i < products.length - 1) {
       await new Promise(r => setTimeout(r, stagger));

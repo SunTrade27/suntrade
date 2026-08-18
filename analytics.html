@@ -9,36 +9,23 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/theme.js"></script>
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/icons.js"></script>
 <style>
-  body { background: #0b1628; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+  body { background: var(--bg, #FAFAFA); color: var(--text, #1A1A2E); font-family: 'Inter', sans-serif; overflow-x: hidden; }
 
   .analytics-page {
     min-height: 100vh;
     padding: 1.5rem 1rem 4rem;
-    background: linear-gradient(180deg,
-      #0b1628 0%,
-      #132744 15%,
-      #1a3a5c 30%,
-      #2d6187 45%,
-      #4a90b8 55%,
-      #7ec8e3 65%,
-      #f4a460 78%,
-      #ff8c42 88%,
-      #ff6b00 95%,
-      #ff4500 100%
-    );
+    background:
+      radial-gradient(circle at 8% 8%, rgba(255,107,0,0.055), transparent 28%),
+      linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 58%, #FFF8F2 100%);
+    color: var(--text, #1A1A2E);
     position: relative;
   }
-  .analytics-page::before {
-    content: '';
-    position: fixed; inset: 0;
-    background: radial-gradient(ellipse at 30% 20%, rgba(255,200,50,0.12) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 80%, rgba(255,140,0,0.08) 0%, transparent 50%);
-    pointer-events: none; z-index: 0;
-  }
+  .analytics-page::before { display: none; }
 
   .analytics-container { max-width: 1280px; margin: 0 auto; position: relative; z-index: 1; }
 
@@ -52,7 +39,7 @@
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     margin-bottom: 0.5rem;
   }
-  .analytics-header p { color: rgba(255,255,255,0.5); font-size: 0.95rem; }
+  .analytics-header p { color: var(--text-light, #6B7280); font-size: 0.95rem; }
 
   @media (max-width: 768px) { .analytics-header h1 { font-size: 1.6rem; } .analytics-header p { font-size: 0.8rem; } }
   @keyframes fadeSlideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
@@ -525,6 +512,211 @@
   }
 
   .analytics-footer { text-align: center; margin-top: 1rem; }
+
+  /* ===== Homepage category visual language =====
+     Analytics uses the same clean white cards, dark line icons and SunTrade
+     orange accents as the category cards on the home page. These final
+     overrides intentionally stay scoped to this page. */
+  body {
+    background: var(--bg, #FAFAFA);
+    color: var(--text, #1A1A2E);
+  }
+  .analytics-page {
+    background:
+      radial-gradient(circle at 8% 8%, rgba(255,107,0,0.055), transparent 28%),
+      linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 58%, #FFF8F2 100%);
+    color: var(--text, #1A1A2E);
+  }
+  .analytics-page::before { display: none; }
+  .analytics-header h1 {
+    background: linear-gradient(135deg, #8B451F 0%, #FF6B00 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  .analytics-header p { color: var(--text-light, #6B7280); }
+
+  /* The four metric cards now mirror .category-card from the homepage. */
+  .stat-card {
+    background: var(--bg-white, #FFFFFF);
+    border: 1px solid var(--border, #E5E7EB);
+    border-radius: var(--radius, 12px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transform-style: flat;
+  }
+  .stat-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255,107,0,0.35);
+    box-shadow: 0 12px 40px rgba(255,107,0,0.12);
+  }
+  .stat-card::after { background: linear-gradient(90deg, transparent, rgba(255,107,0,0.3), transparent); }
+  .stat-card-icon,
+  .sc-products .stat-card-icon,
+  .sc-orders .stat-card-icon,
+  .sc-pending .stat-card-icon,
+  .sc-reviews .stat-card-icon {
+    background: transparent;
+    color: var(--text, #1A1A2E);
+    border: 0;
+    width: 52px;
+    height: 52px;
+  }
+  .stat-card:hover .stat-card-icon {
+    color: var(--primary, #FF6B00);
+    background: #FFF5ED;
+    border-radius: 12px;
+  }
+  .stat-card-value {
+    background: none;
+    color: var(--text, #1A1A2E);
+    -webkit-text-fill-color: var(--text, #1A1A2E);
+  }
+  .stat-card-label { color: var(--text-light, #6B7280); }
+
+  /* White content panels, matching homepage product/review cards. */
+  .chart-card,
+  .recent-orders,
+  .vip-customers {
+    background: var(--bg-white, #FFFFFF);
+    border: 1px solid var(--border, #E5E7EB);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .chart-card h3,
+  .recent-orders h3 { color: var(--text, #1A1A2E); }
+  .bar-label { color: var(--text-light, #6B7280); }
+  .bar-val { color: var(--text, #1A1A2E); }
+  .bar-fill { box-shadow: 0 4px 12px rgba(255,107,0,0.14); }
+  .order-row { border-bottom-color: var(--border, #E5E7EB); }
+  .order-row:hover { background: #FFF8F2; }
+  .order-amount { color: var(--primary-dark, #E05E00); }
+  .order-name { color: var(--text, #1A1A2E); }
+  .order-date { color: var(--text-muted, #9CA3AF); }
+  .customers-subtitle { color: var(--text-light, #6B7280); }
+  .customers-counter {
+    color: var(--text, #1A1A2E);
+    background: #FFF5ED;
+    border-color: rgba(255,107,0,0.25);
+  }
+  .customers-counter strong { color: var(--primary-dark, #E05E00); }
+  .vip-total { color: var(--primary-dark, #E05E00); background: #FFF5ED; border-color: rgba(255,107,0,0.25); }
+  .icon-chart-heading { color: var(--primary, #FF6B00); }
+
+  /* Keep the VIP leaderboard premium, but in the same light card system. */
+  .vip-customers {
+    background: linear-gradient(135deg, #FFFFFF 0%, #FFF9F4 100%);
+    border-color: rgba(255,107,0,0.18);
+  }
+  .vip-customers::before { background: radial-gradient(circle at 50% -10%, rgba(255,107,0,0.09), transparent 60%); }
+  .vip-gift-banner {
+    background: linear-gradient(135deg, #FFF5D6, #FFF5ED);
+    border-color: rgba(255,107,0,0.3);
+    box-shadow: 0 4px 18px rgba(255,107,0,0.09);
+  }
+  .vip-gift-banner-text strong { color: #B45309; }
+  .vip-gift-banner-text span { color: var(--text-light, #6B7280); }
+  .vip-rank-card {
+    background: #FFFFFF;
+    border-color: var(--border, #E5E7EB);
+    box-shadow: 0 3px 12px rgba(0,0,0,0.045);
+  }
+  .vip-rank-card:hover { border-color: rgba(255,107,0,0.35); box-shadow: 0 8px 24px rgba(255,107,0,0.12); }
+  .vip-rank-n .vip-rank-num { background: #F3F4F6; color: var(--text, #1A1A2E); border-color: var(--border, #E5E7EB); }
+  .vip-rank-n .vip-rank-tier { color: var(--text-light, #6B7280); }
+  .vip-rank-n .vip-rank-medal-icon { color: var(--primary, #FF6B00); }
+  .vip-rank-n .vip-meta { color: var(--text-light, #6B7280); }
+  .vip-name { color: var(--text, #1A1A2E); }
+  .vip-amount-regular { color: var(--primary-dark, #E05E00); -webkit-text-fill-color: var(--primary-dark, #E05E00); }
+  .vip-rank-gold .vip-meta,
+  .vip-rank-silver .vip-meta,
+  .vip-rank-bronze .vip-meta { color: var(--text-light, #6B7280); }
+  .vip-rank-silver .vip-rank-tier,
+  .vip-rank-bronze .vip-rank-tier { color: var(--primary-dark, #E05E00); }
+  .vip-rank-silver .vip-rank-medal-icon,
+  .vip-rank-bronze .vip-rank-medal-icon { color: var(--primary, #FF6B00); }
+  .vip-rank-gold {
+    background: linear-gradient(135deg, #FFFDF5, #FFF5D6);
+    border-color: rgba(245,158,11,0.45);
+  }
+  .vip-rank-silver {
+    background: linear-gradient(135deg, #FFFFFF, #F3F4F6);
+    border-color: rgba(156,163,175,0.45);
+  }
+  .vip-rank-bronze {
+    background: linear-gradient(135deg, #FFFFFF, #FFF1E8);
+    border-color: rgba(205,127,50,0.4);
+  }
+  .vip-rank-silver, .vip-rank-bronze, .vip-rank-gold { box-shadow: 0 6px 22px rgba(0,0,0,0.07); }
+
+  .analytics-page button:focus-visible,
+  .analytics-page a:focus-visible {
+    outline: 3px solid rgba(255,107,0,0.45);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 768px) {
+    .analytics-page { padding-top: 1rem; }
+    .analytics-header { margin-bottom: 1.25rem; }
+    .analytics-header h1 { font-size: 1.6rem; }
+    .stat-card { box-shadow: 0 3px 12px rgba(0,0,0,0.05); }
+  }
+
+  /* The page has its own inline light theme, so explicitly mirror the
+     shared dark theme after all analytics-specific rules. */
+  html[data-theme="dark"] .analytics-page {
+    background: linear-gradient(180deg, #0B1220 0%, #111B2E 58%, #2D170D 100%);
+    color: #E5E7EB;
+  }
+  html[data-theme="dark"] .analytics-header h1 {
+    background: linear-gradient(135deg, #FFB15C, #FF6B00);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  html[data-theme="dark"] .analytics-header p,
+  html[data-theme="dark"] .stat-card-label,
+  html[data-theme="dark"] .bar-label,
+  html[data-theme="dark"] .customers-subtitle,
+  html[data-theme="dark"] .order-date { color: #AAB7C9; }
+  html[data-theme="dark"] .stat-card,
+  html[data-theme="dark"] .chart-card,
+  html[data-theme="dark"] .recent-orders,
+  html[data-theme="dark"] .vip-customers {
+    background: #182338;
+    border-color: #2D3B53;
+    color: #E5E7EB;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  }
+  html[data-theme="dark"] .stat-card-icon { color: #E5E7EB; background: transparent; }
+  html[data-theme="dark"] .stat-card:hover .stat-card-icon { color: #FFB15C; background: rgba(255,107,0,0.12); }
+  html[data-theme="dark"] .stat-card-value,
+  html[data-theme="dark"] .chart-card h3,
+  html[data-theme="dark"] .recent-orders h3,
+  html[data-theme="dark"] .bar-val,
+  html[data-theme="dark"] .order-name,
+  html[data-theme="dark"] .vip-name { color: #F8FAFC; -webkit-text-fill-color: #F8FAFC; }
+  html[data-theme="dark"] .order-row { border-bottom-color: #2D3B53; }
+  html[data-theme="dark"] .order-row:hover { background: #24324A; }
+  html[data-theme="dark"] .customers-counter,
+  html[data-theme="dark"] .vip-total { background: rgba(255,107,0,0.12); border-color: rgba(255,107,0,0.35); color: #E5E7EB; }
+  html[data-theme="dark"] .customers-counter strong,
+  html[data-theme="dark"] .vip-total { color: #FFB15C; }
+  html[data-theme="dark"] .vip-gift-banner { background: linear-gradient(135deg, rgba(255,215,0,0.14), rgba(255,107,0,0.12)); border-color: rgba(255,177,92,0.42); }
+  html[data-theme="dark"] .vip-gift-banner-text strong { color: #FFD166; }
+  html[data-theme="dark"] .vip-gift-banner-text span { color: #AAB7C9; }
+  html[data-theme="dark"] .vip-rank-card { background: #111B2E; border-color: #2D3B53; }
+  html[data-theme="dark"] .vip-rank-n .vip-rank-num { background: #24324A; color: #E5E7EB; border-color: #3B4A63; }
+  html[data-theme="dark"] .vip-rank-n .vip-rank-tier,
+  html[data-theme="dark"] .vip-rank-n .vip-meta,
+  html[data-theme="dark"] .vip-rank-gold .vip-meta,
+  html[data-theme="dark"] .vip-rank-silver .vip-meta,
+  html[data-theme="dark"] .vip-rank-bronze .vip-meta { color: #AAB7C9; }
+  html[data-theme="dark"] .vip-rank-gold { background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,107,0,0.12)); }
+  html[data-theme="dark"] .vip-rank-silver { background: linear-gradient(135deg, rgba(220,228,238,0.12), rgba(76,91,112,0.2)); }
+  html[data-theme="dark"] .vip-rank-bronze { background: linear-gradient(135deg, rgba(205,127,50,0.16), rgba(95,47,22,0.22)); }
+  html[data-theme="dark"] .loading-shimmer { background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%); background-size: 200% 100%; }
+  html[data-theme="dark"] .order-amount { color: #FFB15C; }
 </style>
 </head><body>
 <script>document.body.classList.remove('cw-no-scroll');document.body.style.overflow='';</script>
@@ -538,17 +730,20 @@
       <li><a href="/catalog.html" data-i18n="nav_catalog">Каталог</a></li>
       <li><a href="/analytics.html" class="active" data-i18n="nav_analytics">Анализ</a></li>
       <li><a href="/cart.html" data-i18n="nav_cart">Себет</a></li>
+      <li class="theme-menu-item"><button type="button" class="theme-toggle" aria-pressed="false"><svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="theme-toggle-label">Dark mode</span></button></li>
     </ul>
     <div class="nav-right">
       <div class="lang-wrapper">
         <button id="lang-toggle"><svg class="icon icon-md" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg> EN</button>
         <div id="lang-dropdown"></div>
       </div>
-      <a href="/cart.html" class="cart-link">
+      <a href="/cart.html" class="cart-link top-nav-cart">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
         <span id="cart-badge">0</span>
       </a>
-      <button class="mobile-menu-btn" onclick="document.getElementById('nav-links').classList.toggle('show')">
+      <div id="user-menu-container"></div>
+      <button type="button" class="theme-toggle theme-toggle-desktop" aria-pressed="false" aria-label="Switch to dark mode" title="Switch to dark mode"><svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="theme-toggle-label">Dark mode</span></button>
+      <button class="mobile-menu-btn" aria-expanded="false" onclick="var n=document.getElementById('nav-links'); var open=n.classList.toggle('show'); this.setAttribute('aria-expanded', String(open));">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
     </div>
@@ -666,6 +861,31 @@
 <script src="/js/i18n.js"></script>
 <script src="/js/cart.js"></script>
 <script src="/js/user-menu.js"></script>
+<script src="/js/shared-ui.js"></script>
+
+<!-- BOTTOM NAVIGATION (Mobile) -->
+<nav class="bottom-nav" aria-label="Mobile navigation">
+  <div class="bottom-nav-inner">
+    <a href="/" class="bottom-nav-item" aria-label="Home">
+      <svg class="icon icon-lg"><use href="#icon-home"/></svg>
+      <span data-i18n="nav_home">Басты бет</span>
+    </a>
+    <a href="/catalog.html?favorites=true" class="bottom-nav-item" aria-label="Favorites">
+      <svg class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span data-i18n="nav_favorites">Таңдаулылар</span>
+    </a>
+    <a href="/cart.html" class="bottom-nav-item" aria-label="Cart">
+      <svg class="icon icon-lg"><use href="#icon-cart"/></svg>
+      <span data-i18n="nav_cart">Себет</span>
+      <span class="bottom-nav-badge" id="bottom-nav-cart-badge" style="display:none;">0</span>
+    </a>
+    <a href="/account.html" class="bottom-nav-item" aria-label="Account">
+      <svg class="icon icon-lg"><use href="#icon-user"/></svg>
+      <span data-i18n="account_title">Аккаунт</span>
+    </a>
+  </div>
+</nav>
+
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(async () => {

@@ -11,7 +11,7 @@
 // ============================================================
 
 const { createClient } = require('@supabase/supabase-js');
-const { sendMail, isConfigured, ADMIN_EMAIL, ORDER_NOTIFICATION_EMAIL, SMTP_FROM } = require('./lib/email');
+const { sendMail, isConfigured, ADMIN_EMAIL, ORDER_NOTIFICATION_EMAIL, SMTP_FROM } = require('../lib/email');
 
 const SITE_URL = process.env.SITE_URL || 'https://www.suntrade.store';
 

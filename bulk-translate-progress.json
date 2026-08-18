@@ -1,0 +1,1364 @@
+{
+  "done": [
+    {
+      "key": "c5b73673-c5d8-46b3-a265-3baaf76d51d0|kz",
+      "id": "c5b73673-c5d8-46b3-a265-3baaf76d51d0",
+      "lang": "kz",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:39:24.981Z"
+    },
+    {
+      "key": "c5b73673-c5d8-46b3-a265-3baaf76d51d0|ru",
+      "id": "c5b73673-c5d8-46b3-a265-3baaf76d51d0",
+      "lang": "ru",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:39:26.704Z"
+    },
+    {
+      "key": "c5b73673-c5d8-46b3-a265-3baaf76d51d0|de",
+      "id": "c5b73673-c5d8-46b3-a265-3baaf76d51d0",
+      "lang": "de",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:39:28.425Z"
+    },
+    {
+      "key": "c5b73673-c5d8-46b3-a265-3baaf76d51d0|fr",
+      "id": "c5b73673-c5d8-46b3-a265-3baaf76d51d0",
+      "lang": "fr",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:39:30.104Z"
+    },
+    {
+      "key": "c5b73673-c5d8-46b3-a265-3baaf76d51d0|es",
+      "id": "c5b73673-c5d8-46b3-a265-3baaf76d51d0",
+      "lang": "es",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:39:31.589Z"
+    },
+    {
+      "key": "c5b73673-c5d8-46b3-a265-3baaf76d51d0|it",
+      "id": "c5b73673-c5d8-46b3-a265-3baaf76d51d0",
+      "lang": "it",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:39:33.311Z"
+    },
+    {
+      "key": "c5b73673-c5d8-46b3-a265-3baaf76d51d0|tr",
+      "id": "c5b73673-c5d8-46b3-a265-3baaf76d51d0",
+      "lang": "tr",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:39:35.049Z"
+    },
+    {
+      "key": "c5b73673-c5d8-46b3-a265-3baaf76d51d0|pt",
+      "id": "c5b73673-c5d8-46b3-a265-3baaf76d51d0",
+      "lang": "pt",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:39:36.613Z"
+    },
+    {
+      "key": "c5b73673-c5d8-46b3-a265-3baaf76d51d0|nl",
+      "id": "c5b73673-c5d8-46b3-a265-3baaf76d51d0",
+      "lang": "nl",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:39:38.120Z"
+    },
+    {
+      "key": "c5b73673-c5d8-46b3-a265-3baaf76d51d0|pl",
+      "id": "c5b73673-c5d8-46b3-a265-3baaf76d51d0",
+      "lang": "pl",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:39:39.782Z"
+    },
+    {
+      "key": "c5b73673-c5d8-46b3-a265-3baaf76d51d0|ar",
+      "id": "c5b73673-c5d8-46b3-a265-3baaf76d51d0",
+      "lang": "ar",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:39:41.620Z"
+    },
+    {
+      "key": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2|kz",
+      "id": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2",
+      "lang": "kz",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:39:43.480Z"
+    },
+    {
+      "key": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2|ru",
+      "id": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2",
+      "lang": "ru",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:39:47.268Z"
+    },
+    {
+      "key": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2|de",
+      "id": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2",
+      "lang": "de",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:39:48.932Z"
+    },
+    {
+      "key": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2|fr",
+      "id": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2",
+      "lang": "fr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:39:52.286Z"
+    },
+    {
+      "key": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2|es",
+      "id": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2",
+      "lang": "es",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:39:55.565Z"
+    },
+    {
+      "key": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2|it",
+      "id": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2",
+      "lang": "it",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:39:58.595Z"
+    },
+    {
+      "key": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2|tr",
+      "id": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2",
+      "lang": "tr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:40:01.570Z"
+    },
+    {
+      "key": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2|pt",
+      "id": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2",
+      "lang": "pt",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:40:04.545Z"
+    },
+    {
+      "key": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2|nl",
+      "id": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2",
+      "lang": "nl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:40:07.646Z"
+    },
+    {
+      "key": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2|pl",
+      "id": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2",
+      "lang": "pl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:40:10.695Z"
+    },
+    {
+      "key": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2|ar",
+      "id": "4867afa7-f27c-4d89-a6cf-34a7bfb476f2",
+      "lang": "ar",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:40:13.717Z"
+    },
+    {
+      "key": "adada7f0-2452-4f08-8414-46d73d35a2a8|kz",
+      "id": "adada7f0-2452-4f08-8414-46d73d35a2a8",
+      "lang": "kz",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:40:23.032Z"
+    },
+    {
+      "key": "adada7f0-2452-4f08-8414-46d73d35a2a8|ru",
+      "id": "adada7f0-2452-4f08-8414-46d73d35a2a8",
+      "lang": "ru",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:40:32.561Z"
+    },
+    {
+      "key": "adada7f0-2452-4f08-8414-46d73d35a2a8|de",
+      "id": "adada7f0-2452-4f08-8414-46d73d35a2a8",
+      "lang": "de",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:40:41.722Z"
+    },
+    {
+      "key": "adada7f0-2452-4f08-8414-46d73d35a2a8|fr",
+      "id": "adada7f0-2452-4f08-8414-46d73d35a2a8",
+      "lang": "fr",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:40:51.181Z"
+    },
+    {
+      "key": "adada7f0-2452-4f08-8414-46d73d35a2a8|es",
+      "id": "adada7f0-2452-4f08-8414-46d73d35a2a8",
+      "lang": "es",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:41:01.079Z"
+    },
+    {
+      "key": "adada7f0-2452-4f08-8414-46d73d35a2a8|it",
+      "id": "adada7f0-2452-4f08-8414-46d73d35a2a8",
+      "lang": "it",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:41:10.580Z"
+    },
+    {
+      "key": "adada7f0-2452-4f08-8414-46d73d35a2a8|tr",
+      "id": "adada7f0-2452-4f08-8414-46d73d35a2a8",
+      "lang": "tr",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:41:19.796Z"
+    },
+    {
+      "key": "adada7f0-2452-4f08-8414-46d73d35a2a8|pt",
+      "id": "adada7f0-2452-4f08-8414-46d73d35a2a8",
+      "lang": "pt",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:41:29.283Z"
+    },
+    {
+      "key": "adada7f0-2452-4f08-8414-46d73d35a2a8|nl",
+      "id": "adada7f0-2452-4f08-8414-46d73d35a2a8",
+      "lang": "nl",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:41:38.284Z"
+    },
+    {
+      "key": "adada7f0-2452-4f08-8414-46d73d35a2a8|pl",
+      "id": "adada7f0-2452-4f08-8414-46d73d35a2a8",
+      "lang": "pl",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:41:47.352Z"
+    },
+    {
+      "key": "adada7f0-2452-4f08-8414-46d73d35a2a8|ar",
+      "id": "adada7f0-2452-4f08-8414-46d73d35a2a8",
+      "lang": "ar",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:41:56.946Z"
+    },
+    {
+      "key": "2e7ce508-6abf-4309-bcef-79c4f17daac4|kz",
+      "id": "2e7ce508-6abf-4309-bcef-79c4f17daac4",
+      "lang": "kz",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:41:58.638Z"
+    },
+    {
+      "key": "2e7ce508-6abf-4309-bcef-79c4f17daac4|ru",
+      "id": "2e7ce508-6abf-4309-bcef-79c4f17daac4",
+      "lang": "ru",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:42:00.533Z"
+    },
+    {
+      "key": "2e7ce508-6abf-4309-bcef-79c4f17daac4|de",
+      "id": "2e7ce508-6abf-4309-bcef-79c4f17daac4",
+      "lang": "de",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:42:11.139Z"
+    },
+    {
+      "key": "2e7ce508-6abf-4309-bcef-79c4f17daac4|fr",
+      "id": "2e7ce508-6abf-4309-bcef-79c4f17daac4",
+      "lang": "fr",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:42:19.946Z"
+    },
+    {
+      "key": "2e7ce508-6abf-4309-bcef-79c4f17daac4|es",
+      "id": "2e7ce508-6abf-4309-bcef-79c4f17daac4",
+      "lang": "es",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:42:28.546Z"
+    },
+    {
+      "key": "2e7ce508-6abf-4309-bcef-79c4f17daac4|it",
+      "id": "2e7ce508-6abf-4309-bcef-79c4f17daac4",
+      "lang": "it",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:42:37.611Z"
+    },
+    {
+      "key": "2e7ce508-6abf-4309-bcef-79c4f17daac4|tr",
+      "id": "2e7ce508-6abf-4309-bcef-79c4f17daac4",
+      "lang": "tr",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:42:46.366Z"
+    },
+    {
+      "key": "2e7ce508-6abf-4309-bcef-79c4f17daac4|pt",
+      "id": "2e7ce508-6abf-4309-bcef-79c4f17daac4",
+      "lang": "pt",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:42:55.390Z"
+    },
+    {
+      "key": "2e7ce508-6abf-4309-bcef-79c4f17daac4|nl",
+      "id": "2e7ce508-6abf-4309-bcef-79c4f17daac4",
+      "lang": "nl",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:43:04.577Z"
+    },
+    {
+      "key": "2e7ce508-6abf-4309-bcef-79c4f17daac4|pl",
+      "id": "2e7ce508-6abf-4309-bcef-79c4f17daac4",
+      "lang": "pl",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:43:13.502Z"
+    },
+    {
+      "key": "2e7ce508-6abf-4309-bcef-79c4f17daac4|ar",
+      "id": "2e7ce508-6abf-4309-bcef-79c4f17daac4",
+      "lang": "ar",
+      "wrote": true,
+      "failed": false,
+      "at": "2026-08-07T18:43:22.526Z"
+    },
+    {
+      "key": "abcc6dbf-d923-4512-becf-d6c50026718a|kz",
+      "id": "abcc6dbf-d923-4512-becf-d6c50026718a",
+      "lang": "kz",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:43:24.409Z"
+    },
+    {
+      "key": "abcc6dbf-d923-4512-becf-d6c50026718a|ru",
+      "id": "abcc6dbf-d923-4512-becf-d6c50026718a",
+      "lang": "ru",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:43:26.149Z"
+    },
+    {
+      "key": "abcc6dbf-d923-4512-becf-d6c50026718a|de",
+      "id": "abcc6dbf-d923-4512-becf-d6c50026718a",
+      "lang": "de",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:43:28.672Z"
+    },
+    {
+      "key": "abcc6dbf-d923-4512-becf-d6c50026718a|fr",
+      "id": "abcc6dbf-d923-4512-becf-d6c50026718a",
+      "lang": "fr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:43:30.447Z"
+    },
+    {
+      "key": "abcc6dbf-d923-4512-becf-d6c50026718a|es",
+      "id": "abcc6dbf-d923-4512-becf-d6c50026718a",
+      "lang": "es",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:43:32.444Z"
+    },
+    {
+      "key": "abcc6dbf-d923-4512-becf-d6c50026718a|it",
+      "id": "abcc6dbf-d923-4512-becf-d6c50026718a",
+      "lang": "it",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:43:34.605Z"
+    },
+    {
+      "key": "abcc6dbf-d923-4512-becf-d6c50026718a|tr",
+      "id": "abcc6dbf-d923-4512-becf-d6c50026718a",
+      "lang": "tr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:43:36.403Z"
+    },
+    {
+      "key": "abcc6dbf-d923-4512-becf-d6c50026718a|pt",
+      "id": "abcc6dbf-d923-4512-becf-d6c50026718a",
+      "lang": "pt",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:43:38.180Z"
+    },
+    {
+      "key": "abcc6dbf-d923-4512-becf-d6c50026718a|nl",
+      "id": "abcc6dbf-d923-4512-becf-d6c50026718a",
+      "lang": "nl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:43:40.344Z"
+    },
+    {
+      "key": "abcc6dbf-d923-4512-becf-d6c50026718a|pl",
+      "id": "abcc6dbf-d923-4512-becf-d6c50026718a",
+      "lang": "pl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:43:42.164Z"
+    },
+    {
+      "key": "abcc6dbf-d923-4512-becf-d6c50026718a|ar",
+      "id": "abcc6dbf-d923-4512-becf-d6c50026718a",
+      "lang": "ar",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:43:44.083Z"
+    },
+    {
+      "key": "1bdb5c07-0563-4b38-8144-be4381c87f62|kz",
+      "id": "1bdb5c07-0563-4b38-8144-be4381c87f62",
+      "lang": "kz",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:43:45.757Z"
+    },
+    {
+      "key": "1bdb5c07-0563-4b38-8144-be4381c87f62|ru",
+      "id": "1bdb5c07-0563-4b38-8144-be4381c87f62",
+      "lang": "ru",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:43:47.428Z"
+    },
+    {
+      "key": "1bdb5c07-0563-4b38-8144-be4381c87f62|de",
+      "id": "1bdb5c07-0563-4b38-8144-be4381c87f62",
+      "lang": "de",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:43:51.798Z"
+    },
+    {
+      "key": "1bdb5c07-0563-4b38-8144-be4381c87f62|fr",
+      "id": "1bdb5c07-0563-4b38-8144-be4381c87f62",
+      "lang": "fr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:43:55.701Z"
+    },
+    {
+      "key": "1bdb5c07-0563-4b38-8144-be4381c87f62|es",
+      "id": "1bdb5c07-0563-4b38-8144-be4381c87f62",
+      "lang": "es",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:43:59.275Z"
+    },
+    {
+      "key": "1bdb5c07-0563-4b38-8144-be4381c87f62|it",
+      "id": "1bdb5c07-0563-4b38-8144-be4381c87f62",
+      "lang": "it",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:44:03.174Z"
+    },
+    {
+      "key": "1bdb5c07-0563-4b38-8144-be4381c87f62|tr",
+      "id": "1bdb5c07-0563-4b38-8144-be4381c87f62",
+      "lang": "tr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:44:06.972Z"
+    },
+    {
+      "key": "1bdb5c07-0563-4b38-8144-be4381c87f62|pt",
+      "id": "1bdb5c07-0563-4b38-8144-be4381c87f62",
+      "lang": "pt",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:44:10.634Z"
+    },
+    {
+      "key": "1bdb5c07-0563-4b38-8144-be4381c87f62|nl",
+      "id": "1bdb5c07-0563-4b38-8144-be4381c87f62",
+      "lang": "nl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:44:14.327Z"
+    },
+    {
+      "key": "1bdb5c07-0563-4b38-8144-be4381c87f62|pl",
+      "id": "1bdb5c07-0563-4b38-8144-be4381c87f62",
+      "lang": "pl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:44:18.019Z"
+    },
+    {
+      "key": "1bdb5c07-0563-4b38-8144-be4381c87f62|ar",
+      "id": "1bdb5c07-0563-4b38-8144-be4381c87f62",
+      "lang": "ar",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:44:22.044Z"
+    },
+    {
+      "key": "ac881bba-449c-44ad-9e3f-700830a9ce03|kz",
+      "id": "ac881bba-449c-44ad-9e3f-700830a9ce03",
+      "lang": "kz",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:44:23.855Z"
+    },
+    {
+      "key": "ac881bba-449c-44ad-9e3f-700830a9ce03|ru",
+      "id": "ac881bba-449c-44ad-9e3f-700830a9ce03",
+      "lang": "ru",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:44:25.626Z"
+    },
+    {
+      "key": "ac881bba-449c-44ad-9e3f-700830a9ce03|de",
+      "id": "ac881bba-449c-44ad-9e3f-700830a9ce03",
+      "lang": "de",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:44:27.541Z"
+    },
+    {
+      "key": "ac881bba-449c-44ad-9e3f-700830a9ce03|fr",
+      "id": "ac881bba-449c-44ad-9e3f-700830a9ce03",
+      "lang": "fr",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:44:29.550Z"
+    },
+    {
+      "key": "ac881bba-449c-44ad-9e3f-700830a9ce03|es",
+      "id": "ac881bba-449c-44ad-9e3f-700830a9ce03",
+      "lang": "es",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:44:31.454Z"
+    },
+    {
+      "key": "ac881bba-449c-44ad-9e3f-700830a9ce03|it",
+      "id": "ac881bba-449c-44ad-9e3f-700830a9ce03",
+      "lang": "it",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:44:33.355Z"
+    },
+    {
+      "key": "ac881bba-449c-44ad-9e3f-700830a9ce03|tr",
+      "id": "ac881bba-449c-44ad-9e3f-700830a9ce03",
+      "lang": "tr",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:44:34.994Z"
+    },
+    {
+      "key": "ac881bba-449c-44ad-9e3f-700830a9ce03|pt",
+      "id": "ac881bba-449c-44ad-9e3f-700830a9ce03",
+      "lang": "pt",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:44:36.646Z"
+    },
+    {
+      "key": "ac881bba-449c-44ad-9e3f-700830a9ce03|nl",
+      "id": "ac881bba-449c-44ad-9e3f-700830a9ce03",
+      "lang": "nl",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:44:38.547Z"
+    },
+    {
+      "key": "ac881bba-449c-44ad-9e3f-700830a9ce03|pl",
+      "id": "ac881bba-449c-44ad-9e3f-700830a9ce03",
+      "lang": "pl",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:44:40.449Z"
+    },
+    {
+      "key": "ac881bba-449c-44ad-9e3f-700830a9ce03|ar",
+      "id": "ac881bba-449c-44ad-9e3f-700830a9ce03",
+      "lang": "ar",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:44:42.104Z"
+    },
+    {
+      "key": "6628e2c2-7f8b-4277-aa65-97e00c572700|kz",
+      "id": "6628e2c2-7f8b-4277-aa65-97e00c572700",
+      "lang": "kz",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:44:44.842Z"
+    },
+    {
+      "key": "6628e2c2-7f8b-4277-aa65-97e00c572700|ru",
+      "id": "6628e2c2-7f8b-4277-aa65-97e00c572700",
+      "lang": "ru",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:44:47.273Z"
+    },
+    {
+      "key": "6628e2c2-7f8b-4277-aa65-97e00c572700|de",
+      "id": "6628e2c2-7f8b-4277-aa65-97e00c572700",
+      "lang": "de",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:44:49.759Z"
+    },
+    {
+      "key": "6628e2c2-7f8b-4277-aa65-97e00c572700|fr",
+      "id": "6628e2c2-7f8b-4277-aa65-97e00c572700",
+      "lang": "fr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:44:52.626Z"
+    },
+    {
+      "key": "6628e2c2-7f8b-4277-aa65-97e00c572700|es",
+      "id": "6628e2c2-7f8b-4277-aa65-97e00c572700",
+      "lang": "es",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:44:55.384Z"
+    },
+    {
+      "key": "6628e2c2-7f8b-4277-aa65-97e00c572700|it",
+      "id": "6628e2c2-7f8b-4277-aa65-97e00c572700",
+      "lang": "it",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:44:57.808Z"
+    },
+    {
+      "key": "6628e2c2-7f8b-4277-aa65-97e00c572700|tr",
+      "id": "6628e2c2-7f8b-4277-aa65-97e00c572700",
+      "lang": "tr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:45:00.305Z"
+    },
+    {
+      "key": "6628e2c2-7f8b-4277-aa65-97e00c572700|pt",
+      "id": "6628e2c2-7f8b-4277-aa65-97e00c572700",
+      "lang": "pt",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:45:02.795Z"
+    },
+    {
+      "key": "6628e2c2-7f8b-4277-aa65-97e00c572700|nl",
+      "id": "6628e2c2-7f8b-4277-aa65-97e00c572700",
+      "lang": "nl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:45:05.236Z"
+    },
+    {
+      "key": "6628e2c2-7f8b-4277-aa65-97e00c572700|pl",
+      "id": "6628e2c2-7f8b-4277-aa65-97e00c572700",
+      "lang": "pl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:45:07.932Z"
+    },
+    {
+      "key": "6628e2c2-7f8b-4277-aa65-97e00c572700|ar",
+      "id": "6628e2c2-7f8b-4277-aa65-97e00c572700",
+      "lang": "ar",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:45:10.699Z"
+    },
+    {
+      "key": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9|kz",
+      "id": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9",
+      "lang": "kz",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:45:12.287Z"
+    },
+    {
+      "key": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9|ru",
+      "id": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9",
+      "lang": "ru",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:45:14.126Z"
+    },
+    {
+      "key": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9|de",
+      "id": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9",
+      "lang": "de",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:45:15.828Z"
+    },
+    {
+      "key": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9|fr",
+      "id": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9",
+      "lang": "fr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:45:18.197Z"
+    },
+    {
+      "key": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9|es",
+      "id": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9",
+      "lang": "es",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:45:19.966Z"
+    },
+    {
+      "key": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9|it",
+      "id": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9",
+      "lang": "it",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:45:21.901Z"
+    },
+    {
+      "key": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9|tr",
+      "id": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9",
+      "lang": "tr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:45:23.830Z"
+    },
+    {
+      "key": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9|pt",
+      "id": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9",
+      "lang": "pt",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:45:25.598Z"
+    },
+    {
+      "key": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9|nl",
+      "id": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9",
+      "lang": "nl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:45:27.599Z"
+    },
+    {
+      "key": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9|pl",
+      "id": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9",
+      "lang": "pl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:45:29.621Z"
+    },
+    {
+      "key": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9|ar",
+      "id": "484e4600-2f63-4ef3-a92a-51d6c5b1b0b9",
+      "lang": "ar",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:45:31.643Z"
+    },
+    {
+      "key": "c89297e1-a583-4f6c-ad01-bdf05f47472e|kz",
+      "id": "c89297e1-a583-4f6c-ad01-bdf05f47472e",
+      "lang": "kz",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:45:33.339Z"
+    },
+    {
+      "key": "c89297e1-a583-4f6c-ad01-bdf05f47472e|ru",
+      "id": "c89297e1-a583-4f6c-ad01-bdf05f47472e",
+      "lang": "ru",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:45:35.019Z"
+    },
+    {
+      "key": "c89297e1-a583-4f6c-ad01-bdf05f47472e|de",
+      "id": "c89297e1-a583-4f6c-ad01-bdf05f47472e",
+      "lang": "de",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:45:37.041Z"
+    },
+    {
+      "key": "c89297e1-a583-4f6c-ad01-bdf05f47472e|fr",
+      "id": "c89297e1-a583-4f6c-ad01-bdf05f47472e",
+      "lang": "fr",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:45:38.705Z"
+    },
+    {
+      "key": "c89297e1-a583-4f6c-ad01-bdf05f47472e|es",
+      "id": "c89297e1-a583-4f6c-ad01-bdf05f47472e",
+      "lang": "es",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:45:40.679Z"
+    },
+    {
+      "key": "c89297e1-a583-4f6c-ad01-bdf05f47472e|it",
+      "id": "c89297e1-a583-4f6c-ad01-bdf05f47472e",
+      "lang": "it",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:45:42.366Z"
+    },
+    {
+      "key": "c89297e1-a583-4f6c-ad01-bdf05f47472e|tr",
+      "id": "c89297e1-a583-4f6c-ad01-bdf05f47472e",
+      "lang": "tr",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:45:44.095Z"
+    },
+    {
+      "key": "c89297e1-a583-4f6c-ad01-bdf05f47472e|pt",
+      "id": "c89297e1-a583-4f6c-ad01-bdf05f47472e",
+      "lang": "pt",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:45:45.726Z"
+    },
+    {
+      "key": "c89297e1-a583-4f6c-ad01-bdf05f47472e|nl",
+      "id": "c89297e1-a583-4f6c-ad01-bdf05f47472e",
+      "lang": "nl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:45:47.514Z"
+    },
+    {
+      "key": "c89297e1-a583-4f6c-ad01-bdf05f47472e|pl",
+      "id": "c89297e1-a583-4f6c-ad01-bdf05f47472e",
+      "lang": "pl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:45:49.215Z"
+    },
+    {
+      "key": "c89297e1-a583-4f6c-ad01-bdf05f47472e|ar",
+      "id": "c89297e1-a583-4f6c-ad01-bdf05f47472e",
+      "lang": "ar",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:45:50.994Z"
+    },
+    {
+      "key": "e4779c3e-2dff-47b7-a2cc-94eb60541377|kz",
+      "id": "e4779c3e-2dff-47b7-a2cc-94eb60541377",
+      "lang": "kz",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:45:54.585Z"
+    },
+    {
+      "key": "e4779c3e-2dff-47b7-a2cc-94eb60541377|ru",
+      "id": "e4779c3e-2dff-47b7-a2cc-94eb60541377",
+      "lang": "ru",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:45:57.526Z"
+    },
+    {
+      "key": "e4779c3e-2dff-47b7-a2cc-94eb60541377|de",
+      "id": "e4779c3e-2dff-47b7-a2cc-94eb60541377",
+      "lang": "de",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:00.573Z"
+    },
+    {
+      "key": "e4779c3e-2dff-47b7-a2cc-94eb60541377|fr",
+      "id": "e4779c3e-2dff-47b7-a2cc-94eb60541377",
+      "lang": "fr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:03.566Z"
+    },
+    {
+      "key": "e4779c3e-2dff-47b7-a2cc-94eb60541377|es",
+      "id": "e4779c3e-2dff-47b7-a2cc-94eb60541377",
+      "lang": "es",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:06.635Z"
+    },
+    {
+      "key": "e4779c3e-2dff-47b7-a2cc-94eb60541377|it",
+      "id": "e4779c3e-2dff-47b7-a2cc-94eb60541377",
+      "lang": "it",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:09.584Z"
+    },
+    {
+      "key": "e4779c3e-2dff-47b7-a2cc-94eb60541377|tr",
+      "id": "e4779c3e-2dff-47b7-a2cc-94eb60541377",
+      "lang": "tr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:12.580Z"
+    },
+    {
+      "key": "e4779c3e-2dff-47b7-a2cc-94eb60541377|pt",
+      "id": "e4779c3e-2dff-47b7-a2cc-94eb60541377",
+      "lang": "pt",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:15.597Z"
+    },
+    {
+      "key": "e4779c3e-2dff-47b7-a2cc-94eb60541377|nl",
+      "id": "e4779c3e-2dff-47b7-a2cc-94eb60541377",
+      "lang": "nl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:18.592Z"
+    },
+    {
+      "key": "e4779c3e-2dff-47b7-a2cc-94eb60541377|pl",
+      "id": "e4779c3e-2dff-47b7-a2cc-94eb60541377",
+      "lang": "pl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:21.511Z"
+    },
+    {
+      "key": "e4779c3e-2dff-47b7-a2cc-94eb60541377|ar",
+      "id": "e4779c3e-2dff-47b7-a2cc-94eb60541377",
+      "lang": "ar",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:24.581Z"
+    },
+    {
+      "key": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412|kz",
+      "id": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412",
+      "lang": "kz",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:27.505Z"
+    },
+    {
+      "key": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412|ru",
+      "id": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412",
+      "lang": "ru",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:30.373Z"
+    },
+    {
+      "key": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412|de",
+      "id": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412",
+      "lang": "de",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:33.388Z"
+    },
+    {
+      "key": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412|fr",
+      "id": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412",
+      "lang": "fr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:36.417Z"
+    },
+    {
+      "key": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412|es",
+      "id": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412",
+      "lang": "es",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:39.349Z"
+    },
+    {
+      "key": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412|it",
+      "id": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412",
+      "lang": "it",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:42.299Z"
+    },
+    {
+      "key": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412|tr",
+      "id": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412",
+      "lang": "tr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:45.337Z"
+    },
+    {
+      "key": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412|pt",
+      "id": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412",
+      "lang": "pt",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:48.273Z"
+    },
+    {
+      "key": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412|nl",
+      "id": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412",
+      "lang": "nl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:51.309Z"
+    },
+    {
+      "key": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412|pl",
+      "id": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412",
+      "lang": "pl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:54.585Z"
+    },
+    {
+      "key": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412|ar",
+      "id": "c8f0c62f-c856-4fd6-8c6a-7fac39db7412",
+      "lang": "ar",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:46:57.452Z"
+    },
+    {
+      "key": "d175bf26-878a-4375-8d41-8d637a93a4a4|kz",
+      "id": "d175bf26-878a-4375-8d41-8d637a93a4a4",
+      "lang": "kz",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:00.472Z"
+    },
+    {
+      "key": "d175bf26-878a-4375-8d41-8d637a93a4a4|ru",
+      "id": "d175bf26-878a-4375-8d41-8d637a93a4a4",
+      "lang": "ru",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:03.464Z"
+    },
+    {
+      "key": "d175bf26-878a-4375-8d41-8d637a93a4a4|de",
+      "id": "d175bf26-878a-4375-8d41-8d637a93a4a4",
+      "lang": "de",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:06.416Z"
+    },
+    {
+      "key": "d175bf26-878a-4375-8d41-8d637a93a4a4|fr",
+      "id": "d175bf26-878a-4375-8d41-8d637a93a4a4",
+      "lang": "fr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:09.432Z"
+    },
+    {
+      "key": "d175bf26-878a-4375-8d41-8d637a93a4a4|es",
+      "id": "d175bf26-878a-4375-8d41-8d637a93a4a4",
+      "lang": "es",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:12.412Z"
+    },
+    {
+      "key": "d175bf26-878a-4375-8d41-8d637a93a4a4|it",
+      "id": "d175bf26-878a-4375-8d41-8d637a93a4a4",
+      "lang": "it",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:15.425Z"
+    },
+    {
+      "key": "d175bf26-878a-4375-8d41-8d637a93a4a4|tr",
+      "id": "d175bf26-878a-4375-8d41-8d637a93a4a4",
+      "lang": "tr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:18.391Z"
+    },
+    {
+      "key": "d175bf26-878a-4375-8d41-8d637a93a4a4|pt",
+      "id": "d175bf26-878a-4375-8d41-8d637a93a4a4",
+      "lang": "pt",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:21.666Z"
+    },
+    {
+      "key": "d175bf26-878a-4375-8d41-8d637a93a4a4|nl",
+      "id": "d175bf26-878a-4375-8d41-8d637a93a4a4",
+      "lang": "nl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:24.487Z"
+    },
+    {
+      "key": "d175bf26-878a-4375-8d41-8d637a93a4a4|pl",
+      "id": "d175bf26-878a-4375-8d41-8d637a93a4a4",
+      "lang": "pl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:27.654Z"
+    },
+    {
+      "key": "d175bf26-878a-4375-8d41-8d637a93a4a4|ar",
+      "id": "d175bf26-878a-4375-8d41-8d637a93a4a4",
+      "lang": "ar",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:30.613Z"
+    },
+    {
+      "key": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7|kz",
+      "id": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7",
+      "lang": "kz",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:47:32.268Z"
+    },
+    {
+      "key": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7|ru",
+      "id": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7",
+      "lang": "ru",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:47:34.161Z"
+    },
+    {
+      "key": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7|de",
+      "id": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7",
+      "lang": "de",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:36.569Z"
+    },
+    {
+      "key": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7|fr",
+      "id": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7",
+      "lang": "fr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:38.338Z"
+    },
+    {
+      "key": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7|es",
+      "id": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7",
+      "lang": "es",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:40.108Z"
+    },
+    {
+      "key": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7|it",
+      "id": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7",
+      "lang": "it",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:41.869Z"
+    },
+    {
+      "key": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7|tr",
+      "id": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7",
+      "lang": "tr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:43.648Z"
+    },
+    {
+      "key": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7|pt",
+      "id": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7",
+      "lang": "pt",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:45.446Z"
+    },
+    {
+      "key": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7|nl",
+      "id": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7",
+      "lang": "nl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:47.206Z"
+    },
+    {
+      "key": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7|pl",
+      "id": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7",
+      "lang": "pl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:49.127Z"
+    },
+    {
+      "key": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7|ar",
+      "id": "1d74d434-f502-4a9b-9091-cdf31c2bcdc7",
+      "lang": "ar",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:50.919Z"
+    },
+    {
+      "key": "0e7b11da-622f-4117-8c44-51efc5fcf69b|kz",
+      "id": "0e7b11da-622f-4117-8c44-51efc5fcf69b",
+      "lang": "kz",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:47:52.564Z"
+    },
+    {
+      "key": "0e7b11da-622f-4117-8c44-51efc5fcf69b|ru",
+      "id": "0e7b11da-622f-4117-8c44-51efc5fcf69b",
+      "lang": "ru",
+      "wrote": false,
+      "failed": false,
+      "at": "2026-08-07T18:47:54.253Z"
+    },
+    {
+      "key": "0e7b11da-622f-4117-8c44-51efc5fcf69b|de",
+      "id": "0e7b11da-622f-4117-8c44-51efc5fcf69b",
+      "lang": "de",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:47:57.803Z"
+    },
+    {
+      "key": "0e7b11da-622f-4117-8c44-51efc5fcf69b|fr",
+      "id": "0e7b11da-622f-4117-8c44-51efc5fcf69b",
+      "lang": "fr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:48:00.805Z"
+    },
+    {
+      "key": "0e7b11da-622f-4117-8c44-51efc5fcf69b|es",
+      "id": "0e7b11da-622f-4117-8c44-51efc5fcf69b",
+      "lang": "es",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:48:03.811Z"
+    },
+    {
+      "key": "0e7b11da-622f-4117-8c44-51efc5fcf69b|it",
+      "id": "0e7b11da-622f-4117-8c44-51efc5fcf69b",
+      "lang": "it",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:48:06.712Z"
+    },
+    {
+      "key": "0e7b11da-622f-4117-8c44-51efc5fcf69b|tr",
+      "id": "0e7b11da-622f-4117-8c44-51efc5fcf69b",
+      "lang": "tr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:48:09.747Z"
+    },
+    {
+      "key": "0e7b11da-622f-4117-8c44-51efc5fcf69b|pt",
+      "id": "0e7b11da-622f-4117-8c44-51efc5fcf69b",
+      "lang": "pt",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:48:12.705Z"
+    },
+    {
+      "key": "0e7b11da-622f-4117-8c44-51efc5fcf69b|nl",
+      "id": "0e7b11da-622f-4117-8c44-51efc5fcf69b",
+      "lang": "nl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:48:15.659Z"
+    },
+    {
+      "key": "0e7b11da-622f-4117-8c44-51efc5fcf69b|pl",
+      "id": "0e7b11da-622f-4117-8c44-51efc5fcf69b",
+      "lang": "pl",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:48:18.638Z"
+    },
+    {
+      "key": "0e7b11da-622f-4117-8c44-51efc5fcf69b|ar",
+      "id": "0e7b11da-622f-4117-8c44-51efc5fcf69b",
+      "lang": "ar",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:48:21.686Z"
+    },
+    {
+      "key": "76ba2384-37b1-4677-92f2-a6ea6154e456|kz",
+      "id": "76ba2384-37b1-4677-92f2-a6ea6154e456",
+      "lang": "kz",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:48:24.697Z"
+    },
+    {
+      "key": "76ba2384-37b1-4677-92f2-a6ea6154e456|ru",
+      "id": "76ba2384-37b1-4677-92f2-a6ea6154e456",
+      "lang": "ru",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:48:27.647Z"
+    },
+    {
+      "key": "76ba2384-37b1-4677-92f2-a6ea6154e456|de",
+      "id": "76ba2384-37b1-4677-92f2-a6ea6154e456",
+      "lang": "de",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:48:30.617Z"
+    },
+    {
+      "key": "76ba2384-37b1-4677-92f2-a6ea6154e456|fr",
+      "id": "76ba2384-37b1-4677-92f2-a6ea6154e456",
+      "lang": "fr",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:48:33.596Z"
+    },
+    {
+      "key": "76ba2384-37b1-4677-92f2-a6ea6154e456|es",
+      "id": "76ba2384-37b1-4677-92f2-a6ea6154e456",
+      "lang": "es",
+      "wrote": false,
+      "failed": true,
+      "at": "2026-08-07T18:48:36.474Z"
+    }
+  ]
+}

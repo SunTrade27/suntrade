@@ -6,14 +6,58 @@
 // /api/chat?action=send      — admin жауап жіберу
 // /api/chat?action=toggle    — чат статусын өзгерту (ai/human/closed)
 // ============================================================
+const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
+const {
+  applyCors,
+  getAdminUser,
+  setSecurityHeaders
+} = require('../lib/security');
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
+  process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 const GEMINI_KEY = process.env.GEMINI_API_KEY;
+const requestCounts = new Map();
+const WINDOW_MS = 60 * 1000;
+const MAX_PUBLIC_REQUESTS = 30;
+const MAX_MESSAGE_LENGTH = 4000;
+const CHAT_TOKEN_SECRET = process.env.CHAT_TOKEN_SECRET || process.env.SUPABASE_SERVICE_KEY || '';
+
+function createChatToken(customerId) {
+  if (!CHAT_TOKEN_SECRET) return '';
+  return crypto.createHmac('sha256', CHAT_TOKEN_SECRET).update(String(customerId)).digest('hex');
+}
+
+function hasValidChatToken(customerId, token) {
+  const expected = createChatToken(customerId);
+  const actual = String(token || '');
+  if (!expected || actual.length !== expected.length) return false;
+  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(actual));
+}
+
+function getClientIp(req) {
+  return String(req.headers?.['x-forwarded-for'] || req.headers?.['x-real-ip'] || 'unknown')
+    .split(',')[0].trim().slice(0, 80);
+}
+
+function checkRateLimit(req, key, limit = MAX_PUBLIC_REQUESTS) {
+  const now = Date.now();
+  const bucketKey = `${getClientIp(req)}:${key}`;
+  const current = requestCounts.get(bucketKey);
+  if (!current || current.resetAt <= now) {
+    requestCounts.set(bucketKey, { count: 1, resetAt: now + WINDOW_MS });
+    return true;
+  }
+  current.count += 1;
+  return current.count <= limit;
+}
+
+function validCustomerId(value) {
+  return /^cust_[A-Za-z0-9_-]{8,120}$/.test(String(value || ''));
+}
 
 // ============================================================
 // ORTAK ФУНКЦИЯЛАР
@@ -201,7 +245,16 @@ async function handleList(req, res) {
 // ============================================================
 async function handleMessages(req, res) {
   try {
-    const { customerId, conversationId } = req.query;
+    const { customerId, conversationId, chatToken } = req.query;
+    if (!checkRateLimit(req, 'messages', 60)) {
+      return res.status(429).json({ error: 'Too many requests' });
+    }
+    // A conversationId is an internal identifier and must never be usable as
+    // an unauthenticated read primitive. Public chat clients may only use their
+    // own opaque customerId generated in the browser.
+    if (conversationId && !(await getAdminUser(req))) {
+      return res.status(401).json({ error: 'Admin authentication required' });
+    }
     if (!customerId && !conversationId) {
       return res.status(400).json({ error: 'Missing customerId or conversationId' });
     }
@@ -226,6 +279,9 @@ async function handleMessages(req, res) {
     if (!conversation) {
       return res.status(200).json({ conversation: null, messages: [] });
     }
+    if (!conversationId && !hasValidChatToken(customerId, chatToken)) {
+      return res.status(401).json({ error: 'Chat token required' });
+    }
 
     const { data: messages, error } = await supabase
       .from('wa_messages')
@@ -246,16 +302,25 @@ async function handleMessages(req, res) {
 // ============================================================
 async function handleMessage(req, res) {
   try {
-    const { customerId, message } = req.body;
-    if (!customerId || !message) {
-      return res.status(400).json({ error: 'Missing customerId or message' });
+    const { customerId, message, chatToken } = req.body || {};
+    const cleanMessage = typeof message === 'string' ? message.trim() : '';
+    if (!validCustomerId(customerId) || !cleanMessage || cleanMessage.length > MAX_MESSAGE_LENGTH) {
+      return res.status(400).json({ error: 'Invalid customerId or message' });
     }
+    if (!checkRateLimit(req, `message:${customerId}`)) {
+      return res.status(429).json({ error: 'Too many messages. Please try again later.' });
+    }
+    const sanitizedMessage = cleanMessage;
 
     let { data: conversation } = await supabase
       .from('wa_conversations')
       .select('*')
       .eq('customer_id', customerId)
       .single();
+
+    if (conversation && !hasValidChatToken(customerId, chatToken)) {
+      return res.status(401).json({ error: 'Chat token required' });
+    }
 
     if (!conversation) {
       const { data: newConv } = await supabase
@@ -265,9 +330,13 @@ async function handleMessage(req, res) {
         .single();
       conversation = newConv;
     }
+    if (!conversation) {
+      return res.status(500).json({ error: 'Unable to create chat conversation' });
+    }
+    const responseChatToken = createChatToken(customerId);
 
-    const lang = await detectLanguage(message);
-    const translatedToKz = await translate(message, lang, 'kz');
+    const lang = await detectLanguage(sanitizedMessage);
+    const translatedToKz = await translate(sanitizedMessage, lang, 'kz');
 
     if (lang !== conversation.customer_lang) {
       await supabase
@@ -280,7 +349,7 @@ async function handleMessage(req, res) {
       conversation_id: conversation.id,
       direction: 'in',
       sender: 'customer',
-      original_text: message,
+      original_text: sanitizedMessage,
       translated_text: translatedToKz,
       original_lang: lang
     });
@@ -294,7 +363,8 @@ async function handleMessage(req, res) {
       return res.status(200).json({
         success: true,
         status: 'human',
-        message: 'Your message has been sent. Please wait for our manager to respond.'
+        message: 'Your message has been sent. Please wait for our manager to respond.',
+        chatToken: responseChatToken
       });
     }
 
@@ -335,7 +405,7 @@ WHEN TO ESCALATE TO HUMAN OPERATOR:
 When escalating: start your message with "OPERATOR:" followed by a brief explanation for the operator (in English), then a friendly message to the customer in their language.
 
 Delivery to Kazakhstan: 7-15 business days. Payment: Stripe (card). Returns: within 14 days.`,
-      message,
+      cleanMessage,
       history || []
     );
 
@@ -376,7 +446,8 @@ Delivery to Kazakhstan: 7-15 business days. Payment: Stripe (card). Returns: wit
         reply: fallbackText,
         fallback: true,
         whatsapp: '77021379248',
-        lang
+        lang,
+        chatToken: responseChatToken
       });
     }
 
@@ -400,7 +471,7 @@ Delivery to Kazakhstan: 7-15 business days. Payment: Stripe (card). Returns: wit
         .update({ status: 'human' })
         .eq('id', conversation.id);
 
-      return res.status(200).json({ success: true, status: 'human', reply: customerMsg, lang });
+      return res.status(200).json({ success: true, status: 'human', reply: customerMsg, lang, chatToken: responseChatToken });
     }
 
     const aiTranslatedToKz = await translate(aiResponse, lang, 'kz');
@@ -414,7 +485,7 @@ Delivery to Kazakhstan: 7-15 business days. Payment: Stripe (card). Returns: wit
       original_lang: lang
     });
 
-    return res.status(200).json({ success: true, status: 'ai', reply: aiResponse, lang });
+    return res.status(200).json({ success: true, status: 'ai', reply: aiResponse, lang, chatToken: responseChatToken });
   } catch (err) {
     console.error('Chat message error:', err);
     return res.status(500).json({ error: 'Internal server error' });
@@ -426,9 +497,13 @@ Delivery to Kazakhstan: 7-15 business days. Payment: Stripe (card). Returns: wit
 // ============================================================
 async function handleSend(req, res) {
   try {
-    const { conversationId, message } = req.body;
-    if (!conversationId || !message) {
-      return res.status(400).json({ error: 'Missing conversationId or message' });
+    const { conversationId, message } = req.body || {};
+    const cleanMessage = typeof message === 'string' ? message.trim() : '';
+    if (!conversationId || !cleanMessage || cleanMessage.length > MAX_MESSAGE_LENGTH) {
+      return res.status(400).json({ error: 'Invalid conversationId or message' });
+    }
+    if (!checkRateLimit(req, 'admin-message', 120)) {
+      return res.status(429).json({ error: 'Too many requests' });
     }
 
     const { data: conversation } = await supabase
@@ -441,13 +516,13 @@ async function handleSend(req, res) {
       return res.status(404).json({ error: 'Conversation not found' });
     }
 
-    const translated = await translate(message, 'kz', conversation.customer_lang);
+    const translated = await translate(cleanMessage, 'kz', conversation.customer_lang);
 
     await supabase.from('wa_messages').insert({
       conversation_id: conversationId,
       direction: 'out',
       sender: 'admin',
-      original_text: message,
+      original_text: cleanMessage,
       translated_text: translated,
       original_lang: conversation.customer_lang
     });
@@ -491,11 +566,12 @@ async function handleToggle(req, res) {
 // MAIN ROUTER
 // ============================================================
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  setSecurityHeaders(res);
+  if (!applyCors(req, res, 'GET, POST, OPTIONS')) {
+    return res.status(403).json({ error: 'Origin not allowed' });
+  }
 
-  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method === 'OPTIONS') return res.status(204).end();
 
   // action параметрін алу (GET — query, POST — body)
   let action;
@@ -524,6 +600,7 @@ module.exports = async (req, res) => {
   switch (action) {
     case 'list':
       if (req.method !== 'GET') return res.status(405).json({ error: 'Use GET' });
+      if (!(await getAdminUser(req))) return res.status(401).json({ error: 'Admin authentication required' });
       return handleList(req, res);
     case 'messages':
       if (req.method !== 'GET') return res.status(405).json({ error: 'Use GET' });
@@ -533,9 +610,11 @@ module.exports = async (req, res) => {
       return handleMessage(req, res);
     case 'send':
       if (req.method !== 'POST') return res.status(405).json({ error: 'Use POST' });
+      if (!(await getAdminUser(req))) return res.status(401).json({ error: 'Admin authentication required' });
       return handleSend(req, res);
     case 'toggle':
       if (req.method !== 'POST') return res.status(405).json({ error: 'Use POST' });
+      if (!(await getAdminUser(req))) return res.status(401).json({ error: 'Admin authentication required' });
       return handleToggle(req, res);
     default:
       return res.status(400).json({ error: 'Unknown action: ' + action });

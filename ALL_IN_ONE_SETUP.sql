@@ -97,6 +97,11 @@ CREATE TABLE IF NOT EXISTS products (
   stock INTEGER DEFAULT 0,
   category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
   images TEXT[] DEFAULT '{}',
+  model_3d_url TEXT,
+  model_3d_source_images TEXT[] NOT NULL DEFAULT '{}',
+  model_3d_task_id TEXT,
+  model_3d_status TEXT NOT NULL DEFAULT 'none',
+  video_url TEXT,
   active BOOLEAN DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -253,7 +258,15 @@ CREATE POLICY "Public can manage own messages" ON wa_messages FOR ALL WITH CHECK
 -- 3-БӨЛІМ: STORAGE BUCKETS (product-images, review-images, avatars)
 -- ============================================================
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-VALUES ('product-images', 'product-images', true, 10485760, ARRAY['image/png','image/jpeg','image/jpg','image/webp','image/gif'])
+VALUES ('product-images', 'product-images', true, 10485760, ARRAY['image/png','image/jpeg','image/jpg','image/webp','image/gif','image/avif'])
+ON CONFLICT (id) DO UPDATE SET public = EXCLUDED.public, file_size_limit = EXCLUDED.file_size_limit, allowed_mime_types = EXCLUDED.allowed_mime_types;
+
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES ('product-models', 'product-models', true, 52428800, ARRAY['model/gltf-binary','model/gltf+json','application/octet-stream'])
+ON CONFLICT (id) DO UPDATE SET public = EXCLUDED.public, file_size_limit = EXCLUDED.file_size_limit, allowed_mime_types = EXCLUDED.allowed_mime_types;
+
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES ('product-videos', 'product-videos', true, 209715200, ARRAY['video/mp4','video/webm','video/ogg','video/quicktime'])
 ON CONFLICT (id) DO UPDATE SET public = EXCLUDED.public, file_size_limit = EXCLUDED.file_size_limit, allowed_mime_types = EXCLUDED.allowed_mime_types;
 
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
@@ -287,6 +300,18 @@ CREATE POLICY "Admin can update product images" ON storage.objects FOR UPDATE US
 CREATE POLICY "Admin can delete product images" ON storage.objects FOR DELETE USING (
   bucket_id = 'product-images' AND public.is_admin()
 );
+
+-- product-models
+CREATE POLICY "Public can view product models" ON storage.objects FOR SELECT USING (bucket_id = 'product-models');
+CREATE POLICY "Admin can upload product models" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'product-models' AND public.is_admin());
+CREATE POLICY "Admin can update product models" ON storage.objects FOR UPDATE USING (bucket_id = 'product-models' AND public.is_admin());
+CREATE POLICY "Admin can delete product models" ON storage.objects FOR DELETE USING (bucket_id = 'product-models' AND public.is_admin());
+
+-- product-videos
+CREATE POLICY "Public can view product videos" ON storage.objects FOR SELECT USING (bucket_id = 'product-videos');
+CREATE POLICY "Admin can upload product videos" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'product-videos' AND public.is_admin());
+CREATE POLICY "Admin can update product videos" ON storage.objects FOR UPDATE USING (bucket_id = 'product-videos' AND public.is_admin());
+CREATE POLICY "Admin can delete product videos" ON storage.objects FOR DELETE USING (bucket_id = 'product-videos' AND public.is_admin());
 
 -- review-images
 CREATE POLICY "Public can view review images" ON storage.objects FOR SELECT USING (bucket_id = 'review-images');

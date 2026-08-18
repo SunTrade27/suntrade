@@ -2,7 +2,7 @@
 // Saves orders, sends Telegram alert + email confirmation
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { createClient } = require('@supabase/supabase-js');
-const { sendMail, isConfigured } = require('./lib/email');
+const { sendMail, isConfigured } = require('../lib/email');
 
 const supabase = createClient(
   process.env.SUPABASE_URL,

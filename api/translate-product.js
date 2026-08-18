@@ -22,7 +22,10 @@
 // ===== Free mode constants and helpers =====
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://wmznfdngucpsmjbxiwzn.supabase.co';
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+// Existing Vercel projects may use the shorter SUPABASE_SERVICE_KEY name.
+// Accept both names so translation write-back is not silently disabled.
+const SUPABASE_SERVICE_ROLE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || '';
 // The anon key is public (it ships in js/supabase-client.js) and is needed to
 // READ product rows for on-demand translation. Previously the hardcoded value
 // was removed, which silently broke every free-mode request whenever the
@@ -79,6 +82,44 @@ function freeReadBody(req) {
 // "English source copied into a target column").
 function stripText(s) {
   return String(s || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
+function isSafeLabelTranslation(value, source) {
+  const text = String(value || '').trim();
+  if (!text || /[<>]/.test(text) || /javascript:|fontdatabase|uherhiy|data:image|function\s*\(/i.test(text)) return false;
+  // Do not show a long provider echo as a translated short label.
+  if (source && stripText(text) === stripText(source)) return false;
+  return text.length <= Math.max(120, String(source || '').length * 4);
+}
+
+// Free providers can translate some chunks and echo the remaining English
+// chunks when a quota is reached. Detect only a clearly dominant unchanged
+// chunk: shorter brand names, model numbers, and spec labels may legitimately
+// remain in English inside a Kazakh/Russian translation.
+function containsUntranslatedSourceChunk(value, source) {
+  const translated = stripText(value);
+  const original = stripText(source);
+  if (!translated || !original) return false;
+  if (translated === original) return true;
+  // A provider may translate only the tail and leave the opening English
+  // paragraph intact. Catch that mixed response before it reaches the DB.
+  if (original.length >= 160 && translated.length <= original.length * 1.35 &&
+      translated.startsWith(original.slice(0, 160))) return true;
+  // Long descriptions are intentionally bounded for Gemini. If it returns
+  // that bounded English prefix, comparing it to 450-character chunks alone
+  // misses the echo because the returned value is much longer than one chunk.
+  if (translated.length >= 80 && original.startsWith(translated)) return true;
+  const sourceLooksLikeHtml = /<\s*\/?\s*[a-z][^>]*>/i.test(String(source || ''));
+  const chunks = sourceLooksLikeHtml ? htmlChunks(String(source), 450) : sentenceChunks(String(source), 450);
+  return chunks.some(chunk => {
+    const visibleChunk = stripText(chunk);
+    // Require a long exact echo and a translated result that is not much
+    // longer than the echoed source. This avoids rejecting normal unchanged
+    // product names/brands while catching a mostly-English fallback response.
+    return visibleChunk.length >= 80 &&
+      translated.length <= visibleChunk.length * 1.35 &&
+      translated.includes(visibleChunk);
+  });
 }
 
 function freePreCleanHtml(html) {
@@ -156,6 +197,10 @@ async function freeTranslateText(text, targetLang) {
   for (let i = 0; i < chunks.length; i++) {
     const c = chunks[i];
     const translated = await freeTranslateChunk(c, code, looksLikeHtml);
+    // A failed provider must not contribute the original English chunk. An
+    // empty result makes the whole description retryable instead of silently
+    // persisting a mixed English/translated description.
+    if (!translated || !String(translated).trim()) return '';
     out.push(translated);
     // Throttle: ~250 ms between chunks keeps us under most anonymous
     // rate limits (MyMemory ≅5 req/min, LibreTranslate ≅20 req/min).
@@ -164,6 +209,9 @@ async function freeTranslateText(text, targetLang) {
     }
   }
   const joined = out.join(looksLikeHtml ? '' : ' ');
+  // Do not cache or return a partial source echo. The caller can retry this
+  // field later and the product page will keep its valid English fallback.
+  if (containsUntranslatedSourceChunk(joined, text)) return '';
   lcSet(cacheKey, joined);
   return joined;
 }
@@ -201,10 +249,9 @@ async function freeTranslateChunk(text, code, looksLikeHtml) {
       }
     } catch (e) { /* try next instance */ }
   }
-  // Both failed; return the source chunk verbatim. The caller is already
-  // doing best-effort so we'll have whatever MyMemory/LibreTranslate
-  // managed, with English in the gaps.
-  return text;
+  // Both providers failed. Returning the source here used to poison desc_kz /
+  // desc_ru with English (and made later requests look like a translation).
+  return '';
 }
 
 // Split HTML into ≤maxSize chunks at </p>, </li>, </tr>, <br>, <h1-6>
@@ -384,10 +431,17 @@ async function aiTranslateOne(nameEn, descEn, langCode) {
     it: 'Italian', tr: 'Turkish', pt: 'Portuguese', nl: 'Dutch', pl: 'Polish', ar: 'Arabic'
   };
   const langName = langNames[langCode] || langCode;
+  // Supplier descriptions can be tens of thousands of characters long. Sending
+  // the raw HTML to Gemini makes the request time out or return incomplete JSON,
+  // which was especially visible for Kazakh and Russian. Translate a bounded,
+  // cleaned excerpt; the UI already uses the same first portion for the initial
+  // description and future retries can process a later source revision.
+  const cleanedDesc = freePreCleanHtml(String(descEn || ''));
+  const boundedDesc = cleanedDesc.slice(0, 5000);
   const prompt = `You are a professional translator for an e-commerce store. Translate the following product information from English to ${langName}.
 
 Product Name: "${nameEn}"
-Product Description: "${descEn || ''}"
+Product Description: "${boundedDesc}"
 
 Rules:
 1. Translate naturally and accurately — do NOT add or remove information
@@ -395,7 +449,8 @@ Rules:
 3. Do NOT translate brand names, model numbers, or prices
 4. Reply ONLY in valid JSON format: {"name": "translated_name", "desc": "translated_description"}
 5. The "desc" field should preserve any HTML formatting exactly as in the original
-6. If the description is empty, return an empty string for "desc"`;
+6. If the description is empty, return an empty string for "desc"
+7. Translate every character of the provided description excerpt; never return the English source text.`;
   const result = await callGemini(prompt, `You are a professional e-commerce translator. Translate from English to ${langName}. Reply ONLY with valid JSON.`, {
     maxTokens: 4000, temperature: 0.2
   });
@@ -403,14 +458,79 @@ Rules:
   const jsonStr = (result.text.match(/\{[\s\S]*\}/) || [result.text])[0];
   try {
     const parsed = JSON.parse(jsonStr);
-    if (!parsed || typeof parsed.name !== 'string' || !parsed.name.trim()) return null;
-    // Partial output (e.g. desc missing) — fall back entirely rather than
-    // returning the English descEn as if it were a translation.
-    if (typeof parsed.desc !== 'string') return null;
-    return { name: parsed.name, desc: parsed.desc };
+    if (!parsed || typeof parsed !== 'object') return null;
+    // Name and description are independent. A provider may complete one field
+    // while rate-limiting or truncating the other; keep the valid field so the
+    // caller can persist it and retry only the missing field.
+    const parsedName = typeof parsed.name === 'string' ? parsed.name.trim() : '';
+    const parsedDesc = typeof parsed.desc === 'string' ? parsed.desc : '';
+    return { name: parsedName, desc: parsedDesc };
   } catch (e) {
     console.warn('[translate-product:free] Gemini JSON parse failed:', e.message);
     return null;
+  }
+}
+
+// Translate short variant/option labels such as "Black" and "Rose Gold".
+// These labels live inside the existing JSONB types/option_groups fields, so
+// they can be localized on demand without a database migration or changing
+// the English source values used for matching/cart data.
+const KAZAKH_LABEL_OVERRIDES = {
+  'black': 'Қара',
+  'white': 'Ақ',
+  'red': 'Қызыл',
+  'blue': 'Көк',
+  'green': 'Жасыл',
+  'yellow': 'Сары',
+  'gold': 'Алтын',
+  'silver': 'Күміс',
+  'rose gold': 'Алтын раушан',
+  'color': 'Түс',
+  'colour': 'Түс',
+  'size': 'Өлшем',
+  'type': 'Түрі'
+};
+
+async function aiTranslateLabels(labels, langCode) {
+  const langNames = {
+    kz: 'Kazakh', ru: 'Russian', de: 'German', fr: 'French', es: 'Spanish',
+    it: 'Italian', tr: 'Turkish', pt: 'Portuguese', nl: 'Dutch', pl: 'Polish', ar: 'Arabic'
+  };
+  const langName = langNames[langCode] || langCode;
+  const kazakhRules = langCode === 'kz'
+    ? `\n5. For Kazakh, write natural modern Kazakh in Cyrillic, not Russian transliteration. Use Қара for Black, Ақ for White, Түс for Color, Өлшем for Size, and Алтын раушан for Rose Gold.\n6. Never return markup, code, font names, or technical tokens.`
+    : '';
+  const prompt = `Translate these e-commerce variant labels from English to ${langName}.\n\n` +
+    JSON.stringify(labels) +
+    `\n\nRules:\n1. Return ONLY a valid JSON object with exactly the same keys.\n` +
+    `2. Translate ordinary words naturally (for example Black, Rose Gold, Size, Color).\n` +
+    `3. Keep brand names, model numbers, measurements, plug codes, and abbreviations unchanged when appropriate.\n` +
+    `4. Do not add explanations or markdown.` + kazakhRules;
+  const result = await callGemini(prompt, `You translate short e-commerce variant labels from English to ${langName}. Reply only with JSON.`, {
+    maxTokens: 1200, temperature: 0.1
+  });
+  if (!result.text) return {};
+  const jsonStr = (result.text.match(/\{[\s\S]*\}/) || [result.text])[0];
+  try {
+    const parsed = JSON.parse(jsonStr);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+    const out = {};
+    Object.keys(labels).forEach(key => {
+      const value = typeof parsed[key] === 'string' ? parsed[key].trim() : '';
+      // A malformed model response must never be shown as a label. In
+      // particular, reject leaked HTML/code/font tokens seen in old output.
+      if (value && !/[<>]/.test(value) && !/fontdatabase|uherhiy/i.test(value)) out[key] = value;
+    });
+    if (langCode === 'kz') {
+      Object.keys(labels).forEach(key => {
+        const override = KAZAKH_LABEL_OVERRIDES[String(labels[key] || '').trim().toLowerCase()];
+        if (override) out[key] = override;
+      });
+    }
+    return out;
+  } catch (e) {
+    console.warn('[translate-product:labels] Gemini JSON parse failed:', e.message);
+    return {};
   }
 }
 
@@ -430,9 +550,54 @@ module.exports = async function handler(req, res) {
     // ===== Mode 1: FREE on-demand translation (no AI) =====
     if (body.mode === 'free') {
       const targetLang = body.target_lang;
+      const nameOnly = body.name_only === true;
       if (!FREE_SUPPORTED_LANGS.includes(targetLang)) {
         return res.status(400).json({ error: 'Invalid target_lang', supported: FREE_SUPPORTED_LANGS });
       }
+
+      // Short labels are translated independently from product descriptions.
+      // The English keys remain untouched in the product JSON; the browser uses
+      // this response only for the current site language.
+      if (body.labels && typeof body.labels === 'object' && !Array.isArray(body.labels)) {
+        const sourceLabels = {};
+        Object.entries(body.labels).slice(0, 100).forEach(([key, value]) => {
+          const text = String(value || '').trim();
+          if (key && text) sourceLabels[String(key)] = text;
+        });
+        if (!Object.keys(sourceLabels).length) {
+          return res.status(200).json({ success: true, labels: {} });
+        }
+        if (targetLang === 'en') {
+          return res.status(200).json({ success: true, labels: sourceLabels });
+        }
+
+        let translatedLabels = {};
+        if (process.env.GEMINI_API_KEY) {
+          try { translatedLabels = await aiTranslateLabels(sourceLabels, targetLang); } catch (e) {
+            console.warn('[translate-product:labels] AI failed:', e.message);
+          }
+        }
+        if (targetLang === 'kz') {
+          Object.entries(sourceLabels).forEach(([key, source]) => {
+            const override = KAZAKH_LABEL_OVERRIDES[String(source).trim().toLowerCase()];
+            if (override) translatedLabels[key] = override;
+          });
+        }
+        for (const [key, source] of Object.entries(sourceLabels)) {
+          if (translatedLabels[key]) continue;
+          try {
+            const translated = await freeTranslateText(source, targetLang);
+            // If a public provider cannot translate a short word, keep the
+            // English label as a safe fallback instead of showing blank UI.
+            translatedLabels[key] = isSafeLabelTranslation(translated, source)
+              ? translated.trim() : source;
+          } catch (_) {
+            translatedLabels[key] = source;
+          }
+        }
+        return res.status(200).json({ success: true, labels: translatedLabels });
+      }
+
       if (targetLang === 'en') {
         return res.status(200).json({
           success: true,
@@ -449,29 +614,34 @@ module.exports = async function handler(req, res) {
 
       if (productId) {
         product = await freeFetchProductRow(productId);
-        if (!product) {
+        if (product && product.name_en) {
+          sourceName = product.name_en;
+          sourceDesc = freePreCleanHtml(product.desc_en || '');
+          existingName = product[`name_${targetLang}`] || '';
+          existingDesc = product[`desc_${targetLang}`] || '';
+        } else if (body.name_en) {
+          // The admin post-save worker sends the English source explicitly as
+          // a short-lived fallback for a just-created row. Prefer the DB row,
+          // but continue when the read is momentarily unavailable.
+          sourceName = body.name_en;
+          sourceDesc = freePreCleanHtml(body.desc_en || '');
+        } else {
           return res.status(200).json({
             success: false,
-            error: 'Product not found or no Supabase credentials',
+            error: product ? 'Product has no English source' : 'Product not found or no Supabase credentials',
             translation: { name: '', desc: '' }
           });
         }
-        if (!product.name_en) {
-          return res.status(200).json({
-            success: false,
-            error: 'Product has no English source',
-            translation: { name: '', desc: '' }
-          });
-        }
-        sourceName = product.name_en;
-        sourceDesc = freePreCleanHtml(product.desc_en || '');
-        existingName = product[`name_${targetLang}`] || '';
-        existingDesc = product[`desc_${targetLang}`] || '';
       } else {
         if (!body.name_en) return res.status(400).json({ error: 'name_en or product_id required' });
         sourceName = body.name_en;
         sourceDesc = freePreCleanHtml(body.desc_en || '');
       }
+
+      // Name requests intentionally run independently from long descriptions.
+      // Product cards and the title must not wait for a many-chunk supplier
+      // description translation to finish.
+      if (nameOnly) sourceDesc = '';
 
       // DB cache hit?
       // Real cache hit requires: target column has actual translated content,
@@ -480,7 +650,8 @@ module.exports = async function handler(req, res) {
       // treated as cached — we want a fresh translation instead.
       const existingIsEnglishCopy = !!(existingName.trim() &&
         sourceName.trim() &&
-        existingName.trim().toLowerCase() === sourceName.trim().toLowerCase());
+        (existingName.trim().toLowerCase() === sourceName.trim().toLowerCase() ||
+         containsUntranslatedSourceChunk(existingName, sourceName)));
       // Compare the VISIBLE text (tags stripped) so an English copy stored
       // with different formatting (cleaned vs raw HTML, whitespace, etc.)
       // is still recognized as untranslated. Substring containment is used
@@ -490,7 +661,8 @@ module.exports = async function handler(req, res) {
       const exV = stripText(existingDesc);
       const existingDescIsEnglishCopy = !!(existingDesc.trim() &&
         sourceDesc.trim() &&
-        (exV === srcV ||
+        (containsUntranslatedSourceChunk(existingDesc, sourceDesc) ||
+         exV === srcV ||
          exV.includes(srcV.slice(0, 200)) ||
          srcV.includes(exV.slice(0, 200))));
       if (existingName.trim() &&
@@ -513,26 +685,61 @@ module.exports = async function handler(req, res) {
       let translatedDesc = '';
       if (process.env.GEMINI_API_KEY) {
         const ai = await aiTranslateOne(sourceName, sourceDesc, targetLang);
-        if (ai && ai.name) {
-          translatedName = ai.name;
-          translatedDesc = ai.desc || '';
+        if (ai) {
+          // Name and description are handled independently. This is important
+          // for every locale: one incomplete Gemini field must not discard the
+          // other valid translation.
+          if (ai.name && !containsUntranslatedSourceChunk(ai.name, sourceName)) {
+            translatedName = ai.name;
+          }
+          // For long descriptions Gemini only saw a bounded excerpt. Do not
+          // store that excerpt as the complete product description; the free
+          // chunked path below must translate and reassemble the full source.
+          if (!sourceDesc.trim() ||
+              (sourceDesc.length <= 5000 && ai.desc && !containsUntranslatedSourceChunk(ai.desc, sourceDesc))) {
+            translatedDesc = ai.desc || '';
+          }
         }
       }
-      if (!translatedName) {
+      // Fill each missing field independently. Previously this fallback ran
+      // only when the name was missing, so a valid Gemini name plus an empty
+      // description permanently returned a partial translation.
+      if (!translatedName || (sourceDesc.trim() && !translatedDesc)) {
         const [fn, fd] = await Promise.all([
-          freeTranslateText(sourceName.substring(0, 5000), targetLang),
-          sourceDesc ? freeTranslateText(sourceDesc.substring(0, 5000), targetLang) : Promise.resolve('')
+          !translatedName
+            ? freeTranslateText(sourceName.substring(0, 5000), targetLang)
+            : Promise.resolve(''),
+          sourceDesc && !translatedDesc
+            ? freeTranslateText(sourceDesc, targetLang)
+            : Promise.resolve('')
         ]);
-        translatedName = fn;
-        translatedDesc = fd;
+        if (!translatedName) translatedName = fn;
+        if (!translatedDesc) translatedDesc = fd;
       }
 
-      const failed = translatedName === sourceName && translatedDesc === sourceDesc;
+      // A provider can return one translated field and echo the other source
+      // field (especially when it hits a free-tier limit). Never persist that
+      // English echo as a target-language description.
+      const nameIsCopy = !!(translatedName && sourceName &&
+        stripText(translatedName) === stripText(sourceName));
+      const descIsCopy = !!(translatedDesc && sourceDesc &&
+        containsUntranslatedSourceChunk(translatedDesc, sourceDesc));
+      const safeName = nameIsCopy ? '' : translatedName;
+      const safeDesc = descIsCopy ? '' : translatedDesc;
+      // A non-empty source description is a required part of this request.
+      // Returning `failed:false` with only a translated name made the browser
+      // assume the request was complete and leave the English description on
+      // screen forever. Name-only results remain usable for a later retry, but
+      // are explicitly marked partial so callers can retry the description.
+      const failed = !safeName || (sourceDesc.trim() && !safeDesc);
 
       let wroteToDb = false;
-      if (productId && !failed) {
+      // Persist whichever independent field succeeded. A missing name must not
+      // prevent a valid description from being written (or vice versa).
+      if (productId && (safeName || safeDesc)) {
         try {
-          wroteToDb = await freeWriteTranslation(productId, targetLang, translatedName, translatedDesc);
+          const descForWrite = safeDesc || undefined;
+          wroteToDb = await freeWriteTranslation(productId, targetLang, safeName, descForWrite);
           if (wroteToDb) console.log(`[translate-product:free] cached ${productId} → ${targetLang}`);
         } catch (e) {
           console.warn('[translate-product:free] write-back failed:', e.message);
@@ -543,7 +750,7 @@ module.exports = async function handler(req, res) {
         success: true,
         failed,
         wrote_to_db: wroteToDb,
-        translation: { name: translatedName, desc: translatedDesc }
+        translation: { name: safeName, desc: safeDesc }
       });
     }
 
@@ -637,10 +844,16 @@ RULES — STRICT:
 
     for (const [langCode, langName] of Object.entries(targetLangs)) {
       try {
+        // Batch translation uses the same bounded, cleaned source as the
+        // single-language endpoint. The old raw supplier HTML could be tens of
+        // thousands of characters while maxTokens was only 1000, so every
+        // language after the first few often returned an empty/partial desc.
+        const cleanedBatchDesc = freePreCleanHtml(String(desc_en || ''));
+        const batchDesc = cleanedBatchDesc.slice(0, 5000);
         const prompt = `You are a professional translator for an e-commerce store. Translate the following product information from English to ${langName}.
 
 Product Name: "${name_en}"
-Product Description: "${desc_en || ''}"
+Product Description: "${batchDesc}"
 
 Rules:
 1. Translate naturally and accurately — do NOT add or remove information
@@ -648,10 +861,11 @@ Rules:
 3. Do NOT translate brand names or prices
 4. Reply ONLY in valid JSON format: {"name": "translated_name", "desc": "translated_description"}
 5. The "desc" field should preserve any HTML formatting exactly as in the original
-6. If description is empty, return empty string for desc`;
+6. If description is empty, return empty string for desc
+7. Translate every character of the provided description excerpt and never echo the English source.`;
 
         const result = await callGemini(prompt, `You are a professional e-commerce translator. Translate from English to ${langName}. Reply ONLY with valid JSON.`, {
-          maxTokens: 1000, temperature: 0.2
+          maxTokens: 4000, temperature: 0.2
         });
         const text = result.text || '';
         if (!text) {
@@ -663,10 +877,23 @@ Rules:
         if (jsonMatch) jsonStr = jsonMatch[0];
         try {
           const parsed = JSON.parse(jsonStr);
-          translations[langCode] = {
-            name: parsed.name || name_en,
-            desc: parsed.desc || (desc_en || '')
-          };
+          // Never use the English source as a silent fallback. An empty
+          // target value is intentional: the admin/cron worker can retry it,
+          // while copying English here makes the site look translated and
+          // permanently poisons the target column.
+          const parsedName = typeof parsed.name === 'string' ? parsed.name.trim() : '';
+          const parsedDesc = typeof parsed.desc === 'string' ? parsed.desc : '';
+          // Reject exact or dominant English echoes from Gemini. Empty fields
+          // remain empty so the admin worker can retry that field only.
+          const safeName = parsedName && !containsUntranslatedSourceChunk(parsedName, name_en)
+            ? parsedName : '';
+          // For a long source, batch Gemini only received an excerpt. Leave
+          // desc empty so the admin worker uses the full free chunked fallback
+          // instead of saving a truncated description.
+          const safeDesc = cleanedBatchDesc.length <= 5000 && parsedDesc &&
+              !containsUntranslatedSourceChunk(parsedDesc, batchDesc)
+            ? parsedDesc : '';
+          translations[langCode] = { name: safeName, desc: safeDesc };
         } catch (parseErr) {
           console.error(`JSON parse error for ${langCode}:`, parseErr.message);
           translations[langCode] = { name: '', desc: '' };

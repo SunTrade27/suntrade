@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title data-i18n="page_title">SunTrade i18n Test</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; line-height: 1.6; }
+    .test { padding: 12px; margin: 8px 0; border-radius: 8px; background: #f3f4f6; }
+    .label { font-weight: bold; display: inline-block; min-width: 160px; }
+    .ok { background: #d1fae5; color: #065f46; }
+    .fail { background: #fee2e2; color: #991b1b; }
+    button { padding: 8px 16px; margin: 4px; border-radius: 6px; border: 1px solid #d1d5db; background: white; cursor: pointer; font-size: 14px; }
+    button.primary { background: #FF6B00; color: white; border-color: #FF6B00; }
+    code { background: #1f2937; color: #f9fafb; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/i18n.js"></script>
+</head>
+<body>
+
+<h1 data-i18n="page_title">i18n Test</h1>
+<p data-i18n="intro">If you can read this in your language after clicking the buttons below, the translation system works correctly on your browser.</p>
+
+<div class="test">
+  <span class="label" data-i18n="current_lang_label">Current language:</span>
+  <code id="cur-lang">unknown</code>
+</div>
+
+<div class="test">
+  <span class="label" data-i18n="button_test_label">Test button (Add to Cart equivalent):</span>
+  <button class="primary" data-i18n="product_add_cart">Add to Cart</button>
+</div>
+
+<div class="test">
+  <span class="label" data-i18n="nav_test_label">Test nav:</span>
+  <a href="#" data-i18n="nav_home">Home</a> ·
+  <a href="#" data-i18n="nav_catalog">Catalog</a> ·
+  <a href="#" data-i18n="nav_cart">Cart</a>
+</div>
+
+<div class="test">
+  <span class="label" data-i18n="manual_switch">Click to switch language:</span>
+  <button onclick="loadTranslations('en')">🇬🇧 EN</button>
+  <button onclick="loadTranslations('kz')">🇰🇿 KZ</button>
+  <button onclick="loadTranslations('ru')">🇷🇺 RU</button>
+  <button onclick="loadTranslations('de')">🇩🇪 DE</button>
+  <button onclick="loadTranslations('ar')">🇸🇦 AR</button>
+</div>
+
+<div class="test">
+  <span class="label" data-i18n="diagnostic_label">Diagnostic:</span>
+  <pre id="diag" style="margin:0;font-family:monospace;font-size:12px;">Test running...</pre>
+</div>
+
+<script>
+// Force a hard reload of i18n.js to bypass cache, and verify everything works.
+(function () {
+  const info = {
+    'i18n.js loaded': typeof loadTranslations === 'function' ? '✅' : '❌',
+    't() function': typeof t === 'function' ? '✅' : '❌',
+    'currentLang value': typeof currentLang !== 'undefined' ? currentLang : 'undefined',
+    'saved in localStorage': localStorage.getItem('suntrade_lang') || '(none)',
+    'locale file accessible': 'test below',
+  };
+
+  function renderDiag() {
+    document.getElementById('diag').textContent = JSON.stringify(info, null, 2);
+    document.getElementById('cur-lang').textContent = currentLang;
+  }
+
+  // Test that loading /locales/kz.json works
+  fetch('/locales/kz.json').then(r => {
+    info['locale file accessible'] = r.ok ? '✅ HTTP ' + r.status : '❌ HTTP ' + r.status;
+    return r.json();
+  }).then(d => {
+    info['kz.product_add_cart'] = d.product_add_cart;
+    info['kz keys total'] = Object.keys(d).length;
+    renderDiag();
+  }).catch(e => {
+    info['locale fetch error'] = e.message;
+    renderDiag();
+  });
+
+  // Watch language changes
+  window.addEventListener('langChanged', () => {
+    info['last switch'] = currentLang + ' (at ' + new Date().toLocaleTimeString() + ')';
+    renderDiag();
+  });
+
+  renderDiag();
+})();
+</script>
+
+</body>
+</html>

@@ -22,6 +22,7 @@
   <link rel="alternate" hreflang="ar" href="https://www.suntrade.store/product.html" />
   <link rel="alternate" hreflang="x-default" href="https://www.suntrade.store/product.html" />
   <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/theme.js"></script>
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/icons.js"></script>
@@ -51,8 +52,8 @@
   }
   .magnifier-lens {
     position: absolute;
-    width: 160px;
-    height: 160px;
+    width: 210px;
+    height: 210px;
     border-radius: 50%;
     border: 3px solid rgba(255, 107, 0, 0.55);
     background-repeat: no-repeat;
@@ -63,15 +64,24 @@
       0 0 0 2px rgba(255,255,255,0.6),
       0 8px 32px rgba(0,0,0,0.25);
     background-color: #fff;
+    overflow: hidden;
     transition: width 0.15s, height 0.15s;
     will-change: transform, left, top;
-    /* The lens zooms 2.5x via background-size which is NOT a real
-       CSS image-render-able surface; modern Chromium supports
-       -webkit-optimize-contrast on background images to keep edges
-       crisp. Without this the lens image looks noticeably soft
-       compared to the surrounding photo. */
     image-rendering: auto;
     image-rendering: -webkit-optimize-contrast;
+  }
+  .magnifier-lens-image {
+    position: absolute;
+    display: block;
+    max-width: none !important;
+    max-height: none !important;
+    width: auto;
+    height: auto;
+    object-fit: fill;
+    object-position: 0 0;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
   }
   .magnifier-lens::after {
     content: '';
@@ -105,8 +115,8 @@
   /* Lens shrinks on mobile so it doesn't cover the whole image */
   @media (max-width: 768px) {
     .magnifier-lens {
-      width: 100px;
-      height: 100px;
+      width: 120px;
+      height: 120px;
     }
   }
   @media (max-width: 480px) {
@@ -200,6 +210,87 @@
     font-size: 1.1rem;
   }
 
+  /* ===== Suntrade.store store badge ===== */
+  .product-store-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0.35rem 0 0.9rem;
+    padding: 0.35rem 0.9rem;
+    background: linear-gradient(135deg, rgba(255, 107, 0, 0.1), rgba(255, 107, 0, 0.04));
+    border: 1px solid rgba(255, 107, 0, 0.35);
+    border-radius: 50px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--primary, #FF6B00);
+    letter-spacing: 0.2px;
+  }
+  .product-store-badge > svg {
+    width: 15px;
+    height: 15px;
+    color: var(--primary, #FF6B00);
+  }
+  .product-store-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #10B981;
+  }
+  .product-store-check svg {
+    width: 10px;
+    height: 10px;
+    color: #fff;
+  }
+
+  /* ===== Flowing 10% discount banner ===== */
+  .discount-marquee {
+    grid-column: 1 / -1;
+    width: 100%;
+    overflow: hidden;
+    background: linear-gradient(90deg, #0b1628, #1a3a5c, #0b1628);
+    border: 1px solid rgba(255, 177, 92, 0.35);
+    border-radius: 14px;
+    padding: 0.85rem 0;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+    position: relative;
+  }
+  .discount-marquee-track {
+    display: flex;
+    width: max-content;
+    animation: discountMarquee 22s linear infinite;
+  }
+  .discount-marquee:hover .discount-marquee-track {
+    animation-play-state: paused;
+  }
+  .discount-marquee-group {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+  }
+  .discount-marquee-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 1.4rem;
+    color: #ffd700;
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-shadow: 0 0 18px rgba(255, 215, 0, 0.45);
+  }
+  @keyframes discountMarquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @media (max-width: 640px) {
+    .discount-marquee { border-radius: 10px; padding: 0.6rem 0; }
+    .discount-marquee-item { font-size: 0.9rem; margin: 0 1rem; }
+  }
+
   /* ===== Product Types ===== */
   .product-types {
     margin: 0.75rem 0;
@@ -241,6 +332,74 @@
     color: white;
     border-color: var(--primary, #FF6B00);
     box-shadow: 0 0 0 2px rgba(255,107,0,0.2);
+  }
+  .product-types .type-value.has-option-image {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px 3px 5px;
+  }
+  .product-types .type-value img,
+  .product-option-value img {
+    width: 34px;
+    height: 34px;
+    object-fit: cover;
+    border-radius: 7px;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: #fff;
+    flex: 0 0 auto;
+  }
+  .product-option-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin: 0.85rem 0 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-light, #f3f4f6);
+  }
+  .product-option-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  .product-option-group-title {
+    color: var(--text-muted, #6b7280);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .product-option-values {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+  .product-option-value {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 3px 10px;
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 9px;
+    background: var(--bg-subtle, #f9fafb);
+    color: var(--text, #111827);
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  }
+  .product-option-value:hover { border-color: var(--primary, #FF6B00); transform: translateY(-1px); }
+  .product-option-value.active {
+    border-color: var(--primary, #FF6B00);
+    box-shadow: 0 0 0 2px rgba(255,107,0,0.18);
+    background: rgba(255,107,0,0.07);
+  }
+  .product-option-swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.16);
+    flex: 0 0 auto;
   }
 
   /* ===== Auto-Calculated Price Display ===== */
@@ -342,13 +501,14 @@
       <li><a href="/catalog.html" data-i18n="nav_catalog">Catalog</a></li>
       <li><a href="/analytics.html" data-i18n="nav_analytics">Analytics</a></li>
       <li><a href="/cart.html" data-i18n="nav_cart">Cart</a></li>
+      <li class="theme-menu-item"><button type="button" class="theme-toggle" aria-pressed="false"><svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="theme-toggle-label">Dark mode</span></button></li>
     </ul>
     <div class="nav-right">
       <div class="lang-wrapper">
         <button id="lang-toggle"><svg class="icon icon-md" style="vertical-align:middle"><use href="#icon-globe"/></svg> EN</button>
         <div id="lang-dropdown"></div>
       </div>
-      <a href="/cart.html" class="cart-link">
+      <a href="/cart.html" class="cart-link top-nav-cart">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
         <span id="cart-badge">0</span>
       </a>
@@ -356,7 +516,8 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
       </a>
       <div id="user-menu-container"></div>
-      <button class="mobile-menu-btn" onclick="document.getElementById('nav-links').classList.toggle('show')">
+      <button type="button" class="theme-toggle theme-toggle-desktop" aria-pressed="false" aria-label="Switch to dark mode" title="Switch to dark mode"><svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="theme-toggle-label">Dark mode</span></button>
+      <button class="mobile-menu-btn" aria-expanded="false" onclick="var n=document.getElementById('nav-links'); var open=n.classList.toggle('show'); this.setAttribute('aria-expanded', String(open));">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
     </div>
@@ -366,6 +527,17 @@
 <!-- PRODUCT DETAIL -->
 <div class="product-detail" id="product-detail">
   <div class="loading-spinner"><div class="spinner"></div></div>
+</div>
+
+<!-- VIDEO MODAL (in-site video viewer) -->
+<div class="video-modal" id="video-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Video">
+  <div class="video-modal-backdrop" onclick="closeVideoModal()"></div>
+  <div class="video-modal-card">
+    <button type="button" class="video-modal-close" onclick="closeVideoModal()" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="video-modal-player" id="video-modal-player"></div>
+  </div>
 </div>
 
 <!-- REVIEWS SECTION -->
@@ -429,8 +601,8 @@
     </div>
     <div class="footer-col">
       <h4 data-i18n="footer_follow">Follow Us</h4>
-      <a href="https://www.instagram.com/sunna_china?igsh=OTF4aHY2c29yaXZw" target="_blank" rel="noopener">Instagram</a>
-      <a href="https://www.tiktok.com/@sunna_china?_r=1&_t=ZS-970idOL3jE2" target="_blank" rel="noopener">TikTok</a>
+      <a href="https://www.instagram.com/suntrade.store/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.threads.com/@suntrade.store?xmt=AQG0HqVI9qERwOHL9wR5-KrYhAPH5adKgD4JHMp26W9Y6Yw" target="_blank" rel="noopener">Threads</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -453,8 +625,295 @@
 <script>
   let currentProduct = null;
   let currentImageIndex = 0;
+  let productRenderVersion = 0;
+  let selectedTypeIndex = 0;
+  let selectedOptionValues = {};
+  let localizedVariantLabels = {};
 
-  // Listen for language changes
+  function safeImageUrl(value) {
+    const url = String(value || '').trim();
+    return /^https?:\/\//i.test(url) ? url : '';
+  }
+
+  function getProductTypes(p) {
+    p = p || {};
+    const legacyImages = [p.type_image, p.type_image2, p.type_image3, p.type_image4, p.type_image5];
+    if (Array.isArray(p.types) && p.types.length) {
+      const storedTypes = p.types
+        .map((type, index) => ({
+          ...type,
+          label: String(type?.label || '').trim(),
+          image: type.image || type.image_url || legacyImages[index] || ''
+        }))
+        .filter(type => type.label);
+      const onlyImplicitDefault = storedTypes.length === 1 &&
+        /^(?:default|type\s*1)$/i.test(storedTypes[0].label) &&
+        !safeImageUrl(storedTypes[0].image) &&
+        [p.type2, p.type3, p.type4, p.type5].every(label => !String(label || '').trim()) &&
+        legacyImages.every(image => !safeImageUrl(image));
+      return onlyImplicitDefault ? [] : storedTypes;
+    }
+    const legacyLabels = [p.type, p.type2, p.type3, p.type4, p.type5];
+    const firstLegacyLabel = String(legacyLabels[0] || '').trim();
+    // `Default` was written by the old admin form when no type was entered.
+    // It is not a buyer-facing variant. Keep genuine legacy type labels, but
+    // suppress this implicit single-row placeholder.
+    const implicitDefault = /^(?:default|type\s*1)$/i.test(firstLegacyLabel) &&
+      legacyLabels.slice(1).every(label => !String(label || '').trim()) &&
+      legacyImages.every(image => !safeImageUrl(image));
+    return legacyLabels
+      .map((label, index) => {
+        const cleanLabel = String(label || '').trim();
+        if (!cleanLabel || (index === 0 && implicitDefault)) return null;
+        return { label: cleanLabel, image: legacyImages[index] || '' };
+      })
+      .filter(Boolean);
+  }
+
+  // Type images are the SKU's canonical photos: Type 1 is gallery slot 1,
+  // Type 2 is slot 2, and so on. Ordinary product/gallery images follow them.
+  // Older saves may contain type images inside p.images in a different order,
+  // so remove duplicates without discarding the first ordinary gallery image.
+  function getProductGalleryImages(p) {
+    p = p || {};
+    const urls = [];
+    const add = value => {
+      const url = safeImageUrl(value);
+      if (url && !urls.includes(url)) urls.push(url);
+    };
+    const typeImages = getProductTypes(p)
+      .map(type => type && (type.image || type.image_url))
+      .map(safeImageUrl)
+      .filter(Boolean);
+    const typeImageSet = new Set(typeImages);
+    typeImages.forEach(add);
+    (Array.isArray(p.images) ? p.images : [])
+      .filter(image => !typeImageSet.has(safeImageUrl(image)))
+      .forEach(add);
+    return urls.length ? urls : ['/images/placeholder.jpg'];
+  }
+
+  function getSelectedProductImage() {
+    const p = currentProduct || {};
+    // A directly selected Type is the primary SKU choice. Option groups are
+    // used when that type has no image (or for products without type rows).
+    const type = getProductTypes(p)[selectedTypeIndex];
+    if (type && safeImageUrl(type.image)) return type.image;
+    const legacy = [p.type_image, p.type_image2, p.type_image3, p.type_image4, p.type_image5][selectedTypeIndex];
+    if (safeImageUrl(legacy)) return legacy;
+    const groups = Array.isArray(p.option_groups) ? p.option_groups : [];
+    for (const group of groups) {
+      const selected = selectedOptionValues[group.name];
+      const option = Array.isArray(group.options) && group.options.find(o => o.label === selected);
+      if (option && safeImageUrl(option.image)) return option.image;
+    }
+    return getProductGalleryImages(p)[0] || '/images/placeholder.jpg';
+  }
+
+  function getSelectedProductImageIndex() {
+    const images = getProductGalleryImages(currentProduct);
+    const selected = safeImageUrl(getSelectedProductImage());
+    const index = images.findIndex(image => safeImageUrl(image) === selected);
+    return index >= 0 ? index : 0;
+  }
+
+  function getSelectedVariantParts() {
+    const parts = [];
+    const type = getProductTypes(currentProduct)[selectedTypeIndex];
+    if (type && type.label) parts.push({ group: '', value: type.label });
+    Object.keys(selectedOptionValues || {}).forEach(name => {
+      if (selectedOptionValues[name]) parts.push({ group: name, value: selectedOptionValues[name] });
+    });
+    return parts;
+  }
+
+  function getSelectedVariantLabel() {
+    return getSelectedVariantParts().map(part => {
+      const group = localizedVariantLabels[part.group] || part.group;
+      const value = localizedVariantLabels[part.value] || part.value;
+      return group ? group + ': ' + value : value;
+    }).join(' / ');
+  }
+
+  const BUILTIN_VARIANT_LABELS = {
+    kz: { black: 'Қара', white: 'Ақ', red: 'Қызыл', blue: 'Көк', green: 'Жасыл', yellow: 'Сары', gold: 'Алтын', silver: 'Күміс', 'rose gold': 'Алтын раушан', color: 'Түс', colour: 'Түс', size: 'Өлшем', type: 'Түрі' },
+    ru: { black: 'Чёрный', white: 'Белый', gold: 'Золотой', silver: 'Серебряный', 'rose gold': 'Розовое золото', color: 'Цвет', size: 'Размер', type: 'Тип' },
+    de: { black: 'Schwarz', white: 'Weiß', gold: 'Gold', silver: 'Silber', 'rose gold': 'Roségold', color: 'Farbe', size: 'Größe', type: 'Typ' },
+    fr: { black: 'Noir', white: 'Blanc', gold: 'Or', silver: 'Argent', 'rose gold': 'Or rose', color: 'Couleur', size: 'Taille', type: 'Type' },
+    es: { black: 'Negro', white: 'Blanco', gold: 'Dorado', silver: 'Plateado', 'rose gold': 'Oro rosa', color: 'Color', size: 'Talla', type: 'Tipo' },
+    it: { black: 'Nero', white: 'Bianco', gold: 'Oro', silver: 'Argento', 'rose gold': 'Oro rosa', color: 'Colore', size: 'Taglia', type: 'Tipo' },
+    tr: { black: 'Siyah', white: 'Beyaz', gold: 'Altın', silver: 'Gümüş', 'rose gold': 'Rose altın', color: 'Renk', size: 'Beden', type: 'Tür' },
+    pt: { black: 'Preto', white: 'Branco', gold: 'Dourado', silver: 'Prateado', 'rose gold': 'Ouro rosé', color: 'Cor', size: 'Tamanho', type: 'Tipo' },
+    nl: { black: 'Zwart', white: 'Wit', gold: 'Goud', silver: 'Zilver', 'rose gold': 'Roségoud', color: 'Kleur', size: 'Maat', type: 'Type' },
+    pl: { black: 'Czarny', white: 'Biały', gold: 'Złoty', silver: 'Srebrny', 'rose gold': 'Różowe złoto', color: 'Kolor', size: 'Rozmiar', type: 'Typ' },
+    ar: { black: 'أسود', white: 'أبيض', gold: 'ذهبي', silver: 'فضي', 'rose gold': 'ذهبي وردي', color: 'اللون', size: 'المقاس', type: 'النوع' }
+  };
+
+  function getBuiltinVariantLabels(labels, lang) {
+    const dictionary = BUILTIN_VARIANT_LABELS[lang] || {};
+    const result = {};
+    Object.keys(labels || {}).forEach(key => {
+      const translated = dictionary[String(labels[key] || '').trim().toLowerCase()];
+      if (translated) result[key] = translated;
+    });
+    return result;
+  }
+
+  function isBadVariantLabel(value) {
+    return /[<>]|fontdatabase|uherhiy|javascript:/i.test(String(value || ''));
+  }
+
+  function collectVariantLabels(p) {
+    const labels = {};
+    getProductTypes(p).forEach(type => { if (type && type.label) labels[type.label] = type.label; });
+    (Array.isArray(p?.option_groups) ? p.option_groups : []).forEach(group => {
+      if (group && group.name) labels[group.name] = group.name;
+      (Array.isArray(group?.options) ? group.options : []).forEach(option => {
+        if (option && option.label) labels[option.label] = option.label;
+      });
+    });
+    return labels;
+  }
+
+  async function translateVariantLabelsForPage(p, lang, renderVersion) {
+    if (!p || !p.id || !lang || lang === 'en' || typeof ensureProductLabelTranslations !== 'function') return;
+    const labels = collectVariantLabels(p);
+    if (!Object.keys(labels).length) return;
+    // Apply common labels immediately while the network translation runs.
+    // This makes switching to Kazakh instant for Black/Rose Gold/Color/Size.
+    localizedVariantLabels = { ...localizedVariantLabels, ...getBuiltinVariantLabels(labels, lang) };
+    document.querySelectorAll('[data-variant-label-key]').forEach(el => {
+      const key = el.getAttribute('data-variant-label-key');
+      if (localizedVariantLabels[key]) el.textContent = localizedVariantLabels[key];
+    });
+    const translated = await ensureProductLabelTranslations(p.id, lang, labels);
+    if (renderVersion !== productRenderVersion || currentLang !== lang) return;
+    const safeTranslated = Object.fromEntries(Object.entries(translated || {}).filter(([, value]) => !isBadVariantLabel(value)));
+    localizedVariantLabels = { ...localizedVariantLabels, ...safeTranslated };
+    document.querySelectorAll('[data-variant-label-key]').forEach(el => {
+      const key = el.getAttribute('data-variant-label-key');
+      if (localizedVariantLabels[key]) el.textContent = localizedVariantLabels[key];
+    });
+  }
+
+  function safeColorHex(value) {
+    const color = String(value || '').trim();
+    return /^#[0-9a-f]{3,8}$/i.test(color) ? color : '';
+  }
+
+  function refreshMagnifierForImage(img) {
+    if (!img) return;
+    const container = document.getElementById('magnifier-container');
+    if (!container) return;
+
+    // Keep one magnifier instance attached to the gallery container. The main
+    // image element is reused when a thumbnail is clicked, so destroying and
+    // recreating the mouse handlers here can race with the image load event.
+    // The existing move handler reads img.currentSrc on every move and can
+    // therefore zoom whichever gallery image is currently displayed.
+    const currentLens = container._magnifierLens;
+    const targetSrc = img.src;
+    if (currentLens && currentLens.parentNode) {
+      const lensImage = currentLens.querySelector('.magnifier-lens-image');
+      // Hide while the new main image is loading so an old photo is never
+      // shown through the loupe after a thumbnail click.
+      currentLens.style.display = 'none';
+      if (lensImage && targetSrc && lensImage.src !== targetSrc) lensImage.src = targetSrc;
+
+      if (container._magnifierImageLoadHandler) {
+        img.removeEventListener('load', container._magnifierImageLoadHandler);
+        delete container._magnifierImageLoadHandler;
+      }
+      const requestId = (container._magnifierImageRequestId || 0) + 1;
+      container._magnifierImageRequestId = requestId;
+      const handleLoad = () => {
+        if (container._magnifierImageRequestId !== requestId) return;
+        if (container._magnifierImageLoadHandler === handleLoad) {
+          delete container._magnifierImageLoadHandler;
+        }
+        const loadedSrc = img.currentSrc || img.src;
+        if (lensImage && loadedSrc === targetSrc) {
+          lensImage.src = loadedSrc;
+          if (container.matches(':hover') && container._magnifierMove && container._magnifierLastPointer) {
+            container._magnifierMove(container._magnifierLastPointer);
+          }
+        }
+      };
+      container._magnifierImageLoadHandler = handleLoad;
+      img.addEventListener('load', handleLoad, { once: true });
+
+      // Cached images may not emit a new load event after the listener is
+      // attached, so update the lens immediately when the new source is ready.
+      if (img.complete && img.naturalWidth > 0 && (img.currentSrc || img.src) === targetSrc) {
+        img.removeEventListener('load', handleLoad);
+        delete container._magnifierImageLoadHandler;
+        if (lensImage) lensImage.src = img.currentSrc || img.src;
+        if (container.matches(':hover') && container._magnifierMove && container._magnifierLastPointer) {
+          container._magnifierMove(container._magnifierLastPointer);
+        }
+      }
+      return;
+    }
+
+    if (container._magnifierImageLoadHandler) {
+      img.removeEventListener('load', container._magnifierImageLoadHandler);
+      delete container._magnifierImageLoadHandler;
+    }
+
+    const expectedSrc = targetSrc;
+    const requestId = (container._magnifierImageRequestId || 0) + 1;
+    container._magnifierImageRequestId = requestId;
+    const handleLoad = () => {
+      if (container._magnifierImageRequestId !== requestId) return;
+      if (container._magnifierImageLoadHandler === handleLoad) {
+        delete container._magnifierImageLoadHandler;
+      }
+      // The listener is intentionally installed on the stable main image.
+      // setupMagnifier creates the instance only after this selected image is
+      // ready, preventing a white lens on the first thumbnail switch.
+      if (!container._magnifierLens) setupMagnifier('main-image', 'magnifier-container', 2.5);
+    };
+    container._magnifierImageLoadHandler = handleLoad;
+    img.addEventListener('load', handleLoad, { once: true });
+
+    // A cached image may already be complete when the thumbnail is selected.
+    const loadedSrc = img.currentSrc || img.src;
+    if (img.complete && img.naturalWidth > 0 && loadedSrc === expectedSrc) {
+      img.removeEventListener('load', handleLoad);
+      delete container._magnifierImageLoadHandler;
+      if (!container._magnifierLens) setupMagnifier('main-image', 'magnifier-container', 2.5);
+    }
+  }
+
+  function resetSelectedProductImage() {
+    const mainImg = document.getElementById('main-image');
+    if (!mainImg) return;
+    const image = getSelectedProductImage();
+    const imageIndex = getSelectedProductImageIndex();
+    mainImg.src = safeImageUrl(image) || '/images/placeholder.jpg';
+    currentImageIndex = imageIndex;
+    document.querySelectorAll('.gallery-thumb').forEach((t, index) => t.classList.toggle('active', index === imageIndex));
+    const container = document.getElementById('magnifier-container');
+    if (container && container._resetMobileZoom) container._resetMobileZoom();
+    refreshMagnifierForImage(mainImg);
+  }
+
+  function selectOption(groupIndex, optionIndex) {
+    const groups = Array.isArray(currentProduct?.option_groups) ? currentProduct.option_groups : [];
+    const group = groups[groupIndex];
+    const option = group && Array.isArray(group.options) ? group.options[optionIndex] : null;
+    if (!group || !option) return;
+    selectedOptionValues[group.name] = option.label;
+    document.querySelectorAll('.product-option-group').forEach((el, i) => {
+      if (i !== groupIndex) return;
+      el.querySelectorAll('.product-option-value').forEach((valueEl, i2) => valueEl.classList.toggle('active', i2 === optionIndex));
+    });
+    resetSelectedProductImage();
+  }
+
+  // Listen for language changes. The render version prevents a slower
+  // translation request for the previous language from overwriting the
+  // product page after the visitor has already switched again.
   window.addEventListener('langChanged', () => {
     if (currentProduct) renderProduct();
   });
@@ -475,36 +934,79 @@
     }, 500);
   });
 
+  function getProductDescription(product, lang) {
+    const p = product || {};
+    const languages = [lang, 'en', 'kz', 'ru', 'de', 'fr', 'es', 'it', 'tr', 'pt', 'nl', 'pl', 'ar'];
+    for (const code of [...new Set(languages)]) {
+      const value = String(p['desc_' + code] || '').trim();
+      if (value) return value;
+    }
+    return '';
+  }
+
+  function getRenderableDescription(value) {
+    const source = String(value || '');
+    if (!source.trim()) return '';
+    const cleaned = typeof cleanDescriptionHtml === 'function' ? cleanDescriptionHtml(source) : source;
+    if (cleaned && (cleaned.replace(/<[^>]*>/g, '').trim() || /<img\b/i.test(cleaned))) return cleaned;
+
+    // The cleaner intentionally removes supplier headings/UI shells. If a
+    // description consists only of such markup, keep its visible text instead
+    // of turning a saved description into a blank product page.
+    const fallbackRoot = document.createElement('div');
+    fallbackRoot.innerHTML = typeof decodeStoredDescriptionMarkup === 'function'
+      ? decodeStoredDescriptionMarkup(source)
+      : source;
+    fallbackRoot.querySelectorAll('script,style,iframe,object,embed,form,input,select,textarea,svg').forEach(el => el.remove());
+    const text = (fallbackRoot.textContent || '').replace(/\s+/g, ' ').trim();
+    return text ? '<p>' + escHtml(text) + '</p>' : cleaned;
+  }
+
   function renderProduct() {
     const p = currentProduct;
-    const name = p['name_' + currentLang] || p.name_en || 'Product';
-    // Clean description HTML to remove Alibaba/1688/Taobao UI junk before rendering
-    const rawDesc = p['desc_' + currentLang] || p.desc_en || '';
+    selectedTypeIndex = 0;
+    selectedOptionValues = {};
+    localizedVariantLabels = {};
+    (Array.isArray(p.option_groups) ? p.option_groups : []).forEach(group => {
+      const firstOption = Array.isArray(group.options) && group.options.find(option => option && option.label);
+      if (firstOption) selectedOptionValues[group.name] = firstOption.label;
+    });
+    const renderVersion = ++productRenderVersion;
+    const renderLang = currentLang;
+    const name = p['name_' + renderLang] || p.name_en || 'Product';
+    // Clean description HTML to remove Alibaba/1688/Taobao UI junk before rendering.
+    // Fall back through the other language columns too: older products (or a
+    // product entered only in KZ/RU) may not have desc_en populated.
+    const rawDesc = getProductDescription(p, renderLang);
     // On-demand free translation: if the current language has no row
     // for this product yet, ask /api/translate-product (mode: 'free') to fetch one
     // from MyMemory / LibreTranslate (no AI/LLM). The API also writes the
     // result back to Supabase so future visitors get an instant hit.
     // We render English immediately and quietly swap in the translation
     // when it arrives — no flicker, no blocking.
-    const hasNameInLang = !!(p['name_' + currentLang] || '').trim();
-    const hasDescInLang = !!(p['desc_' + currentLang] || '').trim();
+    const hasNameInLang = !!(p['name_' + renderLang] || '').trim();
+    const hasDescInLang = !!(p['desc_' + renderLang] || '').trim();
     // A non-empty name_XX / desc_XX may still be an English copy left behind
     // by earlier write-backs (desc_kz was historically written back as
     // verbatim English). Treat those as "not translated" so the on-demand
     // translator re-translates them — the server endpoint also detects this
     // and skips its DB cache.
     const nameLooksEnglish = hasNameInLang && typeof isEnglishCopy === 'function' &&
-      isEnglishCopy(p['name_' + currentLang], p.name_en);
+      isEnglishCopy(p['name_' + renderLang], p.name_en);
     const descLooksEnglish = hasDescInLang && typeof isEnglishCopy === 'function' &&
-      isEnglishCopy(p['desc_' + currentLang], p.desc_en);
+      isEnglishCopy(p['desc_' + renderLang], p.desc_en);
     const needsOnDemandTranslate =
-      currentLang !== 'en' &&
+      renderLang !== 'en' &&
       !!p.id &&
       !!p.name_en &&
       (!hasNameInLang || !hasDescInLang || nameLooksEnglish || descLooksEnglish) &&
       typeof ensureProductTranslation === 'function';
-    const desc = applyAlternatingFloats(cleanDescriptionHtml(rawDesc));
-    const images = p.images && p.images.length ? p.images : ['/images/placeholder.jpg'];
+    const desc = applyAlternatingFloats(getRenderableDescription(rawDesc));
+    const images = getProductGalleryImages(p);
+    const productTypes = getProductTypes(p);
+    const initialImage = getSelectedProductImage();
+    const initialImageIndex = getSelectedProductImageIndex();
+    const safeImages = images.map(image => safeImageUrl(image) || '/images/placeholder.jpg');
     const inStock = p.stock > 0;
 
     // Update page title and meta
@@ -535,7 +1037,7 @@
     document.head.appendChild(ogSiteName);
     const ogImage = document.createElement('meta');
     ogImage.setAttribute('property', 'og:image');
-    ogImage.content = images[0];
+    ogImage.content = safeImages[0];
     document.head.appendChild(ogImage);
     const ogType = document.createElement('meta');
     ogType.setAttribute('property', 'og:type');
@@ -543,21 +1045,15 @@
     document.head.appendChild(ogType);
 
     // Add JSON-LD Product schema (structured data for Google)
-    addProductSchema(p, name, desc, images);
+    addProductSchema(p, name, desc, safeImages);
 
     document.getElementById('product-detail').innerHTML = `
       <div class="product-gallery">
-        <button class="btn-view-3d" onclick="open3DViewer()" aria-label="View in 3D">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
-          </svg>
-          360° View
-        </button>
+        ${p.video_url ? renderProductVideo(p.video_url) : ''}
         <div class="gallery-main">
           <div class="img-magnifier-container" id="magnifier-container">
             <img id="main-image"
-                 src="${images[0]}"
+                 src="${escHtml(initialImage)}"
                  alt="${name}"
                  loading="eager"
                  decoding="sync"
@@ -570,9 +1066,9 @@
         </div>
         ${images.length > 1 ? `
         <div class="gallery-thumbs">
-          ${images.map((img, i) => `
-            <div class="gallery-thumb ${i === 0 ? 'active' : ''}" onclick="setMainImage(${i})">
-              <img src="${img}" alt="${name}">
+          ${safeImages.map((img, i) => `
+            <div class="gallery-thumb ${i === initialImageIndex ? 'active' : ''}" onclick="setMainImage(${i})">
+              <img src="${escHtml(img)}" alt="${escHtml(name)}">
             </div>
           `).join('')}
         </div>
@@ -580,21 +1076,36 @@
       </div>
       <div class="product-info">
         <h1 id="product-name">${name}</h1>
+        <!-- Store badge: builds trust, shows this is SunTrade's own store -->
+        <div class="product-store-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l1.5-5h15L21 9M4 9h16v11a1 1 0 01-1 1H5a1 1 0 01-1-1V9z"/><path d="M9 13h6"/></svg>
+          <span>Suntrade.store</span>
+          <span class="product-store-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+        </div>
         <div class="product-price-block" id="product-price-block">
           <div class="product-price-unit-wrap">
-            <span class="product-price-detail" id="product-price-display">&euro;${parseFloat(p.price).toFixed(2)}</span>
-            <span class="product-price-per-unit" data-i18n="product_per_piece">/ piece</span>
+            <span class="product-price-detail" id="product-price-display">&euro;${(parseFloat(p.price) * 0.9).toFixed(2)}</span>
+            <span class="product-price-per-unit" data-i18n="product_price">Price</span>
           </div>
           <div class="product-price-total" id="product-price-total">
             <span class="price-total-label" data-i18n="product_total">Total:</span>
-            <span class="price-total-value" id="price-total-value">&euro;${parseFloat(p.price).toFixed(2)}</span>
-            <span class="price-discount-badge" id="price-discount-badge" style="display:none;">-0%</span>
+            <span class="price-total-value" id="price-total-value">&euro;${(parseFloat(p.price) * 0.9).toFixed(2)}</span>
+            <span class="price-discount-badge" id="price-discount-badge">-10%</span>
           </div>
         </div>
-        ${p.type || p.type2 || p.type3 || p.type4 || p.type5 ? `
+        ${productTypes.length ? `
         <div class="product-types">
           <strong><span data-i18n="product_type_label">Type:</span></strong>
-          ${[p.type, p.type2, p.type3, p.type4, p.type5].map((v, i) => v ? `<span class="type-value${i === 0 ? ' active' : ''}" data-type-index="${i}" onclick="selectType(${i})">${v}</span>` : '').filter(Boolean).join(' ')}
+          ${productTypes.map((v, i) => v.label ? `<span class="type-value${i === 0 ? ' active' : ''}${safeImageUrl(v.image) ? ' has-option-image' : ''}" data-type-index="${i}" onclick="selectType(${i})">${safeImageUrl(v.image) ? `<img src="${escHtml(safeImageUrl(v.image))}" alt="">` : ''}<span data-variant-label-key="${escHtml(v.label)}">${escHtml(v.label)}</span></span>` : '').join('')}
+        </div>
+        ` : ''}
+        ${Array.isArray(p.option_groups) && p.option_groups.some(g => Array.isArray(g.options) && g.options.some(o => o.label)) ? `
+        <div class="product-option-groups">
+          ${p.option_groups.map((group, groupIndex) => {
+            const options = Array.isArray(group.options) ? group.options.filter(o => o && o.label) : [];
+            if (!options.length) return '';
+            return `<div class="product-option-group"><div class="product-option-group-title" data-variant-label-key="${escHtml(group.name || 'Option')}">${escHtml(group.name || 'Option')}</div><div class="product-option-values">${options.map((option, optionIndex) => `<button type="button" class="product-option-value${optionIndex === 0 ? ' active' : ''}" onclick="selectOption(${groupIndex}, ${optionIndex})">${group.type === 'color' && safeColorHex(option.color_hex) ? `<span class="product-option-swatch" style="background:${safeColorHex(option.color_hex)}"></span>` : ''}${safeImageUrl(option.image) ? `<img src="${escHtml(safeImageUrl(option.image))}" alt="">` : ''}<span data-variant-label-key="${escHtml(option.label)}">${escHtml(option.label)}</span></button>`).join('')}</div></div>`;
+          }).join('')}
         </div>
         ` : ''}
         <!-- Volume Pricing Tiers -->
@@ -604,16 +1115,16 @@
             <span data-i18n="product_volume_pricing">Volume Pricing</span>
           </div>
           <div class="volume-tier volume-tier-base active" data-tier="1">
-            <span class="volume-tier-qty">1 <span data-i18n="product_piece">piece</span></span>
-            <span class="volume-tier-price">&euro;${parseFloat(p.price).toFixed(2)}</span>
+            <span class="volume-tier-qty">1 <span data-i18n="product_piece">piece</span> <span class="discount-badge">-10%</span></span>
+            <span class="volume-tier-price">&euro;${(parseFloat(p.price) * 0.9).toFixed(2)}</span>
           </div>
           <div class="volume-tier" data-tier="2">
-            <span class="volume-tier-qty">2-4 <span data-i18n="product_pieces">pieces</span></span>
-            <span class="volume-tier-price">&euro;${(p.price * 0.9).toFixed(2)}</span>
+            <span class="volume-tier-qty">2-4 <span data-i18n="product_pieces">pieces</span> <span class="discount-badge">-20%</span></span>
+            <span class="volume-tier-price">&euro;${(p.price * 0.8).toFixed(2)}</span>
           </div>
           <div class="volume-tier" data-tier="3">
-            <span class="volume-tier-qty">5+ <span data-i18n="product_pieces">pieces</span> <span class="discount-badge" data-i18n="product_best_deal">Best Deal</span></span>
-            <span class="volume-tier-price">&euro;${(p.price * 0.8).toFixed(2)}</span>
+            <span class="volume-tier-qty">5+ <span data-i18n="product_pieces">pieces</span> <span class="discount-badge">-30%</span> <span class="discount-badge" data-i18n="product_best_deal">Best Deal</span></span>
+            <span class="volume-tier-price">&euro;${(p.price * 0.7).toFixed(2)}</span>
           </div>
         </div>
         <span class="product-stock ${inStock ? 'in-stock' : 'out-of-stock'}">
@@ -651,15 +1162,6 @@
             </div>
           </div>
           <div class="trust-badge" role="listitem">
-            <div class="trust-badge-icon" style="background:rgba(255,107,0,0.12);color:#FF6B00;" aria-hidden="true">
-              <svg class="icon" aria-hidden="true"><use href="#icon-money"/></svg>
-            </div>
-            <div class="trust-badge-text-block">
-              <div class="trust-badge-text" data-i18n="trust_money_back">Money-Back</div>
-              <div class="trust-badge-sub" data-i18n="trust_money_back_sub">30-day return</div>
-            </div>
-          </div>
-          <div class="trust-badge" role="listitem">
             <div class="trust-badge-icon" style="background:rgba(59,130,246,0.12);color:#3B82F6;" aria-hidden="true">
               <svg class="icon" aria-hidden="true"><use href="#icon-check-circle"/></svg>
             </div>
@@ -676,6 +1178,78 @@
               <div class="trust-badge-text" data-i18n="trust_shipping">Fast Delivery</div>
               <div class="trust-badge-sub" data-i18n="trust_shipping_sub">Worldwide shipping</div>
             </div>
+          </div>
+          <!-- Refund policy: clear, calm wording + link to our return policy page -->
+          <div class="trust-refund" role="listitem">
+            <div class="trust-badge-icon" style="background:rgba(16,185,129,0.12);color:#10B981;" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/></svg>
+            </div>
+            <div class="trust-refund-body">
+              <div class="trust-refund-title" data-i18n="refund_policy">Refund policy</div>
+              <div class="trust-refund-desc" data-i18n="refund_policy_desc">Claim a refund if your order doesn't ship, is missing, or the products arrive defective, incorrect, or damaged.</div>
+              <a class="trust-refund-link" href="/return-policy.html" data-i18n="refund_learn_more">Learn about refunds and returns <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+          <!-- Accepted payment methods: professional SVG logos -->
+          <div class="payment-methods" role="listitem" aria-label="Accepted payment methods">
+            <div class="pm-badge">
+              <svg viewBox="0 0 48 32" width="42" height="28" aria-label="VISA">
+                <rect width="48" height="32" rx="4" fill="#1A1F71"/>
+                <text x="24" y="20" text-anchor="middle" fill="#fff" font-size="14" font-weight="800" font-family="Arial,sans-serif" letter-spacing="0.5">VISA</text>
+              </svg>
+            </div>
+            <div class="pm-badge">
+              <svg viewBox="0 0 48 32" width="42" height="28" aria-label="Mastercard">
+                <rect width="48" height="32" rx="4" fill="#2D2D2D"/>
+                <circle cx="19" cy="16" r="9" fill="#EB001B"/>
+                <circle cx="29" cy="16" r="9" fill="#F79E1B"/>
+                <path d="M24 9.5a9 9 0 010 13" fill="#FF5F00"/>
+              </svg>
+            </div>
+            <div class="pm-badge">
+              <svg viewBox="0 0 48 32" width="42" height="28" aria-label="AMEX">
+                <rect width="48" height="32" rx="4" fill="#006FCF"/>
+                <text x="24" y="20" text-anchor="middle" fill="#fff" font-size="10" font-weight="800" font-family="Arial,sans-serif" letter-spacing="0.3">AMEX</text>
+              </svg>
+            </div>
+            <div class="pm-badge">
+              <svg viewBox="0 0 52 32" width="44" height="28" aria-label="Apple Pay">
+                <rect width="52" height="32" rx="4" fill="#000"/>
+                <text x="26" y="20" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" font-family="Arial,sans-serif">Apple Pay</text>
+              </svg>
+            </div>
+            <div class="pm-badge">
+              <svg viewBox="0 0 48 32" width="42" height="28" aria-label="Google Pay">
+                <rect width="48" height="32" rx="4" fill="#fff" stroke="#E0E0E0" stroke-width="0.5"/>
+                <text x="24" y="20" text-anchor="middle" fill="#5F6368" font-size="9" font-weight="700" font-family="Arial,sans-serif">G Pay</text>
+              </svg>
+            </div>
+            <div class="pm-badge">
+              <svg viewBox="0 0 48 32" width="42" height="28" aria-label="PayPal">
+                <rect width="48" height="32" rx="4" fill="#003087"/>
+                <text x="24" y="19" text-anchor="middle" fill="#fff" font-size="9" font-weight="800" font-family="Arial,sans-serif" font-style="italic">PayPal</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Flowing 10% discount banner, placed between the info column
+           (with the trust badges) and the description. -->
+      <div class="discount-marquee" aria-hidden="true">
+        <div class="discount-marquee-track">
+          <div class="discount-marquee-group">
+            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
+            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
+            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
+            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
+            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
+          </div>
+          <div class="discount-marquee-group">
+            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
+            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
+            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
+            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
+            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
           </div>
         </div>
       </div>
@@ -716,47 +1290,98 @@
         badge.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;opacity:0.45;margin-left:6px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="40" stroke-dashoffset="20"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1.2s" repeatCount="indefinite"/></circle></svg>';
         nameEl.appendChild(badge);
       }
-      ensureProductTranslation(p.id, currentLang).then(translation => {
-        if (!translation || !translation.name) return;
-        // Cache on the in-memory product so a langChanged rerender won't
-        // re-trigger the network call.
-        p['name_' + currentLang] = translation.name;
-        if (translation.desc) p['desc_' + currentLang] = translation.desc;
+      // Request the product title separately from the long description. This
+      // guarantees all 11 translated names can appear quickly even when the
+      // supplier HTML takes much longer to translate.
+      const runFullTranslation = () => ensureProductTranslation(p.id, renderLang, p.desc_en).then(translation => {
+        // Ignore a late response for a language that is no longer displayed.
+        if (renderVersion !== productRenderVersion || currentLang !== renderLang) return;
+
+        // Name and description are independent fields. A translation provider
+        // can return a valid description even when the name is empty or
+        // rate-limited; the old `!translation.name` guard discarded that
+        // description, which made kz/ru appear stuck in English.
+        const hasTranslatedName = !!(translation && typeof translation.name === 'string' &&
+          translation.name.trim() &&
+          !(typeof isEnglishCopy === 'function' && isEnglishCopy(translation.name, p.name_en)));
+        const hasTranslatedDesc = !!(translation && typeof translation.desc === 'string' &&
+          (translation.desc.trim() || !String(p.desc_en || '').trim()) &&
+          !(typeof isEnglishCopy === 'function' && isEnglishCopy(translation.desc, p.desc_en)));
+
+        // Cache only genuine values. Never replace a target description with
+        // an empty string or a verbatim English copy after a partial response.
+        if (hasTranslatedName) p['name_' + renderLang] = translation.name.trim();
+        if (hasTranslatedDesc) p['desc_' + renderLang] = translation.desc;
 
         // Swap DOM text — textContent is safer than innerHTML for the name
         // (no allow-listed markup expected there). Description may carry HTML
         // such as <b>/<ul>/<img>, so we re-run the same junk-cleaner the
         // first render used to keep parity.
         const titleEl = document.getElementById('product-name');
-        if (titleEl) {
+        if (titleEl && hasTranslatedName) {
           // Preserve the spinner badge we just inserted; only replace text.
           const badge = titleEl.querySelector('#od-translating-badge');
-          titleEl.textContent = translation.name;
+          titleEl.textContent = translation.name.trim();
           if (badge) titleEl.appendChild(badge);
         }
+        const existingDesc = p['desc_' + renderLang];
+        const existingDescIsUsable = existingDesc &&
+          !(typeof isEnglishCopy === 'function' && isEnglishCopy(existingDesc, p.desc_en));
+        const translatedDesc = hasTranslatedDesc
+          ? translation.desc
+          : (existingDescIsUsable ? existingDesc : (p.desc_en || ''));
         const descEl = document.querySelector('.product-desc-content');
-        if (descEl && translation.desc) {
-          const cleanDesc = typeof applyAlternatingFloats === 'function' && typeof cleanDescriptionHtml === 'function'
-            ? applyAlternatingFloats(cleanDescriptionHtml(translation.desc))
-            : translation.desc;
+        if (descEl && hasTranslatedDesc) {
+          const cleanDesc = typeof applyAlternatingFloats === 'function' && typeof getRenderableDescription === 'function'
+            ? applyAlternatingFloats(getRenderableDescription(translatedDesc))
+            : translatedDesc;
           descEl.innerHTML = cleanDesc || (typeof t === 'function' ? t('no_description') : '');
         }
-        // Page <title> for the browser tab and proper share copy
-        document.title = translation.name + ' - SunTrade';
+        // Page <title> and meta description follow whichever fields succeeded.
+        if (hasTranslatedName) document.title = translation.name.trim() + ' - SunTrade';
         const metaDesc = document.querySelector('meta[name="description"]');
-        if (metaDesc && translation.desc) {
-          metaDesc.content = translation.desc.replace(/<[^>]*>/g, '').substring(0, 160);
+        if (metaDesc && hasTranslatedDesc) {
+          metaDesc.content = translatedDesc.replace(/<[^>]*>/g, '').substring(0, 160);
         }
-        // Remove the spinner once we've swapped. Tiny fade so it feels
-        // intentional rather than abrupt.
+        // Remove the spinner whether both fields succeeded or only one did.
         const spinner = document.getElementById('od-translating-badge');
         if (spinner) {
           spinner.style.transition = 'opacity 0.4s';
           spinner.style.opacity = '0';
           setTimeout(() => spinner.remove(), 450);
         }
-      }).catch(err => console.warn('[product.html] on-demand translation failed', err));
+      }).catch(err => {
+        const spinner = document.getElementById('od-translating-badge');
+        if (spinner) spinner.remove();
+        console.warn('[product.html] on-demand translation failed', err);
+      });
+
+      if ((!hasNameInLang || nameLooksEnglish) && typeof ensureProductNameTranslation === 'function') {
+        ensureProductNameTranslation(p.id, renderLang).then(nameTranslation => {
+          if (renderVersion !== productRenderVersion || currentLang !== renderLang) return;
+          const translatedName = nameTranslation && typeof nameTranslation.name === 'string'
+            ? nameTranslation.name.trim() : '';
+          if (!translatedName || (typeof isEnglishCopy === 'function' && isEnglishCopy(translatedName, p.name_en))) return;
+          p['name_' + renderLang] = translatedName;
+          const titleEl = document.getElementById('product-name');
+          if (titleEl) {
+            const badge = titleEl.querySelector('#od-translating-badge');
+            titleEl.textContent = translatedName;
+            if (badge) titleEl.appendChild(badge);
+          }
+          document.title = translatedName + ' - SunTrade';
+        }).catch(err => console.warn('[product.html] name translation failed', err))
+          .finally(runFullTranslation);
+      } else {
+        runFullTranslation();
+      }
     }
+
+    // Translate type/option labels independently from the long description.
+    // English remains the matching/cart source; only visible labels change.
+    translateVariantLabelsForPage(p, renderLang, renderVersion).catch(err => {
+      console.warn('[product.html] variant label translation failed', err);
+    });
 
     // Setup image magnifier lens (desktop hover zoom)
     setupMagnifier('main-image', 'magnifier-container', 2.5);
@@ -793,18 +1418,27 @@
   function setupMagnifier(imgId, containerId, zoom, retryCount) {
     const img = document.getElementById(imgId);
     const container = document.getElementById(containerId);
-    if (!img || !container || !img.complete || img.naturalWidth === 0) {
-      // Image not loaded yet — retry up to 10 times
+    if (!img || !container) return;
+
+    // Cancel a previous delayed initialization so thumbnail changes can never
+    // create duplicate lenses or duplicate mouse handlers.
+    if (container._magnifierRetryTimer) {
+      clearTimeout(container._magnifierRetryTimer);
+      delete container._magnifierRetryTimer;
+    }
+    if (!img.complete || img.naturalWidth === 0) {
       retryCount = retryCount || 0;
       if (retryCount < 10) {
-        setTimeout(() => setupMagnifier(imgId, containerId, zoom, retryCount + 1), 300);
+        container._magnifierRetryTimer = setTimeout(() => {
+          delete container._magnifierRetryTimer;
+          setupMagnifier(imgId, containerId, zoom, retryCount + 1);
+        }, 300);
       }
       return;
     }
 
-    // Remove old lens if present
-    const oldLens = container.querySelector('.magnifier-lens');
-    if (oldLens) oldLens.remove();
+    // Remove old handlers/lens before creating the single stable instance.
+    destroyMagnifier(imgId, containerId);
 
     // Don't set up magnifier on small touch screens (pinch-zoom handles them)
     if (window.innerWidth <= 480) return;
@@ -824,54 +1458,54 @@
       }
     }
 
-    // Create lens element
+    // Stable model: lens and source image share the container coordinate system.
     const lens = document.createElement('div');
     lens.className = 'magnifier-lens';
+    // Use a real image element inside the lens. CSS background URLs were
+    // unreliable after thumbnail swaps and left a white lens, even though the
+    // newly selected main image was already visible.
+    const lensImage = document.createElement('img');
+    lensImage.className = 'magnifier-lens-image';
+    lensImage.alt = '';
+    lensImage.draggable = false;
+    lensImage.src = img.currentSrc || img.src;
+    lens.appendChild(lensImage);
     container.appendChild(lens);
 
-    // Named handlers so we can properly remove them later
     function showLens() {
       if (lens && lens.parentNode) lens.style.display = 'block';
     }
 
     function moveLens(e) {
       if (!lens || !lens.parentNode) return;
-      const rect = container.getBoundingClientRect();
+      container._magnifierLastPointer = { clientX: e.clientX, clientY: e.clientY };
+      const rect = img.getBoundingClientRect();
+      const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+      const y = Math.max(0, Math.min(e.clientY - rect.top, rect.height));
+      const lw = lens.offsetWidth || 210;
+      const lh = lens.offsetHeight || 210;
 
-      // Get cursor position relative to container
-      const clientX = e.clientX;
-      const clientY = e.clientY;
-
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
-
-      // Clamp cursor inside container
-      const clampedX = Math.max(0, Math.min(x, rect.width));
-      const clampedY = Math.max(0, Math.min(y, rect.height));
-
-      // Lens dimensions
-      const lw = lens.offsetWidth || 160;
-      const lh = lens.offsetHeight || 160;
-
-      // Position lens centered on cursor, clamped so it stays within bounds
-      let lensX = clampedX - lw / 2;
-      let lensY = clampedY - lh / 2;
+      let lensX = x - lw / 2;
+      let lensY = y - lh / 2;
       lensX = Math.max(0, Math.min(lensX, rect.width - lw));
       lensY = Math.max(0, Math.min(lensY, rect.height - lh));
-
       lens.style.left = lensX + 'px';
       lens.style.top = lensY + 'px';
       lens.style.display = 'block';
 
-      // Background position: map the lens position to the zoomed image.
-      const bgW = rect.width * zoom;
-      const bgH = rect.height * zoom;
-      const bgX = -(clampedX * zoom - lw / 2);
-      const bgY = -(clampedY * zoom - lh / 2);
-
-      lens.style.backgroundImage = 'url(' + img.src + ')';
-      lens.style.backgroundSize = bgW + 'px ' + bgH + 'px';
-      lens.style.backgroundPosition = bgX + 'px ' + bgY + 'px';
+      // Recalculate for every selected image: gallery photos may have
+      // different natural widths, but the displayed gallery box is shared.
+      const activeZoom = img.naturalWidth > 0
+        ? Math.max(3, Math.min(4, img.naturalWidth / rect.width))
+        : zoom;
+      const zoomedW = rect.width * activeZoom;
+      const zoomedH = rect.height * activeZoom;
+      const imageSrc = img.currentSrc || img.src;
+      if (lensImage.src !== imageSrc) lensImage.src = imageSrc;
+      lensImage.style.width = zoomedW + 'px';
+      lensImage.style.height = zoomedH + 'px';
+      lensImage.style.left = -(x * activeZoom - lw / 2) + 'px';
+      lensImage.style.top = -(y * activeZoom - lh / 2) + 'px';
     }
 
     function hideLens() {
@@ -892,6 +1526,21 @@
   function destroyMagnifier(imgId, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
+    if (container._magnifierRetryTimer) {
+      clearTimeout(container._magnifierRetryTimer);
+      delete container._magnifierRetryTimer;
+    }
+    if (container._magnifierImageLoadHandler) {
+      const pendingImg = document.getElementById(imgId);
+      if (pendingImg) pendingImg.removeEventListener('load', container._magnifierImageLoadHandler);
+      delete container._magnifierImageLoadHandler;
+    }
+    container._magnifierImageRequestId = (container._magnifierImageRequestId || 0) + 1;
+    const img = document.getElementById(imgId);
+    if (img && container._magnifierLoadHandler) {
+      img.removeEventListener('load', container._magnifierLoadHandler);
+      delete container._magnifierLoadHandler;
+    }
     if (container._magnifierLens) {
       container._magnifierLens.remove();
       delete container._magnifierLens;
@@ -908,6 +1557,7 @@
       container.removeEventListener('mouseleave', container._magnifierHide);
       delete container._magnifierHide;
     }
+    delete container._magnifierLastPointer;
   }
 
   // ===== Mobile Image Pinch-Zoom (image only — the page never zooms) =====
@@ -917,9 +1567,9 @@
   //   - double-tap toggles a 2.5x zoom centered on the tapped spot
   //   - while zoomed, drag with one finger to pan; the image is clamped
   //     inside its own bounds
-  //   - touch-action stays 'pan-x pan-y' at 1x so normal page scrolling
-  //     over the image still works, and flips to 'none' while zoomed so
-  //     the single-finger drag pans the image instead of scrolling
+  //   - touch-action is disabled on the image surface so the browser cannot
+  //     steal the two-finger gesture for page-level zoom; one-finger panning
+  //     is handled explicitly while the image is zoomed
   //   - tapping once while zoomed returns to 1x
   function setupMobileImageZoom(imgEl, containerEl) {
     if (!imgEl || !containerEl) return;
@@ -929,7 +1579,31 @@
     let scale = 1, tx = 0, ty = 0;
     let startDist = 0, startScale = 1;
     let lastTouch = null;
+    let pinchStartMidpoint = null;
+    let pinchImagePoint = null;
     let wasPinching = false; // suppress the synthetic click after a pinch
+
+    function midpoint(touches) {
+      return {
+        x: (touches[0].clientX + touches[1].clientX) / 2,
+        y: (touches[0].clientY + touches[1].clientY) / 2
+      };
+    }
+
+    // Return the unscaled image point currently under a viewport point. The
+    // image transform uses its centre as the origin, so retaining this point
+    // while changing scale keeps the user's fingers on the same product detail.
+    function imagePointAt(clientPoint, currentTx, currentTy, currentScale) {
+      const rect = containerEl.getBoundingClientRect();
+      const baseCenterX = rect.left + containerEl.clientWidth / 2;
+      const baseCenterY = rect.top + containerEl.clientHeight / 2;
+      const iw = imgEl.offsetWidth;
+      const ih = imgEl.offsetHeight;
+      return {
+        x: ((clientPoint.x - baseCenterX - currentTx) / currentScale) + iw / 2,
+        y: ((clientPoint.y - baseCenterY - currentTy) / currentScale) + ih / 2
+      };
+    }
 
     function apply(animate) {
       imgEl.style.transition = animate ? 'transform 0.25s ease' : 'none';
@@ -948,7 +1622,7 @@
     }
     function resetZoom() {
       scale = 1; tx = 0; ty = 0;
-      containerEl.style.touchAction = 'pan-x pan-y';
+      containerEl.style.touchAction = 'pan-y';
       imgEl.style.cursor = 'zoom-in';
       apply(true);
     }
@@ -956,13 +1630,19 @@
     // Allow the caller (setMainImage / selectType) to reset after a src swap
     containerEl._resetMobileZoom = resetZoom;
 
-    containerEl.style.touchAction = 'pan-x pan-y';
+    // Keep normal vertical page scrolling available at 1x. Once a two-finger
+    // pinch starts, the handler switches this surface to `none` so the browser
+    // cannot steal the gesture for page-level zoom.
+    containerEl.style.touchAction = 'pan-y';
     containerEl.style.cursor = 'zoom-in';
 
     containerEl.addEventListener('touchstart', function(e) {
       if (e.touches.length === 2) {
         startDist = dist2(e.touches);
         startScale = scale;
+        pinchStartMidpoint = midpoint(e.touches);
+        pinchImagePoint = imagePointAt(pinchStartMidpoint, tx, ty, scale);
+        lastTouch = null;
         wasPinching = true;
       } else if (e.touches.length === 1) {
         lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -973,18 +1653,23 @@
       if (e.touches.length === 2) {
         e.preventDefault();
         const d = dist2(e.touches);
-        if (startDist > 0) {
+        if (startDist > 0 && pinchStartMidpoint && pinchImagePoint) {
           const ns = Math.max(MIN, Math.min(MAX, startScale * (d / startDist)));
+          const currentMidpoint = midpoint(e.touches);
           const rect = containerEl.getBoundingClientRect();
-          const cx = rect.width / 2, cy = rect.height / 2;
-          // Scale around the container centre so the pinch feels anchored.
-          const imgX = (cx - tx) / scale;
-          const imgY = (cy - ty) / scale;
+          const baseCenterX = rect.left + containerEl.clientWidth / 2;
+          const baseCenterY = rect.top + containerEl.clientHeight / 2;
+          const iw = imgEl.offsetWidth;
+          const ih = imgEl.offsetHeight;
+
+          // Keep the exact image pixel that was between the fingers under the
+          // moving finger midpoint. This prevents zooming into the centre (or
+          // an unrelated area) when the user pinches a detail near an edge.
           scale = ns;
-          tx = cx - imgX * scale;
-          ty = cy - imgY * scale;
+          tx = currentMidpoint.x - baseCenterX - (pinchImagePoint.x - iw / 2) * scale;
+          ty = currentMidpoint.y - baseCenterY - (pinchImagePoint.y - ih / 2) * scale;
           clampPan();
-          containerEl.style.touchAction = (scale > 1) ? 'none' : 'pan-x pan-y';
+          containerEl.style.touchAction = 'none';
           imgEl.style.cursor = (scale > 1) ? 'zoom-out' : 'zoom-in';
           apply(false);
         }
@@ -1000,8 +1685,15 @@
     }, { passive: false });
 
     containerEl.addEventListener('touchend', function(e) {
-      if (e.touches.length < 2) startDist = 0;
-      if (e.touches.length === 0) {
+      if (e.touches.length < 2) {
+        startDist = 0;
+        pinchStartMidpoint = null;
+        pinchImagePoint = null;
+      }
+      if (e.touches.length === 1) {
+        lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else if (e.touches.length === 0) {
+        lastTouch = null;
         // Clear the pinch flag a moment later so the synthetic click (if any)
         // is suppressed without blocking a genuine double-tap.
         setTimeout(function() { wasPinching = false; }, 300);
@@ -1045,48 +1737,27 @@
   }
 
   function setMainImage(index) {
-    const images = currentProduct.images || [];
+    const images = getProductGalleryImages(currentProduct);
+    if (!images.length) return;
+    const safeIndex = Math.max(0, Math.min(Number(index) || 0, images.length - 1));
     const mainImg = document.getElementById('main-image');
-    if (mainImg) mainImg.src = images[index];
-    document.querySelectorAll('.gallery-thumb').forEach((t, i) => t.classList.toggle('active', i === index));
-    currentImageIndex = index;
+    if (mainImg) mainImg.src = safeImageUrl(images[safeIndex]) || '/images/placeholder.jpg';
+    document.querySelectorAll('.gallery-thumb').forEach((t, i) => t.classList.toggle('active', i === safeIndex));
+    currentImageIndex = safeIndex;
     // Reset any mobile pinch-zoom state for the freshly swapped image
     const container = document.getElementById('magnifier-container');
     if (container && container._resetMobileZoom) container._resetMobileZoom();
-    // Re-init magnifier for the new image
-    destroyMagnifier('main-image', 'magnifier-container');
-    setupMagnifier('main-image', 'magnifier-container', 2.5);
+    // Wait for the newly selected thumbnail to finish loading before creating
+    // the lens; otherwise setupMagnifier can still see the previous image.
+    refreshMagnifierForImage(mainImg);
   }
 
   function selectType(index) {
-    const images = currentProduct.images || [];
-    const p = currentProduct;
-    const typeImages = [p.type_image, p.type_image2, p.type_image3, p.type_image4, p.type_image5];
-    const typeImage = typeImages[index];
-
-    // Highlight the selected type
+    selectedTypeIndex = index;
     document.querySelectorAll('.product-types .type-value').forEach(el => el.classList.remove('active'));
     const activeEl = document.querySelector(`.product-types .type-value[data-type-index="${index}"]`);
     if (activeEl) activeEl.classList.add('active');
-
-    // Deselect gallery thumbnails (to show that a type image is active, not a gallery thumb)
-    document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
-
-    // If this type has a specific image, show it; otherwise show default image
-    const mainImg = document.getElementById('main-image');
-    if (mainImg) {
-      if (typeImage) {
-        mainImg.src = typeImage;
-      } else if (images[0]) {
-        mainImg.src = images[0];
-      }
-      // Reset any mobile pinch-zoom state for the freshly swapped image
-      const container = document.getElementById('magnifier-container');
-      if (container && container._resetMobileZoom) container._resetMobileZoom();
-      // Re-init magnifier for the new image
-      destroyMagnifier('main-image', 'magnifier-container');
-      setupMagnifier('main-image', 'magnifier-container', 2.5);
-    }
+    resetSelectedProductImage();
   }
 
   function changeQty(delta) {
@@ -1107,12 +1778,17 @@
     let discountPercent = 0;
 
     if (qty >= 5) {
-      effectiveUnitPrice = basePrice * 0.8;
+      effectiveUnitPrice = basePrice * 0.7;
       activeTier = '3';
-      discountPercent = 20;
+      discountPercent = 30;
     } else if (qty >= 2) {
-      effectiveUnitPrice = basePrice * 0.9;
+      effectiveUnitPrice = basePrice * 0.8;
       activeTier = '2';
+      discountPercent = 20;
+    } else {
+      // Permanent 10% discount — applies even to a single item.
+      effectiveUnitPrice = basePrice * 0.9;
+      activeTier = '1';
       discountPercent = 10;
     }
 
@@ -1129,9 +1805,9 @@
     const perUnitEl = document.querySelector('.product-price-per-unit');
     if (perUnitEl) {
       if (hasDiscount) {
-        perUnitEl.innerHTML = '/ ' + (typeof t === 'function' ? t('product_piece') : 'piece') + ' <s style="color:var(--text-muted);font-size:0.75rem;">&euro;' + basePrice.toFixed(2) + '</s>';
+        perUnitEl.innerHTML = (typeof t === 'function' ? t('product_price') : 'Price') + ' <s style="color:var(--text-muted);font-size:0.75rem;">&euro;' + basePrice.toFixed(2) + '</s>';
       } else {
-        perUnitEl.textContent = typeof t === 'function' ? t('product_per_piece') : '/ piece';
+        perUnitEl.textContent = typeof t === 'function' ? t('product_price') : 'Price';
       }
     }
 
@@ -1193,30 +1869,48 @@
 
   function addProductToCart() {
     const name = currentProduct['name_' + currentLang] || currentProduct.name_en || 'Product';
-    const img = (currentProduct.images && currentProduct.images[0]) || '/images/placeholder.jpg';
+    const img = getSelectedProductImage();
     const qty = parseInt(document.getElementById('qty-input').value) || 1;
+    const selectedVariant = getSelectedVariantLabel();
 
     // Check if product is already in cart
     const existing = cart.find(item => item.id === currentProduct.id);
     if (existing) {
-      // Already in cart - just notify and don't add again
+      // Keep the cart preview aligned with the latest selected type image,
+      // even though this cart intentionally de-duplicates by product id.
+      existing.image = img;
+      existing.baseName = name;
+      existing.variantParts = getSelectedVariantParts();
+      existing.variantLabelTranslations = { ...localizedVariantLabels };
+      existing.name = getCartItemDisplayName(existing);
+      saveCart();
       showNotification((typeof t === 'function' ? t('already_in_cart') : 'Already in cart') + ' <svg class="icon icon-sm" style="color:white;vertical-align:middle;"><use href="#icon-check"/></svg>');
       return false;
     }
-    return addToCart(currentProduct.id, name, currentProduct.price, img, qty);
+    return addToCart(currentProduct.id, name + (selectedVariant ? ' — ' + selectedVariant : ''), currentProduct.price, img, qty, {
+      baseName: name,
+      variantParts: getSelectedVariantParts(),
+      variantLabelTranslations: { ...localizedVariantLabels }
+    });
   }
 
   function buyNow() {
     const name = currentProduct['name_' + currentLang] || currentProduct.name_en || 'Product';
-    const img = (currentProduct.images && currentProduct.images[0]) || '/images/placeholder.jpg';
+    const img = getSelectedProductImage();
     const qty = parseInt(document.getElementById('qty-input').value) || 1;
+    const selectedVariant = getSelectedVariantLabel();
 
     // For Buy Now, we need a single-item cart with the correct quantity.
     // Note: cart.js applies volume discounts automatically via getDiscountedPrice().
     const existing = cart.find(item => item.id === currentProduct.id);
     if (existing) {
-      // Already in cart — update quantity to match current selection, then checkout
+      // Update quantity and selected variant image before checkout.
       existing.qty = qty;
+      existing.image = img;
+      existing.baseName = name;
+      existing.variantParts = getSelectedVariantParts();
+      existing.variantLabelTranslations = { ...localizedVariantLabels };
+      existing.name = getCartItemDisplayName(existing);
       saveCart();
       window.location.href = '/checkout.html';
       return;
@@ -1224,7 +1918,11 @@
     // Clear cart, add only this product with effective price, then go to checkout
     cart = [];
     // Store base price so cart.js can apply volume discount correctly
-    addToCart(currentProduct.id, name, currentProduct.price, img, qty);
+    addToCart(currentProduct.id, name + (selectedVariant ? ' — ' + selectedVariant : ''), currentProduct.price, img, qty, {
+      baseName: name,
+      variantParts: getSelectedVariantParts(),
+      variantLabelTranslations: { ...localizedVariantLabels }
+    });
     window.location.href = '/checkout.html';
   }
 
@@ -1260,7 +1958,7 @@
         '@type': 'Offer',
         'url': 'https://www.suntrade.store/product.html?id=' + p.id,
         'priceCurrency': 'EUR',
-        'price': parseFloat(p.price).toFixed(2),
+        'price': (parseFloat(p.price) * 0.9).toFixed(2),
         'priceValidUntil': new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         'availability': p.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
         'itemCondition': 'https://schema.org/NewCondition'
@@ -1315,9 +2013,63 @@
   // "Product Overview", "Features") — our page already renders an h3
   // "Description" header above this block. Real content is in <p>, <ul>,
   // <ol>, <table>, <strong>, <em>, <img>, <br>.
+  function decodeStoredDescriptionMarkup(value) {
+    const source = String(value || '');
+    if (!/&lt;\s*\/?\s*(?:div|a|img|p|table|ul|ol|br)\b/i.test(source)) return source;
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = source;
+    return textarea.value;
+  }
+
+  function normalizeStoredDescriptionTree(html) {
+    const root = document.createElement('div');
+    root.innerHTML = decodeStoredDescriptionMarkup(html);
+    const baseHref = document.baseURI;
+    const imageAttrs = ['data-src', 'data-lazy-src', 'data-original', 'data-url', 'data-image-src', 'data-ks-lazyload'];
+    const sourceFor = el => {
+      for (const attr of imageAttrs) {
+        const value = (el.getAttribute(attr) || '').trim();
+        if (value) return value;
+      }
+      const srcset = (el.getAttribute('srcset') || '').trim();
+      if (srcset) return srcset.split(',').map(x => x.trim().split(/\s+/)[0]).filter(Boolean).pop() || '';
+      return (el.getAttribute('src') || '').trim();
+    };
+    root.querySelectorAll('[module-id], [module-title], [render="true"]').forEach(el => {
+      if (!el.parentNode) return;
+      while (el.firstChild) el.parentNode.insertBefore(el.firstChild, el);
+      el.remove();
+    });
+    root.querySelectorAll('a').forEach(a => {
+      const href = a.getAttribute('href') || '';
+      if (/(?:alibaba|aliexpress|1688|taobao|tmall|alicdn|alicompany)/i.test(href)) {
+        while (a.firstChild) a.parentNode.insertBefore(a.firstChild, a);
+        a.remove();
+      }
+    });
+    root.querySelectorAll('*').forEach(el => {
+      const source = sourceFor(el);
+      if (el.tagName === 'IMG') {
+        if (source) el.setAttribute('src', source);
+        imageAttrs.concat(['srcset']).forEach(attr => el.removeAttribute(attr));
+      } else if (source && !el.querySelector('img')) {
+        const img = document.createElement('img');
+        img.src = source;
+        if (el.style && el.style.backgroundImage) el.style.removeProperty('background-image');
+        const hasMeaningfulText = (el.textContent || '').trim().length > 0;
+        if (!hasMeaningfulText && !el.children.length) el.replaceWith(img);
+        else el.appendChild(img);
+      }
+      el.removeAttribute('module-id');
+      el.removeAttribute('module-title');
+      el.removeAttribute('render');
+    });
+    return root.innerHTML;
+  }
+
   function cleanDescriptionHtml(html) {
     if (!html || typeof html !== 'string') return '';
-    let cleaned = html
+    let cleaned = normalizeStoredDescriptionTree(html)
       // 1) HTML comments. Alibaba markup wraps their content in
       //    <!--StartFragment--> ... <!--EndFragment--> which leaves
       //    `<!` artifacts visible if we don't strip them first.
@@ -1679,18 +2431,96 @@
     }
   }
 
-  // ===== 3D Viewer Integration =====
-  function open3DViewer() {
-    if (!currentProduct || !currentProduct.images || currentProduct.images.length < 1) return;
-    if (window.Product3DViewer) {
-      Product3DViewer.open(currentProduct.images);
-    }
+  // ===== Product video =====
+  // Parses a saved video URL into { kind, id, href, thumb }. Missing or
+  // invalid URLs return null.
+  function parseVideoUrl(videoUrl) {
+    const url = String(videoUrl || '').trim();
+    if (!url) return null;
+    try {
+      const parsed = new URL(url, window.location.origin);
+      const isHttp = /^https?:$/.test(parsed.protocol);
+      const isYoutube = /(^|\.)youtube\.com$/.test(parsed.hostname) || /(^|\.)youtu\.be$/.test(parsed.hostname);
+      const isVimeo = /(^|\.)vimeo\.com$/.test(parsed.hostname);
+      const isDirectFile = /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(parsed.pathname);
+
+      if (isYoutube) {
+        let videoId = '';
+        const vParam = parsed.searchParams.get('v');
+        if (vParam) videoId = vParam;
+        else {
+          const m = parsed.pathname.match(/\/(?:embed\/|v\/|shorts\/)?([a-zA-Z0-9_-]{11})/);
+          if (m) videoId = m[1];
+        }
+        if (!videoId) return null;
+        return {
+          kind: 'youtube',
+          id: videoId,
+          href: 'https://www.youtube.com/watch?v=' + videoId,
+          thumb: 'https://img.youtube.com/vi/' + videoId + '/hqdefault.jpg'
+        };
+      }
+      if (isVimeo) {
+        const m = parsed.pathname.match(/\/(\d+)/);
+        if (!m) return null;
+        return { kind: 'vimeo', id: m[1], href: 'https://vimeo.com/' + m[1], thumb: '' };
+      }
+      if (isDirectFile || isHttp) {
+        return { kind: 'direct', id: '', href: url, thumb: '' };
+      }
+    } catch (e) { /* fall through */ }
+    return null;
   }
+
+  // Renders the "Watch video" button. Clicking it opens the video in an
+  // in-site modal (no redirect to YouTube).
+  function renderProductVideo(videoUrl) {
+    const v = parseVideoUrl(videoUrl);
+    if (!v) return '';
+    return '<button type="button" class="product-video-btn" data-video-url="' + escHtml(v.href) + '" onclick="openVideoModal(this)" aria-label="' + escHtml(t('product_watch_video')) + '">' +
+      '<span class="product-video-label"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>' + escHtml(t('product_watch_video')) + '</span>' +
+      '</button>';
+  }
+
+  // Builds the player markup shown inside the modal.
+  function renderVideoEmbed(videoUrl) {
+    const v = parseVideoUrl(videoUrl);
+    if (!v) return '';
+    if (v.kind === 'youtube') {
+      return '<iframe class="video-modal-iframe" src="https://www.youtube.com/embed/' + encodeURIComponent(v.id) + '?autoplay=1&rel=0&playsinline=1" title="Product video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+    }
+    if (v.kind === 'vimeo') {
+      return '<iframe class="video-modal-iframe" src="https://player.vimeo.com/video/' + encodeURIComponent(v.id) + '?autoplay=1" title="Product video" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+    }
+    return '<video class="video-modal-video" controls autoplay playsinline src="' + escHtml(v.href) + '"></video>';
+  }
+
+  function openVideoModal(btn) {
+    const modal = document.getElementById('video-modal');
+    const player = document.getElementById('video-modal-player');
+    if (!modal || !player) return;
+    const url = btn ? btn.getAttribute('data-video-url') : '';
+    player.innerHTML = renderVideoEmbed(url);
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeVideoModal() {
+    const modal = document.getElementById('video-modal');
+    const player = document.getElementById('video-modal-player');
+    if (modal) { modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true'); }
+    if (player) player.innerHTML = '';
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeVideoModal();
+  });
 
 </script>
 <script src="/js/chat-widget.js"></script>
 <script src="/js/user-menu.js"></script>
-<script src="/js/product-3d-viewer.js"></script>
 <script src="/js/shared-ui.js"></script>
 
 <!-- BOTTOM NAVIGATION (Mobile) -->

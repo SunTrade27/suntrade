@@ -1,9 +1,11 @@
 // ===== Volume Discount Tiers =====
-// Quantity-based discount rules (applied automatically in cart)
+// Quantity-based discount rules (applied automatically in cart). A permanent
+// 10% discount is always active — even for a single item. Larger quantities
+// get progressively bigger discounts: 2-4 pieces 20%, 5+ pieces 30%.
 const DISCOUNT_TIERS = [
-  { minQty: 1, maxQty: 1, discount: 0, label: '1' },
-  { minQty: 2, maxQty: 4, discount: 0.10, label: '2-4' },
-  { minQty: 5, maxQty: Infinity, discount: 0.20, label: '5+' }
+  { minQty: 1, maxQty: 1, discount: 0.10, label: '1' },
+  { minQty: 2, maxQty: 4, discount: 0.20, label: '2-4' },
+  { minQty: 5, maxQty: Infinity, discount: 0.30, label: '5+' }
 ];
 
 /** Get the effective (discounted) unit price for a given base price and quantity */
@@ -51,7 +53,48 @@ function saveCart() {
   updateCartBadge();
 }
 
-function addToCart(productId, name, price, image, qty = 1) {
+function escapeCartHtml(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function getCartItemDisplayName(item) {
+  if (!item) return '';
+  const baseName = item.baseName || item.name || '';
+  const parts = Array.isArray(item.variantParts) ? item.variantParts : [];
+  if (!parts.length) return item.name || baseName;
+  const labels = item.variantLabelTranslations || {};
+  const rendered = parts.map(part => {
+    const group = labels[part.group] || part.group || '';
+    const value = labels[part.value] || part.value || '';
+    return group ? group + ': ' + value : value;
+  }).filter(Boolean).join(' / ');
+  return baseName + (rendered ? ' — ' + rendered : '');
+}
+
+async function refreshCartVariantTranslations() {
+  if (typeof currentLang === 'undefined' || currentLang === 'en' ||
+      typeof ensureProductLabelTranslations !== 'function') return;
+  const items = cart.filter(item => item && item.id && Array.isArray(item.variantParts) && item.variantParts.length);
+  for (const item of items) {
+    const sourceLabels = {};
+    item.variantParts.forEach(part => {
+      if (part.group) sourceLabels[part.group] = part.group;
+      if (part.value) sourceLabels[part.value] = part.value;
+    });
+    const translated = await ensureProductLabelTranslations(item.id, currentLang, sourceLabels);
+    item.variantLabelTranslations = { ...sourceLabels, ...translated };
+    item.name = getCartItemDisplayName(item);
+  }
+  if (items.length) {
+    localStorage.setItem('suntrade_cart', JSON.stringify(cart));
+    if (typeof renderCartPage === 'function') renderCartPage();
+    if (typeof renderCheckoutItems === 'function') renderCheckoutItems();
+  }
+}
+
+function addToCart(productId, name, price, image, qty = 1, metadata = {}) {
   // Guard: reject items with empty/missing name
   if (!name || String(name).trim() === '') {
     console.error('Cannot add product without a name:', productId);
@@ -73,7 +116,20 @@ function addToCart(productId, name, price, image, qty = 1) {
     showNotification((typeof t === 'function' ? t('already_in_cart') : 'Already in cart') + ' <svg class="icon icon-sm" style="color:white;vertical-align:middle;"><use href="#icon-check"/></svg>');
     return false;
   } else {
-    cart.push({ id: productId, name: String(name), price: numPrice, image: image || '', qty: numQty });
+    const item = {
+      id: productId,
+      name: String(name),
+      baseName: metadata.baseName || String(name),
+      price: numPrice,
+      image: image || '',
+      qty: numQty
+    };
+    if (Array.isArray(metadata.variantParts) && metadata.variantParts.length) {
+      item.variantParts = metadata.variantParts;
+      item.variantLabelTranslations = metadata.variantLabelTranslations || {};
+      item.name = getCartItemDisplayName(item);
+    }
+    cart.push(item);
   }
   saveCart();
   showNotification((typeof t === 'function' ? t('product_add_cart') : 'Add to Cart') + ' <svg class="icon icon-sm" style="color:white;vertical-align:middle;"><use href="#icon-check"/></svg>');
@@ -144,7 +200,7 @@ function renderCartPage() {
     <div class="cart-item" data-id="${item.id}">
       <img src="${item.image || '/images/placeholder.jpg'}" alt="${item.name}" class="cart-item-img">
       <div class="cart-item-info">
-        <h3 class="cart-item-name">${item.name}</h3>
+        <h3 class="cart-item-name">${escapeCartHtml(getCartItemDisplayName(item))}</h3>
         <p class="cart-item-price">
           €${unitPrice.toFixed(2)}
           ${hasDiscount ? `<span class="cart-item-base-price">€${item.price.toFixed(2)}</span>` : ''}
@@ -184,4 +240,10 @@ function showNotification(message) {
   }, 2000);
 }
 
-document.addEventListener('DOMContentLoaded', updateCartBadge);
+document.addEventListener('DOMContentLoaded', () => {
+  updateCartBadge();
+  refreshCartVariantTranslations().catch(err => console.warn('[cart] initial variant label translation failed:', err));
+});
+window.addEventListener('langChanged', () => {
+  refreshCartVariantTranslations().catch(err => console.warn('[cart] variant label translation failed:', err));
+});

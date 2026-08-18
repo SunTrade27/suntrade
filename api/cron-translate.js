@@ -33,7 +33,7 @@ const TARGET_LANGS = ['kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'];
 function supabaseHeadersRead() {
   // Reads use the service-role key when available, fall back to anon
   // for dry-runs so we can at least SCAN without env vars set up.
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY;
   if (!key) {
     throw new Error('SUPABASE_SERVICE_ROLE_KEY or SUPABASE_ANON_KEY env var must be set to read products.');
   }
@@ -48,9 +48,9 @@ function supabaseHeadersWrite() {
   // Writes REQUIRE the service-role key — anon would fail RLS for
   // updates and we never want to silently fall back to a read-only
   // failure here.
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
   if (!key) {
-    throw new Error('SUPABASE_SERVICE_ROLE_KEY env var must be set to write product translations.');
+    throw new Error('SUPABASE_SERVICE_KEY or SUPABASE_SERVICE_ROLE_KEY env var must be set to write product translations.');
   }
   return {
     apikey: key,
@@ -63,10 +63,13 @@ function escStatus(s) { return (s == null ? '' : String(s)).substring(0, 200); }
 
 function needsTranslate(p) {
   if (!p.name_en || !String(p.name_en).trim()) return false;
+  const visible = (value) => String(value || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
+  const sourceName = visible(p.name_en);
+  const sourceDesc = visible(p.desc_en);
   for (const lang of TARGET_LANGS) {
     const n = (p['name_' + lang] || '').trim();
     const d = (p['desc_' + lang] || '').trim();
-    if (!n || !d) return true;
+    if (!n || visible(n) === sourceName || (sourceDesc && (!d || visible(d) === sourceDesc))) return true;
   }
   return false;
 }
@@ -99,23 +102,89 @@ async function updateProduct(id, fields) {
   return true;
 }
 
+const TRANSLATION_LANGS = ['kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'];
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+function visibleText(value) {
+  return String(value || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
+function usableTranslation(value, source) {
+  const text = String(value || '').trim();
+  return !!text && (!source || visibleText(text) !== visibleText(source));
+}
+
 async function translateOne(p) {
-  const resp = await fetch(`${process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : 'https://www.suntrade.store'}/api/translate-product`, {
+  const baseUrl = process.env.VERCEL_URL
+    ? 'https://' + process.env.VERCEL_URL
+    : 'https://www.suntrade.store';
+  const resp = await fetch(`${baseUrl}/api/translate-product`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name_en: p.name_en || '', desc_en: p.desc_en || '' })
   });
   const json = await resp.json().catch(() => ({}));
-  if (!json.success || !json.translations) {
+  if (!resp.ok || !json.success || !json.translations) {
     throw new Error(json.error || 'translate_product_failed');
   }
+
+  // Keep only genuine translations. Gemini can return a partial object or
+  // echo English for one language; those fields must be retried individually.
   const updateFields = { updated_at: new Date().toISOString() };
-  for (const [lang, data] of Object.entries(json.translations)) {
-    if (data && data.name) updateFields['name_' + lang] = data.name;
-    if (data && data.desc) updateFields['desc_' + lang] = data.desc;
+  for (const lang of TRANSLATION_LANGS) {
+    const data = json.translations[lang] || {};
+    if (usableTranslation(data.name, p.name_en)) updateFields['name_' + lang] = data.name;
+    if (p.desc_en && usableTranslation(data.desc, p.desc_en)) updateFields['desc_' + lang] = data.desc;
   }
+
+  // Complete missing languages through free mode. It uses the same Gemini
+  // single-language path first, then MyMemory/LibreTranslate, and writes to
+  // Supabase with the service key alias configured by this project.
+  for (const lang of TRANSLATION_LANGS) {
+    const nameReady = usableTranslation(updateFields['name_' + lang], p.name_en);
+    const descReady = !p.desc_en || usableTranslation(updateFields['desc_' + lang], p.desc_en);
+    if (nameReady && descReady) continue;
+
+    let translated = null;
+    for (let attempt = 1; attempt <= 2 && !translated; attempt++) {
+      try {
+        const fallbackResp = await fetch(`${baseUrl}/api/translate-product`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mode: 'free',
+            product_id: p.id,
+            target_lang: lang,
+            name_en: p.name_en || '',
+            desc_en: p.desc_en || ''
+          })
+        });
+        const fallback = await fallbackResp.json().catch(() => ({}));
+        if (fallbackResp.ok && fallback.success && fallback.translation) {
+          translated = fallback.translation;
+        }
+      } catch (err) {
+        console.warn(`[cron-translate] ${p.id}/${lang} attempt ${attempt}:`, err.message);
+      }
+      if (!translated && attempt < 2) await sleep(1500 * attempt);
+    }
+
+    if (translated) {
+      if (usableTranslation(translated.name, p.name_en)) updateFields['name_' + lang] = translated.name;
+      if (p.desc_en && usableTranslation(translated.desc, p.desc_en)) updateFields['desc_' + lang] = translated.desc;
+    }
+    // Avoid sending 11 requests as a burst to free providers.
+    await sleep(700);
+  }
+
+  const complete = TRANSLATION_LANGS.every(lang =>
+    usableTranslation(updateFields['name_' + lang], p.name_en) &&
+    (!p.desc_en || usableTranslation(updateFields['desc_' + lang], p.desc_en))
+  );
+  if (!complete) throw new Error('partial_translations');
+
   await updateProduct(p.id, updateFields);
-  return Object.keys(json.translations).length;
+  return TRANSLATION_LANGS.length;
 }
 
 module.exports = async function handler(req, res) {

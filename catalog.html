@@ -12,6 +12,7 @@
   <link rel="alternate" hreflang="kk" href="https://www.suntrade.store/catalog.html" />
   <link rel="alternate" hreflang="x-default" href="https://www.suntrade.store/catalog.html" />
   <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/theme.js"></script>
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/icons.js"></script>
@@ -32,13 +33,14 @@
       <li><a href="/catalog.html" class="active" data-i18n="nav_catalog">Catalog</a></li>
       <li><a href="/analytics.html" data-i18n="nav_analytics">Analytics</a></li>
       <li><a href="/cart.html" data-i18n="nav_cart">Cart</a></li>
+      <li class="theme-menu-item"><button type="button" class="theme-toggle" aria-pressed="false"><svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="theme-toggle-label">Dark mode</span></button></li>
     </ul>
     <div class="nav-right">
       <div class="lang-wrapper">
         <button id="lang-toggle"><svg class="icon icon-md" style="vertical-align:middle"><use href="#icon-globe"/></svg> EN</button>
         <div id="lang-dropdown"></div>
       </div>
-      <a href="/cart.html" class="cart-link">
+      <a href="/cart.html" class="cart-link top-nav-cart">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
         <span id="cart-badge">0</span>
       </a>
@@ -46,7 +48,8 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
       </a>
       <div id="user-menu-container"></div>
-      <button class="mobile-menu-btn" onclick="document.getElementById('nav-links').classList.toggle('show')">
+      <button type="button" class="theme-toggle theme-toggle-desktop" aria-pressed="false" aria-label="Switch to dark mode" title="Switch to dark mode"><svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="theme-toggle-label">Dark mode</span></button>
+      <button class="mobile-menu-btn" aria-expanded="false" onclick="var n=document.getElementById('nav-links'); var open=n.classList.toggle('show'); this.setAttribute('aria-expanded', String(open));">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
     </div>
@@ -102,8 +105,8 @@
     </div>
     <div class="footer-col">
       <h4 data-i18n="footer_follow">Follow Us</h4>
-      <a href="https://www.instagram.com/sunna_china?igsh=OTF4aHY2c29yaXZw" target="_blank" rel="noopener">Instagram</a>
-      <a href="https://www.tiktok.com/@sunna_china?_r=1&_t=ZS-970idOL3jE2" target="_blank" rel="noopener">TikTok</a>
+      <a href="https://www.instagram.com/suntrade.store/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.threads.com/@suntrade.store?xmt=AQG0HqVI9qERwOHL9wR5-KrYhAPH5adKgD4JHMp26W9Y6Yw" target="_blank" rel="noopener">Threads</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -242,37 +245,6 @@
 
     if (countEl) countEl.textContent = products.length + ' products';
 
-    // ===== On-demand free translation (no AI / no LLM) =====
-    // Catalog product names default to English on products that don't yet have
-    // a name_XX column. After the page paints we kick off a sequential
-    // background translation through /api/translate-product (mode: free)
-    // — driven by MyMemory → LibreTranslate under the hood (no AI / no LLM).
-    // LibreTranslate). Each translation is also written back to Supabase
-    // server-side, so subsequent visitors get an instant hit from cache.
-    // The list is processed one-by-one with an 800 ms stagger so a grid of
-    // 30 products stays well under the free APIs' rate limits.
-    if (typeof ensureProductsTranslated === 'function' && currentLang !== 'en') {
-      ensureProductsTranslated(products, currentLang, {
-        staggerMs: 800,
-        onUpdate: (p, t) => {
-          if (!t || !t.name) return;
-          // Patch the DOM card for this product in place — no re-render,
-          // no scroll reset, no image reflow.
-          const card = grid.querySelector(
-            '.wishlist-btn[data-product-id="' + p.id + '"]'
-          )?.closest('.product-card');
-          if (!card) return;
-          const newName = t.name;
-          const nameEl = card.querySelector('.product-card-name');
-          if (nameEl) nameEl.textContent = newName;
-          const imgEl = card.querySelector('img.product-card-img');
-          if (imgEl) imgEl.alt = newName;
-          const linkEl = card.querySelector('.product-card-link');
-          if (linkEl) linkEl.setAttribute('aria-label', newName);
-        }
-      });
-    }
-
     grid.innerHTML = products.map(p => {
       const name = p['name_' + currentLang] || p.name_en || 'Product';
       const safeName = name.replace(/'/g, "&#39;");
@@ -288,7 +260,7 @@
           </div>
           <div class="product-card-body">
             <h3 class="product-card-name">${name}</h3>
-            <p class="product-card-price">&euro;${parseFloat(p.price).toFixed(2)}</p>
+            <p class="product-card-price"><span class="card-price-off">&euro;${(parseFloat(p.price) * 0.9).toFixed(2)}</span> <s class="card-price-base">&euro;${parseFloat(p.price).toFixed(2)}</s> <span class="card-discount-badge">-10%</span></p>
             <button class="product-card-btn" onclick="event.preventDefault(); event.stopPropagation(); addToCart('${p.id}', '${safeName}', ${p.price}, '${img}');">
               <span data-i18n="product_add_cart">${(typeof t === 'function' && translations && translations.product_add_cart) ? t('product_add_cart') : 'Add to Cart'}</span>
             </button>
@@ -296,6 +268,34 @@
         </div>
       `;
     }).join('');
+
+    // ===== On-demand free translation (no AI / no LLM) =====
+    // Render the cards BEFORE starting the requests. Otherwise the async
+    // callback can return while the grid is still empty and has no card to
+    // patch, leaving the English fallback visible after a language switch.
+    // The helper also updates each product object, so later re-renders use the
+    // cached translation immediately.
+    const translationLang = currentLang;
+    if (typeof ensureProductsTranslated === 'function' && translationLang !== 'en') {
+      ensureProductsTranslated(products, translationLang, {
+        staggerMs: 800,
+        onUpdate: (p, translation) => {
+          // Ignore a slow response for an older language selection.
+          if (currentLang !== translationLang || !translation || !translation.name) return;
+          const card = grid.querySelector(
+            '.wishlist-btn[data-product-id="' + p.id + '"]'
+          )?.closest('.product-card');
+          if (!card) return;
+          const nameEl = card.querySelector('.product-card-name');
+          if (nameEl) nameEl.textContent = translation.name;
+          const imgEl = card.querySelector('img.product-card-img');
+          if (imgEl) imgEl.alt = translation.name;
+          const linkEl = card.querySelector('.product-card-link');
+          if (linkEl) linkEl.setAttribute('aria-label', translation.name);
+        }
+      });
+    }
+
     applyTranslations();
     // Update wishlist button states
     FavoritesManager.updateButtons();

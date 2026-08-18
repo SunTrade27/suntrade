@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin - SunTrade</title>
   <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/theme.js"></script>
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
@@ -407,7 +408,7 @@
 }
 .product-type-row {
   display: grid;
-  grid-template-columns: minmax(120px, 1.2fr) minmax(120px, 1fr) minmax(90px, 0.8fr) auto;
+  grid-template-columns: auto minmax(120px, 1.2fr) minmax(120px, 1fr) minmax(90px, 0.8fr) minmax(88px, 0.75fr) auto;
   gap: 0.5rem;
   align-items: center;
   padding: 0.55rem 0.6rem;
@@ -570,7 +571,7 @@
 }
 .option-row {
   display: grid;
-  grid-template-columns: minmax(110px, 1.4fr) minmax(60px, 0.6fr) minmax(110px, 0.9fr) auto;
+  grid-template-columns: minmax(110px, 1.25fr) minmax(60px, 0.6fr) minmax(110px, 0.9fr) 64px auto;
   gap: 0.4rem;
   align-items: center;
 }
@@ -614,6 +615,89 @@
 .option-row .opt-remove:hover {
   background: rgba(239,68,68,0.20);
 }
+
+/* A compact option/type image picker. The original URL is saved; this is
+   only a thumbnail in the admin editor. */
+.option-image-upload {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(255,107,0,0.55);
+  border-radius: 8px;
+  background: rgba(255,107,0,0.06);
+  color: #FF6B00;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.18s, transform 0.18s, background 0.18s;
+}
+.option-image-upload:hover {
+  border-color: #FF6B00;
+  background: rgba(255,107,0,0.13);
+  transform: translateY(-1px);
+}
+.option-image-upload input[type=file] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.option-image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.option-image-empty { font-size: 1.2rem; line-height: 1; pointer-events: none; }
+.option-image-status {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(17,24,39,0.72);
+  color: #fff;
+  font-size: 0.62rem;
+  z-index: 2;
+}
+.type-image-cell { display: flex; align-items: center; gap: 0.3rem; min-width: 0; }
+.type-image-cell .option-image-upload { width: 54px; height: 54px; }
+.remove-option-image {
+  border: 0;
+  background: transparent;
+  color: #EF4444;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 2px;
+  opacity: 0.85;
+}
+.remove-option-image:hover { opacity: 1; transform: scale(1.08); }
+.remove-bg-type-btn {
+  border: 1px solid rgba(255,107,0,0.45);
+  background: rgba(255,107,0,0.08);
+  color: #FF6B00;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1.15;
+  padding: 4px 6px;
+  white-space: normal;
+  max-width: 92px;
+}
+.remove-bg-type-btn:hover { background: rgba(255,107,0,0.18); }
+.remove-bg-type-btn:disabled { opacity: 0.55; cursor: wait; }
+@media (max-width: 640px) {
+  .product-type-row { grid-template-columns: 1fr 1fr; }
+  .product-type-row .type-row-number { grid-column: 1 / -1; }
+  .product-type-row .product-type-field:first-of-type { grid-column: 1 / -1; }
+  .product-type-row .type-image-cell { grid-column: 1 / -1; }
+  .option-row { grid-template-columns: 1fr 1fr auto; }
+  .option-row .opt-hex-wrap { grid-column: 1 / -1; }
+  .option-row .opt-image-wrap { grid-column: 1 / -1; }
+}
 .option-group-card .add-option-row-btn {
   align-self: flex-start;
   font-size: 0.7rem;
@@ -631,6 +715,7 @@
 .option-group-card .add-option-row-btn:hover {
   background: rgba(255,107,0,0.12);
 }
+
 @media (max-width: 640px) {
   .option-row {
     grid-template-columns: 1fr 1fr auto;
@@ -757,6 +842,7 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <h1 id="admin-page-title" data-i18n="admin_dashboard">Dashboard</h1>
+      <button type="button" class="theme-toggle admin-theme-toggle" aria-pressed="false" aria-label="Switch to dark mode" title="Switch to dark mode"><svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="theme-toggle-label">Dark mode</span></button>
       <div class="lang-wrapper">
         <button id="lang-toggle"><svg class="icon icon-md" style="vertical-align:middle"><use href="#icon-globe"/></svg> EN</button>
         <div id="lang-dropdown"></div>
@@ -803,7 +889,7 @@
         </div>
       </div>
       <div id="batch-translate-status" style="display:none;margin-bottom:1rem;padding:0.75rem 1rem;border-radius:8px;font-size:0.9rem;"></div>
-      <div id="products-table"></div>
+      <div id="products-table" class="admin-table-wrap"></div>
       <div id="products-cards" class="admin-products-cards"></div>
     </div>
 
@@ -915,7 +1001,10 @@
            variants on the fly. The first variant's values still mirror
            into the legacy ptype / pprice / pstock hidden fields so
            catalog, product, cart, and checkout keep reading them. -->
-      <div class="form-group">
+      <!-- Product types section hidden — variants are managed via option groups now.
+           The legacy hidden fields below still mirror the first variant for
+           backward compat with catalog / product / cart / checkout code. -->
+      <div class="form-group" style="display:none;" id="product-types-wrap">
         <label style="display:flex;align-items:center;gap:0.4rem;">
           <svg class="icon icon-sm" style="color:var(--primary);"><use href="#icon-package"/></svg>
           <span data-i18n="admin_product_variants">Product variants (Type 1, Type 2, ...)</span>
@@ -942,7 +1031,7 @@
         <div id="image-upload-zone" style="border:2px dashed var(--border);border-radius:var(--radius);padding:2rem;text-align:center;cursor:pointer;transition:var(--transition);margin-bottom:1rem;position:relative;">
           <div id="upload-icon" style="margin-bottom:0.5rem;"><svg class="icon icon-xxl" style="color:var(--text-muted)"><use href="#icon-camera"/></svg></div>
           <p style="color:var(--text-light);font-size:0.9rem;">Drag & drop images here or click to upload</p>
-          <input type="file" id="image-file-input" accept="image/*" multiple style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;">
+          <input type="file" id="image-file-input" accept="image/*,image/avif,.avif" multiple style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;">
         </div>
         <div id="uploaded-images-preview" style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.25rem;"></div>
         <p class="images-reorder-hint" data-i18n="admin_product_images_reorder_hint">Drag thumbnails to reorder — the first image is the main one.</p>
@@ -961,6 +1050,26 @@
           <summary style="cursor:pointer;font-size:0.85rem;color:var(--text-light);">Or add image URLs manually</summary>
           <textarea id="pimages" rows="2" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:var(--radius-sm);resize:vertical;margin-top:0.5rem;" placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"></textarea>
         </details>
+      </div>
+
+      <!-- ===== Product video =====.
+           Optional: a YouTube/Vimeo link or a direct MP4/WebM file URL. Shown
+           on the product page above the photo gallery. -->
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:0.4rem;">
+          <svg class="icon icon-sm" style="color:var(--primary);"><use href="#icon-video"/></svg>
+          <span data-i18n="admin_product_video">Product video (optional)</span>
+        </label>
+        <input type="url" id="pvideo" placeholder="https://www.youtube.com/watch?v=...  or  https://example.com/product.mp4" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:var(--radius-sm);" value="">
+        <div style="display:flex;gap:0.5rem;margin-top:0.5rem;align-items:center;flex-wrap:wrap;">
+          <label for="pvideo-file" style="display:inline-flex;align-items:center;gap:0.3rem;padding:8px 14px;background:rgba(255,107,0,0.08);border:1px solid rgba(255,107,0,0.45);border-radius:8px;color:#FF6B00;font-size:0.82rem;font-weight:600;cursor:pointer;transition:background 0.15s;white-space:nowrap;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Видео жүктеу
+          </label>
+          <input type="file" id="pvideo-file" accept="video/mp4,video/webm,video/ogg,.mp4,.webm,.ogg,.mov" style="display:none;" onchange="handleVideoUpload(this.files)">
+          <span id="video-upload-status" style="font-size:0.78rem;"></span>
+        </div>
+        <div style="color:var(--text-light);font-size:0.78rem;margin-top:0.35rem;">YouTube / Vimeo сілтемесі, MP4/ WebM файл сілтемесі немесе жоғарыдағы жүктеу батырмасын пайдаланыңыз.</div>
       </div>
 
       <!-- ===== Option groups (Alibaba-style) =====.
@@ -1008,6 +1117,7 @@
   // Sortable.js instance for the uploaded-images preview grid. Re-created
   // every time updateImagePreview() runs so it always reflects the latest DOM.
   let uploadedImagesSortable = null;
+  let pendingOptionImageUploads = 0;
 
   document.addEventListener('DOMContentLoaded', async () => {
     // Wait for supabase to init with retry
@@ -1032,6 +1142,7 @@
         if (session) {
           const admin = await isUserAdmin();
           if (admin) {
+            await requireAdminMfa();
             showAdminPanel();
           } else {
             document.getElementById('login-page').style.display = 'flex';
@@ -1069,6 +1180,40 @@
     }
   });
 
+  function isSupportedImageFile(file) {
+    if (!file) return false;
+    const type = String(file.type || '').toLowerCase();
+    const name = String(file.name || '').toLowerCase();
+    // Some Windows/browser combinations report AVIF as an empty or generic
+    // MIME type. The extension fallback keeps those files uploadable too.
+    return type.startsWith('image/') || type === 'image/avif' || /\.avif$/i.test(name);
+  }
+
+  /** Upload a video file to Supabase Storage (product-videos bucket) and
+      write the resulting public URL into the video URL input. */
+  async function handleVideoUpload(files) {
+    const file = files && files[0];
+    if (!file) return;
+    const statusEl = document.getElementById('video-upload-status');
+    const videoInput = document.getElementById('pvideo');
+    statusEl.textContent = 'Жүктелуде...';
+    statusEl.style.color = '#FF6B00';
+    try {
+      const url = await uploadVideo(file);
+      videoInput.value = url;
+      statusEl.textContent = '✅ Видео жүктелді!';
+      statusEl.style.color = '#10B981';
+      setTimeout(() => { statusEl.textContent = ''; }, 3000);
+    } catch (err) {
+      console.error('Video upload error:', err);
+      statusEl.textContent = '❌ Қате: ' + err.message;
+      statusEl.style.color = '#EF4444';
+    }
+    // Reset the file input so the same file can be re-selected if needed
+    const fileInput = document.getElementById('pvideo-file');
+    if (fileInput) fileInput.value = '';
+  }
+
   async function handleImageFiles(files) {
     const autoRemove = document.getElementById('auto-bg-remove').checked;
     const statusEl = document.getElementById('bg-remove-status');
@@ -1076,7 +1221,7 @@
     const previewEl = document.getElementById('uploaded-images-preview');
 
     for (const file of files) {
-      if (!file.type.startsWith('image/')) continue;
+      if (!isSupportedImageFile(file)) continue;
 
       try {
         // Upload to Supabase Storage
@@ -1096,7 +1241,7 @@
           const resp = await fetch('/api/remove-bg', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ imageBase64: base64.split(',')[1] })
+            body: JSON.stringify({ imageBase64: base64.split(',')[1], imageMime: getImageContentType(file) })
           });
           progressEl.style.width = '80%';
 
@@ -1204,6 +1349,7 @@
       );
       const admin = await isUserAdmin();
       if (admin) {
+        await requireAdminMfa();
         showAdminPanel();
       } else {
         await adminLogout();
@@ -1367,7 +1513,7 @@
         <tbody id="products-sortable-body">${products.map(p => `
           <tr data-id="${p.id}">
             <td><span class="drag-handle" title="Drag to reorder">☰</span><img src="${(p.images && p.images[0]) || '/images/placeholder.jpg'}" style="width:50px;height:50px;object-fit:cover;border-radius:8px;"></td>
-            <td>${p.name_en || 'Unnamed'}</td>
+            <td class="admin-product-name" data-product-id="${p.id}">${escapeHtml(p['name_' + currentLang] || p.name_en || 'Unnamed')}</td>
             <td>€${parseFloat(p.price).toFixed(2)}</td>
             <td>${p.stock}</td>
             <td>${p.active ? '<svg class="icon icon-md" style="color:#22C55E"><use href="#icon-check"/></svg>' : '<svg class="icon icon-md" style="color:var(--danger)"><use href="#icon-x"/></svg>'}</td>
@@ -1383,7 +1529,7 @@
     // Mobile: card view
     cardsContainer.innerHTML = products.map(p => {
       const img = (p.images && p.images[0]) || '/images/placeholder.jpg';
-      const name = p.name_en || 'Unnamed';
+      const name = p['name_' + currentLang] || p.name_en || 'Unnamed';
       const statusClass = p.active ? 'active' : 'inactive';
       const statusLabel = p.active ? (typeof t === 'function' ? t('active_label') : 'Active') : (typeof t === 'function' ? t('inactive_label') : 'Inactive');
       const stockLabel = typeof t === 'function' ? t('admin_product_stock') : 'Stock';
@@ -1392,7 +1538,7 @@
           <span class="drag-handle" title="Drag to reorder" style="writing-mode:vertical-rl;">☰</span>
           <img class="product-row-card-img" src="${img}" alt="${escapeHtml(name)}" loading="lazy">
           <div class="product-row-card-info">
-            <div class="product-row-card-name">${escapeHtml(name)}</div>
+            <div class="product-row-card-name admin-product-name" data-product-id="${p.id}">${escapeHtml(name)}</div>
             <div class="product-row-card-meta">
               <span><strong>€${parseFloat(p.price).toFixed(2)}</strong></span>
               <span>${stockLabel}: ${p.stock}</span>
@@ -1409,6 +1555,22 @@
 
     // Initialize drag-and-drop reordering
     initProductSortable();
+
+    // Translate missing product fields for the language currently selected in
+    // the site switcher. The list is already rendered, so async results can
+    // patch the visible admin rows/cards without resetting scroll position.
+    const translationLang = currentLang;
+    if (translationLang !== 'en' && typeof ensureProductsTranslated === 'function') {
+      ensureProductsTranslated(products, translationLang, {
+        staggerMs: 800,
+        onUpdate: (p, translation) => {
+          if (currentLang !== translationLang || !translation || !translation.name) return;
+          document.querySelectorAll('.admin-product-name[data-product-id="' + p.id + '"]').forEach(el => {
+            el.textContent = translation.name;
+          });
+        }
+      });
+    }
   }
 
   // ===== Drag-and-Drop Product Reordering =====
@@ -1720,10 +1882,13 @@
     currentLangTab = lang;
     document.querySelectorAll('.lang-tab').forEach(b => b.classList.toggle('active', b.textContent.trim().toLowerCase() === lang));
 
-    // Save current visible editor content to raw textarea
+    // Save current visible editor content to raw textarea. During product
+    // loading the visible editor still belongs to the previous product, so it
+    // must not overwrite the freshly loaded dataset values.
+    const productForm = document.getElementById('product-form');
     const currentEditor = document.querySelector('.desc-editor[contenteditable]');
     const currentLangAttr = currentEditor ? currentEditor.dataset.lang : '';
-    if (currentLangAttr && currentEditor) {
+    if (currentLangAttr && currentEditor && !productForm?.dataset.loadingProduct) {
       const rawTextarea = document.getElementById('pdesc-' + currentLangAttr + '-raw');
       if (rawTextarea) {
         rawTextarea.value = currentEditor.innerHTML;
@@ -1734,16 +1899,25 @@
       }
     }
 
+    const currentNameInput = document.getElementById('pname-' + currentLangAttr);
+    if (productForm && currentLangAttr && !productForm.dataset.loadingProduct) {
+      if (currentNameInput) productForm.dataset['name_' + currentLangAttr] = currentNameInput.value;
+      if (currentEditor) productForm.dataset['desc_' + currentLangAttr] = currentEditor.innerHTML;
+    }
+
     const nameInput = document.getElementById('pname-' + lang);
     const fieldsDiv = document.getElementById('lang-fields');
+    const storedName = productForm && productForm.dataset['name_' + lang];
+    const nameValue = storedName !== undefined ? storedName : (nameInput ? nameInput.value : '');
 
     const descRaw = document.getElementById('pdesc-' + lang + '-raw');
-    const descHtml = descRaw ? descRaw.value : '';
+    const storedDesc = productForm && productForm.dataset['desc_' + lang];
+    const descHtml = storedDesc !== undefined ? storedDesc : (descRaw ? descRaw.value : '');
 
     fieldsDiv.innerHTML = `
       <div class="form-group">
         <label>Product Name (${lang.toUpperCase()})</label>
-        <input type="text" id="pname-${lang}" value="${nameInput ? nameInput.value.replace(/"/g, '&quot;') : ''}">
+        <input type="text" id="pname-${lang}" value="${String(nameValue || '').replace(/"/g, '&quot;')}">
       </div>
       <div class="form-group">
         <label>Description (${lang.toUpperCase()})</label>
@@ -1882,6 +2056,17 @@
   }  async function openProductModal(product) {
     const modal = document.getElementById('product-modal');
     modal.style.display = 'flex';
+    const productForm = document.getElementById('product-form');
+    if (productForm) {
+      // Prevent switchLangTab() from committing the stale editor that belongs
+      // to the product opened immediately before this one. All fields are
+      // loaded first, then the visible language tab is rendered from dataset.
+      productForm.dataset.loadingProduct = 'true';
+      // Keep the English source that was loaded into the editor. If it changes,
+      // the old target-language values must be cleared and regenerated.
+      productForm.dataset.originalNameEn = product ? (product.name_en || '') : '';
+      productForm.dataset.originalDescEn = product ? (product.desc_en || '') : '';
+    }
     uploadedImageUrls = [];
     document.getElementById('uploaded-images-preview').innerHTML = '';
 
@@ -1895,43 +2080,90 @@
       document.getElementById('modal-title').textContent = t('admin_edit_product');
       document.getElementById('product-id').value = product.id;
       document.getElementById('pactive').checked = product.active;
-      // uploadedImageUrls is the single source of truth for all product images
-      // (whether they came from the original product or were newly uploaded).
-      // Removing from the preview actually removes them on save.
-      uploadedImageUrls = (product.images || []).slice();
+      // Keep all images in order — first image is the main product photo,
+      // followed by any type/variant images in sequence. No filtering.
+      uploadedImageUrls = (Array.isArray(product.images) ? product.images : [])
+        .map(url => String(url || '').trim())
+        .filter(Boolean);
       document.getElementById('pimages').value = uploadedImageUrls.join('\n');
       updateImagePreview();
+      const pvideoEl = document.getElementById('pvideo');
+      if (pvideoEl) pvideoEl.value = String(product.video_url || '').trim();
+      if (productForm) productForm.dataset.originalVideoUrl = String(product.video_url || '').trim();
       // Fill all lang fields - both visible inputs and raw textareas
       ['en','kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'].forEach(lang => {
         const nameEl = document.getElementById('pname-' + lang);
         const descRaw = document.getElementById('pdesc-' + lang + '-raw');
-        if (nameEl) nameEl.value = product['name_' + lang] || '';
-        if (descRaw) descRaw.value = product['desc_' + lang] || '';
+        const nameValue = product['name_' + lang] || '';
+        const descValue = product['desc_' + lang] || '';
+        if (nameEl) nameEl.value = nameValue;
+        if (descRaw) descRaw.value = descValue;
+        if (productForm) {
+          productForm.dataset['name_' + lang] = nameValue;
+          productForm.dataset['desc_' + lang] = descValue;
+        }
       });
       // Prefer the new types[] array; if it's empty (legacy product) we
       // manufacture one row from the existing flat price/stock/type
       // columns so the admin still sees a usable editor.
-      const variants = (Array.isArray(product.types) && product.types.length)
-        ? product.types
-        : [{ label: product.type || 'Default', price: product.price, stock: product.stock }];
+      const legacyTypeImages = [product.type_image, product.type_image2, product.type_image3, product.type_image4, product.type_image5];
+      const legacyTypeLabel = String(product.type || '').trim();
+      // Older products used `Default` (and later `Type 1`) as an automatic
+      // placeholder. Do not bring that placeholder back into the editor as a
+      // real variant; the row still carries the legacy price/stock values.
+      const legacyTypeWasImplicit = /^(?:default|type\s*1)$/i.test(legacyTypeLabel) &&
+        !product.type2 && !product.type3 && !product.type4 && !product.type5 &&
+        !legacyTypeImages.some(Boolean);
+      const storedTypes = Array.isArray(product.types) ? product.types : [];
+      const storedTypeLabels = storedTypes.map(v => String(v?.label || '').trim());
+      const storedTypesWereImplicit = storedTypes.length === 1 &&
+        /^(?:default|type\s*1)$/i.test(storedTypeLabels[0]) &&
+        !storedTypes[0]?.image && !storedTypes[0]?.image_url &&
+        !legacyTypeImages.some(Boolean);
+      const variants = storedTypes.length && !storedTypesWereImplicit
+        ? storedTypes.map((v, i) => ({ ...v, image: v.image || v.image_url || legacyTypeImages[i] || '' }))
+        : [{ label: legacyTypeWasImplicit || storedTypesWereImplicit ? '' : legacyTypeLabel, price: product.price, stock: product.stock, image: product.type_image || '' }];
       loadProductTypes(variants);
       // Option groups (Alibaba-style) — load from product.option_groups if present.
       loadOptionGroups(product.option_groups);
     } else {
       document.getElementById('modal-title').textContent = t('admin_add_product');
-      document.getElementById('product-form').reset();
+      const newProductForm = document.getElementById('product-form');
+      newProductForm.reset();
+      // reset() does not clear contenteditable elements or values held by the
+      // language-tab cache. Clear every language field explicitly so opening
+      // "Add Product" can never show the previous product's description.
+      newProductForm.querySelectorAll('[id^="pname-"]').forEach(input => { input.value = ''; });
+      newProductForm.querySelectorAll('[id^="pdesc-"][id$="-raw"]').forEach(textarea => { textarea.value = ''; });
+      newProductForm.querySelectorAll('.desc-editor[contenteditable]').forEach(editor => { editor.innerHTML = ''; });
       document.getElementById('product-id').value = '';
       document.getElementById('pactive').checked = true;
+      if (productForm) {
+        // Clear cached per-language values from a previously edited product.
+        Object.keys(productForm.dataset).forEach(key => {
+          if (/^(name|desc)_/.test(key)) delete productForm.dataset[key];
+        });
+        productForm.dataset.originalNameEn = '';
+        productForm.dataset.originalDescEn = '';
+      }
       uploadedImageUrls = [];
       document.getElementById('pimages').value = '';
       updateImagePreview();
-      // New products start with one blank Type 1 row so the form is
-      // immediately usable without the admin having to click +.
+      const pvideoEl = document.getElementById('pvideo');
+      if (pvideoEl) pvideoEl.value = '';
+      if (productForm) productForm.dataset.originalVideoUrl = '';
+      // New products start with one blank price/stock row. Its empty label is
+      // intentional: saving without entering a type must remain type-less.
       loadProductTypes([{ label: '', price: '', stock: '' }]);
       // And one blank option group row.
       loadOptionGroups([{ name: '', type: 'text', options: [{ label: '', price_mod: 0, color_hex: '' }] }]);
     }
     switchLangTab('en');
+    // switchLangTab renders the visible editor from the cached per-language
+    // values; sync once more after that render to keep the hidden raw field in
+    // lockstep with what the admin sees.
+    syncAllDescriptionEditors();
+    if (productForm) delete productForm.dataset.loadingProduct;
   }
 
   // ===== Product variants editor (Type 1, Type 2, ...) =====
@@ -1962,11 +2194,23 @@
         '<label data-i18n="admin_product_stock">Stock</label>' +
         '<input type="number" class="pstock-input" min="0" value="' + escapeAttr(prefill.stock === '' || prefill.stock == null ? '' : prefill.stock) + '">' +
       '</div>' +
+      '<div class="type-image-cell" title="Product image for this type">' +
+        '<label class="option-image-upload" title="Add image for this type">' +
+          '<img class="option-image-preview" src="' + escapeAttr(prefill.image || prefill.image_url || '') + '" alt="" style="display:' + ((prefill.image || prefill.image_url) ? 'block' : 'none') + ';">' +
+          '<span class="option-image-empty" style="display:' + ((prefill.image || prefill.image_url) ? 'none' : 'inline') + ';">＋</span>' +
+          '<span class="option-image-status">…</span>' +
+          '<input type="file" accept="image/*,image/avif,.avif" onchange="handleOptionImageFile(this)">' +
+        '</label>' +
+        '<button type="button" class="remove-option-image" onclick="removeOptionImage(this)" title="Remove type image" aria-label="Remove type image">×</button>' +
+        '<button type="button" class="remove-bg-type-btn" onclick="removeTypeImageBackground(this)" data-i18n="remove_background" title="Remove image background">Remove background</button>' +
+      '</div>' +
       '<button type="button" class="remove-type-btn" onclick="removeProductTypeRow(this)" title="' + escapeAttr(typeof t === 'function' ? (t('admin_product_remove_variant') || 'Remove variant') : 'Remove variant') + '" aria-label="Remove variant">' +
         '<svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M12 5v14"/></svg>' +
       '</button>';
     list.appendChild(row);
+    row.dataset.image = prefill.image || prefill.image_url || '';
     refreshVariantNumbering();
+    if (typeof refreshApplyI18n === 'function') refreshApplyI18n();
   }
 
   function removeProductTypeRow(btn) {
@@ -2006,23 +2250,32 @@
     }
   }
 
+  function readProductTypeRow(row) {
+    if (!row) return { label: '', price: 0, stock: 0, image: '' };
+    const label = row.querySelector('.ptype-input')?.value.trim() || '';
+    const price = parseFloat(row.querySelector('.pprice-input')?.value);
+    const stock = parseInt(row.querySelector('.pstock-input')?.value, 10);
+    return {
+      label,
+      price: isFinite(price) && price >= 0 ? price : 0,
+      stock: isFinite(stock) && stock >= 0 ? stock : 0,
+      image: row.dataset.image || ''
+    };
+  }
+
+  function getProductBaseValues() {
+    const row = document.querySelector('#product-types-list .product-type-row');
+    return readProductTypeRow(row);
+  }
+
   function collectProductTypes() {
     const list = document.getElementById('product-types-list');
     if (!list) return [];
-    const out = [];
-    Array.from(list.querySelectorAll('.product-type-row')).forEach(function(row) {
-      const label = row.querySelector('.ptype-input')?.value.trim() || '';
-      const priceRaw = row.querySelector('.pprice-input')?.value;
-      const stockRaw = row.querySelector('.pstock-input')?.value;
-      const price = parseFloat(priceRaw);
-      const stock = parseInt(stockRaw, 10);
-      out.push({
-        label: label || 'Type ' + (out.length + 1),
-        price: isFinite(price) && price >= 0 ? price : 0,
-        stock: isFinite(stock) && stock >= 0 ? stock : 0
-      });
-    });
-    return out;
+    // A blank row is only the price/stock editor for a product without
+    // variants. It must never become an invented "Type 1" or "Default".
+    return Array.from(list.querySelectorAll('.product-type-row'))
+      .map(readProductTypeRow)
+      .filter(variant => variant.label);
   }
 
   function loadProductTypes(types) {
@@ -2110,10 +2363,20 @@
         '<input type="color" class="opt-hex" value="' + escapeAttr(prefill.color_hex || '#888888') + '" title="Color swatch (optional)">' +
         '<input type="text" class="opt-hexhex" placeholder="#hex" value="' + escapeAttr(prefill.color_hex || '') + '" style="flex:1;min-width:0;font-size:0.72rem;padding:5px 8px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.10);border-radius:6px;color:rgba(255,255,255,0.85);">' +
       '</div>' +
+      '<div class="opt-image-wrap" style="display:flex;align-items:center;gap:0.2rem;">' +
+        '<label class="option-image-upload" title="Add image for this option">' +
+          '<img class="option-image-preview" src="' + escapeAttr(prefill.image || prefill.image_url || '') + '" alt="" style="display:' + ((prefill.image || prefill.image_url) ? 'block' : 'none') + ';">' +
+          '<span class="option-image-empty" style="display:' + ((prefill.image || prefill.image_url) ? 'none' : 'inline') + ';">＋</span>' +
+          '<span class="option-image-status">…</span>' +
+          '<input type="file" accept="image/*,image/avif,.avif" onchange="handleOptionImageFile(this)">' +
+        '</label>' +
+        '<button type="button" class="remove-option-image" onclick="removeOptionImage(this)" title="Remove option image" aria-label="Remove option image">×</button>' +
+      '</div>' +
       '<button type="button" class="opt-remove" onclick="removeOptionRow(this)" title="' + escapeAttr(typeof t === 'function' ? (t('admin_product_remove_option') || 'Remove option') : 'Remove option') + '" aria-label="Remove option">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="width:14px;height:14px;"><path d="M6 6l12 12M18 6L6 18"/></svg>' +
       '</button>';
     list.appendChild(row);
+    row.dataset.image = prefill.image || prefill.image_url || '';
     // Wire hex <-> hex text two-way sync
     var colorPicker = row.querySelector('input.opt-hex');
     var hexText = row.querySelector('input.opt-hexhex');
@@ -2125,6 +2388,90 @@
       }
     });
     refreshApplyI18n();
+  }
+
+  async function handleOptionImageFile(input) {
+    var row = input && input.closest('.option-row, .product-type-row');
+    var file = input && input.files && input.files[0];
+    if (!row || !file || !isSupportedImageFile(file)) return;
+    var status = row.querySelector('.option-image-status');
+    var preview = row.querySelector('.option-image-preview');
+    var empty = row.querySelector('.option-image-empty');
+    if (status) status.style.display = 'flex';
+    pendingOptionImageUploads++;
+    var saveBtn = document.querySelector('#product-form button[type="submit"]');
+    if (saveBtn) saveBtn.disabled = true;
+    try {
+      // Upload the original file directly: option images must retain their
+      // source resolution; only the admin preview is intentionally small.
+      var url = await uploadImage(file);
+      row.dataset.image = url;
+      if (preview) { preview.src = url; preview.style.display = 'block'; }
+      if (empty) empty.style.display = 'none';
+    } catch (err) {
+      console.error('Option image upload error:', err);
+      alert('Image upload error: ' + err.message);
+    } finally {
+      if (status) status.style.display = 'none';
+      pendingOptionImageUploads = Math.max(0, pendingOptionImageUploads - 1);
+      if (saveBtn && pendingOptionImageUploads === 0) saveBtn.disabled = false;
+      input.value = '';
+    }
+  }
+
+  function removeOptionImage(btn) {
+    var row = btn && btn.closest('.option-row, .product-type-row');
+    if (!row) return;
+    row.dataset.image = '';
+    var preview = row.querySelector('.option-image-preview');
+    var empty = row.querySelector('.option-image-empty');
+    if (preview) { preview.removeAttribute('src'); preview.style.display = 'none'; }
+    if (empty) empty.style.display = 'inline';
+  }
+
+  async function removeTypeImageBackground(btn) {
+    var row = btn && btn.closest('.product-type-row');
+    var url = row && String(row.dataset.image || '').trim();
+    if (!row || !url) {
+      alert(typeof t === 'function' ? (t('type_image_required') || 'Upload a type image first.') : 'Upload a type image first.');
+      return;
+    }
+    var preview = row.querySelector('.option-image-preview');
+    var originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = typeof t === 'function' ? (t('bg_remove_working') || 'Removing…') : 'Removing…';
+    try {
+      // Reuse the same remove.bg endpoint as the main-image uploader, but
+      // process the already-uploaded Type image and save the PNG back into
+      // this Type row. The original stays untouched if anything fails.
+      var sourceResp = await fetch(url);
+      if (!sourceResp.ok) throw new Error('Could not read the type image');
+      var sourceBlob = await sourceResp.blob();
+      var sourceFile = new File([sourceBlob], 'type-image.' + ((getImageContentType(sourceBlob) || 'image/jpeg').split('/')[1] || 'jpg'), {
+        type: getImageContentType(sourceBlob) || sourceBlob.type || 'image/jpeg'
+      });
+      var base64 = await fileToBase64(sourceFile);
+      var removeResp = await fetch('/api/remove-bg', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64: base64.split(',')[1], imageMime: getImageContentType(sourceFile) })
+      });
+      var result = await removeResp.json().catch(function() { return {}; });
+      if (!removeResp.ok || !result.success || !result.imageUrl) throw new Error(result.error || 'Background removal failed');
+      var processedBlob = await fetch(result.imageUrl).then(function(response) { return response.blob(); });
+      var processedFile = new File([processedBlob], 'type_bg_removed_' + Date.now() + '.png', { type: 'image/png' });
+      var processedUrl = await uploadImage(processedFile);
+      row.dataset.image = processedUrl;
+      if (preview) { preview.src = processedUrl; preview.style.display = 'block'; }
+      btn.textContent = typeof t === 'function' ? (t('bg_remove_done') || 'Background removed') : 'Background removed';
+    } catch (err) {
+      console.error('Type image background removal error:', err);
+      btn.textContent = typeof t === 'function' ? (t('bg_remove_failed') || 'Failed — original kept') : 'Failed — original kept';
+      setTimeout(function() { btn.textContent = originalText; }, 2500);
+    } finally {
+      btn.disabled = false;
+      if (btn.textContent === (typeof t === 'function' ? (t('bg_remove_working') || 'Removing…') : 'Removing…')) btn.textContent = originalText;
+    }
   }
 
   function removeOptionRow(btn) {
@@ -2151,12 +2498,14 @@
         var rawPrice = row.querySelector('.opt-pricemod')?.value;
         var colorHex = ((row.querySelector('.opt-hexhex')?.value) || (row.querySelector('.opt-hex')?.value) || '').trim();
         var priceMod = parseFloat(rawPrice);
-        // Skip fully blank rows so empty placeholders don't pollute the saved array.
-        if (!label && !rawPrice && !colorHex) return;
+        // An option needs a label; the editor always shows a blank placeholder
+        // row, whose default price value is 0 and must not be persisted.
+        if (!label) return;
         options.push({
           label: label || '',
           price_mod: isFinite(priceMod) ? priceMod : 0,
-          color_hex: colorHex || null
+          color_hex: colorHex || null,
+          image: row.dataset.image || null
         });
       });
       // Skip fully blank groups
@@ -2345,11 +2694,99 @@
     return UI_ARTIFACT_CLASS_HINTS.some(h => combined.includes(h));
   }
 
+  function decodeEncodedMarkup(value) {
+    const source = String(value || '');
+    // Some Alibaba clipboard implementations put the HTML inside escaped
+    // text (&lt;div ...&gt;). Decode only when it clearly contains markup, so
+    // normal product text such as "5 &lt; 10" is left untouched.
+    if (!/&lt;\s*\/?\s*(?:div|a|img|p|table|ul|ol|br)\b/i.test(source)) return source;
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = source;
+    return textarea.value;
+  }
+
+  function bestPastedImageSource(el, baseHref) {
+    const attrs = ['data-src', 'data-lazy-src', 'data-original', 'data-url', 'data-ks-lazyload', 'data-image-src'];
+    let src = '';
+    for (const attr of attrs) {
+      const candidate = (el.getAttribute(attr) || '').trim();
+      if (candidate) { src = candidate; break; }
+    }
+    const current = (el.getAttribute('src') || '').trim();
+    if (!src && current && !/^(?:about:blank|data:image\/(?:gif|png);base64,[a-z0-9+/=]{0,120})$/i.test(current)) src = current;
+    if (!src) {
+      const srcset = (el.getAttribute('srcset') || '').trim();
+      if (srcset) {
+        const candidates = srcset.split(',').map(part => part.trim().split(/\s+/)[0]).filter(Boolean);
+        src = candidates[candidates.length - 1] || '';
+      }
+    }
+    if (!src && el.style && el.style.backgroundImage) {
+      const match = el.style.backgroundImage.match(/url\(\s*["']?([^"')]+)["']?\s*\)/i);
+      if (match) src = match[1].trim();
+    }
+    if (!src) return '';
+    if (src.startsWith('//')) return 'https:' + src;
+    if (/^(?:data:image\/|https?:\/\/)/i.test(src)) return src;
+    try { return new URL(src, baseHref || document.baseURI).href; } catch (e) { return src; }
+  }
+
+  function unwrapPastedElement(el) {
+    if (!el || !el.parentNode) return;
+    const parent = el.parentNode;
+    while (el.firstChild) parent.insertBefore(el.firstChild, el);
+    parent.removeChild(el);
+  }
+
+  function normalizePastedDescriptionTree(root) {
+    const baseEl = root.querySelector('base[href]');
+    const baseHref = baseEl ? baseEl.getAttribute('href') : document.baseURI;
+
+    // Alibaba wraps real content in module shells. Unwrap, rather than
+    // remove, so all nested text and images survive.
+    Array.from(root.querySelectorAll('[module-id], [module-title], [render="true"]')).forEach(el => {
+      if (el.parentNode) unwrapPastedElement(el);
+    });
+
+    // Supplier links are not useful on our product page. Keep their image or
+    // text content, but never keep the external Alibaba link shell.
+    Array.from(root.querySelectorAll('a')).forEach(a => {
+      const href = (a.getAttribute('href') || '').toLowerCase();
+      if (/(?:alibaba|aliexpress|1688|taobao|tmall|alicdn|alicompany)/i.test(href)) {
+        unwrapPastedElement(a);
+      }
+    });
+
+    root.querySelectorAll('*').forEach(el => {
+      const source = bestPastedImageSource(el, baseHref);
+      if (el.tagName === 'IMG') {
+        if (source) el.setAttribute('src', source);
+        ['data-src','data-lazy-src','data-original','data-url','data-ks-lazyload','data-image-src','srcset'].forEach(attr => el.removeAttribute(attr));
+      } else if (source && !el.querySelector('img')) {
+        // Alibaba often stores the real image on a wrapper such as
+        // <div data-src="..."> rather than on an <img>. Turn that lazy
+        // source into a real image even when no background-image exists.
+        const img = document.createElement('img');
+        img.setAttribute('src', source);
+        img.setAttribute('alt', '');
+        if (el.style && el.style.backgroundImage) el.style.removeProperty('background-image');
+        const hasMeaningfulText = (el.textContent || '').trim().length > 0;
+        if (!hasMeaningfulText && !el.children.length) el.replaceWith(img);
+        else el.appendChild(img);
+      }
+      el.removeAttribute('module-id');
+      el.removeAttribute('module-title');
+      el.removeAttribute('render');
+    });
+    if (baseEl) baseEl.remove();
+    return root;
+  }
+
   async function uploadPastedDataImage(dataUrl) {
     try {
       const res = await fetch(dataUrl);
       const blob = await res.blob();
-      if (!blob || !blob.type.startsWith('image/')) return null;
+      if (!blob || !isSupportedImageFile(blob)) return null;
       const ext = (blob.type.split('/')[1] || 'png').replace('jpeg','jpg');
       const file = new File([blob], `pasted_${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`, { type: blob.type });
       const url = await uploadImage(file);
@@ -2418,7 +2855,7 @@
     const resp = await fetch(url, { mode: 'cors', credentials: 'omit' });
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const blob = await resp.blob();
-    if (!blob || !blob.type || !blob.type.startsWith('image/')) {
+    if (!blob || !isSupportedImageFile(blob)) {
       throw new Error('Not an image: ' + (blob && blob.type));
     }
     const ext = (blob.type.split('/')[1] || 'png').split(';')[0];
@@ -2460,21 +2897,25 @@
 
   async function cleanPastedHtmlAsync(html) {
     const temp = document.createElement('div');
-    temp.innerHTML = html;
+    temp.innerHTML = decodeEncodedMarkup(html);
 
     // 1) Remove dangerous / known UI container tags wholesale
     UI_ARTIFACT_TAGS.forEach(tag => {
       temp.querySelectorAll(tag).forEach(el => el.remove());
     });
 
-    // 2) Remove containers whose class/id/role match common UI artifact hints
+    // 2) Unwrap Alibaba module shells and recover lazy/background images
+    // before class/id cleanup can discard the attributes that identify them.
+    normalizePastedDescriptionTree(temp);
+
+    // 3) Remove containers whose class/id/role match common UI artifact hints
     //    (iterate in document order; removing the element drops descendants too)
     const allEls = Array.from(temp.querySelectorAll('*'));
     for (const el of allEls) {
       if (isUiArtifactContainer(el)) el.remove();
     }
 
-    // 3) Strip event handlers, class/id, dangerous inline styles
+    // 4) Strip event handlers, class/id, dangerous inline styles
     temp.querySelectorAll('*').forEach(el => {
       [...el.attributes].forEach(attr => {
         if (attr.name.startsWith('on')) el.removeAttribute(attr.name);
@@ -2487,7 +2928,7 @@
       });
     });
 
-    // 4) Remove text nodes that are pure UI artifact text (e.g. <p>Report abuse</p>)
+    // 5) Remove text nodes that are pure UI artifact text (e.g. <p>Report abuse</p>)
     //    Walk leaf containers only and check their textContent
     const leafTextTags = ['p','span','div','li','b','strong','em','i','u','small','a','h1','h2','h3','h4','h5','h6'];
     temp.querySelectorAll(leafTextTags.join(',')).forEach(el => {
@@ -2496,10 +2937,10 @@
       if (txt && isUiArtifactText(txt)) el.remove();
     });
 
-    // 5) Upload data: image URLs to Supabase so they survive even if the clipboard image is lost
+    // 6) Upload data: image URLs to Supabase so they survive even if the clipboard image is lost
     await uploadAllDataImagesIn(temp);
 
-    // 6) Style images: keep them, make them responsive & pretty
+    // 7) Style images: keep them, make them responsive & pretty
     temp.querySelectorAll('img').forEach(el => {
       el.setAttribute('loading', 'lazy');
       el.style.maxWidth = '100%';
@@ -2512,7 +2953,7 @@
       if (!el.getAttribute('src') || el.getAttribute('src') === '') el.remove();
     });
 
-    // 7) Style links
+    // 8) Style links
     temp.querySelectorAll('a').forEach(el => {
       el.style.color = 'var(--primary)';
       el.style.textDecoration = 'underline';
@@ -2522,7 +2963,7 @@
       }
     });
 
-    // 8) Style tables
+    // 9) Style tables
     temp.querySelectorAll('table').forEach(el => {
       el.style.width = '100%';
       el.style.borderCollapse = 'collapse';
@@ -2535,7 +2976,7 @@
       el.style.textAlign = 'left';
     });
 
-    // 9) Style headings & paragraphs
+    // 10) Style headings & paragraphs
     temp.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(el => {
       el.style.margin = '14px 0 8px';
       el.style.fontWeight = '700';
@@ -2551,7 +2992,7 @@
       el.style.lineHeight = '1.65';
     });
 
-    // 10) Lists
+    // 11) Lists
     temp.querySelectorAll('ul, ol').forEach(el => {
       el.style.paddingLeft = '1.5rem';
       el.style.margin = '8px 0';
@@ -2560,7 +3001,7 @@
       el.style.marginBottom = '4px';
     });
 
-    // 11) Blockquotes
+    // 12) Blockquotes
     temp.querySelectorAll('blockquote').forEach(el => {
       el.style.borderLeft = '3px solid var(--primary)';
       el.style.margin = '10px 0';
@@ -2570,7 +3011,7 @@
       el.style.color = 'var(--text)';
     });
 
-    // 12) Drop empty containers (but keep ones with images)
+    // 13) Drop empty containers (but keep ones with images)
     temp.querySelectorAll('p, div, span, b, i, u, strong, em, h1, h2, h3, h4, h5, h6, li').forEach(el => {
       if (!el.innerHTML.trim() && !el.querySelector('img')) el.remove();
     });
@@ -2594,104 +3035,123 @@
   }
 
   function syncDescRaw(e) {
-    const editor = e.target;
-    if (editor && editor.classList && editor.classList.contains('desc-editor')) {
-      const lang = editor.dataset.lang;
-      if (lang) {
-        const rawTextarea = document.getElementById('pdesc-' + lang + '-raw');
-        if (rawTextarea) {
-          rawTextarea.value = editor.innerHTML;
-        }
-      }
-    }
+    const editor = e && e.target ? e.target : e;
+    if (!editor || !editor.classList || !editor.classList.contains('desc-editor')) return;
+    const lang = editor.dataset.lang;
+    if (!lang) return;
+    const html = editor.innerHTML || '';
+    const rawTextarea = document.getElementById('pdesc-' + lang + '-raw');
+    if (rawTextarea) rawTextarea.value = html;
+    const form = document.getElementById('product-form');
+    if (form) form.dataset['desc_' + lang] = html;
   }
 
-  // ===== AI Auto-Translate =====
+  function syncAllDescriptionEditors() {
+    document.querySelectorAll('.desc-editor[contenteditable]').forEach(editor => syncDescRaw(editor));
+  }
+
+  // ===== Auto-Translate: English -> all 11 target languages =====
+  // Each language gets its own request. This avoids one large Vercel/Gemini
+  // request timing out and leaving the form with only a few translations.
   async function translateAll() {
     const btn = document.getElementById('translate-btn');
     const status = document.getElementById('translate-status');
+    const langs = ['kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'];
 
-    // Save current editor content first
     const editor = document.querySelector('.desc-editor[contenteditable]');
     if (editor) {
-      const lang = editor.dataset.lang;
-      const raw = document.getElementById('pdesc-' + lang + '-raw');
+      const raw = document.getElementById('pdesc-' + editor.dataset.lang + '-raw');
       if (raw) raw.value = editor.innerHTML;
     }
 
-    const nameEn = document.getElementById('pname-en').value;
+    const translateForm = document.getElementById('product-form');
+    const nameEn = (document.getElementById('pname-en')?.value || translateForm?.dataset['name_en'] || '').trim();
+    const descEn = document.getElementById('pdesc-en-raw')?.value || translateForm?.dataset['desc_en'] || '';
     if (!nameEn) {
       alert('Please fill in the English product name first.');
       return;
     }
 
-    // Get description from raw textarea
-    const descRaw = document.getElementById('pdesc-en-raw');
-    const descEn = descRaw ? descRaw.value : '';
+    const visible = value => String(value || '').replace(/<[^>]*>/g, ' ').replace(/\\s+/g, ' ').trim().toLowerCase();
+    const usable = (value, source) => !!String(value || '').trim() && visible(value) !== visible(source);
+    const refreshCurrentEditor = () => {
+      const currentEditor = document.querySelector('.desc-editor[contenteditable]');
+      if (!currentEditor || currentLangTab === 'en') return;
+      const translated = fields['desc_' + currentLangTab];
+      if (translated) {
+        currentEditor.innerHTML = translated;
+        const raw = document.getElementById('pdesc-' + currentLangTab + '-raw');
+        if (raw) raw.value = translated;
+        const form = document.getElementById('product-form');
+        if (form) form.dataset['desc_' + currentLangTab] = translated;
+      }
+    };
 
     btn.disabled = true;
-    btn.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Translating...';
-    status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Translating to 10 languages...';
+    status.style.display = 'inline';
     status.classList.add('show');
+    status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Translating 0/' + langs.length + '…';
+
+    let completed = 0;
+    let successful = 0;
+    const failed = [];
+    let nextIndex = 0;
+    const fields = {};
+    const worker = async () => {
+      while (nextIndex < langs.length) {
+        const lang = langs[nextIndex++];
+        let ok = false;
+        let errorText = 'unavailable';
+        for (let attempt = 1; attempt <= 3 && !ok; attempt++) {
+          try {
+            const resp = await fetch('/api/translate-product', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ mode: 'free', target_lang: lang, name_en: nameEn, desc_en: descEn })
+            });
+            const result = await resp.json().catch(() => ({}));
+            const data = result.translation || {};
+            if (usable(data.name, nameEn)) {
+              fields['name_' + lang] = String(data.name).trim();
+              const nameInput = document.getElementById('pname-' + lang);
+              if (nameInput) nameInput.value = fields['name_' + lang];
+            }
+            if (descEn && usable(data.desc, descEn)) {
+              fields['desc_' + lang] = data.desc;
+              const descRaw = document.getElementById('pdesc-' + lang + '-raw');
+              if (descRaw) descRaw.value = data.desc;
+            }
+            ok = !!(resp.ok && result.success && usable(fields['name_' + lang], nameEn) && (!descEn || usable(fields['desc_' + lang], descEn)) && !result.failed);
+            if (!ok) errorText = result.error || (result.failed ? 'partial translation' : 'empty translation');
+          } catch (err) {
+            errorText = err.message || String(err);
+          }
+          if (!ok && attempt < 3) await new Promise(resolve => setTimeout(resolve, 1200 * attempt));
+        }
+        completed++;
+        if (ok) successful++; else failed.push(lang + ': ' + errorText);
+        status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Translating ' + completed + '/' + langs.length + '…';
+      }
+    };
 
     try {
-      const resp = await fetch('/api/translate-product', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name_en: nameEn, desc_en: descEn })
-      });
-
-      const result = await resp.json();
-
-      if (result.success && result.translations) {
-        const translations = result.translations;
-        let count = 0;
-        const total = Object.keys(translations).length;
-
-        for (const [lang, data] of Object.entries(translations)) {
-          const nameInput = document.getElementById('pname-' + lang);
-          const descRaw = document.getElementById('pdesc-' + lang + '-raw');
-
-          if (nameInput && data.name) {
-            nameInput.value = data.name;
-          }
-          if (descRaw && data.desc) {
-            descRaw.value = data.desc;
-          }
-
-          count++;
-          status.innerHTML = `<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Translating... ${count}/${total}`;
-        }
-
-        // If currently viewing English tab, need to refresh
-        // If currently viewing one of the translated tabs, refresh the display
-        const currentEditor = document.querySelector('.desc-editor[contenteditable]');
-        if (currentEditor) {
-          const currentLang = currentEditor.dataset.lang;
-          // Refresh the raw textarea for the current tab
-          const currentRaw = document.getElementById('pdesc-' + currentLang + '-raw');
-          if (currentRaw && currentLang !== 'en') {
-            // Update the editor display with translated content
-            switchLangTab(currentLang);
-          } else if (currentLang === 'en') {
-            // Stay on EN, but refresh the editor content from raw
-            switchLangTab('en');
-          }
-        }
-
-        status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#22C55E;"><use href="#icon-check-circle"/></svg> Translated to ' + total + ' languages!';
-        setTimeout(() => { status.classList.remove('show'); }, 3000);
-      } else {
-        status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#EF4444;"><use href="#icon-x"/></svg> Translation failed';
-        setTimeout(() => { status.classList.remove('show'); }, 3000);
+      await Promise.all([worker(), worker()]);
+      // If the product is already saved, persist the translations immediately.
+      const id = document.getElementById('product-id')?.value;
+      if (id && Object.keys(fields).length && typeof sb !== 'undefined' && sb) {
+        const { error } = await sb.from('products').update(fields).eq('id', id);
+        if (error) throw error;
       }
+      refreshCurrentEditor();
+      status.innerHTML = failed.length
+        ? '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#D97706;"><use href="#icon-alert"/></svg> Translated ' + successful + '/' + langs.length + '. Save the product to retry failed languages.'
+        : '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#22C55E;"><use href="#icon-check-circle"/></svg> Translated into all 11 other languages.';
     } catch (err) {
       console.error('Translation error:', err);
-      status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#EF4444;"><use href="#icon-x"/></svg> Error: ' + err.message;
-      setTimeout(() => { status.classList.remove('show'); }, 4000);
+      status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#EF4444;"><use href="#icon-x"/></svg> Translation error: ' + err.message;
     } finally {
       btn.disabled = false;
-      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> <span class="translate-btn-text">AI Auto-Translate</span> <span class="translate-btn-text-full">AI Auto-Translate (EN → All)</span>';
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> <span class="translate-btn-text">AI Auto-Translate</span> <span class="translate-btn-text-full">AI Auto-Translate (EN → All)</span>';
     }
   }
 
@@ -2725,6 +3185,11 @@
     statusEl.textContent = 'Loading products...';
 
     const allLangs = ['kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'];
+    const visibleText = value => String(value || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
+    const usableTranslation = (value, source) => {
+      const text = String(value || '').trim();
+      return !!text && (!source || visibleText(text) !== visibleText(source));
+    };
 
     // We treat a product as "fully translated" if every non-EN language
     // has both a non-empty name AND a non-empty desc. If it's missing even
@@ -2733,10 +3198,13 @@
     // cheap; the bigger win is that products already done spend zero quota.
     function needsTranslate(p) {
       if (!p.name_en || !p.name_en.trim()) return false;
+      const visible = value => String(value || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
+      const sourceName = visible(p.name_en);
+      const sourceDesc = visible(p.desc_en);
       for (const lang of allLangs) {
         const n = (p['name_' + lang] || '').trim();
         const d = (p['desc_' + lang] || '').trim();
-        if (!n || !d) return true;
+        if (!n || visible(n) === sourceName || (sourceDesc && (!d || visible(d) === sourceDesc))) return true;
       }
       return false;
     }
@@ -2789,17 +3257,51 @@
 
             if (result.success && result.translations && Object.keys(result.translations).length > 0) {
               const updateFields = {};
-              for (const [lang, data] of Object.entries(result.translations)) {
-                const tName = (data && data.name) || '';
-                const tDesc = (data && data.desc) || '';
-                if (tName) updateFields['name_' + lang] = tName;
-                if (tDesc) updateFields['desc_' + lang] = tDesc;
+              for (const lang of allLangs) {
+                const data = result.translations[lang] || {};
+                const tName = data.name || '';
+                const tDesc = data.desc || '';
+                if (usableTranslation(tName, p.name_en)) updateFields['name_' + lang] = tName;
+                if (p.desc_en && usableTranslation(tDesc, p.desc_en)) updateFields['desc_' + lang] = tDesc;
               }
+
+              // Gemini can return only a subset of the 11 languages. Finish
+              // every missing language through the free endpoint, which now
+              // writes with either SUPABASE_SERVICE_ROLE_KEY or the project's
+              // existing SUPABASE_SERVICE_KEY. This is what makes the batch
+              // deterministic instead of reporting success too early.
+              for (const lang of allLangs) {
+                const nameReady = usableTranslation(updateFields['name_' + lang], p.name_en);
+                const descReady = !p.desc_en || usableTranslation(updateFields['desc_' + lang], p.desc_en);
+                if (nameReady && descReady) continue;
+                const fallbackResp = await fetch('/api/translate-product', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    mode: 'free',
+                    product_id: p.id,
+                    target_lang: lang,
+                    name_en: p.name_en,
+                    desc_en: p.desc_en || ''
+                  })
+                });
+                const fallback = await fallbackResp.json().catch(() => ({}));
+                const data = fallback.translation || {};
+                if (usableTranslation(data.name, p.name_en)) updateFields['name_' + lang] = data.name;
+                if (p.desc_en && usableTranslation(data.desc, p.desc_en)) updateFields['desc_' + lang] = data.desc;
+              }
+
               if (Object.keys(updateFields).length === 0) {
                 throw new Error('empty translations');
               }
               const { error: upErr } = await sb.from('products').update(updateFields).eq('id', p.id);
               if (upErr) throw upErr;
+
+              const complete = allLangs.every(lang =>
+                usableTranslation(updateFields['name_' + lang], p.name_en) &&
+                (!p.desc_en || usableTranslation(updateFields['desc_' + lang], p.desc_en))
+              );
+              if (!complete) throw new Error('partial translations');
               ok = true;
             } else if (/429|quota|rate/i.test(JSON.stringify(result))) {
               // rate-limited; back off longer and retry
@@ -2967,85 +3469,136 @@
       setTimeout(function() { statusEl.style.display = 'none'; }, 15000);
     }
   }
+  // Translate each target language independently after the English row is
+  // saved. One slow provider or failed language cannot cancel the other ten.
+  // This is intentionally client-orchestrated because a single Vercel request
+  // that loops through all 11 languages can time out before it returns.
+  async function translateSavedProduct(savedProduct, langs) {
+    const nameEn = String(savedProduct.name_en || '').trim();
+    const descEn = String(savedProduct.desc_en || '').trim();
+    if (!savedProduct.id || !nameEn) return;
+
+    const status = document.getElementById('batch-translate-status');
+    const setStatus = (html, tone) => {
+      if (!status) return;
+      status.style.display = 'block';
+      status.style.background = tone === 'success' ? '#D1FAE5' : tone === 'error' ? '#FEE2E2' : '#FEF3C7';
+      status.style.color = tone === 'success' ? '#065F46' : tone === 'error' ? '#991B1B' : '#92400E';
+      status.innerHTML = html;
+    };
+    const visible = value => String(value || '').replace(/<[^>]*>/g, ' ').replace(/\\s+/g, ' ').trim().toLowerCase();
+    const usable = (value, source) => {
+      const text = String(value || '').trim();
+      return !!text && visible(text) !== visible(source);
+    };
+
+    const total = langs.length;
+    const translatedFields = {};
+    let completed = 0;
+    let successful = 0;
+    const failed = [];
+    setStatus('<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Saved in English. Translating to all 12 languages… 0/' + total, 'working');
+
+    // Two requests at a time keeps the free providers stable while making the
+    // operation much faster than the old fully sequential fallback loop.
+    let nextIndex = 0;
+    const worker = async () => {
+      while (nextIndex < total) {
+        const index = nextIndex++;
+        const lang = langs[index];
+        let ok = false;
+        let lastError = 'translation_unavailable';
+
+        for (let attempt = 1; attempt <= 3 && !ok; attempt++) {
+          try {
+            const resp = await fetch('/api/translate-product', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                mode: 'free',
+                product_id: savedProduct.id,
+                target_lang: lang,
+                name_en: nameEn,
+                desc_en: descEn
+              })
+            });
+            const result = await resp.json().catch(() => ({}));
+            const data = result.translation || {};
+            if (usable(data.name, nameEn)) translatedFields['name_' + lang] = String(data.name).trim();
+            if (descEn && usable(data.desc, descEn)) translatedFields['desc_' + lang] = data.desc;
+            const nameReady = usable(translatedFields['name_' + lang], nameEn);
+            const descReady = !descEn || usable(translatedFields['desc_' + lang], descEn);
+            if (resp.ok && result.success && nameReady && descReady && !result.failed) {
+              ok = true;
+            } else {
+              lastError = result.error || (result.failed ? 'partial_translation' : 'empty_translation');
+            }
+          } catch (err) {
+            lastError = err.message || String(err);
+          }
+          if (!ok && attempt < 3) {
+            await new Promise(resolve => setTimeout(resolve, 1200 * attempt));
+          }
+        }
+
+        completed++;
+        if (ok) successful++;
+        else failed.push(lang + ': ' + lastError);
+        setStatus('<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Translating all 12 languages… ' + completed + '/' + total + ' · ✓ ' + successful + ' · ✗ ' + failed.length, 'working');
+      }
+    };
+
+    await Promise.all([worker(), worker()]);
+
+    // AI/free mode writes each successful result itself when the service key is
+    // configured. This authenticated update also covers projects where the
+    // endpoint can translate but cannot write back to Supabase.
+    if (Object.keys(translatedFields).length && typeof sb !== 'undefined' && sb) {
+      const { error } = await sb.from('products').update(translatedFields).eq('id', savedProduct.id);
+      if (error) console.warn('[admin] saving translated fields failed:', error);
+    }
+
+    const message = failed.length === 0
+      ? '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#16A34A;"><use href="#icon-check-circle"/></svg> English content was translated into all 12 site languages.'
+      : '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#D97706;"><use href="#icon-alert"/></svg> Translated ' + successful + '/' + total + ' languages. Save again or use Batch Translate All to retry the rest.';
+    setStatus(message, failed.length === 0 ? 'success' : 'error');
+    loadProducts();
+    setTimeout(() => { if (status) status.style.display = 'none'; }, 15000);
+  }
+
   async function saveProduct(e) {
     e.preventDefault();
-
-    // Save current editor content to raw textarea
-    const editor = document.querySelector('.desc-editor[contenteditable]');
-    if (editor) {
-      const lang = editor.dataset.lang;
-      const raw = document.getElementById('pdesc-' + lang + '-raw');
-      if (raw) raw.value = editor.innerHTML;
-    }
-
-    // ===== AUTO-TRANSLATE: Егер тек ағылшынша толтырылса, қалған 10 тілді автоматты аудару =====
-    const nameEn = document.getElementById('pname-en').value.trim();
-    const descRawEn = document.getElementById('pdesc-en-raw');
-    const descEn = descRawEn ? descRawEn.value.trim() : '';
-    const translateLangs = ['kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'];
-
-    if (nameEn) {
-      // Check if any other language fields are empty
-      const needsTranslate = translateLangs.some(lang => {
-        const nameEl = document.getElementById('pname-' + lang);
-        return nameEl && !nameEl.value.trim();
-      });
-
-      if (needsTranslate) {
-        const status = document.getElementById('translate-status');
-        const btn = document.getElementById('translate-btn');
-        status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Auto-translating to 10 languages...';
-        status.classList.add('show');
-        if (btn) btn.disabled = true;
-
-        try {
-          const resp = await fetch('/api/translate-product', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name_en: nameEn, desc_en: descEn })
-          });
-          const result = await resp.json();
-
-          if (result.success && result.translations) {
-            let count = 0;
-            const total = Object.keys(result.translations).length;
-            for (const [lang, data] of Object.entries(result.translations)) {
-              const nameInput = document.getElementById('pname-' + lang);
-              const descRaw = document.getElementById('pdesc-' + lang + '-raw');
-              if (nameInput && data.name) nameInput.value = data.name;
-              if (descRaw && data.desc) descRaw.value = data.desc;
-              count++;
-              status.innerHTML = `<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Translating... ${count}/${total}`;
-            }
-            status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#22C55E;"><use href="#icon-check-circle"/></svg> Auto-translated to ' + total + ' languages!';
-            setTimeout(() => { status.classList.remove('show'); }, 3000);
-          } else {
-            status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#F59E0B;"><use href="#icon-alert"/></svg> Translation failed, saving with English only';
-            setTimeout(() => { status.classList.remove('show'); }, 4000);
-          }
-        } catch (err) {
-          console.error('Auto-translate error:', err);
-          status.innerHTML = '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#F59E0B;"><use href="#icon-alert"/></svg> Translation error, saving with English only';
-          setTimeout(() => { status.classList.remove('show'); }, 4000);
-        } finally {
-          if (btn) btn.disabled = false;
-        }
-      }
-    }
-
-    // ===== Variants (Type 1, Type 2, ...) =====
-    // Collect rows from the dynamic editor and reflect them back into the
-    // hidden legacy fields so the rest of the site (catalog, product,
-    // cart, checkout) keeps reading product.type / .price / .stock
-    // without having to look at the new JSONB column. The first row's
-    // values become the "canonical" variant for any page that hasn't
-    // been updated to render the full array yet.
-    const variants = collectProductTypes();
-    if (!variants.length) {
-      alert(t('error') + ': ' + (typeof t === 'function' ? (t('admin_product_min_one_variant') || 'At least one product variant is required') : 'At least one product variant is required'));
+    const productForm = document.getElementById('product-form');
+    if (pendingOptionImageUploads > 0) {
+      alert('Please wait until the option image upload finishes.');
       return;
     }
-    const first = variants[0];
+
+    // The product video is manual-only: the admin pastes a link or explicitly
+    // clicks "Find video" and picks a result. We intentionally do NOT auto-search
+    // on save — silently attaching the top YouTube result could put an irrelevant
+    // video on a live product page and generate customer complaints.
+
+    // The description is edited in contenteditable elements, while the
+    // database payload is collected from hidden raw textareas. Sync every
+    // editor immediately before collecting the payload so a browser/input
+    // event timing issue cannot save an empty description.
+    syncAllDescriptionEditors();
+
+    // Translate only after the English product row is safely saved. The old
+    // flow translated before insert/update, so one slow Gemini request could
+    // make the whole save appear broken. The background worker below uses the
+    // saved product id and persists each language independently.
+    const translateLangs = ['kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'];
+
+    // ===== Variants (Type 1, Type 2, ...) =====
+    // Collect rows from the dynamic editor and reflect them back into the      // hidden legacy fields so the rest of the site (catalog, product,
+      // cart, checkout) keeps reading product.price / .stock. When a type is
+      // entered, the first row also remains the canonical legacy type.
+    const variants = collectProductTypes();
+    // No type is a valid product state. Use the blank editor row only for the
+    // base price/stock, while keeping the saved type fields empty/null.
+    const first = variants[0] || getProductBaseValues();
     document.getElementById('pprice').value = first.price;
     document.getElementById('pstock').value = first.stock;
     document.getElementById('ptype').value = first.label;
@@ -3056,34 +3609,75 @@
     const optionGroups = collectOptionGroups();
 
     // ===== САҚТАУ =====
+    // All images are in uploadedImageUrls — first is the main product photo,
+    // the rest follow in the order the admin arranged them.
+    const orderedGalleryImages = uploadedImageUrls
+      .map(url => String(url || '').trim())
+      .filter(Boolean);
+
     const product = {
       price: parseFloat(first.price) || 0,
       type: first.label,
+      type2: variants[1]?.label || null,
+      type3: variants[2]?.label || null,
+      type4: variants[3]?.label || null,
+      type5: variants[4]?.label || null,
       stock: parseInt(first.stock, 10) || 0,
       types: variants,
       option_groups: optionGroups,
+      type_image: variants[0]?.image || null,
+      type_image2: variants[1]?.image || null,
+      type_image3: variants[2]?.image || null,
+      type_image4: variants[3]?.image || null,
+      type_image5: variants[4]?.image || null,
       category_id: document.getElementById('pcategory').value || null,
       active: document.getElementById('pactive').checked,
-      // Use uploadedImageUrls (the single source of truth) so removed images stay removed
-      images: uploadedImageUrls.slice()
+      images: orderedGalleryImages,
+      // Optional product video (YouTube / Vimeo / MP4 link).
+      video_url: document.getElementById('pvideo')?.value.trim() || null
     };
 
     // Collect all lang fields from inputs (name) and raw textareas (description)
     ['en', ...translateLangs].forEach(lang => {
       const nameEl = document.getElementById('pname-' + lang);
       const descRaw = document.getElementById('pdesc-' + lang + '-raw');
-      product['name_' + lang] = nameEl ? nameEl.value : '';
-      product['desc_' + lang] = descRaw ? descRaw.value : '';
+      product['name_' + lang] = nameEl ? nameEl.value : (productForm?.dataset['name_' + lang] || '');
+      product['desc_' + lang] = descRaw
+        ? descRaw.value
+        : (productForm?.dataset['desc_' + lang] || '');
     });
 
     const idField = document.getElementById('product-id').value;
     if (idField) product.id = idField;
 
+    // English is the single source of truth. When the English name or
+    // description changes, old translations are no longer valid; clear them
+    // before saving so the background worker always regenerates all 11 targets.
+    const sourceChanged = !!idField && (
+      product.name_en !== (productForm?.dataset.originalNameEn || '') ||
+      product.desc_en !== (productForm?.dataset.originalDescEn || '')
+    );
+    if (sourceChanged) {
+      translateLangs.forEach(lang => {
+        product['name_' + lang] = '';
+        product['desc_' + lang] = '';
+      });
+    }
+
     try {
-      await adminSaveProduct(product);
+      const savedProduct = await adminSaveProduct(product);
       closeProductModal();
       loadProducts();
       showNotification(t('product_saved'));
+
+      // EN is the source of truth. Start the 11-language translation after
+      // saving so the customer can already see the product immediately, while
+      // the names/descriptions are filled in one by one in the database.
+      if (savedProduct && savedProduct.id && product.name_en) {
+        translateSavedProduct(savedProduct, translateLangs).catch(err => {
+          console.error('Post-save translation error:', err);
+        });
+      }
     } catch (err) {
       alert(t('error') + ': ' + err.message);
     }
