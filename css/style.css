@@ -5050,14 +5050,14 @@ html[data-theme="dark"] .mobile-admin-panel {
   height: 24px;
   width: auto;
 }
-/* Mobile: 2 rows of 6 */
+/* Mobile: 2 rows of 6+5 */
 @media (max-width: 640px) {
   .payment-methods {
-    gap: 0.25rem;
+    gap: 0.2rem;
     justify-content: center;
   }
-  .pm-badge svg { height: 20px; }
-  .pm-badge { padding: 2px 3px; border-radius: 4px; }
+  .pm-badge svg { height: 18px; }
+  .pm-badge { padding: 1px 2px; border-radius: 4px; }
 }
 html[data-theme="dark"] .pm-badge {
   background: #182338;
