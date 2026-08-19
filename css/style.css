@@ -5053,19 +5053,21 @@ html[data-theme="dark"] .mobile-admin-panel {
 /* Mobile: 2 rows of 5+5 */
 @media (max-width: 640px) {
   .payment-methods {
-    gap: 0.35rem;
+    gap: 2px;
     justify-content: center;
     padding-top: 0.4rem;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
   }
   .pm-badge {
-    padding: 4px 6px;
+    padding: 0;
     border-radius: 4px;
     width: 100%;
     box-sizing: border-box;
+    min-width: 0;
+    overflow: hidden;
   }
-  .pm-badge svg { height: 24px; width: 100%; }
+  .pm-badge svg { height: 26px; width: 100%; }
 }
 html[data-theme="dark"] .pm-badge {
   background: #182338;
