@@ -923,18 +923,11 @@
       setEl('s-products', (productsRes && productsRes.count) || 0);
       setEl('s-reviews', (reviewsRes && reviewsRes.count) || 0);
       setEl('s-pending', (pendingRes && pendingRes.count) || 0);
-      // Visitor count: unique visitors (distinct visitor_id from page_view events, last 2 months only)
+      // Visitor count: unique visitors from the last 2 months (via server API)
       try {
-        const twoMonthsAgo = new Date();
-        twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
-        const { data: visitorRows, error: vErr } = await sb.from('visitor_events')
-          .select('visitor_id').eq('event_type', 'page_view').gte('created_at', twoMonthsAgo.toISOString());
-        if (!vErr && visitorRows) {
-          const uniqueVisitors = new Set(visitorRows.map(r => r.visitor_id));
-          setEl('s-visitors', uniqueVisitors.size);
-        } else {
-          setEl('s-visitors', '0');
-        }
+        const vRes = await fetch('/api/visitor-count?months=2');
+        const vData = await vRes.json();
+        setEl('s-visitors', vData.count || 0);
       } catch(_) {
         setEl('s-visitors', '0');
       }
