@@ -17,6 +17,7 @@
   <script src="https://js.stripe.com/v3/"></script>
   <script src="/js/icons.js"></script>
   <script src="/js/pixel.js" defer></script>
+<script src="/js/visitor-tracker.js" defer></script>
   <!-- Cloudflare Turnstile (bot protection) -->
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad" async defer></script>
   <!-- Vercel Speed Insights -->
@@ -273,6 +274,10 @@
     if (typeof fbTrackInitiateCheckout === 'function') {
       fbTrackInitiateCheckout(items.map(i => ({ id: i.id, name: i.name, price: getDiscountedPrice(i.price, i.qty), qty: i.qty })));
     }
+    // Visitor tracker: log checkout event
+    if (typeof visitorTrack !== 'undefined') {
+      visitorTrack.checkout(items.map(i => ({ id: i.id, name: i.name, price: getDiscountedPrice(i.price, i.qty), qty: i.qty })));
+    }
   }
 
   async function handleCheckout(e) {
@@ -418,6 +423,14 @@
       } catch (_) { /* non-fatal */ }
     }
 
+    // Visitor tracker: log purchase
+    if (typeof visitorTrack !== 'undefined') {
+      try {
+        const lastCart2 = JSON.parse(localStorage.getItem('suntrade_cart') || '[]');
+        const purchaseTotal = lastCart2.reduce((s, i) => s + (getDiscountedPrice(i.price, i.qty) * i.qty), 0);
+        visitorTrack.purchase(params.get('order_id') || '', lastCart2, purchaseTotal);
+      } catch (_) {}
+    }
     clearCart();
   }
 </script>

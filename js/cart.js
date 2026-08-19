@@ -137,6 +137,10 @@ function addToCart(productId, name, price, image, qty = 1, metadata = {}) {
   if (typeof fbTrackAddToCart === 'function') {
     fbTrackAddToCart([{ id: productId, name: name, price: numPrice, qty: numQty }]);
   }
+  // Visitor tracker: log add_to_cart event
+  if (typeof visitorTrack !== 'undefined') {
+    visitorTrack.addToCart({ id: productId, name: name, price: numPrice, image: image, qty: numQty, variantLabel: metadata.variantLabel || '' });
+  }
   return true;
 }
 

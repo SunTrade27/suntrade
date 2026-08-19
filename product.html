@@ -27,6 +27,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/icons.js"></script>
   <script src="/js/pixel.js" defer></script>
+<script src="/js/visitor-tracker.js" defer></script>
 <style>
   /* ===== Image Magnifier / Lens Zoom ===== */
   .img-magnifier-container {
@@ -936,6 +937,15 @@
         return;
       }
       renderProduct();
+      // Track product view for lead recovery
+      if (typeof visitorTrack !== 'undefined' && currentProduct) {
+        visitorTrack.viewContent({
+          id: currentProduct.id,
+          name: currentProduct['name_' + currentLang] || currentProduct.name_en || '',
+          price: currentProduct.price,
+          images: currentProduct.images
+        });
+      }
     }, 500);
   });
 

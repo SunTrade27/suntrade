@@ -830,6 +830,7 @@
       <a href="#" onclick="showSection('products', this); return false;" data-i18n="admin_add_product">Тауар қосу</a>
       <a href="#" onclick="showSection('orders', this); return false;" data-i18n="admin_orders">Orders</a>
       <a href="#" onclick="showSection('reviews', this); return false;" data-i18n="admin_reviews">Reviews</a>
+      <a href="#" onclick="showSection('leads', this); return false;">🔥 Лидтер</a>
       <a href="/" style="margin-top:2rem;" data-i18n="nav_home">View Site</a>
       <a href="#" onclick="handleLogout(); return false;" data-i18n="admin_logout">Logout</a>
     </nav>
@@ -898,6 +899,80 @@
       <h2 data-i18n="admin_orders" style="margin-bottom:1.5rem;">Orders</h2>
       <div id="orders-table" class="admin-table-wrap"></div>
       <div id="orders-cards" class="admin-orders-cards"></div>
+    </div>
+
+    <!-- Leads (Abandoned Cart / Visitor Tracking) -->
+    <div id="section-leads" style="display:none;">
+      <h2 style="margin-bottom:1.5rem;"><svg class="icon icon-lg" style="vertical-align:middle;margin-right:6px;color:#EF4444;"><use href="#icon-mail"/></svg> 🔥 Лидтер / Leads</h2>
+
+      <!-- Conversion Funnel Stats -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;">
+        <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:1.5rem;text-align:center;">
+          <div style="font-size:2rem;font-weight:700;color:#3B82F6;" id="stat-leads-views">0</div>
+          <div style="color:var(--text-light);font-size:0.85rem;">👀 Көрулер</div>
+        </div>
+        <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:1.5rem;text-align:center;">
+          <div style="font-size:2rem;font-weight:700;color:#F59E0B;" id="stat-leads-cart">0</div>
+          <div style="color:var(--text-light);font-size:0.85rem;">🛒 Себетке қосу</div>
+        </div>
+        <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:1.5rem;text-align:center;">
+          <div style="font-size:2rem;font-weight:700;color:#8B5CF6;" id="stat-leads-checkout">0</div>
+          <div style="color:var(--text-light);font-size:0.85rem;">💳 Төлем басталды</div>
+        </div>
+        <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:1.5rem;text-align:center;">
+          <div style="font-size:2rem;font-weight:700;color:#22C55E;" id="stat-leads-purchase">0</div>
+          <div style="color:var(--text-light);font-size:0.85rem;">✅ Сатып алу</div>
+        </div>
+      </div>
+
+      <!-- Conversion Rate -->
+      <div style="background:linear-gradient(135deg,#1A1A2E,#16213E);border-radius:16px;padding:1.5rem 2rem;margin-bottom:2rem;color:white;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <div style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:0.3rem;">📊 Конверсия</div>
+            <div style="font-size:2.5rem;font-weight:800;" id="stat-leads-conversion">0%</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:0.3rem;">🔥 Себеттен сатып алуға</div>
+            <div style="font-size:2rem;font-weight:700;color:#FF6B00;" id="stat-leads-cart-conversion">0%</div>
+          </div>
+        </div>
+        <!-- Visual funnel -->
+        <div style="margin-top:1.2rem;display:flex;flex-direction:column;gap:0.4rem;" id="leads-funnel">
+          <div style="height:36px;background:rgba(59,130,246,0.25);border-radius:8px;display:flex;align-items:center;padding:0 12px;font-size:0.8rem;font-weight:600;transition:width 0.5s;" id="funnel-views"><span style="white-space:nowrap;">👀 Көрулер</span></div>
+          <div style="height:36px;background:rgba(245,158,11,0.25);border-radius:8px;display:flex;align-items:center;padding:0 12px;font-size:0.8rem;font-weight:600;transition:width 0.5s;" id="funnel-cart"><span style="white-space:nowrap;">🛒 Себетке</span></div>
+          <div style="height:36px;background:rgba(139,92,246,0.25);border-radius:8px;display:flex;align-items:center;padding:0 12px;font-size:0.8rem;font-weight:600;transition:width 0.5s;" id="funnel-checkout"><span style="white-space:nowrap;">💳 Төлем</span></div>
+          <div style="height:36px;background:rgba(34,197,94,0.25);border-radius:8px;display:flex;align-items:center;padding:0 12px;font-size:0.8rem;font-weight:600;transition:width 0.5s;" id="funnel-purchase"><span style="white-space:nowrap;">✅ Сатып алу</span></div>
+        </div>
+      </div>
+
+      <!-- Facebook Custom Audience Link -->
+      <div style="background:linear-gradient(135deg,#1877F2,#42A5F5);border-radius:16px;padding:1.5rem 2rem;margin-bottom:2rem;color:white;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+        <div style="font-size:2.5rem;">📢</div>
+        <div style="flex:1;min-width:250px;">
+          <div style="font-size:1.1rem;font-weight:700;margin-bottom:0.3rem;">Facebook Custom Audience жасаңыз</div>
+          <div style="font-size:0.85rem;opacity:0.85;">Тауарды көріп, бірақ сатып алмаған адамдарға Facebook/Instagram жарнамасын көрсетіңіз</div>
+        </div>
+        <a href="https://business.facebook.com/adsmanager/audiences/new" target="_blank" rel="noopener" style="background:white;color:#1877F2;padding:12px 24px;border-radius:10px;font-weight:700;font-size:0.9rem;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:transform 0.2s;white-space:nowrap;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          Custom Audience жасау
+        </a>
+      </div>
+
+      <!-- Abandoned Cart Visitors -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+        <h3 style="margin:0;">🛒 Себетке қосып, бірақ алмағандар</h3>
+        <div style="display:flex;gap:0.5rem;">
+          <select id="leads-filter" onchange="loadLeads()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;">
+            <option value="abandoned_cart">Себеттен тастағандар</option>
+            <option value="all">Барлық оқиғалар</option>
+            <option value="page_view">Тек көрулер</option>
+          </select>
+          <button onclick="exportLeads()" style="padding:8px 16px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:0.85rem;font-weight:600;cursor:pointer;">📥 Экспорт CSV</button>
+        </div>
+      </div>
+      <div id="leads-container" class="admin-table-wrap"></div>
+      <div id="leads-cards" class="admin-orders-cards" style="margin-top:0.75rem;"></div>
     </div>
 
     <!-- Reviews -->
@@ -1394,7 +1469,7 @@
   }
 
   function showSection(name, el) {
-    ['dashboard', 'products', 'orders', 'reviews'].forEach(s => {
+    ['dashboard', 'products', 'orders', 'reviews', 'leads'].forEach(s => {
       const sec = document.getElementById('section-' + s);
       if (sec) sec.style.display = s === name ? 'block' : 'none';
     });
@@ -1414,6 +1489,7 @@
     if (name === 'products') loadProducts();
     if (name === 'orders') loadOrders();
     if (name === 'reviews') loadReviews();
+    if (name === 'leads') loadLeads();
 
     // On mobile, close the sidebar after navigating so it doesn't cover the content
     if (window.innerWidth <= 768) {
@@ -1424,7 +1500,7 @@
 
   // Re-render current section when language changes
   window.addEventListener('langChanged', () => {
-    const sections = ['dashboard', 'products', 'orders', 'reviews'];
+    const sections = ['dashboard', 'products', 'orders', 'reviews', 'leads'];
     for (const s of sections) {
       const el = document.getElementById('section-' + s);
       if (el && el.style.display === 'block') {
@@ -1937,6 +2013,191 @@
 
   let allReviews = [];
   let currentReviewFilter = 'all';
+
+  // ===== Leads (Abandoned Cart / Visitor Tracking) =====
+  async function loadLeads() {
+    const container = document.getElementById('leads-container');
+    const cardsContainer = document.getElementById('leads-cards');
+    const filter = document.getElementById('leads-filter')?.value || 'abandoned_cart';
+
+    try {
+      // Fetch all events from last 30 days
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const { data: events, error } = await sb.from('visitor_events')
+        .select('*')
+        .gte('created_at', thirtyDaysAgo)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Failed to load visitor events:', error);
+        container.innerHTML = '<p style="color:var(--danger);">Деректерді жүктеу қатесі: ' + error.message + '</p>';
+        cardsContainer.innerHTML = '';
+        return;
+      }
+
+      if (!events || events.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-light);">Әзірге оқиғалар жоқ. Visitor tracking жұмыс істеп тұр ма?</p>';
+        cardsContainer.innerHTML = '';
+        return;
+      }
+
+      // --- Funnel Stats ---
+      const views = events.filter(e => e.event_type === 'page_view');
+      const carts = events.filter(e => e.event_type === 'add_to_cart');
+      const checkouts = events.filter(e => e.event_type === 'checkout');
+      const purchases = events.filter(e => e.event_type === 'purchase');
+
+      // Unique visitors per step
+      const uniqueViews = new Set(views.map(e => e.visitor_id)).size;
+      const uniqueCarts = new Set(carts.map(e => e.visitor_id)).size;
+      const uniqueCheckouts = new Set(checkouts.map(e => e.visitor_id)).size;
+      const uniquePurchases = new Set(purchases.map(e => e.visitor_id)).size;
+
+      document.getElementById('stat-leads-views').textContent = uniqueViews;
+      document.getElementById('stat-leads-cart').textContent = uniqueCarts;
+      document.getElementById('stat-leads-checkout').textContent = uniqueCheckouts;
+      document.getElementById('stat-leads-purchase').textContent = uniquePurchases;
+
+      // Conversion rates
+      const viewToPurchase = uniqueViews > 0 ? ((uniquePurchases / uniqueViews) * 100).toFixed(1) : '0';
+      const cartToPurchase = uniqueCarts > 0 ? ((uniquePurchases / uniqueCarts) * 100).toFixed(1) : '0';
+      document.getElementById('stat-leads-conversion').textContent = viewToPurchase + '%';
+      document.getElementById('stat-leads-cart-conversion').textContent = cartToPurchase + '%';
+
+      // Funnel bars width
+      const maxCount = Math.max(uniqueViews, 1);
+      document.getElementById('funnel-views').style.width = '100%';
+      document.getElementById('funnel-cart').style.width = Math.max((uniqueCarts / maxCount) * 100, 5) + '%';
+      document.getElementById('funnel-checkout').style.width = Math.max((uniqueCheckouts / maxCount) * 100, 5) + '%';
+      document.getElementById('funnel-purchase').style.width = Math.max((uniquePurchases / maxCount) * 100, 5) + '%';
+
+      // --- Abandoned Cart Visitors ---
+      // Visitors who added to cart but did NOT purchase
+      const purchasingVisitors = new Set(purchases.map(e => e.visitor_id));
+      const cartVisitors = carts.filter(e => !purchasingVisitors.has(e.visitor_id));
+      // Deduplicate by visitor_id + product_id (keep latest)
+      const abandonedMap = {};
+      cartVisitors.forEach(e => {
+        const key = e.visitor_id + '|' + (e.product_id || 'unknown');
+        if (!abandonedMap[key] || new Date(e.created_at) > new Date(abandonedMap[key].created_at)) {
+          abandonedMap[key] = e;
+        }
+      });
+      const abandoned = Object.values(abandonedMap).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      // Filter events
+      let filteredEvents = events;
+      if (filter === 'abandoned_cart') {
+        filteredEvents = abandoned;
+      } else if (filter === 'page_view') {
+        filteredEvents = views;
+      }
+
+      if (filteredEvents.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-light);">Бұл сүзгі бойынша оқиғалар табылмады.</p>';
+        cardsContainer.innerHTML = '';
+        return;
+      }
+
+      // Desktop table
+      container.innerHTML = `
+        <table class="admin-table">
+          <thead><tr>
+            <th>Visitor ID</th>
+            <th>Тауар</th>
+            <th>Баға</th>
+            <th>Оқиға</th>
+            <th>Күні</th>
+            <th>WhatsApp</th>
+          </tr></thead>
+          <tbody>${filteredEvents.map(e => {
+            const productLabel = e.product_name || '—';
+            const eventLabel = e.event_type === 'page_view' ? '👀 Көру' :
+              e.event_type === 'add_to_cart' ? '🛒 Себет' :
+              e.event_type === 'checkout' ? '💳 Төлем' : '✅ Сатып';
+            const eventColor = e.event_type === 'page_view' ? '#3B82F6' :
+              e.event_type === 'add_to_cart' ? '#F59E0B' :
+              e.event_type === 'checkout' ? '#8B5CF6' : '#22C55E';
+            const shortId = e.visitor_id ? e.visitor_id.substring(0, 12) + '...' : '—';
+            const waUrl = 'https://wa.me/77021379248?text=' + encodeURIComponent('Сәлеметсіз бе! Сіз SunTrade-да "' + (e.product_name || '') + '" тауарын қараған болатынсыз. Тауар әлі бар! 🎁 Арнайы жеңілдікпен алғыңыз келе ме?');
+            return `<tr>
+              <td style="font-family:monospace;font-size:0.8rem;" title="${escapeHtml(e.visitor_id || '')}">${escapeHtml(shortId)}</td>
+              <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(productLabel)}</td>
+              <td>${e.product_price ? '€' + parseFloat(e.product_price).toFixed(2) : '—'}</td>
+              <td><span style="background:${eventColor}20;color:${eventColor};padding:3px 10px;border-radius:50px;font-size:0.75rem;font-weight:600;">${eventLabel}</span></td>
+              <td style="font-size:0.8rem;">${new Date(e.created_at).toLocaleDateString()}</td>
+              <td><a href="${waUrl}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#25D366;color:white;border-radius:8px;font-size:0.78rem;font-weight:600;text-decoration:none;white-space:nowrap;">💬 WhatsApp</a></td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      `;
+
+      // Mobile cards
+      cardsContainer.innerHTML = filteredEvents.map(e => {
+        const productLabel = e.product_name || '—';
+        const eventLabel = e.event_type === 'page_view' ? '👀 Көру' :
+          e.event_type === 'add_to_cart' ? '🛒 Себет' :
+          e.event_type === 'checkout' ? '💳 Төлем' : '✅ Сатып';
+        const eventColor = e.event_type === 'page_view' ? '#3B82F6' :
+          e.event_type === 'add_to_cart' ? '#F59E0B' :
+          e.event_type === 'checkout' ? '#8B5CF6' : '#22C55E';
+        const waUrl = 'https://wa.me/77021379248?text=' + encodeURIComponent('Сәлеметсіз бе! Сіз SunTrade-да "' + (e.product_name || '') + '" тауарын қараған болатынсыз. Тауар әлі бар! 🎁 Арнайы жеңілдікпен алғыңыз келе ме?');
+        return `
+          <div class="order-row-card">
+            <div class="order-row-card-head">
+              <div>
+                <div class="order-row-card-id" style="font-size:0.7rem;" title="${escapeHtml(e.visitor_id || '')}">${escapeHtml(e.visitor_id ? e.visitor_id.substring(0, 12) + '...' : '—')}</div>
+                <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">${new Date(e.created_at).toLocaleDateString()}</div>
+              </div>
+              <span style="background:${eventColor}20;color:${eventColor};padding:3px 10px;border-radius:50px;font-size:0.75rem;font-weight:600;">${eventLabel}</span>
+            </div>
+            <div class="order-row-card-body">
+              <div class="order-row-card-row"><span class="order-row-card-label">Тауар</span><span class="order-row-card-value">${escapeHtml(productLabel)}</span></div>
+              <div class="order-row-card-row"><span class="order-row-card-label">Баға</span><span class="order-row-card-value">${e.product_price ? '€' + parseFloat(e.product_price).toFixed(2) : '—'}</span></div>
+            </div>
+            <div class="order-row-card-foot">
+              <a href="${waUrl}" target="_blank" rel="noopener" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px;background:#25D366;color:white;border-radius:8px;font-size:0.82rem;font-weight:600;text-decoration:none;">💬 WhatsApp жазу</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+    } catch (err) {
+      console.error('loadLeads error:', err);
+      container.innerHTML = '<p style="color:var(--danger);">Қате: ' + err.message + '</p>';
+      cardsContainer.innerHTML = '';
+    }
+  }
+
+  // Export leads to CSV
+  function exportLeads() {
+    const container = document.getElementById('leads-container');
+    const rows = container.querySelectorAll('tbody tr');
+    if (!rows.length) {
+      alert('Экспорттайтын деректер жоқ!');
+      return;
+    }
+    let csv = 'Visitor ID,Тауар,Баға,Оқиға,Күні,URL\n';
+    rows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+      if (cells.length >= 5) {
+        csv += [
+          cells[0].textContent.trim(),
+          cells[1].textContent.trim(),
+          cells[2].textContent.trim(),
+          cells[3].textContent.trim(),
+          cells[4].textContent.trim()
+        ].map(v => '"' + v.replace(/"/g, '""') + '"').join(',') + '\n';
+      }
+    });
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'leads-' + new Date().toISOString().slice(0, 10) + '.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
   async function loadReviews() {
     allReviews = await adminGetReviews();
