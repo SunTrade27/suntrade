@@ -784,7 +784,7 @@
       <div class="stat-card sc-visitors" style="position:relative;">
         <div class="stat-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
         <div class="stat-card-value" id="s-visitors">—</div>
-        <div class="stat-card-label">👀 Келушілер</div>
+        <div class="stat-card-label">Келушілер</div>
         <div style="position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:#10B981;box-shadow:0 0 0 0 rgba(16,185,129,0.6);animation:liveDot 2s ease-in-out infinite;"></div>
       </div>
     </div>
@@ -923,10 +923,12 @@
       setEl('s-products', (productsRes && productsRes.count) || 0);
       setEl('s-reviews', (reviewsRes && reviewsRes.count) || 0);
       setEl('s-pending', (pendingRes && pendingRes.count) || 0);
-      // Visitor count: unique visitors (distinct visitor_id from page_view events)
+      // Visitor count: unique visitors (distinct visitor_id from page_view events, last 2 months only)
       try {
+        const twoMonthsAgo = new Date();
+        twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
         const { data: visitorRows, error: vErr } = await sb.from('visitor_events')
-          .select('visitor_id').eq('event_type', 'page_view');
+          .select('visitor_id').eq('event_type', 'page_view').gte('created_at', twoMonthsAgo.toISOString());
         if (!vErr && visitorRows) {
           const uniqueVisitors = new Set(visitorRows.map(r => r.visitor_id));
           setEl('s-visitors', uniqueVisitors.size);
