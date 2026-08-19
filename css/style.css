@@ -5050,20 +5050,22 @@ html[data-theme="dark"] .mobile-admin-panel {
   height: 28px;
   width: auto;
 }
-/* Mobile: 2 rows of 5+5 — compact like desktop */
+/* Mobile: 2 rows of 5+5 — fill grid cells fully */
 @media (max-width: 640px) {
   .payment-methods {
-    gap: 4px 3px;
+    gap: 3px;
     justify-content: center;
     padding-top: 0.4rem;
     display: grid;
-    grid-template-columns: repeat(5, auto);
+    grid-template-columns: repeat(5, 1fr);
   }
   .pm-badge {
-    padding: 2px 2px;
-    border-radius: 4px;
+    padding: 3px 4px;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
   }
-  .pm-badge svg { height: 20px; width: auto; }
+  .pm-badge svg { height: 28px; width: 100%; }
 }
 html[data-theme="dark"] .pm-badge {
   background: #182338;
