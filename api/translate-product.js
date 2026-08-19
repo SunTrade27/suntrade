@@ -124,7 +124,7 @@ function containsUntranslatedSourceChunk(value, source) {
 
 function freePreCleanHtml(html) {
   if (!html || typeof html !== 'string') return html || '';
-  return html
+  let cleaned = html
     // HTML comments first — wrapper comments in particular
     .replace(/<!--[\s\S]*?-->/g, '')
     // Supplier boilerplate headers — we render our own h3 above the description
@@ -132,7 +132,25 @@ function freePreCleanHtml(html) {
     .replace(/<h[1-6]\b[^>]*\/?>/gi, '')
     // Inline style + data- tracking attributes translate to garbage; drop them
     .replace(/\s+style\s*=\s*"[^"]*"/gi, '')
-    .replace(/\s+style\s*=\s*'[^']*'/gi, '')
+    .replace(/\s+style\s*=\s*'[^']*'/gi, '');
+
+  // CRITICAL: Extract lazy-loaded image URLs from data-* attributes BEFORE
+  // stripping them. Supplier sites (Alibaba/1688/AliExpress) put the real
+  // image URL in data-src, data-lazy-src, etc. while src is empty/placeholder.
+  // Without this step, the translated description saved to DB loses all
+  // image URLs, causing broken images on the product page.
+  cleaned = cleaned.replace(
+    /<img\b([^>]*?)\bdata-(src|lazy-src|original|url|image-src|ks-lazyload|actualsrc)\s*=\s*["']([^"']*?)["']([^>]*?)>/gi,
+    (match, before, attr, url, after) => {
+      if (!url) return match;
+      // Only override src if it's empty, a data: URI, or missing
+      const combined = before + after;
+      if (/\bsrc\s*=\s*["'](?!data:)[^"']+["']/i.test(combined)) return match;
+      return `<img src="${url}"${before}${after}>`;
+    }
+  );
+
+  cleaned = cleaned
     .replace(/\s+data-[a-z0-9-]+\s*=\s*"[^"]*"/gi, '')
     .replace(/\s+data-[a-z0-9-]+\s*=\s*'[^']*'/gi, '')
     // aria-* rarely carries meaning in product descriptions

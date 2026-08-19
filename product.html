@@ -26,6 +26,7 @@
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/icons.js"></script>
+  <script src="/js/pixel.js" defer></script>
 <style>
   /* ===== Image Magnifier / Lens Zoom ===== */
   .img-magnifier-container {
@@ -1234,6 +1235,11 @@
     loadProductReviews(p.id);
     loadProductRating(p.id);
 
+    // Facebook Pixel: Track product view
+    if (typeof fbTrackViewContent === 'function') {
+      fbTrackViewContent({ id: p.id, name: name, price: p.price, category: (p.categories && p.categories.name_en) || '' });
+    }
+
     // Check admin and load order management
     checkAdminAndLoadOrders();
 
@@ -1996,7 +2002,7 @@
     const root = document.createElement('div');
     root.innerHTML = decodeStoredDescriptionMarkup(html);
     const baseHref = document.baseURI;
-    const imageAttrs = ['data-src', 'data-lazy-src', 'data-original', 'data-url', 'data-image-src', 'data-ks-lazyload'];
+    const imageAttrs = ['data-src', 'data-lazy-src', 'data-original', 'data-url', 'data-image-src', 'data-ks-lazyload', 'data-actualsrc', 'data-defer-src', 'data-lazy', 'data-origin-src'];
     const sourceFor = el => {
       for (const attr of imageAttrs) {
         const value = (el.getAttribute(attr) || '').trim();
@@ -2110,11 +2116,14 @@
       .replace(/\swidth\s*=\s*"\d+"/gi, '')
       .replace(/\sheight\s*=\s*"\d+"/gi, '');
 
-    // Apply lazy-loading + responsive style to remaining images. Done
-    // AFTER class stripping so our `.desc-img-float-*` classes (added by
+    // Apply lazy-loading + responsive style + referrerpolicy to remaining images.
+    // Done AFTER class stripping so our `.desc-img-float-*` classes (added by
     // applyAlternatingFloats) aren't accidentally nuked above.
+    // referrerpolicy="no-referrer" prevents CDN hotlink protection from
+    // blocking images loaded from external supplier CDNs (Alibaba/AliExpress).
     cleaned = cleaned.replace(/<img\b(?![^>]*\bloading=)([^>]*)>/gi, '<img loading="lazy"$1>');
     cleaned = cleaned.replace(/<img\b(?![^>]*\bstyle=)([^>]*)>/gi, '<img$1 style="max-width:100%;height:auto;">');
+    cleaned = cleaned.replace(/<img\b(?![^>]*\breferrerpolicy=)([^>]*)>/gi, '<img referrerpolicy="no-referrer"$1>');
 
     // Collapse runs of empty tags that some pastes leave behind
     cleaned = cleaned.replace(/(<p[^>]*>\s*<\/p>)+/gi, '');

@@ -16,6 +16,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://js.stripe.com/v3/"></script>
   <script src="/js/icons.js"></script>
+  <script src="/js/pixel.js" defer></script>
   <!-- Cloudflare Turnstile (bot protection) -->
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad" async defer></script>
   <!-- Vercel Speed Insights -->
@@ -267,6 +268,11 @@
     const total = items.reduce((sum, item) => sum + getDiscountedPrice(item.price, item.qty) * item.qty, 0);
     totalEl.textContent = '€' + total.toFixed(2);
     payAmount.textContent = '€' + total.toFixed(2);
+
+    // Facebook Pixel: Track InitiateCheckout
+    if (typeof fbTrackInitiateCheckout === 'function') {
+      fbTrackInitiateCheckout(items.map(i => ({ id: i.id, name: i.name, price: getDiscountedPrice(i.price, i.qty), qty: i.qty })));
+    }
   }
 
   async function handleCheckout(e) {
@@ -395,6 +401,23 @@
     document.querySelector('.cart-summary').style.display = 'none';
     document.getElementById('payment-success').style.display = 'block';
     document.getElementById('order-id').textContent = params.get('order_id') || 'N/A';
+
+    // Facebook Pixel: Track Purchase
+    if (typeof fbTrackPurchase === 'function') {
+      try {
+        const lastCart = JSON.parse(localStorage.getItem('suntrade_cart') || '[]');
+        const purchaseValue = lastCart.reduce((s, i) => s + (getDiscountedPrice(i.price, i.qty) * i.qty), 0);
+        fbTrackPurchase({
+          value: purchaseValue,
+          currency: 'EUR',
+          content_ids: lastCart.map(i => String(i.id)),
+          content_type: 'product',
+          contents: lastCart.map(i => ({ id: String(i.id), quantity: i.qty, item_price: getDiscountedPrice(i.price, i.qty) })),
+          num_items: lastCart.reduce((s, i) => s + i.qty, 0)
+        });
+      } catch (_) { /* non-fatal */ }
+    }
+
     clearCart();
   }
 </script>

@@ -2706,7 +2706,7 @@
   }
 
   function bestPastedImageSource(el, baseHref) {
-    const attrs = ['data-src', 'data-lazy-src', 'data-original', 'data-url', 'data-ks-lazyload', 'data-image-src'];
+    const attrs = ['data-src', 'data-lazy-src', 'data-original', 'data-url', 'data-ks-lazyload', 'data-image-src', 'data-actualsrc', 'data-defer-src', 'data-lazy', 'data-origin-src'];
     let src = '';
     for (const attr of attrs) {
       const candidate = (el.getAttribute(attr) || '').trim();
@@ -2761,7 +2761,7 @@
       const source = bestPastedImageSource(el, baseHref);
       if (el.tagName === 'IMG') {
         if (source) el.setAttribute('src', source);
-        ['data-src','data-lazy-src','data-original','data-url','data-ks-lazyload','data-image-src','srcset'].forEach(attr => el.removeAttribute(attr));
+        ['data-src','data-lazy-src','data-original','data-url','data-ks-lazyload','data-image-src','data-actualsrc','data-defer-src','data-lazy','data-origin-src','srcset'].forEach(attr => el.removeAttribute(attr));
       } else if (source && !el.querySelector('img')) {
         // Alibaba often stores the real image on a wrapper such as
         // <div data-src="..."> rather than on an <img>. Turn that lazy

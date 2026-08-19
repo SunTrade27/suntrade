@@ -133,6 +133,10 @@ function addToCart(productId, name, price, image, qty = 1, metadata = {}) {
   }
   saveCart();
   showNotification((typeof t === 'function' ? t('product_add_cart') : 'Add to Cart') + ' <svg class="icon icon-sm" style="color:white;vertical-align:middle;"><use href="#icon-check"/></svg>');
+  // Facebook Pixel: Track AddToCart
+  if (typeof fbTrackAddToCart === 'function') {
+    fbTrackAddToCart([{ id: productId, name: name, price: numPrice, qty: numQty }]);
+  }
   return true;
 }
 
