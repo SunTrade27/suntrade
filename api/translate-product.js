@@ -536,7 +536,9 @@ async function aiTranslateLabels(labels, langCode) {
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
     const out = {};
     Object.keys(labels).forEach(key => {
-      const value = typeof parsed[key] === 'string' ? parsed[key].trim() : '';
+      let value = typeof parsed[key] === 'string' ? parsed[key].trim() : '';
+      // Strip trailing 'color'/'colour' that the model sometimes appends.
+      value = value.replace(/\s+colou?r\s*$/i, '').trim();
       // A malformed model response must never be shown as a label. In
       // particular, reject leaked HTML/code/font tokens seen in old output.
       if (value && !/[<>]/.test(value) && !/fontdatabase|uherhiy/i.test(value)) out[key] = value;
@@ -610,7 +612,7 @@ module.exports = async function handler(req, res) {
             // If a public provider cannot translate a short word, keep the
             // English label as a safe fallback instead of showing blank UI.
             translatedLabels[key] = isSafeLabelTranslation(translated, source)
-              ? translated.trim() : source;
+              ? translated.trim().replace(/\s+colou?r\s*$/i, '').trim() : source;
           } catch (_) {
             translatedLabels[key] = source;
           }

@@ -59,6 +59,11 @@ function escapeCartHtml(value) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+// Strip trailing 'color'/'colour' tokens from translated variant labels.
+function cleanVariantLabel(value) {
+  return String(value || '').replace(/\s+colou?r\s*$/i, '').trim();
+}
+
 function getCartItemDisplayName(item) {
   if (!item) return '';
   const baseName = item.baseName || item.name || '';
@@ -66,8 +71,8 @@ function getCartItemDisplayName(item) {
   if (!parts.length) return item.name || baseName;
   const labels = item.variantLabelTranslations || {};
   const rendered = parts.map(part => {
-    const group = labels[part.group] || part.group || '';
-    const value = labels[part.value] || part.value || '';
+    const group = cleanVariantLabel(labels[part.group] || part.group || '');
+    const value = cleanVariantLabel(labels[part.value] || part.value || '');
     return group ? group + ': ' + value : value;
   }).filter(Boolean).join(' / ');
   return baseName + (rendered ? ' — ' + rendered : '');
@@ -84,7 +89,8 @@ async function refreshCartVariantTranslations() {
       if (part.value) sourceLabels[part.value] = part.value;
     });
     const translated = await ensureProductLabelTranslations(item.id, currentLang, sourceLabels);
-    item.variantLabelTranslations = { ...sourceLabels, ...translated };
+    const cleaned = Object.fromEntries(Object.entries(translated || {}).map(([k, v]) => [k, cleanVariantLabel(v)]));
+    item.variantLabelTranslations = { ...sourceLabels, ...cleaned };
     item.name = getCartItemDisplayName(item);
   }
   if (items.length) {

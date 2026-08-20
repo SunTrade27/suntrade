@@ -831,6 +831,7 @@
       <a href="#" onclick="showSection('orders', this); return false;" data-i18n="admin_orders">Orders</a>
       <a href="#" onclick="showSection('reviews', this); return false;" data-i18n="admin_reviews">Reviews</a>
       <a href="#" onclick="showSection('leads', this); return false;">🔥 Лидтер</a>
+      <a href="#" onclick="showSection('ads', this); return false;">📢 Жарнама</a>
       <a href="/" style="margin-top:2rem;" data-i18n="nav_home">View Site</a>
       <a href="#" onclick="handleLogout(); return false;" data-i18n="admin_logout">Logout</a>
     </nav>
@@ -1004,6 +1005,15 @@
       </div>
 
       <div id="reviews-container" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:1rem;"></div>
+    </div>
+
+    <!-- Ads Management -->
+    <div id="section-ads" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.5rem;">
+        <h2>📢 Жарнама басқару / Ads</h2>
+        <a href="/ads.html" target="_blank" style="padding:8px 16px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:0.85rem;font-weight:600;cursor:pointer;text-decoration:none;">🔗 Жарнама беті</a>
+      </div>
+      <div id="ads-container" class="admin-table-wrap"></div>
     </div>
 
   </main>
@@ -1469,7 +1479,7 @@
   }
 
   function showSection(name, el) {
-    ['dashboard', 'products', 'orders', 'reviews', 'leads'].forEach(s => {
+    ['dashboard', 'products', 'orders', 'reviews', 'leads', 'ads'].forEach(s => {
       const sec = document.getElementById('section-' + s);
       if (sec) sec.style.display = s === name ? 'block' : 'none';
     });
@@ -1477,7 +1487,6 @@
     if (el && el.classList) {
       el.classList.add('active');
     } else {
-      // Fallback: find the link whose onclick contains this name
       const fallback = document.querySelector(`.admin-nav a[onclick*="showSection('${name}')"]`);
       if (fallback) fallback.classList.add('active');
     }
@@ -1490,6 +1499,7 @@
     if (name === 'orders') loadOrders();
     if (name === 'reviews') loadReviews();
     if (name === 'leads') loadLeads();
+    if (name === 'ads') loadAdsAdmin();
 
     // On mobile, close the sidebar after navigating so it doesn't cover the content
     if (window.innerWidth <= 768) {
@@ -1500,7 +1510,7 @@
 
   // Re-render current section when language changes
   window.addEventListener('langChanged', () => {
-    const sections = ['dashboard', 'products', 'orders', 'reviews', 'leads'];
+    const sections = ['dashboard', 'products', 'orders', 'reviews', 'leads', 'ads'];
     for (const s of sections) {
       const el = document.getElementById('section-' + s);
       if (el && el.style.display === 'block') {
@@ -2314,7 +2324,69 @@
     } catch (err) {
       alert(t('error') + ': ' + err.message);
     }
-  }  async function openProductModal(product) {
+  }
+
+  // ── Ads Management ──
+  async function loadAdsAdmin() {
+    const container = document.getElementById('ads-container');
+    if (!container) return;
+    try {
+      const { data: ads, error } = await sb.from('ads').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      if (!ads || ads.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-light);padding:2rem;text-align:center;">Жарнама жоқ. <a href="/ads.html" target="_blank" style="color:var(--primary);">Жарнама беру бетіне өту</a></p>';
+        return;
+      }
+      container.innerHTML = '<table class="admin-table"><thead><tr><th>Сурет</th><th>Атауы</th><th>Орны</th><th>Белсенді</th><th>Жарнама беруші</th><th>Басталу</th><th>Аяқталу</th><th>Әрекет</th></tr></thead><tbody>' +
+        ads.map(a => {
+          const pos = a.position === 'both' ? '🔵 Екі жерде' : a.position === 'navbar' ? '🔝 Навбар' : '📦 Тауар беті';
+          const img = a.image_url && a.image_url.length > 100
+            ? '<img src="' + a.image_url.substring(0, 100) + '..." style="width:80px;height:40px;object-fit:cover;border-radius:6px;">'
+            : '<div style="width:80px;height:40px;background:#374151;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#9CA3AF;font-size:0.7rem;">Жоқ</div>';
+          return '<tr>' +
+            '<td>' + img + '</td>' +
+            '<td><strong>' + escapeHtml(a.title) + '</strong></td>' +
+            '<td>' + pos + '</td>' +
+            '<td>' + (a.active ? '<span style="color:#22C55E;font-weight:600;">✓ Белсенді</span>' : '<span style="color:#F59E0B;font-weight:600;">⏳ Күтуде</span>') + '</td>' +
+            '<td>' + escapeHtml(a.advertiser_name || '-') + '<br><small style="color:var(--text-light);">' + escapeHtml(a.advertiser_email || '') + '</small></td>' +
+            '<td>' + (a.start_date ? new Date(a.start_date).toLocaleDateString() : '-') + '</td>' +
+            '<td>' + (a.end_date ? new Date(a.end_date).toLocaleDateString() : 'Шектеусіз') + '</td>' +
+            '<td style="white-space:nowrap;">' +
+              (!a.active ? '<button onclick="toggleAdActive(\'' + a.id + '\', true)" style="padding:5px 10px;border:none;border-radius:6px;background:#22C55E;color:white;cursor:pointer;font-size:0.78rem;font-weight:600;margin-right:4px;">✓ Растау</button>' : '<button onclick="toggleAdActive(\'' + a.id + '\', false)" style="padding:5px 10px;border:none;border-radius:6px;background:#F59E0B;color:white;cursor:pointer;font-size:0.78rem;font-weight:600;margin-right:4px;">⏸ Өшіру</button>') +
+              '<button onclick="deleteAd(\'' + a.id + '\')" style="padding:5px 10px;border:none;border-radius:6px;background:#FEE2E2;color:#DC2626;cursor:pointer;font-size:0.78rem;font-weight:600;">🗑</button>' +
+            '</td>' +
+          '</tr>';
+        }).join('') +
+        '</tbody></table>';
+    } catch (err) {
+      container.innerHTML = '<p style="color:var(--danger);">Қате: ' + escapeHtml(err.message || err) + '</p>';
+    }
+  }
+
+  async function toggleAdActive(id, active) {
+    try {
+      const { error } = await sb.from('ads').update({ active }).eq('id', id);
+      if (error) throw error;
+      loadAdsAdmin();
+      showNotification(active ? 'Жарнама белсендірілді' : 'Жарнама өшірілді');
+    } catch (err) {
+      alert('Қате: ' + err.message);
+    }
+  }
+
+  async function deleteAd(id) {
+    if (!confirm('Жарнаманы жою керек пе?')) return;
+    try {
+      const { error } = await sb.from('ads').delete().eq('id', id);
+      if (error) throw error;
+      loadAdsAdmin();
+      showNotification('Жарнама жойылды');
+    } catch (err) {
+      alert('Қате: ' + err.message);
+    }
+  }
+
+  async function openProductModal(product) {
     const modal = document.getElementById('product-modal');
     modal.style.display = 'flex';
     const productForm = document.getElementById('product-form');

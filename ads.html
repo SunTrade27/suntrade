@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Жарнама беру - SunTrade</title>
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { background: #0a0e1a; color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; }
+    .ads-container { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+    .ads-hero { text-align: center; margin-bottom: 2.5rem; }
+    .ads-hero h1 { font-size: 2.2rem; font-weight: 800; color: #FF6B00; margin-bottom: 0.5rem; }
+    .ads-hero p { color: #94a3b8; font-size: 1.05rem; max-width: 600px; margin: 0 auto; }
+    .ads-positions { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem; }
+    .ads-position-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: border-color 0.3s;
+    }
+    .ads-position-card:hover { border-color: #FF6B00; }
+    .ads-position-card .icon-wrap {
+      width: 64px; height: 64px; border-radius: 16px;
+      background: linear-gradient(135deg, rgba(255,107,0,0.15), rgba(255,107,0,0.05));
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem; font-size: 1.8rem;
+    }
+    .ads-position-card h3 { font-size: 1.1rem; color: #f1f5f9; margin-bottom: 0.4rem; }
+    .ads-position-card p { font-size: 0.85rem; color: #94a3b8; line-height: 1.5; }
+    .ads-form {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 2rem;
+    }
+    .ads-form h2 { font-size: 1.4rem; font-weight: 700; color: #f1f5f9; margin-bottom: 1.5rem; text-align: center; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.4rem; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 0.7rem 1rem; border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06);
+      color: #f1f5f9; font-size: 0.95rem; box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none; border-color: #FF6B00;
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .form-group select option { background: #1a1f2e; color: #f1f5f9; }
+    .image-upload-zone {
+      border: 2px dashed rgba(255,107,0,0.3); border-radius: 12px;
+      padding: 2rem; text-align: center; cursor: pointer;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .image-upload-zone:hover { border-color: #FF6B00; background: rgba(255,107,0,0.04); }
+    .image-upload-zone input { display: none; }
+    .image-upload-zone p { color: #94a3b8; font-size: 0.9rem; margin: 0.5rem 0 0; }
+    .image-upload-zone .icon { font-size: 2rem; color: #FF6B00; }
+    .image-preview { max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 1rem; display: none; }
+    .btn-submit {
+      width: 100%; padding: 0.9rem; border: none; border-radius: 12px;
+      background: linear-gradient(135deg, #FF6B00, #FF8C40);
+      color: white; font-size: 1.05rem; font-weight: 700;
+      cursor: pointer; transition: transform 0.2s, box-shadow 0.3s;
+      margin-top: 0.5rem;
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,107,0,0.35); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .success-msg {
+      display: none; text-align: center; padding: 3rem 1rem;
+    }
+    .success-msg .check { font-size: 3rem; margin-bottom: 1rem; }
+    .success-msg h2 { color: #10B981; margin-bottom: 0.5rem; }
+    .success-msg p { color: #94a3b8; }
+    .error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 0.3rem; display: none; }
+    .spec-table { width: 100%; margin: 1.5rem 0; border-collapse: collapse; }
+    .spec-table th, .spec-table td {
+      text-align: left; padding: 0.6rem 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.85rem;
+    }
+    .spec-table th { color: #FF6B00; font-weight: 600; }
+    .spec-table td { color: #cbd5e1; }
+    @media (max-width: 600px) {
+      .ads-positions { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .ads-hero h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="main-navbar">
+    <div class="nav-left">
+      <a href="/" class="logo"><span class="logo-sun">Sun</span>Trade</a>
+    </div>
+    <div class="nav-right">
+      <a href="/" class="nav-link" data-i18n="nav_home">Басты бет</a>
+      <a href="/catalog.html" class="nav-link" data-i18n="nav_catalog">Каталог</a>
+    </div>
+  </nav>
+
+  <div class="ads-container">
+    <div class="ads-hero">
+      <h1>📢 Жарнама беріңіз!</h1>
+      <p>SunTrade сайтында жарнамаңызды орналастырыңыз — мыңдаған сатып алушыға көрініңіз!</p>
+    </div>
+
+    <!-- Position cards -->
+    <div class="ads-positions">
+      <div class="ads-position-card">
+        <div class="icon-wrap">🔝</div>
+        <h3>Навбар үсті</h3>
+        <p>Барлық беттерде навбардың төбесінде көрінетін жарнама баннері. Ең көп көрілетін орын.</p>
+      </div>
+      <div class="ads-position-card">
+        <div class="icon-wrap">📦</div>
+        <h3>Тауар беті төмені</h3>
+        <p>Тауар бетіндегі төлем белгілерінің астындағы бос орында көрінетін жарнама.</p>
+      </div>
+    </div>
+
+    <!-- Specs table -->
+    <div class="ads-form" style="margin-bottom: 2rem;">
+      <h2>📐 Жарнама талаптары</h2>
+      <table class="spec-table">
+        <tr><th>Параметр</th><th>Мәні</th></tr>
+        <tr><td>Сурет форматы</td><td>JPG, PNG, WebP (макс. 2 МБ)</td></tr>
+        <tr><td>Навбар үсті өлшемі</td><td>1200×120 px ( którtylaу бойынша созылады)</td></tr>
+        <tr><td>Тауар беті өлшемі</td><td>1200×200 px (kңtartylaу бойынша созылады)</td></tr>
+        <tr><td>Баға</td><td>Тегін орналастыру! 🎉</td></tr>
+        <tr><td>Мерзімі</td><td>Белсенді болғанша және/немесе күніне дейін</td></tr>
+      </table>
+    </div>
+
+    <!-- Submission form -->
+    <div class="ads-form" id="ads-form-wrapper">
+      <h2>📝 Жарнама тапсырыс</h2>
+      <form id="ads-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Жарнама атауы *</label>
+            <input type="text" id="ad-title" placeholder="Мысалы: Жаздық көзілдірік" required>
+          </div>
+          <div class="form-group">
+            <label>Орналасу орны *</label>
+            <select id="ad-position" required>
+              <option value="both">Екі жерде де (навбар + тауар беті)</option>
+              <option value="navbar">Тек навбар үсті</option>
+              <option value="product_bottom">Тек тауар беті төмені</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Жарнама беруші аты *</label>
+            <input type="text" id="ad-name" placeholder="Компания немесе жеке ат" required>
+          </div>
+          <div class="form-group">
+            <label>Электрондық пошта *</label>
+            <input type="email" id="ad-email" placeholder="email@example.com" required>
+          </div>
+          <div class="form-group">
+            <label>Телефон</label>
+            <input type="tel" id="ad-phone" placeholder="+7 (7XX) XXX-XX-XX">
+          </div>
+          <div class="form-group">
+            <label>Сілтеме URL (міндетті емес)</label>
+            <input type="url" id="ad-link" placeholder="https://example.com">
+          </div>
+          <div class="form-group full">
+            <label>Жарнама суреті *</label>
+            <div class="image-upload-zone" id="image-upload-zone">
+              <div class="icon">🖼️</div>
+              <p><strong>Суретті бұл жерге сүйреңіз</strong> немесе басыңыз</p>
+              <p style="font-size:0.75rem;color:#64748b;margin-top:0.25rem;">JPG, PNG, WebP — макс. 2 МБ</p>
+              <input type="file" id="ad-image" accept="image/*">
+            </div>
+            <img id="image-preview" class="image-preview" alt="Preview">
+          </div>
+          <div class="form-group full">
+            <label>Басталу күні</label>
+            <input type="date" id="ad-start">
+          </div>
+          <div class="form-group full">
+            <label>Аяқталу күні (міндетті емес — тұрғанша жұмыс істейді)</label>
+            <input type="date" id="ad-end">
+          </div>
+        </div>
+        <div class="error-msg" id="form-error"></div>
+        <button type="submit" class="btn-submit" id="submit-btn">🚀 Жарнаманы жіберу</button>
+      </form>
+    </div>
+
+    <!-- Success message -->
+    <div class="success-msg" id="success-msg">
+      <div class="check">✅</div>
+      <h2>Жарнама сәтті жіберілді!</h2>
+      <p>Әкімші растағаннан кейін жарнамаңыз сайтта пайда болады.</p>
+      <p style="margin-top:1rem;"><a href="/" style="color:#FF6B00;text-decoration:none;">← Басты бетке оралу</a></p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="/js/i18n.js"></script>
+  <script>
+    const SUPABASE_URL = 'https://wmznfdngucpsmjbxiwzn.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtem5mZG5ndWNwc21qYnhpd3puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1Nzk1NDAsImV4cCI6MjA5NTE1NTU0MH0.DaYcIF7uaU0FSWbB9Mlq4YVVYm2EleOSz6ACtwyHjsI';
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let uploadedFile = null;
+    let uploadedDataUrl = '';
+
+    // Image upload
+    const uploadZone = document.getElementById('image-upload-zone');
+    const fileInput = document.getElementById('ad-image');
+    const preview = document.getElementById('image-preview');
+
+    uploadZone.addEventListener('click', () => fileInput.click());
+    uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.style.borderColor = '#FF6B00'; });
+    uploadZone.addEventListener('dragleave', () => { uploadZone.style.borderColor = ''; });
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadZone.style.borderColor = '';
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', e => { if (e.target.files.length) handleFile(e.target.files[0]); });
+
+    function handleFile(file) {
+      if (file.size > 2 * 1024 * 1024) {
+        show_error('Сурет 2 МБ-тан аспауы керек');
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        show_error('Тек сурет файлдарын қабылдайды');
+        return;
+      }
+      uploadedFile = file;
+      const reader = new FileReader();
+      reader.onload = e => {
+        uploadedDataUrl = e.target.result;
+        preview.src = uploadedDataUrl;
+        preview.style.display = 'block';
+        uploadZone.querySelector('p').innerHTML = '<strong style="color:#10B981">✓ Сурет таңдалды:</strong> ' + file.name;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Submit
+    document.getElementById('ads-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const errEl = document.getElementById('form-error');
+      errEl.style.display = 'none';
+
+      const title = document.getElementById('ad-title').value.trim();
+      const position = document.getElementById('ad-position').value;
+      const name = document.getElementById('ad-name').value.trim();
+      const email = document.getElementById('ad-email').value.trim();
+      const phone = document.getElementById('ad-phone').value.trim();
+      const link = document.getElementById('ad-link').value.trim();
+      const start = document.getElementById('ad-start').value;
+      const end = document.getElementById('ad-end').value;
+
+      if (!title || !name || !email) {
+        show_error('Міндетті түрде толтырылуы тиіс өрістерді толтырыңыз');
+        return;
+      }
+      if (!uploadedDataUrl) {
+        show_error('Жарнама суретін жүктеңіз');
+        return;
+      }
+
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Жіберілуде...';
+
+      try {
+        const ad = {
+          title,
+          image_url: uploadedDataUrl,
+          link_url: link,
+          position,
+          placement_priority: 0,
+          active: false,  // needs admin approval
+          advertiser_name: name,
+          advertiser_email: email,
+          advertiser_phone: phone,
+          start_date: start ? new Date(start).toISOString() : new Date().toISOString(),
+          end_date: end ? new Date(end).toISOString() : null
+        };
+
+        const { error } = await sb.from('ads').insert(ad);
+        if (error) throw error;
+
+        document.getElementById('ads-form-wrapper').style.display = 'none';
+        document.getElementById('success-msg').style.display = 'block';
+      } catch (err) {
+        show_error('Қате пайда болды: ' + (err.message || err));
+        btn.disabled = false;
+        btn.textContent = '🚀 Жарнаманы жіберу';
+      }
+    });
+
+    function show_error(msg) {
+      const el = document.getElementById('form-error');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+  </script>
+</body>
+</html>

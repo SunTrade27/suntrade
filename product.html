@@ -502,6 +502,7 @@
       <li><a href="/catalog.html" data-i18n="nav_catalog">Catalog</a></li>
       <li><a href="/analytics.html" data-i18n="nav_analytics">Analytics</a></li>
       <li><a href="/cart.html" data-i18n="nav_cart">Cart</a></li>
+      <li><a href="/ads.html" data-i18n="nav_ads">📢 Жарнама</a></li>
       <li class="theme-menu-item"><button type="button" class="theme-toggle" aria-pressed="false"><svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="theme-toggle-label">Dark mode</span></button></li>
     </ul>
     <div class="nav-right">
@@ -769,6 +770,12 @@
     return /[<>]|fontdatabase|uherhiy|javascript:/i.test(String(value || ''));
   }
 
+  // Strip trailing 'color'/'colour' tokens that AI/free-translate sometimes
+  // appends to translated variant labels (e.g. 'Қан қызыл color' → 'Қан қызыл').
+  function cleanVariantLabel(value) {
+    return String(value || '').replace(/\s+colou?r\s*$/i, '').trim();
+  }
+
   function collectVariantLabels(p) {
     const labels = {};
     getProductTypes(p).forEach(type => { if (type && type.label) labels[type.label] = type.label; });
@@ -787,14 +794,16 @@
     if (!Object.keys(labels).length) return;
     // Apply common labels immediately while the network translation runs.
     // This makes switching to Kazakh instant for Black/Rose Gold/Color/Size.
-    localizedVariantLabels = { ...localizedVariantLabels, ...getBuiltinVariantLabels(labels, lang) };
+    const builtinLabels = getBuiltinVariantLabels(labels, lang);
+    const cleanedBuiltin = Object.fromEntries(Object.entries(builtinLabels).map(([k, v]) => [k, cleanVariantLabel(v)]));
+    localizedVariantLabels = { ...localizedVariantLabels, ...cleanedBuiltin };
     document.querySelectorAll('[data-variant-label-key]').forEach(el => {
       const key = el.getAttribute('data-variant-label-key');
       if (localizedVariantLabels[key]) el.textContent = localizedVariantLabels[key];
     });
     const translated = await ensureProductLabelTranslations(p.id, lang, labels);
     if (renderVersion !== productRenderVersion || currentLang !== lang) return;
-    const safeTranslated = Object.fromEntries(Object.entries(translated || {}).filter(([, value]) => !isBadVariantLabel(value)));
+    const safeTranslated = Object.fromEntries(Object.entries(translated || {}).filter(([, value]) => !isBadVariantLabel(value)).map(([k, v]) => [k, cleanVariantLabel(v)]));
     localizedVariantLabels = { ...localizedVariantLabels, ...safeTranslated };
     document.querySelectorAll('[data-variant-label-key]').forEach(el => {
       const key = el.getAttribute('data-variant-label-key');
@@ -1026,6 +1035,9 @@
 
     // Update page title and meta
     document.title = name + ' - SunTrade';
+    // Remove data-i18n so applyTranslations() won't overwrite with meta_title.
+    const titleTag = document.querySelector('title[data-i18n="meta_title"]');
+    if (titleTag) titleTag.removeAttribute('data-i18n');
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) metaDesc.content = desc.replace(/<[^>]*>/g, '').substring(0, 160);
 
@@ -2512,6 +2524,7 @@
 <script src="/js/chat-widget.js"></script>
 <script src="/js/user-menu.js"></script>
 <script src="/js/shared-ui.js"></script>
+<script src="/js/ads.js"></script>
 
 <!-- BOTTOM NAVIGATION (Mobile) -->
 <nav class="bottom-nav" aria-label="Mobile navigation">

@@ -24,6 +24,10 @@
     {
       "source": "/return-policy",
       "destination": "/return-policy.html"
+    },
+    {
+      "source": "/ads",
+      "destination": "/ads.html"
     }
   ],
   "crons": [
