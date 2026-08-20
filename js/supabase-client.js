@@ -482,7 +482,7 @@ async function uploadAvatar(file) {
 
 // Remove background using AI (remove.bg API via serverless function)
 async function removeBackground(imageUrl) {
-  const response = await fetch('/api/remove-bg', {
+  const response = await fetch('/api/ai-tools?action=remove-bg', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ imageUrl })

@@ -1323,7 +1323,7 @@
           progressEl.style.width = '50%';
 
           // Call remove-bg API
-          const resp = await fetch('/api/remove-bg', {
+          const resp = await fetch('/api/ai-tools?action=remove-bg', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ imageBase64: base64.split(',')[1], imageMime: getImageContentType(file) })
@@ -2784,7 +2784,7 @@
         type: getImageContentType(sourceBlob) || sourceBlob.type || 'image/jpeg'
       });
       var base64 = await fileToBase64(sourceFile);
-      var removeResp = await fetch('/api/remove-bg', {
+      var removeResp = await fetch('/api/ai-tools?action=remove-bg', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ imageBase64: base64.split(',')[1], imageMime: getImageContentType(sourceFile) })
