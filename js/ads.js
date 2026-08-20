@@ -19,21 +19,20 @@
       try {
         if (!window.supabase || !window.supabase.createClient) return [];
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        const now = new Date().toISOString();
-        let query = sb.from('ads')
+        const { data, error } = await sb.from('ads')
           .select('*')
           .eq('active', true)
-          .or('end_date.is.null,end_date.gt.' + now)
-          .lte('start_date', now)
           .order('placement_priority', { ascending: false });
-
-        if (position) {
-          query = query.or('position.eq.both,position.eq.' + position);
-        }
-
-        const { data, error } = await query;
         if (error) { console.warn('[ads] fetch error:', error.message); return []; }
-        return data || [];
+        // Client-side filtering for dates and position
+        const now = Date.now();
+        return (data || []).filter(ad => {
+          const startMs = ad.start_date ? new Date(ad.start_date).getTime() : 0;
+          const endMs = ad.end_date ? new Date(ad.end_date).getTime() : Infinity;
+          if (startMs > now || endMs < now) return false;
+          if (position && ad.position !== position && ad.position !== 'both') return false;
+          return true;
+        });
       } catch (e) {
         console.warn('[ads] fetch failed:', e);
         return [];
@@ -105,8 +104,14 @@
         'display:block;width:100%;border-radius:16px;overflow:hidden;' +
         'margin:1.5rem 0;background:#111827;line-height:0;';
 
-      // Strategy: find the trust badges section or the payment badges area
-      // and insert after it
+      // Product page loads content dynamically (500ms delay).
+      // Retry insertion until the target element appears.
+      this._insertProductAd(banner, 0);
+    },
+
+    _insertProductAd(banner, attempt) {
+      if (document.getElementById('ads-product-bottom')) return;
+
       const targets = [
         document.querySelector('.trust-badges'),
         document.querySelector('.payment-badges'),
@@ -114,34 +119,33 @@
         document.getElementById('product-price-block')
       ];
 
-      let inserted = false;
       for (const el of targets) {
         if (el && el.parentNode) {
-          // Insert after the element
           if (el.nextSibling) {
             el.parentNode.insertBefore(banner, el.nextSibling);
           } else {
             el.parentNode.appendChild(banner);
           }
-          inserted = true;
-          break;
+          return;
         }
       }
 
-      // Fallback: insert before the volume pricing or ticker
-      if (!inserted) {
-        const fallbacks = [
-          document.querySelector('.volume-pricing'),
-          document.querySelector('.ticker-banner'),
-          document.querySelector('.product-desc-content')
-        ];
-        for (const el of fallbacks) {
-          if (el && el.parentNode) {
-            el.parentNode.insertBefore(banner, el);
-            inserted = true;
-            break;
-          }
+      // Fallback targets
+      const fallbacks = [
+        document.querySelector('.volume-pricing'),
+        document.querySelector('.ticker-banner'),
+        document.querySelector('.product-desc-content')
+      ];
+      for (const el of fallbacks) {
+        if (el && el.parentNode) {
+          el.parentNode.insertBefore(banner, el);
+          return;
         }
+      }
+
+      // Retry up to 20 times (2 seconds total) for dynamically loaded content
+      if (attempt < 20) {
+        setTimeout(() => this._insertProductAd(banner, attempt + 1), 100);
       }
     }
   };
