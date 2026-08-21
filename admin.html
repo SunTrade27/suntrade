@@ -3944,16 +3944,24 @@
     // base price/stock, while keeping the saved type fields empty/null.
     const first = variants[0] || getProductBaseValues();
     document.getElementById('pprice').value = first.price;
-    // Always use visible stock field (admin's direct input) as source of truth
+    // Collect option groups EARLY so we can derive price/stock from them
+    const optionGroups = collectOptionGroups();
+
+    // Use visible stock field, but also compute from option groups if needed
     const visibleStock = document.getElementById('pstock-visible');
     const visibleStockVal = visibleStock ? parseInt(visibleStock.value, 10) : NaN;
-    document.getElementById('pstock').value = (Number.isFinite(visibleStockVal) && visibleStockVal >= 0) ? visibleStockVal : (first.stock || 100);
+    let computedStock = (Number.isFinite(visibleStockVal) && visibleStockVal >= 0) ? visibleStockVal : (first.stock || 0);
+    if (computedStock <= 0 && optionGroups.length > 0) {
+      let optStock = 0;
+      for (const g of optionGroups) {
+        for (const o of (g.options || [])) {
+          optStock += parseInt(o.stock, 10) || 0;
+        }
+      }
+      if (optStock > 0) computedStock = optStock;
+    }
+    document.getElementById('pstock').value = computedStock;
     document.getElementById('ptype').value = first.label;
-
-    // ===== Option groups (Alibaba-style) =====.
-    // Collect whatever the admin set up; an empty list is a valid state
-    // (no buyer-side selector rendered).
-    const optionGroups = collectOptionGroups();
 
     // ===== САҚТАУ =====
     // Build the gallery order: option group images come first (in group
@@ -3972,14 +3980,40 @@
       .filter(url => url && !optionImageSet.has(url));
     const orderedGalleryImages = [...optionImageUrls, ...extraImages];
 
+    // Calculate effective price from option groups if variant price is 0
+    let effectivePrice = parseFloat(first.price) || 0;
+    if (effectivePrice <= 0 && optionGroups.length > 0) {
+      let minMod = Infinity;
+      for (const g of optionGroups) {
+        for (const o of (g.options || [])) {
+          const mod = parseFloat(o.price_mod) || 0;
+          if (mod > 0 && mod < minMod) minMod = mod;
+        }
+      }
+      if (minMod !== Infinity) effectivePrice = minMod;
+    }
+
+    // Calculate effective stock from option groups
+    let effectiveStock = parseInt(first.stock, 10) || 0;
+    if (effectiveStock <= 0 && optionGroups.length > 0) {
+      let totalOptStock = 0;
+      for (const g of optionGroups) {
+        for (const o of (g.options || [])) {
+          const s = parseInt(o.stock, 10) || 0;
+          totalOptStock += s;
+        }
+      }
+      if (totalOptStock > 0) effectiveStock = totalOptStock;
+    }
+
     const product = {
-      price: parseFloat(first.price) || 0,
+      price: effectivePrice,
       type: first.label,
       type2: variants[1]?.label || null,
       type3: variants[2]?.label || null,
       type4: variants[3]?.label || null,
       type5: variants[4]?.label || null,
-      stock: parseInt(first.stock, 10) || 0,
+      stock: effectiveStock,
       types: variants,
       option_groups: optionGroups,
       type_image: variants[0]?.image || null,
