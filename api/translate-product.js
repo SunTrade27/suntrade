@@ -270,8 +270,26 @@ async function freeTranslateChunk(text, code, looksLikeHtml) {
       }
     } catch (e) { /* try next instance */ }
   }
-  // Both providers failed. Returning the source here used to poison desc_kz /
-  // desc_ru with English (and made later requests look like a translation).
+  // 3) Google Translate (free unofficial API) — last resort fallback.
+  // Uses the same endpoint as Google Translate web interface (gtx client).
+  try {
+    const gtUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${code}&dt=t&q=${encodeURIComponent(text.substring(0, 5000))}`;
+    const resp = await fetch(gtUrl, {
+      headers: { 'User-Agent': 'SunTrade/1.0 (+suntrade.store)' }
+    });
+    if (resp.ok) {
+      const data = await resp.json();
+      // Response format: [[['translated','original',…],…],…]
+      if (data && Array.isArray(data[0])) {
+        const translated = data[0].map(s => s[0] || '').join('');
+        if (translated && translated.trim() && stripText(translated) !== stripText(text)) {
+          return translated;
+        }
+      }
+    }
+  } catch (e) { /* fall through */ }
+
+  // All providers failed. Returning empty string so caller can retry.
   return '';
 }
 
