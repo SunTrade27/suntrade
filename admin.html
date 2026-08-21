@@ -1112,6 +1112,10 @@
         <select id="pcategory"></select>
       </div>
       <div class="form-group">
+        <label data-i18n="admin_product_stock">Stock</label>
+        <input type="number" id="pstock-visible" min="0" value="100" placeholder="100" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);">
+      </div>
+      <div class="form-group">
         <label data-i18n="admin_product_images">Images</label>
         <div id="image-upload-zone" style="border:2px dashed var(--border);border-radius:var(--radius);padding:2rem;text-align:center;cursor:pointer;transition:var(--transition);margin-bottom:1rem;position:relative;">
           <div id="upload-icon" style="margin-bottom:0.5rem;"><svg class="icon icon-xxl" style="color:var(--text-muted)"><use href="#icon-camera"/></svg></div>
@@ -2457,6 +2461,9 @@
         ? storedTypes.map((v, i) => ({ ...v, image: v.image || v.image_url || legacyTypeImages[i] || '' }))
         : [{ label: legacyTypeWasImplicit || storedTypesWereImplicit ? '' : legacyTypeLabel, price: product.price, stock: product.stock, image: product.type_image || '' }];
       loadProductTypes(variants);
+      // Populate visible stock field
+      const visibleStockEl = document.getElementById('pstock-visible');
+      if (visibleStockEl && product.stock != null) visibleStockEl.value = product.stock;
       // Option groups (Alibaba-style) — load from product.option_groups if present.
       loadOptionGroups(product.option_groups);
     } else {
@@ -3933,7 +3940,9 @@
     // base price/stock, while keeping the saved type fields empty/null.
     const first = variants[0] || getProductBaseValues();
     document.getElementById('pprice').value = first.price;
-    document.getElementById('pstock').value = first.stock;
+    // Use visible stock field if variant stock is empty
+    const visibleStock = document.getElementById('pstock-visible');
+    document.getElementById('pstock').value = (first.stock !== '' && first.stock != null) ? first.stock : (visibleStock ? visibleStock.value || '100' : '100');
     document.getElementById('ptype').value = first.label;
 
     // ===== Option groups (Alibaba-style) =====.
