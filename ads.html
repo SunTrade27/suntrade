@@ -12,17 +12,17 @@
   <script src="/js/theme.js"></script>
   <script src="/js/icons.js"></script>
   <style>
-    body { background: #0a0e1a; color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; }
+    body { font-family: 'Inter', sans-serif; margin: 0; }
     .ads-container { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
     .ads-hero { text-align: center; margin-bottom: 2.5rem; }
     .ads-hero h1 { font-size: 2.2rem; font-weight: 800; color: #FF6B00; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.6rem; }
-    .ads-hero p { color: #94a3b8; font-size: 1.05rem; max-width: 600px; margin: 0 auto; }
+    .ads-hero p { color: var(--text-secondary, #4B5563); font-size: 1.05rem; max-width: 600px; margin: 0 auto; }
 
     /* Position cards */
     .ads-positions { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem; }
     .ads-position-card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: var(--bg-white, #fff);
+      border: 1px solid var(--border, #E5E7EB);
       border-radius: 16px;
       padding: 1.5rem;
       text-align: center;
@@ -36,13 +36,13 @@
       margin: 0 auto 1rem;
     }
     .ads-position-card .icon-wrap svg { color: #FF6B00; }
-    .ads-position-card h3 { font-size: 1.1rem; color: #f1f5f9; margin-bottom: 0.4rem; }
-    .ads-position-card p { font-size: 0.85rem; color: #94a3b8; line-height: 1.5; }
+    .ads-position-card h3 { font-size: 1.1rem; color: var(--text, #1A1A2E); margin-bottom: 0.4rem; }
+    .ads-position-card p { font-size: 0.85rem; color: var(--text-secondary, #4B5563); line-height: 1.5; }
 
     /* Price card */
     .ads-price-card {
-      background: linear-gradient(135deg, rgba(255,107,0,0.1), rgba(255,140,64,0.05));
-      border: 1px solid rgba(255,107,0,0.25);
+      background: var(--bg-white, #fff);
+      border: 1px solid var(--border, #E5E7EB);
       border-radius: 20px;
       padding: 2rem;
       text-align: center;
@@ -56,7 +56,7 @@
     }
     .ads-price-card .price-eur {
       font-size: 1.2rem;
-      color: #94a3b8;
+      color: var(--text-secondary, #4B5563);
       margin-bottom: 0.5rem;
     }
     .ads-price-card .price-period {
@@ -75,8 +75,8 @@
 
     /* Queue info */
     .ads-queue-info {
-      background: rgba(255,215,0,0.08);
-      border: 1px solid rgba(255,215,0,0.2);
+      background: var(--bg-white, #fff);
+      border: 1px solid var(--border, #E5E7EB);
       border-radius: 14px;
       padding: 1.2rem 1.5rem;
       margin-bottom: 2rem;
@@ -85,18 +85,18 @@
       gap: 0.75rem;
     }
     .ads-queue-info svg { color: #FFD700; flex-shrink: 0; margin-top: 2px; }
-    .ads-queue-info p { margin: 0; color: #cbd5e1; font-size: 0.9rem; line-height: 1.5; }
+    .ads-queue-info p { margin: 0; color: var(--text-secondary, #4B5563); font-size: 0.9rem; line-height: 1.5; }
     .ads-queue-info strong { color: #FFD700; }
 
     /* Specs table */
     .ads-form {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: var(--bg-white, #fff);
+      border: 1px solid var(--border, #E5E7EB);
       border-radius: 20px;
       padding: 2rem;
     }
     .ads-form h2 {
-      font-size: 1.4rem; font-weight: 700; color: #f1f5f9;
+      font-size: 1.4rem; font-weight: 700; color: var(--text, #1A1A2E);
       margin-bottom: 1.5rem; text-align: center;
       display: flex; align-items: center; justify-content: center; gap: 0.5rem;
     }
@@ -104,28 +104,28 @@
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .form-group { margin-bottom: 1rem; }
     .form-group.full { grid-column: 1 / -1; }
-    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.4rem; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary, #4B5563); margin-bottom: 0.4rem; }
     .form-group input, .form-group select, .form-group textarea {
       width: 100%; padding: 0.7rem 1rem; border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06);
-      color: #f1f5f9; font-size: 0.95rem; box-sizing: border-box;
+      border: 1px solid var(--border, #E5E7EB); background: var(--bg-subtle, #F9FAFB);
+      color: var(--text, #1A1A2E); font-size: 0.95rem; box-sizing: border-box;
       transition: border-color 0.2s;
     }
     .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
       outline: none; border-color: #FF6B00;
     }
     .form-group textarea { resize: vertical; min-height: 80px; }
-    .form-group select option { background: #1a1f2e; color: #f1f5f9; }
+    .form-group select option { background: var(--bg-white, #fff); color: var(--text, #1A1A2E); }
 
     /* Image upload zone */
     .image-upload-zone {
-      border: 2px dashed rgba(255,107,0,0.3); border-radius: 12px;
+      border: 2px dashed var(--border, #E5E7EB); border-radius: 12px;
       padding: 2rem; text-align: center; cursor: pointer;
       transition: border-color 0.3s, background 0.3s;
     }
     .image-upload-zone:hover { border-color: #FF6B00; background: rgba(255,107,0,0.04); }
     .image-upload-zone input { display: none; }
-    .image-upload-zone p { color: #94a3b8; font-size: 0.9rem; margin: 0.5rem 0 0; }
+    .image-upload-zone p { color: var(--text-secondary, #4B5563); font-size: 0.9rem; margin: 0.5rem 0 0; }
     .image-upload-zone svg { color: #FF6B00; }
     .image-preview { max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 1rem; display: none; }
 
@@ -146,17 +146,17 @@
     .success-msg { display: none; text-align: center; padding: 3rem 1rem; }
     .success-msg .check { margin-bottom: 1rem; }
     .success-msg h2 { color: #10B981; margin-bottom: 0.5rem; }
-    .success-msg p { color: #94a3b8; }
-    .error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 0.3rem; display: none; }
+    .success-msg p { color: var(--text-secondary, #4B5563); }
+    .error-msg { color: var(--danger, #ef4444); font-size: 0.85rem; margin-top: 0.3rem; display: none; }
 
     /* Spec table */
     .spec-table { width: 100%; margin: 1.5rem 0; border-collapse: collapse; }
     .spec-table th, .spec-table td {
-      text-align: left; padding: 0.6rem 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.06);
+      text-align: left; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border-light, #F3F4F6);
       font-size: 0.85rem;
     }
-    .spec-table th { color: #FF6B00; font-weight: 600; }
-    .spec-table td { color: #cbd5e1; }
+    .spec-table th { color: var(--primary, #FF6B00); font-weight: 600; }
+    .spec-table td { color: var(--text-secondary, #4B5563); }
 
     /* Queue status */
     .queue-status {
