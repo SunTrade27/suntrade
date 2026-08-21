@@ -1162,7 +1162,6 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
         ${(() => { const _bp = typeof getEffectiveBasePrice === 'function' ? getEffectiveBasePrice() : parseFloat(p.price); return `
         <div class="volume-pricing" id="volume-pricing">
           <div class="volume-pricing-header">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
             <span data-i18n="product_volume_pricing">Volume Pricing</span>
           </div>
           <div class="volume-tier volume-tier-base active" data-tier="1">
@@ -1174,17 +1173,17 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
           </div>
           <div class="volume-tier" data-tier="2">
             <span class="volume-tier-badge popular" data-i18n="product_most_popular">Most Popular</span>
-            <span class="volume-tier-qty">2-4 <span data-i18n="product_pieces">pieces</span> <span class="discount-badge">-20%</span></span>
+            <span class="volume-tier-qty">2-4 <span data-i18n="product_pieces">pieces</span> <span class="discount-badge">-30%</span></span>
             <div class="volume-tier-right">
-              <span class="volume-tier-price">&euro;${(_bp * 0.8).toFixed(2)}</span>
+              <span class="volume-tier-price">&euro;${(_bp * 0.7).toFixed(2)}</span>
               <span class="volume-tier-original-price">&euro;${_bp.toFixed(2)}</span>
             </div>
           </div>
           <div class="volume-tier" data-tier="3">
             <span class="volume-tier-badge best-value" data-i18n="product_best_value">Best Value</span>
-            <span class="volume-tier-qty">5+ <span data-i18n="product_pieces">pieces</span> <span class="discount-badge">-30%</span></span>
+            <span class="volume-tier-qty">5+ <span data-i18n="product_pieces">pieces</span> <span class="discount-badge">-60%</span></span>
             <div class="volume-tier-right">
-              <span class="volume-tier-price">&euro;${(_bp * 0.7).toFixed(2)}</span>
+              <span class="volume-tier-price">&euro;${(_bp * 0.4).toFixed(2)}</span>
               <span class="volume-tier-original-price">&euro;${_bp.toFixed(2)}</span>
             </div>
           </div>
@@ -1912,13 +1911,13 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     let discountPercent = 0;
 
     if (qty >= 5) {
-      effectiveUnitPrice = basePrice * 0.7;
+      effectiveUnitPrice = basePrice * 0.4;
       activeTier = '3';
-      discountPercent = 30;
+      discountPercent = 60;
     } else if (qty >= 2) {
-      effectiveUnitPrice = basePrice * 0.8;
+      effectiveUnitPrice = basePrice * 0.7;
       activeTier = '2';
-      discountPercent = 20;
+      discountPercent = 30;
     } else {
       // Permanent 10% discount — applies even to a single item.
       effectiveUnitPrice = basePrice * 0.9;
