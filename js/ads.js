@@ -136,8 +136,9 @@
       const banner = this.createBanner(ad, 'ads-navbar-banner');
       banner.id = 'ads-navbar-banner';
       banner.style.cssText =
-        'display:block;width:100%;max-height:100px;overflow:hidden;' +
-        'background:#111827;text-align:center;line-height:0;';
+        'display:block;width:100%;max-height:120px;overflow:hidden;' +
+        'background:#111827;text-align:center;line-height:0;' +
+        'border-radius:0 0 8px 8px;box-shadow:0 2px 8px rgba(0,0,0,0.3);';
 
       // Insert before the navbar
       const navbar = document.getElementById('main-navbar') ||
@@ -156,7 +157,8 @@
       banner.id = 'ads-product-bottom';
       banner.style.cssText =
         'display:block;width:100%;border-radius:12px;overflow:hidden;' +
-        'margin-top:1rem;background:var(--bg-white,#fff);border:1px solid var(--border,#E5E7EB);line-height:0;';
+        'margin-top:1rem;background:var(--bg-white,#fff);border:2px solid var(--primary,#FF6B00);' +
+        'line-height:0;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
 
       this._insertProductAd(banner, 0);
     },
