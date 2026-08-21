@@ -490,5 +490,6 @@
   "ads_err_generic": "Si è verificato un errore: ",
   "ads_err_payment_cancelled": "Pagamento annullato. Riprova.",
   "ads_ph_title": "es. Occhiali da sole",
-  "ads_ph_name": "Nome aziendale o personale"
+  "ads_ph_name": "Nome aziendale o personale",
+  "ads_date_format": "Formato: gg/mm/aaaa"
 }

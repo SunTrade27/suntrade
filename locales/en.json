@@ -550,5 +550,6 @@
   "ads_err_generic": "Error occurred: ",
   "ads_err_payment_cancelled": "Payment cancelled. You can try again.",
   "ads_ph_title": "e.g. Summer Sunglasses",
-  "ads_ph_name": "Company or personal name"
+  "ads_ph_name": "Company or personal name",
+  "ads_date_format": "Format: mm/dd/yyyy"
 }

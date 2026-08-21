@@ -552,5 +552,6 @@
   "ads_err_generic": "Произошла ошибка: ",
   "ads_err_payment_cancelled": "Оплата отменена. Попробуйте снова.",
   "ads_ph_title": "Напр. Летние очки",
-  "ads_ph_name": "Компания или имя"
+  "ads_ph_name": "Компания или имя",
+  "ads_date_format": "Формат: дд.мм.гггг"
 }

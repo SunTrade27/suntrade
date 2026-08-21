@@ -490,5 +490,6 @@
   "ads_err_generic": "Fehler aufgetreten: ",
   "ads_err_payment_cancelled": "Zahlung abgebrochen. Bitte versuchen Sie es erneut.",
   "ads_ph_title": "z.B. Sommer-Sonnenbrille",
-  "ads_ph_name": "Firmen- oder Privatname"
+  "ads_ph_name": "Firmen- oder Privatname",
+  "ads_date_format": "Format: tt.mm.jjjj"
 }

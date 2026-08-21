@@ -490,5 +490,6 @@
   "ads_err_generic": "Bir hata oluştu: ",
   "ads_err_payment_cancelled": "Ödeme iptal edildi. Tekrar deneyebilirsiniz.",
   "ads_ph_title": "ör. Yaz Güneş Gözlüğü",
-  "ads_ph_name": "Şirket veya kişisel ad"
+  "ads_ph_name": "Şirket veya kişisel ad",
+  "ads_date_format": "Format: gg.aa.aaaa"
 }

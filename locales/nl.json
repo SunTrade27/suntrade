@@ -490,5 +490,6 @@
   "ads_err_generic": "Er is een fout opgetreden: ",
   "ads_err_payment_cancelled": "Betaling geannuleerd. U kunt het opnieuw proberen.",
   "ads_ph_title": "bv. Zonnebril",
-  "ads_ph_name": "Bedrijfs- of persoonlijke naam"
+  "ads_ph_name": "Bedrijfs- of persoonlijke naam",
+  "ads_date_format": "Formaat: dd-mm-jjjj"
 }

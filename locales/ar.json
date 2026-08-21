@@ -490,5 +490,6 @@
   "ads_err_generic": "حدث خطأ: ",
   "ads_err_payment_cancelled": "تم إلغاء الدفع. يمكنك المحاولة مرة أخرى.",
   "ads_ph_title": "مثال: نظارات شمسية",
-  "ads_ph_name": "اسم الشركة أو الشخصي"
+  "ads_ph_name": "اسم الشركة أو الشخصي",
+  "ads_date_format": "Format: dd/mm/yyyy"
 }

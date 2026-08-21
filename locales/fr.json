@@ -490,5 +490,6 @@
   "ads_err_generic": "Erreur survenue: ",
   "ads_err_payment_cancelled": "Paiement annulé. Vous pouvez réessayer.",
   "ads_ph_title": "ex. Lunettes de soleil",
-  "ads_ph_name": "Nom de l'entreprise ou personnel"
+  "ads_ph_name": "Nom de l'entreprise ou personnel",
+  "ads_date_format": "Format: jj/mm/aaaa"
 }

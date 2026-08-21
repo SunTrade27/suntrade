@@ -490,5 +490,6 @@
   "ads_err_generic": "Wystąpił błąd: ",
   "ads_err_payment_cancelled": "Płatność anulowana. Spróbuj ponownie.",
   "ads_ph_title": "np. Okulary przeciwsłoneczne",
-  "ads_ph_name": "Nazwa firmy lub osobista"
+  "ads_ph_name": "Nazwa firmy lub osobista",
+  "ads_date_format": "Format: dd.mm.rrrr"
 }
