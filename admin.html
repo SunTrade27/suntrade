@@ -830,8 +830,8 @@
       <a href="#" onclick="showSection('products', this); return false;" data-i18n="admin_add_product">Тауар қосу</a>
       <a href="#" onclick="showSection('orders', this); return false;" data-i18n="admin_orders">Orders</a>
       <a href="#" onclick="showSection('reviews', this); return false;" data-i18n="admin_reviews">Reviews</a>
-      <a href="#" onclick="showSection('leads', this); return false;">🔥 Лидтер</a>
-      <a href="#" onclick="showSection('ads', this); return false;">📢 Жарнама</a>
+      <a href="#" onclick="showSection('leads', this); return false;"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-trending-up"/></svg> <span data-i18n="admin_leads">Лидтер</span></a>
+      <a href="#" onclick="showSection('ads', this); return false;"><span data-i18n="nav_ads">Жарнама</span></a>
       <a href="/" style="margin-top:2rem;" data-i18n="nav_home">View Site</a>
       <a href="#" onclick="handleLogout(); return false;" data-i18n="admin_logout">Logout</a>
     </nav>
@@ -904,52 +904,52 @@
 
     <!-- Leads (Abandoned Cart / Visitor Tracking) -->
     <div id="section-leads" style="display:none;">
-      <h2 style="margin-bottom:1.5rem;"><svg class="icon icon-lg" style="vertical-align:middle;margin-right:6px;color:#EF4444;"><use href="#icon-mail"/></svg> 🔥 Лидтер / Leads</h2>
+      <h2 style="margin-bottom:1.5rem;"><svg class="icon icon-lg" style="vertical-align:middle;margin-right:6px;color:#EF4444;"><use href="#icon-trending-up"/></svg> <span data-i18n="admin_leads">Лидтер</span> / Leads</h2>
 
       <!-- Conversion Funnel Stats -->
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;">
         <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:1.5rem;text-align:center;">
           <div style="font-size:2rem;font-weight:700;color:#3B82F6;" id="stat-leads-views">0</div>
-          <div style="color:var(--text-light);font-size:0.85rem;">👀 Көрулер</div>
+          <div style="color:var(--text-light);font-size:0.85rem;display:flex;align-items:center;justify-content:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> <span data-i18n="admin_leads_views">Көрулер</span></div>
         </div>
         <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:1.5rem;text-align:center;">
           <div style="font-size:2rem;font-weight:700;color:#F59E0B;" id="stat-leads-cart">0</div>
-          <div style="color:var(--text-light);font-size:0.85rem;">🛒 Себетке қосу</div>
+          <div style="color:var(--text-light);font-size:0.85rem;display:flex;align-items:center;justify-content:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg> <span data-i18n="admin_leads_cart">Себетке қосу</span></div>
         </div>
         <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:1.5rem;text-align:center;">
           <div style="font-size:2rem;font-weight:700;color:#8B5CF6;" id="stat-leads-checkout">0</div>
-          <div style="color:var(--text-light);font-size:0.85rem;">💳 Төлем басталды</div>
+          <div style="color:var(--text-light);font-size:0.85rem;display:flex;align-items:center;justify-content:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> <span data-i18n="admin_leads_checkout">Төлем басталды</span></div>
         </div>
         <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:1.5rem;text-align:center;">
           <div style="font-size:2rem;font-weight:700;color:#22C55E;" id="stat-leads-purchase">0</div>
-          <div style="color:var(--text-light);font-size:0.85rem;">✅ Сатып алу</div>
+          <div style="color:var(--text-light);font-size:0.85rem;display:flex;align-items:center;justify-content:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> <span data-i18n="admin_leads_purchase">Сатып алу</span></div>
         </div>
       </div>
 
       <!-- Conversion Rate -->
-      <div style="background:linear-gradient(135deg,#1A1A2E,#16213E);border-radius:16px;padding:1.5rem 2rem;margin-bottom:2rem;color:white;">
+      <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 40%,#334155 100%);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:1.5rem 2rem;margin-bottom:2rem;color:white;box-shadow:0 4px 20px rgba(0,0,0,0.25);">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
           <div>
-            <div style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:0.3rem;">📊 Конверсия</div>
+            <div style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:0.3rem;display:flex;align-items:center;gap:6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> <span data-i18n="admin_leads_conversion">Конверсия</span></div>
             <div style="font-size:2.5rem;font-weight:800;" id="stat-leads-conversion">0%</div>
           </div>
           <div style="text-align:right;">
-            <div style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:0.3rem;">🔥 Себеттен сатып алуға</div>
+            <div style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:0.3rem;display:flex;align-items:center;gap:6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg> <span data-i18n="admin_leads_cart_conversion">Себеттен сатып алуға</span></div>
             <div style="font-size:2rem;font-weight:700;color:#FF6B00;" id="stat-leads-cart-conversion">0%</div>
           </div>
         </div>
         <!-- Visual funnel -->
         <div style="margin-top:1.2rem;display:flex;flex-direction:column;gap:0.4rem;" id="leads-funnel">
-          <div style="height:36px;background:rgba(59,130,246,0.25);border-radius:8px;display:flex;align-items:center;padding:0 12px;font-size:0.8rem;font-weight:600;transition:width 0.5s;" id="funnel-views"><span style="white-space:nowrap;">👀 Көрулер</span></div>
-          <div style="height:36px;background:rgba(245,158,11,0.25);border-radius:8px;display:flex;align-items:center;padding:0 12px;font-size:0.8rem;font-weight:600;transition:width 0.5s;" id="funnel-cart"><span style="white-space:nowrap;">🛒 Себетке</span></div>
-          <div style="height:36px;background:rgba(139,92,246,0.25);border-radius:8px;display:flex;align-items:center;padding:0 12px;font-size:0.8rem;font-weight:600;transition:width 0.5s;" id="funnel-checkout"><span style="white-space:nowrap;">💳 Төлем</span></div>
-          <div style="height:36px;background:rgba(34,197,94,0.25);border-radius:8px;display:flex;align-items:center;padding:0 12px;font-size:0.8rem;font-weight:600;transition:width 0.5s;" id="funnel-purchase"><span style="white-space:nowrap;">✅ Сатып алу</span></div>
+          <div style="height:36px;background:linear-gradient(90deg,rgba(59,130,246,0.35),rgba(59,130,246,0.15));border-radius:8px;display:flex;align-items:center;padding:0 12px;font-size:0.8rem;font-weight:600;transition:width 0.5s;" id="funnel-views"><span style="white-space:nowrap;display:flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> <span data-i18n="admin_leads_views">Көрулер</span></span></div>
+          <div style="height:36px;background:linear-gradient(90deg,rgba(245,158,11,0.35),rgba(245,158,11,0.15));border-radius:8px;display:flex;align-items:center;padding:0 12px;font-size:0.8rem;font-weight:600;transition:width 0.5s;" id="funnel-cart"><span style="white-space:nowrap;display:flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg> <span data-i18n="admin_leads_cart">Себетке</span></span></div>
+          <div style="height:36px;background:linear-gradient(90deg,rgba(139,92,246,0.35),rgba(139,92,246,0.15));border-radius:8px;display:flex;align-items:center;padding:0 12px;font-size:0.8rem;font-weight:600;transition:width 0.5s;" id="funnel-checkout"><span style="white-space:nowrap;display:flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> <span data-i18n="admin_leads_checkout">Төлем</span></span></div>
+          <div style="height:36px;background:linear-gradient(90deg,rgba(34,197,94,0.35),rgba(34,197,94,0.15));border-radius:8px;display:flex;align-items:center;padding:0 12px;font-size:0.8rem;font-weight:600;transition:width 0.5s;" id="funnel-purchase"><span style="white-space:nowrap;display:flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> <span data-i18n="admin_leads_purchase">Сатып алу</span></span></div>
         </div>
       </div>
 
       <!-- Facebook Custom Audience Link -->
       <div style="background:linear-gradient(135deg,#1877F2,#42A5F5);border-radius:16px;padding:1.5rem 2rem;margin-bottom:2rem;color:white;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
-        <div style="font-size:2.5rem;">📢</div>
+        <div style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.15);border-radius:12px;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg></div>
         <div style="flex:1;min-width:250px;">
           <div style="font-size:1.1rem;font-weight:700;margin-bottom:0.3rem;">Facebook Custom Audience жасаңыз</div>
           <div style="font-size:0.85rem;opacity:0.85;">Тауарды көріп, бірақ сатып алмаған адамдарға Facebook/Instagram жарнамасын көрсетіңіз</div>
@@ -962,14 +962,14 @@
 
       <!-- Abandoned Cart Visitors -->
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
-        <h3 style="margin:0;">🛒 Себетке қосып, бірақ алмағандар</h3>
+        <h3 style="margin:0;display:flex;align-items:center;gap:8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg> <span data-i18n="admin_leads_abandoned">Себетке қосып, бірақ алмағандар</span></h3>
         <div style="display:flex;gap:0.5rem;">
           <select id="leads-filter" onchange="loadLeads()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;">
-            <option value="abandoned_cart">Себеттен тастағандар</option>
-            <option value="all">Барлық оқиғалар</option>
-            <option value="page_view">Тек көрулер</option>
+            <option value="abandoned_cart" data-i18n="admin_leads_abandoned_cart">Себеттен тастағандар</option>
+            <option value="all" data-i18n="admin_leads_all_events">Барлық оқиғалар</option>
+            <option value="page_view" data-i18n="admin_leads_page_views">Тек көрулер</option>
           </select>
-          <button onclick="exportLeads()" style="padding:8px 16px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:0.85rem;font-weight:600;cursor:pointer;">📥 Экспорт CSV</button>
+          <button onclick="exportLeads()" style="padding:8px 16px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:0.85rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> <span data-i18n="admin_leads_export">Экспорт CSV</span></button>
         </div>
       </div>
       <div id="leads-container" class="admin-table-wrap"></div>
@@ -1010,8 +1010,8 @@
     <!-- Ads Management -->
     <div id="section-ads" style="display:none;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.5rem;">
-        <h2>📢 Жарнама басқару / Ads</h2>
-        <a href="/ads.html" target="_blank" style="padding:8px 16px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:0.85rem;font-weight:600;cursor:pointer;text-decoration:none;">🔗 Жарнама беті</a>
+        <h2><span data-i18n="admin_ads_section">Жарнама басқару</span> / Ads</h2>
+        <a href="/ads.html" target="_blank" style="padding:8px 16px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:0.85rem;font-weight:600;cursor:pointer;text-decoration:none;"><span data-i18n="admin_ads_page">Жарнама беті</span></a>
       </div>
       <div id="ads-container" class="admin-table-wrap"></div>
     </div>
@@ -1286,7 +1286,7 @@
     try {
       const url = await uploadVideo(file);
       videoInput.value = url;
-      statusEl.textContent = '✅ Видео жүктелді!';
+      statusEl.textContent = 'Видео жүктелді!';
       statusEl.style.color = '#10B981';
       setTimeout(() => { statusEl.textContent = ''; }, 3000);
     } catch (err) {
@@ -2046,7 +2046,7 @@
       }
 
       if (!events || events.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-light);">Әзірге оқиғалар жоқ. Visitor tracking жұмыс істеп тұр ма?</p>';
+        container.innerHTML = '<p style="color:var(--text-light);"><span data-i18n="admin_leads_no_events">Әзірге оқиғалар жоқ. Visitor tracking жұмыс істеп тұр ма?</span></p>';
         cardsContainer.innerHTML = '';
         return;
       }
@@ -2104,7 +2104,7 @@
       }
 
       if (filteredEvents.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-light);">Бұл сүзгі бойынша оқиғалар табылмады.</p>';
+        container.innerHTML = '<p style="color:var(--text-light);"><span data-i18n="admin_leads_no_filter">Бұл сүзгі бойынша оқиғалар табылмады.</span></p>';
         cardsContainer.innerHTML = '';
         return;
       }
@@ -2122,21 +2122,21 @@
           </tr></thead>
           <tbody>${filteredEvents.map(e => {
             const productLabel = e.product_name || '—';
-            const eventLabel = e.event_type === 'page_view' ? '👀 Көру' :
-              e.event_type === 'add_to_cart' ? '🛒 Себет' :
-              e.event_type === 'checkout' ? '💳 Төлем' : '✅ Сатып';
+            const eventLabel = e.event_type === 'page_view' ? 'Көру' :
+              e.event_type === 'add_to_cart' ? 'Себет' :
+              e.event_type === 'checkout' ? 'Төлем' : 'Сатып';
             const eventColor = e.event_type === 'page_view' ? '#3B82F6' :
               e.event_type === 'add_to_cart' ? '#F59E0B' :
               e.event_type === 'checkout' ? '#8B5CF6' : '#22C55E';
             const shortId = e.visitor_id ? e.visitor_id.substring(0, 12) + '...' : '—';
-            const waUrl = 'https://wa.me/77021379248?text=' + encodeURIComponent('Сәлеметсіз бе! Сіз SunTrade-да "' + (e.product_name || '') + '" тауарын қараған болатынсыз. Тауар әлі бар! 🎁 Арнайы жеңілдікпен алғыңыз келе ме?');
+            const waUrl = 'https://wa.me/77021379248?text=' + encodeURIComponent('Сәлеметсіз бе! Сіз SunTrade-да "' + (e.product_name || '') + '" тауарын қараған болатынсыз. Тауар әлі бар! Арнайы жеңілдікпен алғыңыз келе ме?');
             return `<tr>
               <td style="font-family:monospace;font-size:0.8rem;" title="${escapeHtml(e.visitor_id || '')}">${escapeHtml(shortId)}</td>
               <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(productLabel)}</td>
               <td>${e.product_price ? '€' + parseFloat(e.product_price).toFixed(2) : '—'}</td>
               <td><span style="background:${eventColor}20;color:${eventColor};padding:3px 10px;border-radius:50px;font-size:0.75rem;font-weight:600;">${eventLabel}</span></td>
               <td style="font-size:0.8rem;">${new Date(e.created_at).toLocaleDateString()}</td>
-              <td><a href="${waUrl}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#25D366;color:white;border-radius:8px;font-size:0.78rem;font-weight:600;text-decoration:none;white-space:nowrap;">💬 WhatsApp</a></td>
+              <td>              <a href="${waUrl}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#25D366;color:white;border-radius:8px;font-size:0.78rem;font-weight:600;text-decoration:none;white-space:nowrap;"><svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp</a></td>
             </tr>`;
           }).join('')}</tbody>
         </table>
@@ -2145,13 +2145,13 @@
       // Mobile cards
       cardsContainer.innerHTML = filteredEvents.map(e => {
         const productLabel = e.product_name || '—';
-        const eventLabel = e.event_type === 'page_view' ? '👀 Көру' :
-          e.event_type === 'add_to_cart' ? '🛒 Себет' :
-          e.event_type === 'checkout' ? '💳 Төлем' : '✅ Сатып';
+        const eventLabel = e.event_type === 'page_view' ? 'Көру' :
+          e.event_type === 'add_to_cart' ? 'Себет' :
+          e.event_type === 'checkout' ? 'Төлем' : 'Сатып';
         const eventColor = e.event_type === 'page_view' ? '#3B82F6' :
           e.event_type === 'add_to_cart' ? '#F59E0B' :
           e.event_type === 'checkout' ? '#8B5CF6' : '#22C55E';
-        const waUrl = 'https://wa.me/77021379248?text=' + encodeURIComponent('Сәлеметсіз бе! Сіз SunTrade-да "' + (e.product_name || '') + '" тауарын қараған болатынсыз. Тауар әлі бар! 🎁 Арнайы жеңілдікпен алғыңыз келе ме?');
+        const waUrl = 'https://wa.me/77021379248?text=' + encodeURIComponent('Сәлеметсіз бе! Сіз SunTrade-да "' + (e.product_name || '') + '" тауарын қараған болатынсыз. Тауар әлі бар! Арнайы жеңілдікпен алғыңыз келе ме?');
         return `
           <div class="order-row-card">
             <div class="order-row-card-head">
@@ -2166,7 +2166,7 @@
               <div class="order-row-card-row"><span class="order-row-card-label">Баға</span><span class="order-row-card-value">${e.product_price ? '€' + parseFloat(e.product_price).toFixed(2) : '—'}</span></div>
             </div>
             <div class="order-row-card-foot">
-              <a href="${waUrl}" target="_blank" rel="noopener" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px;background:#25D366;color:white;border-radius:8px;font-size:0.82rem;font-weight:600;text-decoration:none;">💬 WhatsApp жазу</a>
+              <a href="${waUrl}" target="_blank" rel="noopener" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px;background:#25D366;color:white;border-radius:8px;font-size:0.82rem;font-weight:600;text-decoration:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp жазу</a>
             </div>
           </div>
         `;
@@ -2339,7 +2339,7 @@
       }
       container.innerHTML = '<table class="admin-table"><thead><tr><th>Сурет</th><th>Атауы</th><th>Орны</th><th>Белсенді</th><th>Жарнама беруші</th><th>Басталу</th><th>Аяқталу</th><th>Әрекет</th></tr></thead><tbody>' +
         ads.map(a => {
-          const pos = a.position === 'both' ? '🔵 Екі жерде' : a.position === 'navbar' ? '🔝 Навбар' : '📦 Тауар беті';
+          const pos = a.position === 'both' ? 'Екі жерде' : a.position === 'navbar' ? 'Навбар' : 'Тауар беті';
           const img = a.image_url && a.image_url.length > 100
             ? '<img src="' + a.image_url.substring(0, 100) + '..." style="width:80px;height:40px;object-fit:cover;border-radius:6px;">'
             : '<div style="width:80px;height:40px;background:#374151;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#9CA3AF;font-size:0.7rem;">Жоқ</div>';
@@ -2347,12 +2347,12 @@
             '<td>' + img + '</td>' +
             '<td><strong>' + escapeHtml(a.title) + '</strong></td>' +
             '<td>' + pos + '</td>' +
-            '<td>' + (a.active ? '<span style="color:#22C55E;font-weight:600;">✓ Белсенді</span>' : '<span style="color:#F59E0B;font-weight:600;">⏳ Күтуде</span>') + '</td>' +
+            '<td>' + (a.active ? '<span style="color:#22C55E;font-weight:600;">Белсенді</span>' : '<span style="color:#F59E0B;font-weight:600;">Күтуде</span>') + '</td>' +
             '<td>' + escapeHtml(a.advertiser_name || '-') + '<br><small style="color:var(--text-light);">' + escapeHtml(a.advertiser_email || '') + '</small></td>' +
             '<td>' + (a.start_date ? new Date(a.start_date).toLocaleDateString() : '-') + '</td>' +
             '<td>' + (a.end_date ? new Date(a.end_date).toLocaleDateString() : 'Шектеусіз') + '</td>' +
             '<td style="white-space:nowrap;">' +
-              (!a.active ? '<button onclick="toggleAdActive(\'' + a.id + '\', true)" style="padding:5px 10px;border:none;border-radius:6px;background:#22C55E;color:white;cursor:pointer;font-size:0.78rem;font-weight:600;margin-right:4px;">✓ Растау</button>' : '<button onclick="toggleAdActive(\'' + a.id + '\', false)" style="padding:5px 10px;border:none;border-radius:6px;background:#F59E0B;color:white;cursor:pointer;font-size:0.78rem;font-weight:600;margin-right:4px;">⏸ Өшіру</button>') +
+              (!a.active ? '<button onclick="toggleAdActive(\'' + a.id + '\', true)" style="padding:5px 10px;border:none;border-radius:6px;background:#22C55E;color:white;cursor:pointer;font-size:0.78rem;font-weight:600;margin-right:4px;">Растау</button>' : '<button onclick="toggleAdActive(\'' + a.id + '\', false)" style="padding:5px 10px;border:none;border-radius:6px;background:#F59E0B;color:white;cursor:pointer;font-size:0.78rem;font-weight:600;margin-right:4px;">Өшіру</button>') +
               '<button onclick="deleteAd(\'' + a.id + '\')" style="padding:5px 10px;border:none;border-radius:6px;background:#FEE2E2;color:#DC2626;cursor:pointer;font-size:0.78rem;font-weight:600;">🗑</button>' +
             '</td>' +
           '</tr>';
@@ -3509,7 +3509,7 @@
     const statusEl = document.getElementById('batch-translate-status');
     const stopFlag = { stopped: false };
     btn.disabled = true;
-    btn.innerHTML = '⏹ Stop';
+    btn.innerHTML = '■ Stop';
     btn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); stopFlag.stopped = true; };
 
     statusEl.style.display = 'block';
@@ -3656,7 +3656,7 @@
         }
         if (ok) translated++;
 
-        statusEl.innerHTML = `<strong>[${i + 1}/${todo.length}]</strong> "${name.substring(0, 32)}..." <span style="color:#22C55E;">✓ ${translated}</span> <span style="color:#EF4444;">✗ ${errors}</span> <span style="color:#6B7280;">⏭ ${skipped} дайын</span>${stopFlag.stopped ? ' <strong>⏹ тоқтатылды</strong>' : ''}`;
+        statusEl.innerHTML = `<strong>[${i + 1}/${todo.length}]</strong> "${name.substring(0, 32)}..." <span style="color:#22C55E;">+ ${translated}</span> <span style="color:#EF4444;">- ${errors}</span> <span style="color:#6B7280;">> ${skipped} skipped</span>${stopFlag.stopped ? ' <strong>Stopped</strong>' : ''}`;
 
         if (i < todo.length - 1) {
           await new Promise(r => setTimeout(r, MS_PER_CALL));
@@ -3676,7 +3676,7 @@
         statusEl.style.background = errors > 0 ? '#FEE2E2' : '#FEF3C7';
         statusEl.style.color = errors > 0 ? '#991B1B' : '#92400E';
       }
-      let html = `<strong>${success ? '🎉' : stopped ? '⏹' : '✅'} ${stopped ? 'Тоқтатылды' : success ? 'Бәрі сәтті!' : 'Аяқталды'}</strong>: ✓ ${translated}, ✗ ${errors}, ⏭ ${skipped} дайын.`;
+      let html = `<strong>${stopped ? 'Stopped' : success ? 'Done!' : 'Finished'}</strong>: + ${translated}, - ${errors}, > ${skipped} skipped`;
       if (failed.length) {
         html += `<details style="margin-top:6px;text-align:left;font-size:0.78rem;"><summary style="cursor:pointer;color:#DC2626;font-weight:600;">❌ ${failed.length} қателік</summary><ul style="margin:6px 0 0 1rem;padding:0;">`;
         for (const f of failed.slice(0, 8)) {
@@ -3877,7 +3877,7 @@
         completed++;
         if (ok) successful++;
         else failed.push(lang + ': ' + lastError);
-        setStatus('<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Translating all 12 languages… ' + completed + '/' + total + ' · ✓ ' + successful + ' · ✗ ' + failed.length, 'working');
+        setStatus('<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Translating all 12 languages… ' + completed + '/' + total + ' · + ' + successful + ' · - ' + failed.length, 'working');
       }
     };
 

@@ -502,7 +502,7 @@
       <li><a href="/catalog.html" data-i18n="nav_catalog">Catalog</a></li>
       <li><a href="/analytics.html" data-i18n="nav_analytics">Analytics</a></li>
       <li><a href="/cart.html" data-i18n="nav_cart">Cart</a></li>
-      <li><a href="/ads.html" data-i18n="nav_ads">📢 Жарнама</a></li>
+      <li><a href="/ads.html" data-i18n="nav_ads">Жарнама</a></li>
       <li class="theme-menu-item"><button type="button" class="theme-toggle" aria-pressed="false"><svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="theme-toggle-label">Dark mode</span></button></li>
     </ul>
     <div class="nav-right">
@@ -924,6 +924,7 @@
       el.querySelectorAll('.product-option-value').forEach((valueEl, i2) => valueEl.classList.toggle('active', i2 === optionIndex));
     });
     resetSelectedProductImage();
+    updatePriceDisplay();
   }
 
   // Listen for language changes. The render version prevents a slower
@@ -1121,6 +1122,7 @@
         </div>
         ` : ''}
         <!-- Volume Pricing Tiers -->
+        ${(() => { const _bp = parseFloat(p.price) + (typeof getOptionPriceMod === 'function' ? getOptionPriceMod() : 0); return `
         <div class="volume-pricing" id="volume-pricing">
           <div class="volume-pricing-header">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
@@ -1128,17 +1130,18 @@
           </div>
           <div class="volume-tier volume-tier-base active" data-tier="1">
             <span class="volume-tier-qty">1 <span data-i18n="product_piece">piece</span> <span class="discount-badge">-10%</span></span>
-            <span class="volume-tier-price">&euro;${(parseFloat(p.price) * 0.9).toFixed(2)}</span>
+            <span class="volume-tier-price">&euro;${(_bp * 0.9).toFixed(2)}</span>
           </div>
           <div class="volume-tier" data-tier="2">
             <span class="volume-tier-qty">2-4 <span data-i18n="product_pieces">pieces</span> <span class="discount-badge">-20%</span></span>
-            <span class="volume-tier-price">&euro;${(p.price * 0.8).toFixed(2)}</span>
+            <span class="volume-tier-price">&euro;${(_bp * 0.8).toFixed(2)}</span>
           </div>
           <div class="volume-tier" data-tier="3">
             <span class="volume-tier-qty">5+ <span data-i18n="product_pieces">pieces</span> <span class="discount-badge">-30%</span> <span class="discount-badge" data-i18n="product_best_deal">Best Deal</span></span>
-            <span class="volume-tier-price">&euro;${(p.price * 0.7).toFixed(2)}</span>
+            <span class="volume-tier-price">&euro;${(_bp * 0.7).toFixed(2)}</span>
           </div>
         </div>
+        `; })()}
         <span class="product-stock ${inStock ? 'in-stock' : 'out-of-stock'}">
           ${inStock ? t('product_in_stock') : t('product_out_of_stock')}
         </span>
@@ -1751,12 +1754,36 @@
     refreshMagnifierForImage(mainImg);
   }
 
+  /**
+   * Calculate the effective unit price by adding option_groups price_mod
+   * values from all currently selected options to the base product price.
+   * This ensures the displayed price matches what the admin set per option.
+   */
+  function getOptionPriceMod() {
+    const p = currentProduct;
+    if (!p) return 0;
+    let totalMod = 0;
+    const groups = Array.isArray(p.option_groups) ? p.option_groups : [];
+    for (const group of groups) {
+      const selected = selectedOptionValues[group.name];
+      if (!selected) continue;
+      const options = Array.isArray(group.options) ? group.options : [];
+      const matched = options.find(o => o.label === selected);
+      if (matched) {
+        const mod = parseFloat(matched.price_mod) || 0;
+        totalMod += mod;
+      }
+    }
+    return totalMod;
+  }
+
   function selectType(index) {
     selectedTypeIndex = index;
     document.querySelectorAll('.product-types .type-value').forEach(el => el.classList.remove('active'));
     const activeEl = document.querySelector(`.product-types .type-value[data-type-index="${index}"]`);
     if (activeEl) activeEl.classList.add('active');
     resetSelectedProductImage();
+    updatePriceDisplay();
   }
 
   function changeQty(delta) {
@@ -1771,7 +1798,7 @@
     const p = currentProduct;
     if (!p) return;
     qty = qty || parseInt(document.getElementById('qty-input')?.value) || 1;
-    const basePrice = parseFloat(p.price);
+    const basePrice = parseFloat(p.price) + getOptionPriceMod();
     let effectiveUnitPrice = basePrice;
     let activeTier = '1';
     let discountPercent = 0;
@@ -1886,7 +1913,8 @@
       showNotification((typeof t === 'function' ? t('already_in_cart') : 'Already in cart') + ' <svg class="icon icon-sm" style="color:white;vertical-align:middle;"><use href="#icon-check"/></svg>');
       return false;
     }
-    return addToCart(currentProduct.id, name + (selectedVariant ? ' — ' + selectedVariant : ''), currentProduct.price, img, qty, {
+    const effectivePrice = parseFloat(currentProduct.price) + getOptionPriceMod();
+    return addToCart(currentProduct.id, name + (selectedVariant ? ' — ' + selectedVariant : ''), effectivePrice, img, qty, {
       baseName: name,
       variantParts: getSelectedVariantParts(),
       variantLabelTranslations: { ...localizedVariantLabels }
@@ -1917,7 +1945,8 @@
     // Clear cart, add only this product with effective price, then go to checkout
     cart = [];
     // Store base price so cart.js can apply volume discount correctly
-    addToCart(currentProduct.id, name + (selectedVariant ? ' — ' + selectedVariant : ''), currentProduct.price, img, qty, {
+    const effectivePrice = parseFloat(currentProduct.price) + getOptionPriceMod();
+    addToCart(currentProduct.id, name + (selectedVariant ? ' — ' + selectedVariant : ''), effectivePrice, img, qty, {
       baseName: name,
       variantParts: getSelectedVariantParts(),
       variantLabelTranslations: { ...localizedVariantLabels }

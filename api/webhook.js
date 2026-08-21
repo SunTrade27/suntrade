@@ -299,6 +299,29 @@ module.exports = async (req, res) => {
     }
   }
 
+  // ===== Handle Ad Payment =====
+  if (event.type === 'checkout.session.completed') {
+    var session = event.data.object;
+    if (session.metadata && session.metadata.payment_type === 'advertisement') {
+      try {
+        var adId = session.metadata.ad_id;
+        if (adId) {
+          // Activate the ad — set end_date to 1 month from now
+          var endDate = new Date();
+          endDate.setDate(endDate.getDate() + 30);
+          await supabase.from('ads').update({
+            active: true,
+            start_date: new Date().toISOString(),
+            end_date: endDate.toISOString()
+          }).eq('id', adId);
+          console.log('Ad activated:', adId, 'expires:', endDate.toISOString());
+        }
+      } catch (adErr) {
+        console.error('Error activating ad:', adErr);
+      }
+    }
+  }
+
   return res.status(200).json({ received: true });
 };
 

@@ -6,12 +6,18 @@
   <title>Жарнама беру - SunTrade</title>
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="/js/icons.js"></script>
   <style>
     body { background: #0a0e1a; color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; }
     .ads-container { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
     .ads-hero { text-align: center; margin-bottom: 2.5rem; }
-    .ads-hero h1 { font-size: 2.2rem; font-weight: 800; color: #FF6B00; margin-bottom: 0.5rem; }
+    .ads-hero h1 { font-size: 2.2rem; font-weight: 800; color: #FF6B00; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.6rem; }
     .ads-hero p { color: #94a3b8; font-size: 1.05rem; max-width: 600px; margin: 0 auto; }
+
+    /* Position cards */
     .ads-positions { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem; }
     .ads-position-card {
       background: rgba(255,255,255,0.04);
@@ -26,17 +32,74 @@
       width: 64px; height: 64px; border-radius: 16px;
       background: linear-gradient(135deg, rgba(255,107,0,0.15), rgba(255,107,0,0.05));
       display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 1rem; font-size: 1.8rem;
+      margin: 0 auto 1rem;
     }
+    .ads-position-card .icon-wrap svg { color: #FF6B00; }
     .ads-position-card h3 { font-size: 1.1rem; color: #f1f5f9; margin-bottom: 0.4rem; }
     .ads-position-card p { font-size: 0.85rem; color: #94a3b8; line-height: 1.5; }
+
+    /* Price card */
+    .ads-price-card {
+      background: linear-gradient(135deg, rgba(255,107,0,0.1), rgba(255,140,64,0.05));
+      border: 1px solid rgba(255,107,0,0.25);
+      border-radius: 20px;
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .ads-price-card .price-amount {
+      font-size: 3rem;
+      font-weight: 900;
+      color: #FF6B00;
+      line-height: 1.1;
+    }
+    .ads-price-card .price-eur {
+      font-size: 1.2rem;
+      color: #94a3b8;
+      margin-bottom: 0.5rem;
+    }
+    .ads-price-card .price-period {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255,107,0,0.15);
+      padding: 0.4rem 1rem;
+      border-radius: 50px;
+      color: #FF8C40;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+    .ads-price-card .price-period svg { width: 16px; height: 16px; }
+
+    /* Queue info */
+    .ads-queue-info {
+      background: rgba(255,215,0,0.08);
+      border: 1px solid rgba(255,215,0,0.2);
+      border-radius: 14px;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .ads-queue-info svg { color: #FFD700; flex-shrink: 0; margin-top: 2px; }
+    .ads-queue-info p { margin: 0; color: #cbd5e1; font-size: 0.9rem; line-height: 1.5; }
+    .ads-queue-info strong { color: #FFD700; }
+
+    /* Specs table */
     .ads-form {
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: 20px;
       padding: 2rem;
     }
-    .ads-form h2 { font-size: 1.4rem; font-weight: 700; color: #f1f5f9; margin-bottom: 1.5rem; text-align: center; }
+    .ads-form h2 {
+      font-size: 1.4rem; font-weight: 700; color: #f1f5f9;
+      margin-bottom: 1.5rem; text-align: center;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    }
+    .ads-form h2 svg { color: #FF6B00; }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .form-group { margin-bottom: 1rem; }
     .form-group.full { grid-column: 1 / -1; }
@@ -52,6 +115,8 @@
     }
     .form-group textarea { resize: vertical; min-height: 80px; }
     .form-group select option { background: #1a1f2e; color: #f1f5f9; }
+
+    /* Image upload zone */
     .image-upload-zone {
       border: 2px dashed rgba(255,107,0,0.3); border-radius: 12px;
       padding: 2rem; text-align: center; cursor: pointer;
@@ -60,24 +125,30 @@
     .image-upload-zone:hover { border-color: #FF6B00; background: rgba(255,107,0,0.04); }
     .image-upload-zone input { display: none; }
     .image-upload-zone p { color: #94a3b8; font-size: 0.9rem; margin: 0.5rem 0 0; }
-    .image-upload-zone .icon { font-size: 2rem; color: #FF6B00; }
+    .image-upload-zone svg { color: #FF6B00; }
     .image-preview { max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 1rem; display: none; }
+
+    /* Submit button */
     .btn-submit {
       width: 100%; padding: 0.9rem; border: none; border-radius: 12px;
       background: linear-gradient(135deg, #FF6B00, #FF8C40);
       color: white; font-size: 1.05rem; font-weight: 700;
       cursor: pointer; transition: transform 0.2s, box-shadow 0.3s;
       margin-top: 0.5rem;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
     }
     .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,107,0,0.35); }
     .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    .success-msg {
-      display: none; text-align: center; padding: 3rem 1rem;
-    }
-    .success-msg .check { font-size: 3rem; margin-bottom: 1rem; }
+    .btn-submit svg { width: 20px; height: 20px; }
+
+    /* Success/error messages */
+    .success-msg { display: none; text-align: center; padding: 3rem 1rem; }
+    .success-msg .check { margin-bottom: 1rem; }
     .success-msg h2 { color: #10B981; margin-bottom: 0.5rem; }
     .success-msg p { color: #94a3b8; }
     .error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 0.3rem; display: none; }
+
+    /* Spec table */
     .spec-table { width: 100%; margin: 1.5rem 0; border-collapse: collapse; }
     .spec-table th, .spec-table td {
       text-align: left; padding: 0.6rem 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -85,39 +156,82 @@
     }
     .spec-table th { color: #FF6B00; font-weight: 600; }
     .spec-table td { color: #cbd5e1; }
+
+    /* Queue status */
+    .queue-status {
+      display: flex; align-items: center; gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .queue-badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.3rem 0.7rem; border-radius: 50px;
+      font-size: 0.78rem; font-weight: 600;
+    }
+    .queue-badge.open { background: rgba(16,185,129,0.15); color: #10B981; }
+    .queue-badge.full { background: rgba(239,68,68,0.15); color: #EF4444; }
+    .queue-badge svg { width: 14px; height: 14px; }
+
     @media (max-width: 600px) {
       .ads-positions { grid-template-columns: 1fr; }
       .form-grid { grid-template-columns: 1fr; }
       .ads-hero h1 { font-size: 1.6rem; }
+      .ads-price-card .price-amount { font-size: 2.2rem; }
     }
   </style>
 </head>
 <body>
   <nav class="navbar" id="main-navbar">
-    <div class="nav-left">
-      <a href="/" class="logo"><span class="logo-sun">Sun</span>Trade</a>
-    </div>
-    <div class="nav-right">
-      <a href="/" class="nav-link" data-i18n="nav_home">Басты бет</a>
-      <a href="/catalog.html" class="nav-link" data-i18n="nav_catalog">Каталог</a>
+    <div class="navbar-inner">
+      <a href="/" class="logo">Sun<span>Trade</span></a>
+      <div class="nav-right">
+        <a href="/" class="nav-link" data-i18n="nav_home">Басты бет</a>
+        <a href="/catalog.html" class="nav-link" data-i18n="nav_catalog">Каталог</a>
+      </div>
     </div>
   </nav>
 
   <div class="ads-container">
+    <!-- Hero -->
     <div class="ads-hero">
-      <h1>📢 Жарнама беріңіз!</h1>
+      <h1>
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+        Жарнама беріңіз!
+      </h1>
       <p>SunTrade сайтында жарнамаңызды орналастырыңыз — мыңдаған сатып алушыға көрініңіз!</p>
+    </div>
+
+    <!-- Price card -->
+    <div class="ads-price-card">
+      <div class="price-amount">10 000 ₸</div>
+      <div class="price-eur">≈ 18 €</div>
+      <div class="price-period">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        1 ай мерзімімен
+      </div>
+    </div>
+
+    <!-- Queue info -->
+    <div class="ads-queue-info" id="queue-info">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div>
+        <p><strong>Лимит: 5 жарнама</strong> — бір уақытта 5 жарнама ғана белсенді болады. Егер 5 орын толы болса, жарнамаңыз кезекке қойылады және бос орын шыққанда автоматты түрде ауысады.</p>
+        <div class="queue-status" id="queue-status"></div>
+      </div>
     </div>
 
     <!-- Position cards -->
     <div class="ads-positions">
       <div class="ads-position-card">
-        <div class="icon-wrap">🔝</div>
+        <div class="icon-wrap">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+        </div>
         <h3>Навбар үсті</h3>
         <p>Барлық беттерде навбардың төбесінде көрінетін жарнама баннері. Ең көп көрілетін орын.</p>
       </div>
       <div class="ads-position-card">
-        <div class="icon-wrap">📦</div>
+        <div class="icon-wrap">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.4l-9-5.19"/><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        </div>
         <h3>Тауар беті төмені</h3>
         <p>Тауар бетіндегі төлем белгілерінің астындағы бос орында көрінетін жарнама.</p>
       </div>
@@ -125,20 +239,28 @@
 
     <!-- Specs table -->
     <div class="ads-form" style="margin-bottom: 2rem;">
-      <h2>📐 Жарнама талаптары</h2>
+      <h2>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Жарнама талаптары
+      </h2>
       <table class="spec-table">
         <tr><th>Параметр</th><th>Мәні</th></tr>
         <tr><td>Сурет форматы</td><td>JPG, PNG, WebP (макс. 2 МБ)</td></tr>
-        <tr><td>Навбар үсті өлшемі</td><td>1200×120 px ( którtylaу бойынша созылады)</td></tr>
-        <tr><td>Тауар беті өлшемі</td><td>1200×200 px (kңtartylaу бойынша созылады)</td></tr>
-        <tr><td>Баға</td><td>Тегін орналастыру! 🎉</td></tr>
-        <tr><td>Мерзімі</td><td>Белсенді болғанша және/немесе күніне дейін</td></tr>
+        <tr><td>Навбар үсті өлшемі</td><td>1200×120 px (көлденең бойынша созылады)</td></tr>
+        <tr><td>Тауар беті өлшемі</td><td>1200×200 px (көлденең бойынша созылады)</td></tr>
+        <tr><td>Баға</td><td><strong style="color:#FF6B00;">10 000 ₸ (≈ 18 €)</strong></td></tr>
+        <tr><td>Мерзімі</td><td>1 ай (30 күн)</td></tr>
+        <tr><td>Лимит</td><td>Бір уақытта 5 жарнама (кезектік жүйе)</td></tr>
+        <tr><td>Төлем</td><td>Stripe арқылы онлайн төлем (карта)</td></tr>
       </table>
     </div>
 
     <!-- Submission form -->
     <div class="ads-form" id="ads-form-wrapper">
-      <h2>📝 Жарнама тапсырыс</h2>
+      <h2>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Жарнама тапсырыс
+      </h2>
       <form id="ads-form">
         <div class="form-grid">
           <div class="form-group">
@@ -172,7 +294,7 @@
           <div class="form-group full">
             <label>Жарнама суреті *</label>
             <div class="image-upload-zone" id="image-upload-zone">
-              <div class="icon">🖼️</div>
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               <p><strong>Суретті бұл жерге сүйреңіз</strong> немесе басыңыз</p>
               <p style="font-size:0.75rem;color:#64748b;margin-top:0.25rem;">JPG, PNG, WebP — макс. 2 МБ</p>
               <input type="file" id="ad-image" accept="image/*">
@@ -189,15 +311,20 @@
           </div>
         </div>
         <div class="error-msg" id="form-error"></div>
-        <button type="submit" class="btn-submit" id="submit-btn">🚀 Жарнаманы жіберу</button>
+        <button type="submit" class="btn-submit" id="submit-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          Төлеу және жарнаманы жіберу — 10 000 ₸
+        </button>
       </form>
     </div>
 
     <!-- Success message -->
     <div class="success-msg" id="success-msg">
-      <div class="check">✅</div>
-      <h2>Жарнама сәтті жіберілді!</h2>
-      <p>Әкімші растағаннан кейін жарнамаңыз сайтта пайда болады.</p>
+      <div class="check">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <h2>Төлем сәтті өтті!</h2>
+      <p>Төлем қабылданды. Әкімші растағаннан кейін жарнамаңыз сайтта пайда болады.</p>
       <p style="margin-top:1rem;"><a href="/" style="color:#FF6B00;text-decoration:none;">← Басты бетке оралу</a></p>
     </div>
   </div>
@@ -209,10 +336,38 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtem5mZG5ndWNwc21qYnhpd3puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1Nzk1NDAsImV4cCI6MjA5NTE1NTU0MH0.DaYcIF7uaU0FSWbB9Mlq4YVVYm2EleOSz6ACtwyHjsI';
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    const MAX_ACTIVE_ADS = 5;
     let uploadedFile = null;
     let uploadedDataUrl = '';
 
-    // Image upload
+    // ── Check queue status on load ──
+    async function checkQueueStatus() {
+      try {
+        const { data, error } = await sb.from('ads')
+          .select('id, active, start_date, end_date')
+          .eq('active', true);
+        if (error) throw error;
+        const now = Date.now();
+        const activeCount = (data || []).filter(ad => {
+          const startMs = ad.start_date ? new Date(ad.start_date).getTime() : 0;
+          const endMs = ad.end_date ? new Date(ad.end_date).getTime() : Infinity;
+          return startMs <= now && endMs >= now;
+        }).length;
+        const statusEl = document.getElementById('queue-status');
+        if (statusEl) {
+          if (activeCount >= MAX_ACTIVE_ADS) {
+            statusEl.innerHTML = '<span class="queue-badge full"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Толы (' + activeCount + '/' + MAX_ACTIVE_ADS + ') — кезекке қойылады</span>';
+          } else {
+            statusEl.innerHTML = '<span class="queue-badge open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Бос орын бар (' + activeCount + '/' + MAX_ACTIVE_ADS + ')</span>';
+          }
+        }
+      } catch (e) {
+        console.warn('[ads] queue check failed:', e);
+      }
+    }
+    checkQueueStatus();
+
+    // ── Image upload ──
     const uploadZone = document.getElementById('image-upload-zone');
     const fileInput = document.getElementById('ad-image');
     const preview = document.getElementById('image-preview');
@@ -221,8 +376,7 @@
     uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.style.borderColor = '#FF6B00'; });
     uploadZone.addEventListener('dragleave', () => { uploadZone.style.borderColor = ''; });
     uploadZone.addEventListener('drop', e => {
-      e.preventDefault();
-      uploadZone.style.borderColor = '';
+      e.preventDefault(); uploadZone.style.borderColor = '';
       if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
     });
     fileInput.addEventListener('change', e => { if (e.target.files.length) handleFile(e.target.files[0]); });
@@ -242,12 +396,12 @@
         uploadedDataUrl = e.target.result;
         preview.src = uploadedDataUrl;
         preview.style.display = 'block';
-        uploadZone.querySelector('p').innerHTML = '<strong style="color:#10B981">✓ Сурет таңдалды:</strong> ' + file.name;
+        uploadZone.querySelector('p').innerHTML = '<strong style="color:#10B981">Сурет таңдалды:</strong> ' + file.name;
       };
       reader.readAsDataURL(file);
     }
 
-    // Submit
+    // ── Form submit → Stripe Checkout ──
     document.getElementById('ads-form').addEventListener('submit', async e => {
       e.preventDefault();
       const errEl = document.getElementById('form-error');
@@ -273,16 +427,17 @@
 
       const btn = document.getElementById('submit-btn');
       btn.disabled = true;
-      btn.textContent = '⏳ Жіберілуде...';
+      btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Төлем жүргізілуде...';
 
       try {
-        const ad = {
+        // 1) Create ad record (inactive until payment confirmed)
+        const adData = {
           title,
           image_url: uploadedDataUrl,
           link_url: link,
           position,
           placement_priority: 0,
-          active: false,  // needs admin approval
+          active: false,
           advertiser_name: name,
           advertiser_email: email,
           advertiser_phone: phone,
@@ -290,15 +445,34 @@
           end_date: end ? new Date(end).toISOString() : null
         };
 
-        const { error } = await sb.from('ads').insert(ad);
-        if (error) throw error;
+        const { data: adRecord, error: insertError } = await sb.from('ads').insert(adData).select().single();
+        if (insertError) throw insertError;
 
-        document.getElementById('ads-form-wrapper').style.display = 'none';
-        document.getElementById('success-msg').style.display = 'block';
+        // 2) Create Stripe Checkout session for ad payment
+        const resp = await fetch('/api/create-ad-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ad_id: adRecord.id,
+            ad_title: title,
+            email: email,
+            name: name
+          })
+        });
+
+        const result = await resp.json();
+        if (!resp.ok) throw new Error(result.error || 'Payment failed');
+
+        // 3) Redirect to Stripe Checkout
+        if (result.url) {
+          window.location.href = result.url;
+        } else {
+          throw new Error('Stripe checkout URL not received');
+        }
       } catch (err) {
         show_error('Қате пайда болды: ' + (err.message || err));
         btn.disabled = false;
-        btn.textContent = '🚀 Жарнаманы жіберу';
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> Төлеу және жарнаманы жіберу — 10 000 ₸';
       }
     });
 
@@ -307,6 +481,28 @@
       el.textContent = msg;
       el.style.display = 'block';
     }
+
+    // ── Handle Stripe success redirect ──
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('payment') === 'success' && params.get('ad_id')) {
+        // Payment was successful — activate the ad
+        const adId = params.get('ad_id');
+        sb.from('ads').update({ active: true }).eq('id', adId).then(({ error }) => {
+          if (!error) {
+            document.getElementById('ads-form-wrapper').style.display = 'none';
+            document.getElementById('success-msg').style.display = 'block';
+          }
+        });
+        // Clean URL
+        window.history.replaceState({}, '', '/ads.html');
+      }
+      if (params.get('payment') === 'cancelled') {
+        show_error('Төлем тоқтатылды. Қайта төлеуге болады.');
+        window.history.replaceState({}, '', '/ads.html');
+      }
+    })();
   </script>
+  <style>@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style>
 </body>
 </html>
