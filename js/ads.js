@@ -28,9 +28,10 @@
         if (!window.supabase || !window.supabase.createClient) return [];
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Fetch all ads (active + inactive) to manage rotation
+        // Fetch ONLY paid ads — unpaid ads should NEVER appear on the site
         const { data, error } = await sb.from('ads')
           .select('*')
+          .eq('paid', true)
           .order('placement_priority', { ascending: false });
         if (error) { console.warn('[ads] fetch error:', error.message); return []; }
 
@@ -55,29 +56,27 @@
             // Expired — mark for deactivation
             expiredAds.push(ad);
           } else if (!ad.active && ad.start_date && startMs <= now) {
-            // Queued — eligible to become active
+            // Paid but queued — eligible to become active
             queuedAds.push(ad);
           }
         }
 
-        // Deactivate expired ads
+        // Deactivate expired ads (keep paid=true so they stay in rotation if re-activated)
         for (const expired of expiredAds) {
           sb.from('ads').update({ active: false }).eq('id', expired.id)
             .then(() => console.log('[ads] Deactivated expired ad:', expired.id))
             .catch(err => console.warn('[ads] Failed to deactivate:', err));
         }
 
-        // If we have room, activate queued ads (by priority)
+        // If we have room, activate queued paid ads (by priority)
         const slotsAvailable = MAX_ACTIVE_ADS - activeAds.length;
         if (slotsAvailable > 0 && queuedAds.length > 0) {
           const toActivate = queuedAds.slice(0, slotsAvailable);
           for (const queued of toActivate) {
-            const endDate = new Date();
-            endDate.setDate(endDate.getDate() + 30);
             sb.from('ads').update({
               active: true,
               start_date: new Date().toISOString(),
-              end_date: endDate.toISOString()
+              end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
             }).eq('id', queued.id)
               .then(() => console.log('[ads] Activated queued ad:', queued.id))
               .catch(err => console.warn('[ads] Failed to activate:', err));

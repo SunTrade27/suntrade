@@ -310,6 +310,7 @@ module.exports = async (req, res) => {
           var endDate = new Date();
           endDate.setDate(endDate.getDate() + 30);
           await supabase.from('ads').update({
+            paid: true,
             active: true,
             start_date: new Date().toISOString(),
             end_date: endDate.toISOString()

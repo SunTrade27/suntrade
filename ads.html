@@ -531,7 +531,7 @@
       if (params.get('payment') === 'success' && params.get('ad_id')) {
         // Payment was successful — activate the ad
         const adId = params.get('ad_id');
-        sb.from('ads').update({ active: true }).eq('id', adId).then(({ error }) => {
+        sb.from('ads').update({ paid: true, active: true }).eq('id', adId).then(({ error }) => {
           if (!error) {
             document.getElementById('ads-form-wrapper').style.display = 'none';
             document.getElementById('success-msg').style.display = 'block';
