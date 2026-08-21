@@ -350,11 +350,12 @@
     </div>
   </div>
 
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/supabase-client.js"></script>
   <script src="/js/i18n.js"></script>
   <script src="/js/cart.js"></script>
   <script src="/js/shared-ui.js"></script>
+  <script src="/js/user-menu.js"></script>
   <script>
 
     initSupabase();
@@ -544,8 +545,10 @@
         window.history.replaceState({}, '', '/ads.html');
       }
     })();
+
+    // Initialize user menu directly after sb is ready
+    setTimeout(() => { if (typeof initUserMenu === 'function') initUserMenu(); }, 800);
   </script>
-  <script src="/js/user-menu.js"></script>
   <style>@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style>
 </body>
 </html>
