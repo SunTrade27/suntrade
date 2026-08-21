@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Leads - SunTrade</title>
   <script>
 var _sl=localStorage.getItem('suntrade_lang');
@@ -14,247 +14,176 @@ if(_sl&&_sl!=='en'){document.write('<link rel="preload" href="/locales/'+_sl+'.j
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="/js/theme.js"></script>
-  <!-- Prevent flash of wrong language -->
   <script src="/js/icons.js"></script>
   <style>
-    body { font-family: 'Inter', sans-serif; margin: 0; background: var(--bg, #f8fafc); color: var(--text, #1a1a2e); overflow-x: hidden; }
-    .lang-wrapper { position: relative; }
-    .lang-dropdown, #lang-dropdown { position: absolute; top: 100%; right: 0; background: var(--bg-white, #fff); border: 1px solid var(--border, #e5e7eb); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 999; min-width: 160px; display: none; padding: 0.4rem 0; }
-    .lang-dropdown.show, #lang-dropdown.show { display: block; }
-    .lang-option { display: block; width: 100%; text-align: left; padding: 8px 14px; border: none; background: none; cursor: pointer; font-size: 0.85rem; color: var(--text, #1a1a2e); }
-    .lang-option:hover { background: rgba(255,107,0,0.08); }
-    .lang-option.active { color: var(--primary, #FF6B00); font-weight: 600; }
-    .leads-page { max-width: 600px; margin: 0 auto; padding: 1rem; padding-bottom: 5rem; }
-    .leads-header { text-align: center; margin-bottom: 1.5rem; }
-    .leads-header h1 { font-size: 1.5rem; font-weight: 800; margin: 0.5rem 0 0.25rem; }
-    .leads-header p { color: var(--text-secondary, #64748b); font-size: 0.85rem; margin: 0; }
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; margin: 0; background: var(--bg, #f8fafc); color: var(--text, #1a1a2e); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 
-    /* Stat cards - 2x2 grid */
-    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.25rem; }
-    .stat-card {
-      background: var(--bg-white, #fff);
-      border: 1px solid var(--border, #e5e7eb);
-      border-radius: 12px;
-      padding: 0.75rem 0.5rem;
-      text-align: center;
-      min-width: 0;
-      overflow: hidden;
-    }
-    .stat-card .stat-num { font-size: 1.4rem; font-weight: 800; line-height: 1.2; }
-    .stat-card .stat-label { font-size: 0.68rem; color: var(--text-secondary, #64748b); margin-top: 0.15rem; display: flex; align-items: center; justify-content: center; gap: 3px; white-space: nowrap; }
+    /* Navbar */
+    .top-nav { position: sticky; top: 0; z-index: 50; background: var(--bg-white, #fff); border-bottom: 1px solid var(--border, #e5e7eb); }
+    .top-nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 0 12px; height: 48px; max-width: 600px; margin: 0 auto; }
+    .top-nav .logo { font-size: 1.1rem; font-weight: 800; color: var(--primary, #FF6B00); text-decoration: none; flex-shrink: 0; }
+    .top-nav-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .lang-wrapper { position: relative; }
+    .lang-wrapper button { background: none; border: 1px solid var(--border, #e5e7eb); border-radius: 6px; padding: 4px 8px; font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; gap: 3px; color: var(--text, #1a1a2e); }
+    .lang-wrapper button svg { width: 12px; height: 12px; }
+    #lang-dropdown { position: absolute; top: 100%; right: 0; background: var(--bg-white, #fff); border: 1px solid var(--border, #e5e7eb); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 999; min-width: 140px; display: none; padding: 4px 0; }
+    #lang-dropdown.show { display: block; }
+    .lang-option { display: block; width: 100%; text-align: left; padding: 6px 12px; border: none; background: none; cursor: pointer; font-size: 0.82rem; color: var(--text, #1a1a2e); }
+    .lang-option:hover { background: rgba(255,107,0,0.06); }
+    .lang-option.active { color: var(--primary, #FF6B00); font-weight: 600; }
+    .theme-btn { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border, #e5e7eb); background: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .theme-btn svg { width: 16px; height: 16px; }
+
+    /* Page */
+    .page { max-width: 480px; margin: 0 auto; padding: 12px; padding-bottom: 80px; }
+
+    /* Header */
+    .page-header { text-align: center; margin-bottom: 16px; }
+    .page-header svg { margin-bottom: 4px; }
+    .page-header h1 { font-size: 1.3rem; font-weight: 800; margin: 4px 0 2px; }
+    .page-header p { color: var(--text-secondary, #64748b); font-size: 0.78rem; margin: 0; }
+
+    /* Stat cards — 2x2 */
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    .stat-card { background: var(--bg-white, #fff); border: 1px solid var(--border, #e5e7eb); border-radius: 12px; padding: 12px 8px; text-align: center; }
+    .stat-num { font-size: 1.6rem; font-weight: 800; line-height: 1.1; }
+    .stat-label { font-size: 0.65rem; color: var(--text-secondary, #64748b); margin-top: 2px; display: flex; align-items: center; justify-content: center; gap: 3px; }
+    .stat-label svg { width: 10px; height: 10px; flex-shrink: 0; }
 
     /* Conversion card */
-    .conversion-card {
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      border-radius: 14px;
-      padding: 1rem;
-      margin-bottom: 1.25rem;
-      color: white;
-    }
-    .conversion-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
-    .conversion-label { font-size: 0.7rem; color: rgba(255,255,255,0.6); }
-    .conversion-value { font-size: 1.5rem; font-weight: 800; }
+    .conv-card { background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 14px; padding: 14px; margin-bottom: 14px; color: white; }
+    .conv-row { display: flex; justify-content: space-between; align-items: flex-start; }
+    .conv-label { font-size: 0.68rem; color: rgba(255,255,255,0.5); }
+    .conv-val { font-size: 1.6rem; font-weight: 800; line-height: 1.1; }
+    .conv-val.orange { color: #FF6B00; }
 
-    /* Funnel bars */
-    .funnel { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.35rem; }
-    .funnel-bar {
-      height: 32px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      padding: 0 10px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      color: white;
-      transition: width 0.6s ease;
-      min-width: 40px;
-    }
-    .funnel-bar span { white-space: nowrap; display: flex; align-items: center; gap: 3px; }
+    /* Funnel */
+    .funnel { margin-top: 12px; display: flex; flex-direction: column; gap: 4px; }
+    .f-bar { height: 28px; border-radius: 6px; display: flex; align-items: center; padding: 0 8px; font-size: 0.65rem; font-weight: 600; color: white; transition: width 0.5s; min-width: 32px; }
+    .f-bar span { white-space: nowrap; display: flex; align-items: center; gap: 3px; }
+    .f-bar svg { width: 9px; height: 9px; flex-shrink: 0; }
 
-    /* Filter tabs */
-    .filter-tabs { display: flex; gap: 0.4rem; margin-bottom: 1rem; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .filter-tab {
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      border: 1px solid var(--border, #e5e7eb);
-      background: var(--bg-white, #fff);
-      color: var(--text-secondary, #64748b);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s;
-    }
-    .filter-tab.active { background: var(--primary, #FF6B00); color: white; border-color: var(--primary, #FF6B00); }
+    /* Filters */
+    .filters { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .filters::-webkit-scrollbar { display: none; }
+    .f-tab { padding: 6px 12px; border-radius: 16px; font-size: 0.72rem; font-weight: 600; border: 1px solid var(--border, #e5e7eb); background: var(--bg-white, #fff); color: var(--text-secondary, #64748b); cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.2s; }
+    .f-tab.active { background: var(--primary, #FF6B00); color: white; border-color: var(--primary, #FF6B00); }
 
     /* Lead cards */
-    .lead-card {
-      background: var(--bg-white, #fff);
-      border: 1px solid var(--border, #e5e7eb);
-      border-radius: 12px;
-      padding: 1rem;
-      margin-bottom: 0.75rem;
-      display: flex;
-      gap: 0.75rem;
-      align-items: center;
-    }
-    .lead-icon {
-      width: 40px; height: 40px;
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
+    .lead-card { background: var(--bg-white, #fff); border: 1px solid var(--border, #e5e7eb); border-radius: 10px; padding: 10px 12px; margin-bottom: 6px; display: flex; gap: 10px; align-items: center; }
+    .lead-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .lead-icon svg { width: 16px; height: 16px; }
     .lead-icon.view { background: rgba(59,130,246,0.12); color: #3B82F6; }
     .lead-icon.cart { background: rgba(245,158,11,0.12); color: #F59E0B; }
     .lead-icon.checkout { background: rgba(139,92,246,0.12); color: #8B5CF6; }
     .lead-icon.purchase { background: rgba(34,197,94,0.12); color: #22C55E; }
     .lead-info { flex: 1; min-width: 0; }
-    .lead-product { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .lead-meta { font-size: 0.75rem; color: var(--text-secondary, #64748b); margin-top: 0.15rem; }
-    .lead-whatsapp {
-      width: 36px; height: 36px;
-      background: #25D366;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      text-decoration: none;
-      flex-shrink: 0;
-    }
-    .lead-whatsapp svg { fill: white; }
+    .lead-name { font-weight: 600; font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lead-meta { font-size: 0.68rem; color: var(--text-secondary, #64748b); margin-top: 1px; }
+    .lead-wa { width: 32px; height: 32px; background: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; flex-shrink: 0; }
+    .lead-wa svg { width: 16px; height: 16px; fill: white; }
 
-    /* Export button */
-    .export-btn {
-      position: fixed; bottom: 1.5rem; right: 1.5rem;
-      background: var(--primary, #FF6B00);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 52px; height: 52px;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 4px 16px rgba(255,107,0,0.35);
-      cursor: pointer;
-      z-index: 100;
-    }
+    /* Export FAB */
+    .fab { position: fixed; bottom: 72px; right: 12px; width: 48px; height: 48px; background: var(--primary, #FF6B00); color: white; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(255,107,0,0.3); cursor: pointer; z-index: 100; }
+    .fab svg { width: 20px; height: 20px; }
 
-    /* Empty state */
-    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-secondary, #64748b); }
-    .empty-state svg { margin-bottom: 1rem; opacity: 0.4; }
+    /* Empty */
+    .empty { text-align: center; padding: 40px 16px; color: var(--text-secondary, #64748b); font-size: 0.85rem; }
+    .empty svg { width: 40px; height: 40px; opacity: 0.3; margin-bottom: 8px; }
+
+    /* Bottom nav */
+    .bnav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-white, #fff); border-top: 1px solid var(--border, #e5e7eb); z-index: 50; display: flex; justify-content: space-around; padding: 6px 0 max(6px, env(safe-area-inset-bottom)); }
+    .bnav a { display: flex; flex-direction: column; align-items: center; gap: 2px; text-decoration: none; color: var(--text-secondary, #64748b); font-size: 0.6rem; padding: 2px 8px; }
+    .bnav a svg { width: 20px; height: 20px; }
+    .bnav a.active { color: var(--primary, #FF6B00); }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
   <!-- Navbar -->
-  <nav id="main-navbar" style="position:sticky;top:0;z-index:50;">
-    <div class="navbar" style="display:flex;align-items:center;justify-content:space-between;padding:0 0.75rem;max-width:600px;margin:0 auto;height:48px;">
-      <a href="/" style="font-size:1.1rem;font-weight:800;color:var(--primary,#FF6B00);text-decoration:none;flex-shrink:0;">SunTrade</a>
-      <div style="display:flex;align-items:center;gap:0.5rem;flex-shrink:0;">
+  <nav class="top-nav">
+    <div class="top-nav-inner">
+      <a href="/" class="logo">SunTrade</a>
+      <div class="top-nav-right">
         <div class="lang-wrapper">
-          <button id="lang-toggle" style="background:none;border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:3px 6px;font-size:0.7rem;cursor:pointer;display:flex;align-items:center;gap:3px;color:var(--text,#1a1a2e);white-space:nowrap;">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          <button id="lang-toggle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
             EN
           </button>
           <div id="lang-dropdown"></div>
         </div>
-        <button type="button" class="theme-toggle" aria-pressed="false" style="width:32px;height:32px;">
-          <svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true" style="width:18px;height:18px;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <button class="theme-btn" aria-label="Toggle theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
       </div>
     </div>
   </nav>
 
-  <div class="leads-page">
+  <div class="page">
     <!-- Header -->
-    <div class="leads-header">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    <div class="page-header">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       <h1 data-i18n="admin_leads">Лидтер</h1>
       <p data-i18n="leads_subtitle">Соңғы 30 күндегі статистика</p>
     </div>
 
-    <!-- Stats 2x2 grid -->
+    <!-- Stats -->
     <div class="stat-grid">
       <div class="stat-card">
-        <div class="stat-num" style="color:#3B82F6;" id="stat-views">0</div>
-        <div class="stat-label">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          <span data-i18n="admin_leads_views">Көрулер</span>
-        </div>
+        <div class="stat-num" style="color:#3B82F6" id="stat-views">0</div>
+        <div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><span data-i18n="admin_leads_views">Көрулер</span></div>
       </div>
       <div class="stat-card">
-        <div class="stat-num" style="color:#F59E0B;" id="stat-cart">0</div>
-        <div class="stat-label">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
-          <span data-i18n="admin_leads_cart">Себетке қосу</span>
-        </div>
+        <div class="stat-num" style="color:#F59E0B" id="stat-cart">0</div>
+        <div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg><span data-i18n="admin_leads_cart">Себетке</span></div>
       </div>
       <div class="stat-card">
-        <div class="stat-num" style="color:#8B5CF6;" id="stat-checkout">0</div>
-        <div class="stat-label">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-          <span data-i18n="admin_leads_checkout">Төлем</span>
-        </div>
+        <div class="stat-num" style="color:#8B5CF6" id="stat-checkout">0</div>
+        <div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span data-i18n="admin_leads_checkout">Төлем</span></div>
       </div>
       <div class="stat-card">
-        <div class="stat-num" style="color:#22C55E;" id="stat-purchase">0</div>
-        <div class="stat-label">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          <span data-i18n="admin_leads_purchase">Сатып алу</span>
-        </div>
+        <div class="stat-num" style="color:#22C55E" id="stat-purchase">0</div>
+        <div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span data-i18n="admin_leads_purchase">Сатып алу</span></div>
       </div>
     </div>
 
-    <!-- Conversion card -->
-    <div class="conversion-card">
-      <div class="conversion-row">
-        <div>
-          <div class="conversion-label" data-i18n="admin_leads_conversion">Конверсия</div>
-          <div class="conversion-value" id="stat-conversion">0%</div>
-        </div>
-        <div style="text-align:right;">
-          <div class="conversion-label" data-i18n="admin_leads_cart_conversion">Себеттен сатып алуға</div>
-          <div class="conversion-value" style="color:#FF6B00;" id="stat-cart-conv">0%</div>
-        </div>
+    <!-- Conversion -->
+    <div class="conv-card">
+      <div class="conv-row">
+        <div><div class="conv-label" data-i18n="admin_leads_conversion">Конверсия</div><div class="conv-val" id="stat-conversion">0%</div></div>
+        <div style="text-align:right"><div class="conv-label" data-i18n="admin_leads_cart_conversion">Себеттен сатып алуға</div><div class="conv-val orange" id="stat-cart-conv">0%</div></div>
       </div>
       <div class="funnel">
-        <div class="funnel-bar" style="background:linear-gradient(90deg,rgba(59,130,246,0.6),rgba(59,130,246,0.2));width:100%;" id="funnel-views">
-          <span>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            <span data-i18n="admin_leads_views">Көрулер</span>
-          </span>
-        </div>
-        <div class="funnel-bar" style="background:linear-gradient(90deg,rgba(245,158,11,0.6),rgba(245,158,11,0.2));width:50%;" id="funnel-cart">
-          <span>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
-            <span data-i18n="admin_leads_cart">Себетке</span>
-          </span>
-        </div>
-        <div class="funnel-bar" style="background:linear-gradient(90deg,rgba(139,92,246,0.6),rgba(139,92,246,0.2));width:20%;" id="funnel-checkout">
-          <span>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-            <span data-i18n="admin_leads_checkout">Төлем</span>
-          </span>
-        </div>
-        <div class="funnel-bar" style="background:linear-gradient(90deg,rgba(34,197,94,0.6),rgba(34,197,94,0.2));width:10%;" id="funnel-purchase">
-          <span>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            <span data-i18n="admin_leads_purchase">Сатып алу</span>
-          </span>
-        </div>
+        <div class="f-bar" style="background:linear-gradient(90deg,rgba(59,130,246,0.6),rgba(59,130,246,0.2));width:100%" id="funnel-views"><span><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><span data-i18n="admin_leads_views">Көрулер</span></span></div>
+        <div class="f-bar" style="background:linear-gradient(90deg,rgba(245,158,11,0.6),rgba(245,158,11,0.2));width:50%" id="funnel-cart"><span><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg><span data-i18n="admin_leads_cart">Себетке</span></span></div>
+        <div class="f-bar" style="background:linear-gradient(90deg,rgba(139,92,246,0.6),rgba(139,92,246,0.2));width:20%" id="funnel-checkout"><span><svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span data-i18n="admin_leads_checkout">Төлем</span></span></div>
+        <div class="f-bar" style="background:linear-gradient(90deg,rgba(34,197,94,0.6),rgba(34,197,94,0.2));width:10%" id="funnel-purchase"><span><svg viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span data-i18n="admin_leads_purchase">Сатып алу</span></span></div>
       </div>
     </div>
 
-    <!-- Filter tabs -->
-    <div class="filter-tabs">
-      <button class="filter-tab active" data-filter="abandoned_cart" data-i18n="admin_leads_abandoned_cart">Себеттен тастағандар</button>
-      <button class="filter-tab" data-filter="all" data-i18n="admin_leads_all_events">Барлық оқиғалар</button>
-      <button class="filter-tab" data-filter="page_view" data-i18n="admin_leads_page_views">Тек көрулер</button>
+    <!-- Filters -->
+    <div class="filters">
+      <button class="f-tab active" data-filter="abandoned_cart" data-i18n="admin_leads_abandoned_cart">Себеттен тастағандар</button>
+      <button class="f-tab" data-filter="all" data-i18n="admin_leads_all_events">Барлық оқиғалар</button>
+      <button class="f-tab" data-filter="page_view" data-i18n="admin_leads_page_views">Тек көрулер</button>
     </div>
 
-    <!-- Lead cards container -->
     <div id="leads-container"></div>
   </div>
 
   <!-- Export FAB -->
-  <button class="export-btn" onclick="exportLeads()" title="Export CSV">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  <button class="fab" onclick="exportLeads()" title="CSV Export">
+    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
   </button>
+
+  <!-- Bottom Nav -->
+  <nav class="bnav">
+    <a href="/" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span data-i18n="nav_home">Home</span></a>
+    <a href="/catalog.html?favorites=true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span data-i18n="nav_favorites">Favorites</span></a>
+    <a href="/cart.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg><span data-i18n="nav_cart">Cart</span></a>
+    <a href="/account.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-i18n="account_title">Account</span></a>
+  </nav>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/supabase-client.js"></script>
@@ -267,10 +196,10 @@ if(_sl&&_sl!=='en'){document.write('<link rel="preload" href="/locales/'+_sl+'.j
     let allEvents = [];
     let allAbandoned = [];
 
-    // Filter tab clicks
-    document.querySelectorAll('.filter-tab').forEach(tab => {
+    // Filter tabs
+    document.querySelectorAll('.f-tab').forEach(tab => {
       tab.addEventListener('click', () => {
-        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.f-tab').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         currentFilter = tab.dataset.filter;
         renderLeads();
@@ -279,25 +208,22 @@ if(_sl&&_sl!=='en'){document.write('<link rel="preload" href="/locales/'+_sl+'.j
 
     async function loadLeads() {
       const container = document.getElementById('leads-container');
-      container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-secondary,#64748b);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>';
+      container.innerHTML = '<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>';
 
       try {
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
         const { data: events, error } = await sb.from('visitor_events')
-          .select('*')
-          .gte('created_at', thirtyDaysAgo)
-          .order('created_at', { ascending: false });
+          .select('*').gte('created_at', thirtyDaysAgo).order('created_at', { ascending: false });
 
         if (error) throw error;
-
-        if (!events || events.length === 0) {
+        if (!events || !events.length) {
           document.getElementById('stat-views').textContent = '0';
           document.getElementById('stat-cart').textContent = '0';
           document.getElementById('stat-checkout').textContent = '0';
           document.getElementById('stat-purchase').textContent = '0';
           document.getElementById('stat-conversion').textContent = '0%';
           document.getElementById('stat-cart-conv').textContent = '0%';
-          container.innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><p data-i18n="admin_leads_no_events">Әзірге оқиғалар жоқ</p></div>';
+          container.innerHTML = '<div class="empty"><p data-i18n="admin_leads_no_events">Әзірге оқиғалар жоқ</p></div>';
           return;
         }
 
@@ -317,121 +243,54 @@ if(_sl&&_sl!=='en'){document.write('<link rel="preload" href="/locales/'+_sl+'.j
         document.getElementById('stat-checkout').textContent = uco;
         document.getElementById('stat-purchase').textContent = up;
 
-        const viewToPurchase = uv > 0 ? ((up / uv) * 100).toFixed(1) : '0';
-        const cartToPurchase = uc > 0 ? ((up / uc) * 100).toFixed(1) : '0';
-        document.getElementById('stat-conversion').textContent = viewToPurchase + '%';
-        document.getElementById('stat-cart-conv').textContent = cartToPurchase + '%';
+        document.getElementById('stat-conversion').textContent = (uv > 0 ? ((up / uv) * 100).toFixed(1) : '0') + '%';
+        document.getElementById('stat-cart-conv').textContent = (uc > 0 ? ((up / uc) * 100).toFixed(1) : '0') + '%';
 
-        const maxCount = Math.max(uv, 1);
+        const mx = Math.max(uv, 1);
         document.getElementById('funnel-views').style.width = '100%';
-        document.getElementById('funnel-cart').style.width = Math.max((uc / maxCount) * 100, 5) + '%';
-        document.getElementById('funnel-checkout').style.width = Math.max((uco / maxCount) * 100, 5) + '%';
-        document.getElementById('funnel-purchase').style.width = Math.max((up / maxCount) * 100, 5) + '%';
+        document.getElementById('funnel-cart').style.width = Math.max((uc / mx) * 100, 5) + '%';
+        document.getElementById('funnel-checkout').style.width = Math.max((uco / mx) * 100, 5) + '%';
+        document.getElementById('funnel-purchase').style.width = Math.max((up / mx) * 100, 5) + '%';
 
-        // Abandoned cart
-        const purchasingVisitors = new Set(purchases.map(e => e.visitor_id));
-        const cartVisitors = carts.filter(e => !purchasingVisitors.has(e.visitor_id));
-        const abandonedMap = {};
-        cartVisitors.forEach(e => {
-          const key = e.visitor_id + '|' + (e.product_id || 'unknown');
-          if (!abandonedMap[key] || new Date(e.created_at) > new Date(abandonedMap[key].created_at)) {
-            abandonedMap[key] = e;
-          }
-        });
-        allAbandoned = Object.values(abandonedMap).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        const pv = new Set(purchases.map(e => e.visitor_id));
+        const cv = carts.filter(e => !pv.has(e.visitor_id));
+        const am = {};
+        cv.forEach(e => { const k = e.visitor_id + '|' + (e.product_id || '?'); if (!am[k] || new Date(e.created_at) > new Date(am[k].created_at)) am[k] = e; });
+        allAbandoned = Object.values(am).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
         renderLeads();
       } catch (e) {
-        console.error('Leads error:', e);
-        container.innerHTML = '<div class="empty-state"><p style="color:var(--danger,#ef4444);">Қате: ' + (e.message || e) + '</p></div>';
+        container.innerHTML = '<div class="empty"><p style="color:#ef4444">Қате: ' + (e.message || e) + '</p></div>';
       }
     }
 
     function renderLeads() {
-      const container = document.getElementById('leads-container');
-      let filtered = currentFilter === 'abandoned_cart' ? allAbandoned : allEvents;
-      if (currentFilter === 'page_view') filtered = allEvents.filter(e => e.event_type === 'page_view');
+      const c = document.getElementById('leads-container');
+      let list = currentFilter === 'abandoned_cart' ? allAbandoned : allEvents;
+      if (currentFilter === 'page_view') list = allEvents.filter(e => e.event_type === 'page_view');
 
-      if (!filtered.length) {
-        container.innerHTML = '<div class="empty-state"><p data-i18n="admin_leads_no_filter">Бұл сүзгі бойынша оқиғалар табылмады.</p></div>';
-        return;
-      }
+      if (!list.length) { c.innerHTML = '<div class="empty"><p data-i18n="admin_leads_no_filter">Оқиғалар табылмады</p></div>'; return; }
 
-      // Limit to 50 most recent for mobile
-      const limited = filtered.slice(0, 50);
-
-      container.innerHTML = limited.map(e => {
-        const iconClass = e.event_type === 'page_view' ? 'view' : e.event_type === 'add_to_cart' ? 'cart' : e.event_type === 'checkout' ? 'checkout' : 'purchase';
-        const iconSvg = e.event_type === 'page_view'
-          ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>'
-          : e.event_type === 'add_to_cart'
-          ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>'
-          : e.event_type === 'checkout'
-          ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'
-          : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
-
-        const date = new Date(e.created_at);
-        const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-        const price = e.product_price ? '€' + parseFloat(e.product_price).toFixed(2) : '';
-        const phone = e.phone || '';
-        const whatsappUrl = phone ? 'https://wa.me/' + phone.replace(/[^0-9]/g, '') : '';
-
-        return '<div class="lead-card">' +
-          '<div class="lead-icon ' + iconClass + '">' + iconSvg + '</div>' +
-          '<div class="lead-info">' +
-            '<div class="lead-product">' + (e.product_name || '—') + '</div>' +
-            '<div class="lead-meta">' + dateStr + (price ? ' · ' + price : '') + '</div>' +
-          '</div>' +
-          (whatsappUrl ? '<a href="' + whatsappUrl + '" target="_blank" class="lead-whatsapp"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="white"/></svg></a>' : '') +
-        '</div>';
+      c.innerHTML = list.slice(0, 50).map(e => {
+        const ic = e.event_type === 'page_view' ? 'view' : e.event_type === 'add_to_cart' ? 'cart' : e.event_type === 'checkout' ? 'checkout' : 'purchase';
+        const sv = e.event_type === 'page_view' ? '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>' : e.event_type === 'add_to_cart' ? '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>' : e.event_type === 'checkout' ? '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>' : '<path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>';
+        const d = new Date(e.created_at);
+        const ds = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        const pr = e.product_price ? '€' + parseFloat(e.product_price).toFixed(2) : '';
+        const ph = e.phone || '';
+        const wa = ph ? 'https://wa.me/' + ph.replace(/[^0-9]/g, '') : '';
+        return '<div class="lead-card"><div class="lead-icon ' + ic + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + sv + '</svg></div><div class="lead-info"><div class="lead-name">' + (e.product_name || '—') + '</div><div class="lead-meta">' + ds + (pr ? ' · ' + pr : '') + '</div></div>' + (wa ? '<a href="' + wa + '" target="_blank" class="lead-wa"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="white"/></svg></a>' : '') + '</div>';
       }).join('');
     }
 
     function exportLeads() {
       const events = currentFilter === 'abandoned_cart' ? allAbandoned : allEvents;
       if (!events.length) return;
-      const headers = ['Visitor ID', 'Product', 'Price', 'Event', 'Date', 'Phone'];
-      const rows = events.map(e => [
-        e.visitor_id, e.product_name || '', e.product_price || '', e.event_type,
-        e.created_at, e.phone || ''
-      ]);
-      const csv = [headers, ...rows].map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n');
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'suntrade-leads-' + new Date().toISOString().slice(0,10) + '.csv';
-      a.click();
+      const csv = [['Visitor ID','Product','Price','Event','Date','Phone'], ...events.map(e => [e.visitor_id, e.product_name||'', e.product_price||'', e.event_type, e.created_at, e.phone||''])].map(r => r.map(c => '"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'})); a.download = 'leads-' + new Date().toISOString().slice(0,10) + '.csv'; a.click();
     }
 
-    // Load on DOM ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', loadLeads);
-    } else {
-      loadLeads();
-    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadLeads); else loadLeads();
   </script>
-  <!-- Bottom Navigation -->
-  <nav class="bottom-nav" aria-label="Mobile navigation">
-    <div class="bottom-nav-inner">
-      <a href="/" class="bottom-nav-item" aria-label="Home">
-        <svg class="icon icon-lg"><use href="#icon-home"/></svg>
-        <span data-i18n="nav_home">Home</span>
-      </a>
-      <a href="/catalog.html?favorites=true" class="bottom-nav-item" aria-label="Favorites">
-        <svg class="icon icon-lg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        <span data-i18n="nav_favorites">Favorites</span>
-      </a>
-      <a href="/cart.html" class="bottom-nav-item" aria-label="Cart">
-        <svg class="icon icon-lg"><use href="#icon-cart"/></svg>
-        <span data-i18n="nav_cart">Cart</span>
-        <span class="bottom-nav-badge" id="bottom-nav-cart-badge" style="display:none;">0</span>
-      </a>
-      <a href="/account.html" class="bottom-nav-item" aria-label="Account">
-        <svg class="icon icon-lg"><use href="#icon-user"/></svg>
-        <span data-i18n="account_title">Account</span>
-      </a>
-    </div>
-  </nav>
-  <style>@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style>
 </body>
 </html>
