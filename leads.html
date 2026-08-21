@@ -14,35 +14,43 @@
   <script>if(localStorage.getItem('suntrade_lang')&&localStorage.getItem('suntrade_lang')!=='en'){document.write('<style id="i18n-fowlp">[data-i18n]{visibility:hidden!important}body.i18n-ready [data-i18n]{visibility:visible!important}</style>')}</script>
   <script src="/js/icons.js"></script>
   <style>
-    body { font-family: 'Inter', sans-serif; margin: 0; background: var(--bg, #f8fafc); color: var(--text, #1a1a2e); }
+    body { font-family: 'Inter', sans-serif; margin: 0; background: var(--bg, #f8fafc); color: var(--text, #1a1a2e); overflow-x: hidden; }
+    .lang-wrapper { position: relative; }
+    .lang-dropdown, #lang-dropdown { position: absolute; top: 100%; right: 0; background: var(--bg-white, #fff); border: 1px solid var(--border, #e5e7eb); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 999; min-width: 160px; display: none; padding: 0.4rem 0; }
+    .lang-dropdown.show, #lang-dropdown.show { display: block; }
+    .lang-option { display: block; width: 100%; text-align: left; padding: 8px 14px; border: none; background: none; cursor: pointer; font-size: 0.85rem; color: var(--text, #1a1a2e); }
+    .lang-option:hover { background: rgba(255,107,0,0.08); }
+    .lang-option.active { color: var(--primary, #FF6B00); font-weight: 600; }
     .leads-page { max-width: 600px; margin: 0 auto; padding: 1rem; padding-bottom: 5rem; }
     .leads-header { text-align: center; margin-bottom: 1.5rem; }
     .leads-header h1 { font-size: 1.5rem; font-weight: 800; margin: 0.5rem 0 0.25rem; }
     .leads-header p { color: var(--text-secondary, #64748b); font-size: 0.85rem; margin: 0; }
 
     /* Stat cards - 2x2 grid */
-    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.5rem; }
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.25rem; }
     .stat-card {
       background: var(--bg-white, #fff);
       border: 1px solid var(--border, #e5e7eb);
-      border-radius: 14px;
-      padding: 1rem;
+      border-radius: 12px;
+      padding: 0.75rem 0.5rem;
       text-align: center;
+      min-width: 0;
+      overflow: hidden;
     }
-    .stat-card .stat-num { font-size: 1.8rem; font-weight: 800; line-height: 1.2; }
-    .stat-card .stat-label { font-size: 0.75rem; color: var(--text-secondary, #64748b); margin-top: 0.2rem; display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .stat-card .stat-num { font-size: 1.4rem; font-weight: 800; line-height: 1.2; }
+    .stat-card .stat-label { font-size: 0.68rem; color: var(--text-secondary, #64748b); margin-top: 0.15rem; display: flex; align-items: center; justify-content: center; gap: 3px; white-space: nowrap; }
 
     /* Conversion card */
     .conversion-card {
       background: linear-gradient(135deg, #0f172a, #1e293b);
-      border-radius: 16px;
-      padding: 1.25rem;
-      margin-bottom: 1.5rem;
+      border-radius: 14px;
+      padding: 1rem;
+      margin-bottom: 1.25rem;
       color: white;
     }
-    .conversion-row { display: flex; justify-content: space-between; align-items: center; }
-    .conversion-label { font-size: 0.75rem; color: rgba(255,255,255,0.6); }
-    .conversion-value { font-size: 2rem; font-weight: 800; }
+    .conversion-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+    .conversion-label { font-size: 0.7rem; color: rgba(255,255,255,0.6); }
+    .conversion-value { font-size: 1.5rem; font-weight: 800; }
 
     /* Funnel bars */
     .funnel { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.35rem; }
@@ -132,18 +140,18 @@
 <body>
   <!-- Navbar -->
   <nav id="main-navbar" style="position:sticky;top:0;z-index:50;">
-    <div class="navbar" style="display:flex;align-items:center;justify-content:space-between;padding:0 1rem;max-width:600px;margin:0 auto;height:56px;">
-      <a href="/" style="font-size:1.2rem;font-weight:800;color:var(--primary,#FF6B00);text-decoration:none;">SunTrade</a>
-      <div style="display:flex;align-items:center;gap:0.75rem;">
+    <div class="navbar" style="display:flex;align-items:center;justify-content:space-between;padding:0 0.75rem;max-width:600px;margin:0 auto;height:48px;">
+      <a href="/" style="font-size:1.1rem;font-weight:800;color:var(--primary,#FF6B00);text-decoration:none;flex-shrink:0;">SunTrade</a>
+      <div style="display:flex;align-items:center;gap:0.5rem;flex-shrink:0;">
         <div class="lang-wrapper">
-          <button id="lang-toggle" style="background:none;border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:4px 8px;font-size:0.75rem;cursor:pointer;display:flex;align-items:center;gap:4px;color:var(--text,#1a1a2e);">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          <button id="lang-toggle" style="background:none;border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:3px 6px;font-size:0.7rem;cursor:pointer;display:flex;align-items:center;gap:3px;color:var(--text,#1a1a2e);white-space:nowrap;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
             EN
           </button>
           <div id="lang-dropdown"></div>
         </div>
-        <button type="button" class="theme-toggle" aria-pressed="false">
-          <svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <button type="button" class="theme-toggle" aria-pressed="false" style="width:32px;height:32px;">
+          <svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true" style="width:18px;height:18px;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
       </div>
     </div>
