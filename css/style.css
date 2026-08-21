@@ -757,6 +757,7 @@ html[data-theme="dark"] .admin-main [style*="background:#F3F4F6"] { background: 
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1.5rem;
 }
+.products-grid:empty { display: none; }
 /* ===== PRODUCT CARD — image always centered, buttons always aligned ===== */
 .product-card {
   background: var(--bg-white);

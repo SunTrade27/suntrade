@@ -1078,7 +1078,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
 </section>
 
 <!-- FEATURED PRODUCTS -->
-<section class="section reveal" style="background: var(--bg-white); max-width: 100%; padding-left: 0; padding-right: 0;">
+<section class="section reveal" style="max-width: 100%; padding-left: 0; padding-right: 0;">
   <div style="max-width: 1280px; margin: 0 auto; padding: 0 1rem;">
     <h2 class="section-title" data-i18n="featured_title">Featured Products</h2>
     <div class="products-grid" id="featured-products">
@@ -1510,9 +1510,16 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
 
   // Load featured products and categories on homepage
   document.addEventListener('DOMContentLoaded', async () => {
-    // Wait for supabase to init
-    setTimeout(async () => {
-      if (!sb) return;
+    // Wait for supabase to init with retry
+    async function waitForSupabase(retries = 10) {
+      for (let i = 0; i < retries; i++) {
+        if (window.sb) return true;
+        await new Promise(r => setTimeout(r, 300));
+      }
+      return !!window.sb;
+    }
+    const sbReady = await waitForSupabase();
+    if (!sbReady) return;
 
       // Categories
       cachedCategories = await getCategories();
@@ -1562,7 +1569,6 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
 
       // Init all animations (3D ring, navbar scroll, scroll reveal, tilt effects, hero parallax, mobile carousel)
       initAllAnimations();
-    }, 500);
   });
 
   // ===== Favorites (uses shared FavoritesManager from shared-ui.js) =====
