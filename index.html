@@ -1067,8 +1067,13 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
 <!-- CATEGORIES -->
 <section class="section reveal">
   <h2 class="section-title" data-i18n="categories_title">Categories</h2>
-  <div class="categories-grid" id="categories-grid">
-    <!-- Loaded dynamically -->
+  <div class="categories-wrapper">
+    <div class="categories-grid" id="categories-grid">
+      <!-- Loaded dynamically -->
+    </div>
+    <div class="categories-scroll-hint" id="categories-scroll-hint">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </div>
   </div>
 </section>
 
@@ -1403,6 +1408,17 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
         </a>
       `;
     }).join('');
+    // Show/hide scroll hint arrow
+    const hint = document.getElementById('categories-scroll-hint');
+    if (hint) {
+      const checkScroll = () => {
+        const atEnd = catGrid.scrollLeft + catGrid.clientWidth >= catGrid.scrollWidth - 10;
+        hint.style.opacity = atEnd ? '0' : '1';
+      };
+      checkScroll();
+      catGrid.addEventListener('scroll', checkScroll, { passive: true });
+      window.addEventListener('resize', checkScroll);
+    }
   }
 
   function renderFeaturedProducts() {
