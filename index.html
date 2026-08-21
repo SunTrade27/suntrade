@@ -1509,17 +1509,18 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
   });
 
   // Load featured products and categories on homepage
-  document.addEventListener('DOMContentLoaded', async () => {
+  // Load featured products and categories on homepage
+  async function loadHomepage() {
     // Wait for supabase to init with retry
-    async function waitForSupabase(retries = 10) {
+    async function waitForSupabase(retries = 15) {
       for (let i = 0; i < retries; i++) {
         if (window.sb) return true;
-        await new Promise(r => setTimeout(r, 300));
+        await new Promise(r => setTimeout(r, 200));
       }
       return !!window.sb;
     }
     const sbReady = await waitForSupabase();
-    if (!sbReady) return;
+    if (!sbReady) { console.warn('[home] supabase not ready after retries'); return; }
 
       // Categories
       cachedCategories = await getCategories();
@@ -1569,7 +1570,13 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
 
       // Init all animations (3D ring, navbar scroll, scroll reveal, tilt effects, hero parallax, mobile carousel)
       initAllAnimations();
-  });
+  }
+  // Start immediately if DOM already loaded, otherwise wait
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadHomepage);
+  } else {
+    loadHomepage();
+  }
 
   // ===== Favorites (uses shared FavoritesManager from shared-ui.js) =====
   async function toggleFav(productId, btnEl) {

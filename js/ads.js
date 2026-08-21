@@ -25,8 +25,7 @@
     /** Fetch active ads from Supabase with rotation logic */
     async fetchAds(position) {
       try {
-        if (!window.supabase || !window.supabase.createClient) return [];
-        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const sb = window.sb;
 
         // Fetch ONLY paid ads — unpaid ads should NEVER appear on the site
         const { data, error } = await sb.from('ads')
