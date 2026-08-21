@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="/js/theme.js"></script>
   <script src="/js/icons.js"></script>
   <style>
     body { background: #0a0e1a; color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; }
@@ -180,15 +181,35 @@
   </style>
 </head>
 <body>
-  <nav class="navbar" id="main-navbar">
-    <div class="navbar-inner">
-      <a href="/" class="logo">Sun<span>Trade</span></a>
-      <div class="nav-right">
-        <a href="/" class="nav-link" data-i18n="nav_home">Басты бет</a>
-        <a href="/catalog.html" class="nav-link" data-i18n="nav_catalog">Каталог</a>
+<script>document.body.classList.remove('cw-no-scroll');document.body.style.overflow='';</script>
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="logo">Sun<span>Trade</span></a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/" data-i18n="nav_home">Home</a></li>
+      <li><a href="/catalog.html" data-i18n="nav_catalog">Catalog</a></li>
+      <li><a href="/analytics.html" data-i18n="nav_analytics">Analytics</a></li>
+      <li><a href="/cart.html" data-i18n="nav_cart">Cart</a></li>
+      <li><a href="/ads.html" class="active" data-i18n="nav_ads">Жарнама</a></li>
+      <li class="theme-menu-item"><button type="button" class="theme-toggle" aria-pressed="false"><svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="theme-toggle-label">Dark mode</span></button></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-wrapper">
+        <button id="lang-toggle"><svg class="icon icon-md" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg> EN</button>
+        <div id="lang-dropdown"></div>
       </div>
+      <a href="/cart.html" class="cart-link top-nav-cart">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+        <span id="cart-badge">0</span>
+      </a>
+      <button type="button" class="theme-toggle theme-toggle-desktop" aria-pressed="false" aria-label="Switch to dark mode" title="Switch to dark mode"><svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="theme-toggle-label">Dark mode</span></button>
+      <button class="mobile-menu-btn" aria-expanded="false" onclick="var n=document.getElementById('nav-links'); var open=n.classList.toggle('show'); this.setAttribute('aria-expanded', String(open));">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
     </div>
-  </nav>
+  </div>
+</nav>
 
   <div class="ads-container">
     <!-- Hero -->
@@ -197,7 +218,7 @@
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
         Жарнама беріңіз!
       </h1>
-      <p>SunTrade сайтында жарнамаңызды орналастырыңыз — мыңдаған сатып алушыға көрініңіз!</p>
+      <p data-i18n="ads_hero_subtitle">SunTrade сайтында жарнамаңызды орналастырыңыз — мыңдаған сатып алушыға көрініңіз!</p>
     </div>
 
     <!-- Price card -->
@@ -206,7 +227,7 @@
       <div class="price-eur">≈ 18 €</div>
       <div class="price-period">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        1 ай мерзімімен
+        <span data-i18n="ads_price_period">1 ай мерзімімен</span>
       </div>
     </div>
 
@@ -214,7 +235,7 @@
     <div class="ads-queue-info" id="queue-info">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <div>
-        <p><strong>Лимит: 5 жарнама</strong> — бір уақытта 5 жарнама ғана белсенді болады. Егер 5 орын толы болса, жарнамаңыз кезекке қойылады және бос орын шыққанда автоматты түрде ауысады.</p>
+        <p><strong data-i18n="ads_queue_title">Лимит: 5 жарнама</strong> — <span data-i18n="ads_queue_desc">бір уақытта 5 жарнама ғана белсенді болады. Егер 5 орын толы болса, жарнамаңыз кезекке қойылады және бос орын шыққанда автоматты түрде ауысады.</span></p>
         <div class="queue-status" id="queue-status"></div>
       </div>
     </div>
@@ -225,14 +246,14 @@
         <div class="icon-wrap">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
         </div>
-        <h3>Навбар үсті</h3>
+        <h3 data-i18n="ads_pos_top">Навбар үсті</h3>
         <p>Барлық беттерде навбардың төбесінде көрінетін жарнама баннері. Ең көп көрілетін орын.</p>
       </div>
       <div class="ads-position-card">
         <div class="icon-wrap">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.4l-9-5.19"/><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
         </div>
-        <h3>Тауар беті төмені</h3>
+        <h3 data-i18n="ads_pos_bottom">Тауар беті төмені</h3>
         <p>Тауар бетіндегі төлем белгілерінің астындағы бос орында көрінетін жарнама.</p>
       </div>
     </div>
@@ -241,7 +262,7 @@
     <div class="ads-form" style="margin-bottom: 2rem;">
       <h2>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        Жарнама талаптары
+        <span data-i18n="ads_specs">Жарнама талаптары</span>
       </h2>
       <table class="spec-table">
         <tr><th>Параметр</th><th>Мәні</th></tr>
@@ -259,7 +280,7 @@
     <div class="ads-form" id="ads-form-wrapper">
       <h2>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        Жарнама тапсырыс
+        <span data-i18n="ads_form_title">Жарнама тапсырыс</span>
       </h2>
       <form id="ads-form">
         <div class="form-grid">
@@ -313,7 +334,7 @@
         <div class="error-msg" id="form-error"></div>
         <button type="submit" class="btn-submit" id="submit-btn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-          Төлеу және жарнаманы жіберу — 10 000 ₸
+          <span data-i18n="ads_btn_pay">Төлеу және жарнаманы жіберу — 10 000 ₸</span>
         </button>
       </form>
     </div>
@@ -323,14 +344,15 @@
       <div class="check">
         <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       </div>
-      <h2>Төлем сәтті өтті!</h2>
-      <p>Төлем қабылданды. Әкімші растағаннан кейін жарнамаңыз сайтта пайда болады.</p>
-      <p style="margin-top:1rem;"><a href="/" style="color:#FF6B00;text-decoration:none;">← Басты бетке оралу</a></p>
+      <h2 data-i18n="ads_payment_success">Төлем сәтті өтті!</h2>
+      <p data-i18n="ads_payment_success_desc">Төлем қабылданды. Әкімші растағаннан кейін жарнамаңыз сайтта пайда болады.</p>
+      <p style="margin-top:1rem;"><a href="/" style="color:#FF6B00;text-decoration:none;" data-i18n="ads_back_home">← Басты бетке оралу</a></p>
     </div>
   </div>
 
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="/js/i18n.js"></script>
+  <script src="/js/cart.js"></script>
   <script>
     const SUPABASE_URL = 'https://wmznfdngucpsmjbxiwzn.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtem5mZG5ndWNwc21qYnhpd3puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1Nzk1NDAsImV4cCI6MjA5NTE1NTU0MH0.DaYcIF7uaU0FSWbB9Mlq4YVVYm2EleOSz6ACtwyHjsI';
@@ -356,9 +378,9 @@
         const statusEl = document.getElementById('queue-status');
         if (statusEl) {
           if (activeCount >= MAX_ACTIVE_ADS) {
-            statusEl.innerHTML = '<span class="queue-badge full"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Толы (' + activeCount + '/' + MAX_ACTIVE_ADS + ') — кезекке қойылады</span>';
+            statusEl.innerHTML = '<span class="queue-badge full"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> ' + (typeof t==='function'?t('ads_queue_full'):'Full') + ' (' + activeCount + '/' + MAX_ACTIVE_ADS + ') — ' + (typeof t==='function'?t('ads_queue_queued'):'Queued') + '</span>';
           } else {
-            statusEl.innerHTML = '<span class="queue-badge open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Бос орын бар (' + activeCount + '/' + MAX_ACTIVE_ADS + ')</span>';
+            statusEl.innerHTML = '<span class="queue-badge open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ' + (typeof t==='function'?t('ads_queue_available'):'Available') + ' (' + activeCount + '/' + MAX_ACTIVE_ADS + ')</span>';
           }
         }
       } catch (e) {
@@ -427,7 +449,7 @@
 
       const btn = document.getElementById('submit-btn');
       btn.disabled = true;
-      btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Төлем жүргізілуде...';
+      btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ' + (typeof t==='function'?t('ads_pay_processing'):'Processing payment...') + '...';
 
       try {
         // 1) Create ad record (inactive until payment confirmed)
@@ -473,7 +495,7 @@
       } catch (err) {
         show_error('Қате пайда болды: ' + (err.message || err));
         btn.disabled = false;
-        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> Төлеу және жарнаманы жіберу — 10 000 ₸';
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> ' + (typeof t==='function'?t('ads_btn_pay'):'Pay & Submit Ad — 10,000₸');
       }
     });
 
