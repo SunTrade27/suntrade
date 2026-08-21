@@ -203,6 +203,7 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
         <span id="cart-badge">0</span>
       </a>
+      <div id="user-menu-container"></div>
       <button type="button" class="theme-toggle theme-toggle-desktop" aria-pressed="false" aria-label="Switch to dark mode" title="Switch to dark mode"><svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="theme-toggle-label">Dark mode</span></button>
       <button class="mobile-menu-btn" aria-expanded="false" onclick="var n=document.getElementById('nav-links'); var open=n.classList.toggle('show'); this.setAttribute('aria-expanded', String(open));">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -216,7 +217,7 @@
     <div class="ads-hero">
       <h1>
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
-        Жарнама беріңіз!
+        <span data-i18n="ads_title">Жарнама беріңіз!</span>
       </h1>
       <p data-i18n="ads_hero_subtitle">SunTrade сайтында жарнамаңызды орналастырыңыз — мыңдаған сатып алушыға көрініңіз!</p>
     </div>
@@ -353,6 +354,7 @@
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="/js/i18n.js"></script>
   <script src="/js/cart.js"></script>
+  <script src="/js/shared-ui.js"></script>
   <script>
     const SUPABASE_URL = 'https://wmznfdngucpsmjbxiwzn.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtem5mZG5ndWNwc21qYnhpd3puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1Nzk1NDAsImV4cCI6MjA5NTE1NTU0MH0.DaYcIF7uaU0FSWbB9Mlq4YVVYm2EleOSz6ACtwyHjsI';
