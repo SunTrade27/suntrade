@@ -19,7 +19,7 @@ let languageLoadVersion = 0;
 async function loadTranslations(lang) {
   const loadVersion = ++languageLoadVersion;
   try {
-    const response = await fetch(`/locales/${lang}.json`);
+    const response = await fetch(`/locales/${lang}.json`, { cache: 'force-cache' });
     const nextTranslations = await response.json();
     // A slower response from an older selection must not roll the site back
     // after the visitor has already selected another language.

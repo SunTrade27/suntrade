@@ -13,6 +13,10 @@
   <link rel="stylesheet" href="/css/homepage-theme-overrides.css">
   <script src="/js/theme.js"></script>
   <!-- Prevent flash of wrong language -->
+  <script>
+var _sl=localStorage.getItem('suntrade_lang');
+if(_sl&&_sl!=='en'){document.write('<link rel="preload" href="/locales/'+_sl+'.json" as="fetch" crossorigin>')}
+</script>
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <!-- Hreflang for multi-language support -->
   <link rel="alternate" hreflang="en" href="https://www.suntrade.store/" />
