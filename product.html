@@ -1128,7 +1128,7 @@ if(_sl&&_sl!=='en'){document.write('<link rel="preload" href="/locales/'+_sl+'.j
         </div>
         ` : ''}
         <!-- Volume Pricing Tiers -->
-        ${(() => { const _bp = parseFloat(p.price) + (typeof getOptionPriceMod === 'function' ? getOptionPriceMod() : 0); return `
+        ${(() => { const _bp = typeof getEffectiveBasePrice === 'function' ? getEffectiveBasePrice() : parseFloat(p.price); return `
         <div class="volume-pricing" id="volume-pricing">
           <div class="volume-pricing-header">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
@@ -1770,9 +1770,7 @@ if(_sl&&_sl!=='en'){document.write('<link rel="preload" href="/locales/'+_sl+'.j
   }
 
   /**
-   * Calculate the effective unit price by adding option_groups price_mod
-   * values from all currently selected options to the base product price.
-   * This ensures the displayed price matches what the admin set per option.
+   * Get the total price_mod from selected options (used for relative adjustments).
    */
   function getOptionPriceMod() {
     const p = currentProduct;
@@ -1790,6 +1788,24 @@ if(_sl&&_sl!=='en'){document.write('<link rel="preload" href="/locales/'+_sl+'.j
       }
     }
     return totalMod;
+  }
+
+  /**
+   * Get the effective base price for the product.
+   * If option groups have price_mod values, use the selected option's price_mod
+   * as the absolute base price (not added to p.price).
+   * Otherwise, fall back to p.price.
+   */
+  function getEffectiveBasePrice() {
+    const p = currentProduct;
+    if (!p) return 0;
+    const groups = Array.isArray(p.option_groups) ? p.option_groups : [];
+    if (groups.length > 0) {
+      const mod = getOptionPriceMod();
+      // If selected options have a price_mod, use it as the absolute price
+      if (mod > 0) return mod;
+    }
+    return parseFloat(p.price) || 0;
   }
 
   // Get stock from selected options (each option can have its own stock)
@@ -1848,7 +1864,7 @@ if(_sl&&_sl!=='en'){document.write('<link rel="preload" href="/locales/'+_sl+'.j
     const p = currentProduct;
     if (!p) return;
     qty = qty || parseInt(document.getElementById('qty-input')?.value) || 1;
-    const basePrice = parseFloat(p.price) + getOptionPriceMod();
+    const basePrice = getEffectiveBasePrice();
     let effectiveUnitPrice = basePrice;
     let activeTier = '1';
     let discountPercent = 0;
@@ -1963,7 +1979,7 @@ if(_sl&&_sl!=='en'){document.write('<link rel="preload" href="/locales/'+_sl+'.j
       showNotification((typeof t === 'function' ? t('already_in_cart') : 'Already in cart') + ' <svg class="icon icon-sm" style="color:white;vertical-align:middle;"><use href="#icon-check"/></svg>');
       return false;
     }
-    const effectivePrice = parseFloat(currentProduct.price) + getOptionPriceMod();
+    const effectivePrice = getEffectiveBasePrice();
     return addToCart(currentProduct.id, name + (selectedVariant ? ' — ' + selectedVariant : ''), effectivePrice, img, qty, {
       baseName: name,
       variantParts: getSelectedVariantParts(),
@@ -1995,7 +2011,7 @@ if(_sl&&_sl!=='en'){document.write('<link rel="preload" href="/locales/'+_sl+'.j
     // Clear cart, add only this product with effective price, then go to checkout
     cart = [];
     // Store base price so cart.js can apply volume discount correctly
-    const effectivePrice = parseFloat(currentProduct.price) + getOptionPriceMod();
+    const effectivePrice = getEffectiveBasePrice();
     addToCart(currentProduct.id, name + (selectedVariant ? ' — ' + selectedVariant : ''), effectivePrice, img, qty, {
       baseName: name,
       variantParts: getSelectedVariantParts(),
