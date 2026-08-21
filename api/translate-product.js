@@ -471,7 +471,7 @@ async function aiTranslateOne(nameEn, descEn, langCode) {
   // cleaned excerpt; the UI already uses the same first portion for the initial
   // description and future retries can process a later source revision.
   const cleanedDesc = freePreCleanHtml(String(descEn || ''));
-  const boundedDesc = cleanedDesc.slice(0, 5000);
+  const boundedDesc = cleanedDesc.slice(0, 8000);
   const prompt = `You are a professional translator for an e-commerce store. Translate the following product information from English to ${langName}.
 
 Product Name: "${nameEn}"
@@ -486,7 +486,7 @@ Rules:
 6. If the description is empty, return an empty string for "desc"
 7. Translate every character of the provided description excerpt; never return the English source text.`;
   const result = await callGemini(prompt, `You are a professional e-commerce translator. Translate from English to ${langName}. Reply ONLY with valid JSON.`, {
-    maxTokens: 4000, temperature: 0.2
+    maxTokens: 8000, temperature: 0.2
   });
   if (!result.text) return null;
   const jsonStr = (result.text.match(/\{[\s\S]*\}/) || [result.text])[0];
@@ -756,11 +756,10 @@ module.exports = async function handler(req, res) {
           if (ai.name && !containsUntranslatedSourceChunk(ai.name, sourceName)) {
             translatedName = ai.name;
           }
-          // For long descriptions Gemini only saw a bounded excerpt. Do not
-          // store that excerpt as the complete product description; the free
-          // chunked path below must translate and reassemble the full source.
+          // Accept Gemini's translation even for long descriptions — a partial
+          // translation is far better than leaving the English source untranslated.
           if (!sourceDesc.trim() ||
-              (sourceDesc.length <= 5000 && ai.desc && !containsUntranslatedSourceChunk(ai.desc, sourceDesc))) {
+              (ai.desc && !containsUntranslatedSourceChunk(ai.desc, sourceDesc))) {
             translatedDesc = ai.desc || '';
           }
         }
