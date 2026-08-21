@@ -571,7 +571,7 @@
 }
 .option-row {
   display: grid;
-  grid-template-columns: minmax(110px, 1.25fr) minmax(60px, 0.6fr) minmax(110px, 0.9fr) 64px auto;
+  grid-template-columns: minmax(110px, 1.25fr) minmax(55px, 0.5fr) minmax(55px, 0.5fr) minmax(110px, 0.9fr) 64px auto;
   gap: 0.4rem;
   align-items: center;
 }
@@ -694,7 +694,7 @@
   .product-type-row .type-row-number { grid-column: 1 / -1; }
   .product-type-row .product-type-field:first-of-type { grid-column: 1 / -1; }
   .product-type-row .type-image-cell { grid-column: 1 / -1; }
-  .option-row { grid-template-columns: 1fr 1fr auto; }
+  .option-row { grid-template-columns: 1fr 1fr 1fr auto; }
   .option-row .opt-hex-wrap { grid-column: 1 / -1; }
   .option-row .opt-image-wrap { grid-column: 1 / -1; }
 }
@@ -2699,6 +2699,7 @@
     row.innerHTML =
       '<input type="text" class="opt-label" placeholder="' + escapeAttr(typeof t === 'function' ? (t('admin_product_option_label') || 'e.g. Black') : 'e.g. Black') + '" value="' + escapeAttr(prefill.label || '') + '">' +
       '<input type="number" step="0.01" class="opt-pricemod" placeholder="±0.00" value="' + escapeAttr(prefill.price_mod == null || prefill.price_mod === '' ? 0 : prefill.price_mod) + '">' +
+      '<input type="number" min="0" class="opt-stock" placeholder="Stock" value="' + escapeAttr(prefill.stock == null || prefill.stock === '' ? '' : prefill.stock) + '" style="width:100%;padding:5px 8px;font-size:0.78rem;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.10);border-radius:6px;color:rgba(255,255,255,0.9);text-align:center;">' +
       '<div class="opt-hex-wrap" style="display:flex;align-items:center;gap:0.4rem;min-width:0;">' +
         '<input type="color" class="opt-hex" value="' + escapeAttr(prefill.color_hex || '#888888') + '" title="Color swatch (optional)">' +
         '<input type="text" class="opt-hexhex" placeholder="#hex" value="' + escapeAttr(prefill.color_hex || '') + '" style="flex:1;min-width:0;font-size:0.72rem;padding:5px 8px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.10);border-radius:6px;color:rgba(255,255,255,0.85);">' +
@@ -2841,9 +2842,12 @@
         // An option needs a label; the editor always shows a blank placeholder
         // row, whose default price value is 0 and must not be persisted.
         if (!label) return;
+        var rawStock = row.querySelector('.opt-stock')?.value;
+        var stockVal = parseInt(rawStock, 10);
         options.push({
           label: label || '',
           price_mod: isFinite(priceMod) ? priceMod : 0,
+          stock: isFinite(stockVal) && stockVal >= 0 ? stockVal : null,
           color_hex: colorHex || null,
           image: row.dataset.image || null
         });

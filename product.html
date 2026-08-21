@@ -925,6 +925,7 @@
     });
     resetSelectedProductImage();
     updatePriceDisplay();
+    updateStockDisplay();
   }
 
   // Listen for language changes. The render version prevents a slower
@@ -1032,7 +1033,7 @@
     const initialImage = getSelectedProductImage();
     const initialImageIndex = getSelectedProductImageIndex();
     const safeImages = images.map(image => safeImageUrl(image) || '/images/placeholder.jpg');
-    const inStock = p.stock > 0;
+    const inStock = getEffectiveStock() > 0;
 
     // Update page title and meta
     document.title = name + ' - SunTrade';
@@ -1786,6 +1787,41 @@
     return totalMod;
   }
 
+  // Get stock from selected options (each option can have its own stock)
+  function getEffectiveStock() {
+    const p = currentProduct;
+    if (!p) return 0;
+    let minStock = null;
+    const groups = Array.isArray(p.option_groups) ? p.option_groups : [];
+    for (const group of groups) {
+      const selected = selectedOptionValues[group.name];
+      if (!selected) continue;
+      const options = Array.isArray(group.options) ? group.options : [];
+      const matched = options.find(o => o.label === selected);
+      if (matched && matched.stock != null && matched.stock !== '' && parseInt(matched.stock, 10) >= 0) {
+        const s = parseInt(matched.stock, 10);
+        minStock = minStock === null ? s : Math.min(minStock, s);
+      }
+    }
+    // If no option has stock set, fall back to product-level stock
+    return minStock !== null ? minStock : (p.stock || 0);
+  }
+
+  // Update stock display and quantity max based on selected options
+  function updateStockDisplay() {
+    const stock = getEffectiveStock();
+    const stockEl = document.querySelector('.product-stock');
+    if (stockEl) {
+      stockEl.className = 'product-stock ' + (stock > 0 ? 'in-stock' : 'out-of-stock');
+      stockEl.textContent = stock > 0 ? t('product_in_stock') : t('product_out_of_stock');
+    }
+    const qtyInput = document.getElementById('qty-input');
+    if (qtyInput) {
+      qtyInput.max = stock;
+      if (parseInt(qtyInput.value) > stock) qtyInput.value = Math.max(1, stock);
+    }
+  }
+
   function selectType(index) {
     selectedTypeIndex = index;
     document.querySelectorAll('.product-types .type-value').forEach(el => el.classList.remove('active'));
@@ -1798,7 +1834,7 @@
   function changeQty(delta) {
     const input = document.getElementById('qty-input');
     if (!input) return;
-    const newVal = Math.max(1, Math.min(parseInt(input.value) + delta, currentProduct.stock));
+    const newVal = Math.max(1, Math.min(parseInt(input.value) + delta, getEffectiveStock()));
     input.value = newVal;
     updatePriceDisplay(newVal);
   }
