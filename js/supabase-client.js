@@ -7,6 +7,7 @@ let sb = null;
 function initSupabase() {
   if (window.supabase && window.supabase.createClient) {
     sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    window.sb = sb;
   }
   return sb;
 }

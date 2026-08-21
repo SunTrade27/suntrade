@@ -48,9 +48,56 @@ function cleanCart() {
 }
 cleanCart();
 
+// Sync cart from server on page load (for logged-in users)
+if (typeof sb !== 'undefined' && sb) {
+  syncCartFromServer();
+} else {
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => syncCartFromServer(), 500);
+  });
+}
+
 function saveCart() {
   localStorage.setItem('suntrade_cart', JSON.stringify(cart));
   updateCartBadge();
+  // Sync to Supabase if user is logged in
+  syncCartToServer();
+}
+
+// Sync cart to Supabase (for logged-in users)
+async function syncCartToServer() {
+  try {
+    if (typeof sb === 'undefined' || !sb) return;
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) return;
+    await sb.from('profiles').update({ cart_data: cart }).eq('id', user.id);
+  } catch (e) {
+    // Silent fail — localStorage is the source of truth
+  }
+}
+
+// Load cart from Supabase (when user logs in)
+async function syncCartFromServer() {
+  try {
+    if (typeof sb === 'undefined' || !sb) return;
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) return;
+    const { data } = await sb.from('profiles').select('cart_data').eq('id', user.id).single();
+    if (data && Array.isArray(data.cart_data) && data.cart_data.length > 0) {
+      // Merge: keep local items + add server items that don't exist locally
+      const localIds = new Set(cart.map(i => i.id));
+      const serverOnly = data.cart_data.filter(i => !localIds.has(i.id));
+      if (serverOnly.length > 0) {
+        cart = [...cart, ...serverOnly];
+        saveCart();
+      }
+    } else if (cart.length > 0) {
+      // Local cart has items but server is empty — push to server
+      syncCartToServer();
+    }
+  } catch (e) {
+    // Silent fail
+  }
 }
 
 function escapeCartHtml(value) {
