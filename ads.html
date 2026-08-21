@@ -350,15 +350,12 @@
     </div>
   </div>
 
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="/js/supabase-client.js"></script>
   <script src="/js/i18n.js"></script>
   <script src="/js/cart.js"></script>
   <script src="/js/shared-ui.js"></script>
   <script src="/js/user-menu.js"></script>
   <script>
-    const SUPABASE_URL = 'https://wmznfdngucpsmjbxiwzn.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtem5mZG5ndWNwc21qYnhpd3puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1Nzk1NDAsImV4cCI6MjA5NTE1NTU0MH0.DaYcIF7uaU0FSWbB9Mlq4YVVYm2EleOSz6ACtwyHjsI';
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const MAX_ACTIVE_ADS = 5;
 
@@ -368,8 +365,10 @@
       document.documentElement.lang = lang;
     }
     updateHtmlLang();
+    let uploadedCount = 0;
     window.addEventListener('langChanged', () => {
       updateHtmlLang();
+      updateQueueUI();
     });
     let uploadedFile = null;
     let uploadedDataUrl = '';
@@ -387,19 +386,26 @@
           const endMs = ad.end_date ? new Date(ad.end_date).getTime() : Infinity;
           return startMs <= now && endMs >= now;
         }).length;
-        const statusEl = document.getElementById('queue-status');
-        if (statusEl) {
-          if (activeCount >= MAX_ACTIVE_ADS) {
-            statusEl.innerHTML = '<span class="queue-badge full"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> ' + (typeof t==='function'?t('ads_queue_full'):'Full') + ' (' + activeCount + '/' + MAX_ACTIVE_ADS + ') — ' + (typeof t==='function'?t('ads_queue_queued'):'Queued') + '</span>';
-          } else {
-            statusEl.innerHTML = '<span class="queue-badge open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ' + (typeof t==='function'?t('ads_queue_available'):'Available') + ' (' + activeCount + '/' + MAX_ACTIVE_ADS + ')</span>';
-          }
-        }
+        uploadedCount = activeCount;
+        updateQueueUI();
       } catch (e) {
         console.warn('[ads] queue check failed:', e);
       }
     }
     checkQueueStatus();
+
+    function updateQueueUI() {
+      const statusEl = document.getElementById('queue-status');
+      if (!statusEl) return;
+      const full = uploadedCount >= MAX_ACTIVE_ADS;
+      const label = full ? (typeof t==='function'?t('ads_queue_full'):'Full') : (typeof t==='function'?t('ads_queue_available'):'Available');
+      const sub = full ? (typeof t==='function'?t('ads_queue_queued'):'Queued') : '';
+      if (full) {
+        statusEl.innerHTML = '<span class="queue-badge full"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> ' + label + ' (' + uploadedCount + '/' + MAX_ACTIVE_ADS + ') — ' + sub + '</span>';
+      } else {
+        statusEl.innerHTML = '<span class="queue-badge open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ' + label + ' (' + uploadedCount + '/' + MAX_ACTIVE_ADS + ')</span>';
+      }
+    }
 
     // ── Image upload ──
     const uploadZone = document.getElementById('image-upload-zone');
