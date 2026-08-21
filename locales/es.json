@@ -499,5 +499,7 @@
   "ads_err_upload_product": "Suba una imagen de página de producto (460×200 px)",
   "trust_support": "Soporte 24/7",
   "trust_support_sub": "Siempre aquí para ayudar",
-  "leads_subtitle": "Estadísticas de los últimos 30 días"
+  "leads_subtitle": "Estadísticas de los últimos 30 días",
+  "product_most_popular": "Más popular",
+  "product_best_value": "Mejor valor"
 }

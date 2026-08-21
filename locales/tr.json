@@ -499,5 +499,7 @@
   "ads_err_upload_product": "Ürün sayfası görseli yükleyin (460×200 px)",
   "trust_support": "7/24 Destek",
   "trust_support_sub": "Size yardımcı olmak için her zaman buradayız",
-  "leads_subtitle": "Son 30 günlük istatistikler"
+  "leads_subtitle": "Son 30 günlük istatistikler",
+  "product_most_popular": "En popüler",
+  "product_best_value": "En iyi değer"
 }

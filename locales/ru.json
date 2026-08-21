@@ -561,5 +561,7 @@
   "ads_err_upload_product": "Загрузите изображение для страницы товара (460×200 px)",
   "trust_support": "Поддержка 24/7",
   "trust_support_sub": "Всегда готовы помочь",
-  "leads_subtitle": "Статистика за последние 30 дней"
+  "leads_subtitle": "Статистика за последние 30 дней",
+  "product_most_popular": "Самый популярный",
+  "product_best_value": "Лучшая цена"
 }

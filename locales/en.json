@@ -559,5 +559,7 @@
   "ads_err_upload_product": "Please upload a product page image (460×200 px)",
   "trust_support": "24/7 Support",
   "trust_support_sub": "Always here to help",
-  "leads_subtitle": "Stats from the last 30 days"
+  "leads_subtitle": "Stats from the last 30 days",
+  "product_most_popular": "Most Popular",
+  "product_best_value": "Best Value"
 }

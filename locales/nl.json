@@ -499,5 +499,7 @@
   "ads_err_upload_product": "Upload een productpagina afbeelding (460×200 px)",
   "trust_support": "24/7 Ondersteuning",
   "trust_support_sub": "Altijd hier om te helpen",
-  "leads_subtitle": "Statistieken van de afgelopen 30 dagen"
+  "leads_subtitle": "Statistieken van de afgelopen 30 dagen",
+  "product_most_popular": "Meest populair",
+  "product_best_value": "Beste waarde"
 }

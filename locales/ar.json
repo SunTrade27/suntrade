@@ -499,5 +499,7 @@
   "ads_err_upload_product": "ارفع صورة صفحة المنتج (460×200 بكسل)",
   "trust_support": "دعم على مدار الساعة",
   "trust_support_sub": "دوما هنا للمساعدة",
-  "leads_subtitle": "إحصائيات آخر 30 يومًا"
+  "leads_subtitle": "إحصائيات آخر 30 يومًا",
+  "product_most_popular": "الأكثر شعبية",
+  "product_best_value": "أفضل قيمة"
 }

@@ -561,5 +561,7 @@
   "ads_err_upload_product": "Тауар беті суретін жүктеңіз (460×200 px)",
   "trust_support": "24/7 Қолдау",
   "trust_support_sub": "Әрқашан көмектесеміз",
-  "leads_subtitle": "Соңғы 30 күндегі статистика"
+  "leads_subtitle": "Соңғы 30 күндегі статистика",
+  "product_most_popular": "Ең танымал",
+  "product_best_value": "Үздік ұсыныс"
 }

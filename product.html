@@ -144,28 +144,21 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
 
   /* ===== Volume Pricing Table ===== */
   .volume-pricing {
-    margin: 0.3rem 0;
-    border: 1px solid var(--border, #e5e7eb);
-    border-radius: var(--radius-md, 12px);
-    overflow: hidden;
-    background: var(--bg-card, #ffffff);
-    transition: box-shadow 0.2s;
-  }
-  .volume-pricing:hover {
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin: 0.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
   .volume-pricing-header {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 10px 16px;
     font-size: 0.8rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     color: var(--text-muted, #6b7280);
-    background: var(--bg-subtle, #f9fafb);
-    border-bottom: 1px solid var(--border, #e5e7eb);
+    padding: 0 4px;
   }
   .volume-pricing-header svg {
     width: 16px;
@@ -176,26 +169,27 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--border-light, #f3f4f6);
-    transition: background 0.15s;
-    cursor: default;
-  }
-  .volume-tier:last-child {
-    border-bottom: none;
+    padding: 14px 16px;
+    border: 2px solid var(--border, #e5e7eb);
+    border-radius: 12px;
+    transition: all 0.2s;
+    cursor: pointer;
+    position: relative;
+    background: var(--bg-card, #ffffff);
   }
   .volume-tier:hover {
-    background: var(--bg-hover, #f9fafb);
+    border-color: var(--primary, #FF6B00);
+    box-shadow: 0 2px 12px rgba(255, 107, 0, 0.1);
   }
   .volume-tier.active {
-    background: rgba(255, 107, 0, 0.06);
-    border-left: 3px solid var(--primary, #FF6B00);
-    margin-left: -1px;
+    border-color: #111;
+    background: var(--bg-card, #ffffff);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   }
   .volume-tier-qty {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--text-secondary, #4b5563);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary, #111827);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -209,16 +203,49 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     border-radius: 50px;
     border: 1px solid rgba(16, 185, 129, 0.2);
   }
+  .volume-tier-badge {
+    position: absolute;
+    top: -10px;
+    right: 12px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    color: #fff;
+    z-index: 1;
+  }
+  .volume-tier-badge.popular {
+    background: #111;
+  }
+  .volume-tier-badge.best-value {
+    background: var(--primary, #FF6B00);
+  }
+  .volume-tier-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+  }
   .volume-tier-price {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: var(--text-primary, #111827);
   }
   .volume-tier.active .volume-tier-price {
     color: var(--primary, #FF6B00);
   }
-  .volume-tier-base .volume-tier-price {
-    font-size: 1.1rem;
+  .volume-tier-original-price {
+    font-size: 0.8rem;
+    color: var(--text-muted, #9ca3af);
+    text-decoration: line-through;
+  }
+  @media (max-width: 480px) {
+    .volume-tier { padding: 12px 14px; }
+    .volume-tier-qty { font-size: 0.85rem; }
+    .volume-tier-price { font-size: 1rem; }
+    .volume-tier-badge { font-size: 0.55rem; top: -8px; right: 8px; }
   }
 
   /* ===== Suntrade.store store badge ===== */
@@ -1140,15 +1167,26 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
           </div>
           <div class="volume-tier volume-tier-base active" data-tier="1">
             <span class="volume-tier-qty">1 <span data-i18n="product_piece">piece</span> <span class="discount-badge">-10%</span></span>
-            <span class="volume-tier-price">&euro;${(_bp * 0.9).toFixed(2)}</span>
+            <div class="volume-tier-right">
+              <span class="volume-tier-price">&euro;${(_bp * 0.9).toFixed(2)}</span>
+              <span class="volume-tier-original-price">&euro;${_bp.toFixed(2)}</span>
+            </div>
           </div>
           <div class="volume-tier" data-tier="2">
+            <span class="volume-tier-badge popular" data-i18n="product_most_popular">Most Popular</span>
             <span class="volume-tier-qty">2-4 <span data-i18n="product_pieces">pieces</span> <span class="discount-badge">-20%</span></span>
-            <span class="volume-tier-price">&euro;${(_bp * 0.8).toFixed(2)}</span>
+            <div class="volume-tier-right">
+              <span class="volume-tier-price">&euro;${(_bp * 0.8).toFixed(2)}</span>
+              <span class="volume-tier-original-price">&euro;${_bp.toFixed(2)}</span>
+            </div>
           </div>
           <div class="volume-tier" data-tier="3">
-            <span class="volume-tier-qty">5+ <span data-i18n="product_pieces">pieces</span> <span class="discount-badge">-30%</span> <span class="discount-badge" data-i18n="product_best_deal">Best Deal</span></span>
-            <span class="volume-tier-price">&euro;${(_bp * 0.7).toFixed(2)}</span>
+            <span class="volume-tier-badge best-value" data-i18n="product_best_value">Best Value</span>
+            <span class="volume-tier-qty">5+ <span data-i18n="product_pieces">pieces</span> <span class="discount-badge">-30%</span></span>
+            <div class="volume-tier-right">
+              <span class="volume-tier-price">&euro;${(_bp * 0.7).toFixed(2)}</span>
+              <span class="volume-tier-original-price">&euro;${_bp.toFixed(2)}</span>
+            </div>
           </div>
         </div>
         `; })()}
