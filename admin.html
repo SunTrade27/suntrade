@@ -3940,9 +3940,10 @@
     // base price/stock, while keeping the saved type fields empty/null.
     const first = variants[0] || getProductBaseValues();
     document.getElementById('pprice').value = first.price;
-    // Use visible stock field if variant stock is empty
+    // Always use visible stock field (admin's direct input) as source of truth
     const visibleStock = document.getElementById('pstock-visible');
-    document.getElementById('pstock').value = (first.stock !== '' && first.stock != null) ? first.stock : (visibleStock ? visibleStock.value || '100' : '100');
+    const visibleStockVal = visibleStock ? parseInt(visibleStock.value, 10) : NaN;
+    document.getElementById('pstock').value = (Number.isFinite(visibleStockVal) && visibleStockVal >= 0) ? visibleStockVal : (first.stock || 100);
     document.getElementById('ptype').value = first.label;
 
     // ===== Option groups (Alibaba-style) =====.
