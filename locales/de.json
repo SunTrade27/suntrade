@@ -460,8 +460,8 @@
   "ads_spec_param": "Parameter",
   "ads_spec_value": "Wert",
   "ads_spec_format": "Bildformat",
-  "ads_spec_navbar_size": "Größe über Navigationsleiste",
-  "ads_spec_product_size": "Größe auf Produktseite",
+  "ads_spec_navbar_size": "Navbar-Banner-Größe",
+  "ads_spec_product_size": "Produktseite-Größe",
   "ads_spec_price": "Preis",
   "ads_spec_duration": "Dauer",
   "ads_spec_duration_val": "1 Monat (30 Tage)",
@@ -492,5 +492,9 @@
   "ads_ph_title": "z.B. Sommer-Sonnenbrille",
   "ads_ph_name": "Firmen- oder Privatname",
   "ads_date_format": "Format: tt.mm.jjjj",
-  "ads_ph_phone": "+49 151 12345678"
+  "ads_ph_phone": "+49 151 12345678",
+  "ads_label_image_navbar": "Navbar-Bild * (1200×100 px)",
+  "ads_label_image_product": "Produktseiten-Bild * (460×200 px)",
+  "ads_err_upload_navbar": "Bitte laden Sie ein Navbar-Bild hoch (1200×100 px)",
+  "ads_err_upload_product": "Bitte laden Sie ein Produktseiten-Bild hoch (460×200 px)"
 }

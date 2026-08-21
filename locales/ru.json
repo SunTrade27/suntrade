@@ -522,8 +522,8 @@
   "ads_spec_param": "Параметр",
   "ads_spec_value": "Значение",
   "ads_spec_format": "Формат изображения",
-  "ads_spec_navbar_size": "Размер над навбаром",
-  "ads_spec_product_size": "Размер на странице товара",
+  "ads_spec_navbar_size": "Размер баннера (навбар)",
+  "ads_spec_product_size": "Размер страницы товара",
   "ads_spec_price": "Цена",
   "ads_spec_duration": "Срок",
   "ads_spec_duration_val": "1 месяц (30 дней)",
@@ -554,5 +554,9 @@
   "ads_ph_title": "Напр. Летние очки",
   "ads_ph_name": "Компания или имя",
   "ads_date_format": "Формат: дд.мм.гггг",
-  "ads_ph_phone": "+7 (9XX) XXX-XX-XX"
+  "ads_ph_phone": "+7 (9XX) XXX-XX-XX",
+  "ads_label_image_navbar": "Изображение для навбара * (1200×100 px)",
+  "ads_label_image_product": "Изображение для страницы товара * (460×200 px)",
+  "ads_err_upload_navbar": "Загрузите изображение для навбара (1200×100 px)",
+  "ads_err_upload_product": "Загрузите изображение для страницы товара (460×200 px)"
 }

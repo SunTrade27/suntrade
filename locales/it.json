@@ -460,7 +460,7 @@
   "ads_spec_param": "Parametro",
   "ads_spec_value": "Valore",
   "ads_spec_format": "Formato immagine",
-  "ads_spec_navbar_size": "Dimensione sopra barra",
+  "ads_spec_navbar_size": "Dimensione banner navbar",
   "ads_spec_product_size": "Dimensione pagina prodotto",
   "ads_spec_price": "Prezzo",
   "ads_spec_duration": "Durata",
@@ -492,5 +492,9 @@
   "ads_ph_title": "es. Occhiali da sole",
   "ads_ph_name": "Nome aziendale o personale",
   "ads_date_format": "Formato: gg/mm/aaaa",
-  "ads_ph_phone": "+39 320 123 4567"
+  "ads_ph_phone": "+39 320 123 4567",
+  "ads_label_image_navbar": "Immagine navbar * (1200×100 px)",
+  "ads_label_image_product": "Immagine pagina prodotto * (460×200 px)",
+  "ads_err_upload_navbar": "Carica un'immagine navbar (1200×100 px)",
+  "ads_err_upload_product": "Carica un'immagine pagina prodotto (460×200 px)"
 }

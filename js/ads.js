@@ -95,7 +95,7 @@
     },
 
     /** Build an ad banner HTML element */
-    createBanner(ad, cssClass) {
+    createBanner(ad, cssClass, imageUrl) {
       const a = document.createElement('a');
       a.href = ad.link_url || '#';
       a.target = '_blank';
@@ -105,7 +105,7 @@
       a.setAttribute('aria-label', 'Advertisement: ' + ad.title);
 
       const img = document.createElement('img');
-      img.src = ad.image_url;
+      img.src = imageUrl || ad.image_url;
       img.alt = ad.title;
       img.loading = 'lazy';
       img.style.cssText = 'width:100%;height:auto;display:block;object-fit:cover;';
@@ -148,57 +148,42 @@
       }
     },
 
-    /** Insert ad in the product page empty zone (after trust badges, before ticker) */
+    /** Insert ad inside product-gallery, under the thumbnail strip (left column) */
     insertProductBottomAd(ad) {
-      // Don't duplicate
       if (document.getElementById('ads-product-bottom')) return;
 
-      const banner = this.createBanner(ad, 'ads-product-bottom');
+      const banner = this.createBanner(ad, 'ads-product-bottom', ad.product_image_url || ad.image_url);
       banner.id = 'ads-product-bottom';
       banner.style.cssText =
-        'display:block;width:100%;border-radius:16px;overflow:hidden;' +
-        'margin:1.5rem 0;background:#111827;line-height:0;';
+        'display:block;width:100%;border-radius:12px;overflow:hidden;' +
+        'margin-top:1rem;background:var(--bg-white,#fff);border:1px solid var(--border,#E5E7EB);line-height:0;';
 
-      // Product page loads content dynamically (500ms delay).
-      // Retry insertion until the target element appears.
       this._insertProductAd(banner, 0);
     },
 
     _insertProductAd(banner, attempt) {
       if (document.getElementById('ads-product-bottom')) return;
 
-      const targets = [
-        document.querySelector('.trust-badges'),
-        document.querySelector('.payment-badges'),
-        document.querySelector('.product-actions'),
-        document.getElementById('product-price-block')
-      ];
-
-      for (const el of targets) {
-        if (el && el.parentNode) {
-          if (el.nextSibling) {
-            el.parentNode.insertBefore(banner, el.nextSibling);
-          } else {
-            el.parentNode.appendChild(banner);
-          }
-          return;
-        }
+      // Primary target: inside .product-gallery after .gallery-thumbs (left column under images)
+      const gallery = document.querySelector('.product-gallery');
+      const thumbs = document.querySelector('.gallery-thumbs');
+      if (gallery && thumbs && thumbs.nextSibling) {
+        gallery.insertBefore(banner, thumbs.nextSibling);
+        return;
+      }
+      if (gallery) {
+        gallery.appendChild(banner);
+        return;
       }
 
-      // Fallback targets
-      const fallbacks = [
-        document.querySelector('.volume-pricing'),
-        document.querySelector('.ticker-banner'),
-        document.querySelector('.product-desc-content')
-      ];
-      for (const el of fallbacks) {
-        if (el && el.parentNode) {
-          el.parentNode.insertBefore(banner, el);
-          return;
-        }
+      // Fallback: insert after .gallery-main inside product-gallery
+      const galleryMain = document.querySelector('.gallery-main');
+      if (galleryMain && galleryMain.parentNode === gallery) {
+        galleryMain.parentNode.insertBefore(banner, galleryMain.nextSibling);
+        return;
       }
 
-      // Retry up to 20 times (2 seconds total) for dynamically loaded content
+      // Last resort: retry up to 20 times (2 seconds total)
       if (attempt < 20) {
         setTimeout(() => this._insertProductAd(banner, attempt + 1), 100);
       }

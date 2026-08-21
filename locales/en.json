@@ -520,7 +520,7 @@
   "ads_spec_param": "Parameter",
   "ads_spec_value": "Value",
   "ads_spec_format": "Image format",
-  "ads_spec_navbar_size": "Above navbar size",
+  "ads_spec_navbar_size": "Navbar banner size",
   "ads_spec_product_size": "Product page size",
   "ads_spec_price": "Price",
   "ads_spec_duration": "Duration",
@@ -552,5 +552,9 @@
   "ads_ph_title": "e.g. Summer Sunglasses",
   "ads_ph_name": "Company or personal name",
   "ads_date_format": "Format: mm/dd/yyyy",
-  "ads_ph_phone": "+1 (555) 123-4567"
+  "ads_ph_phone": "+1 (555) 123-4567",
+  "ads_label_image_navbar": "Navbar image * (1200×100 px)",
+  "ads_label_image_product": "Product page image * (460×200 px)",
+  "ads_err_upload_navbar": "Please upload a navbar image (1200×100 px)",
+  "ads_err_upload_product": "Please upload a product page image (460×200 px)"
 }

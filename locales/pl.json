@@ -460,7 +460,7 @@
   "ads_spec_param": "Parametr",
   "ads_spec_value": "Wartosc",
   "ads_spec_format": "Format obrazu",
-  "ads_spec_navbar_size": "Rozmiar nad paskiem",
+  "ads_spec_navbar_size": "Rozmiar banera navbar",
   "ads_spec_product_size": "Rozmiar strony produktu",
   "ads_spec_price": "Cena",
   "ads_spec_duration": "Czas trwania",
@@ -492,5 +492,9 @@
   "ads_ph_title": "np. Okulary przeciwsłoneczne",
   "ads_ph_name": "Nazwa firmy lub osobista",
   "ads_date_format": "Format: dd.mm.rrrr",
-  "ads_ph_phone": "+48 512 345 678"
+  "ads_ph_phone": "+48 512 345 678",
+  "ads_label_image_navbar": "Obrazek navbar * (1200×100 px)",
+  "ads_label_image_product": "Obrazek strony produktu * (460×200 px)",
+  "ads_err_upload_navbar": "Prześlij obrazek navbar (1200×100 px)",
+  "ads_err_upload_product": "Prześlij obrazek strony produktu (460×200 px)"
 }

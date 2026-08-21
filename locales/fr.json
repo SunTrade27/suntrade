@@ -460,7 +460,7 @@
   "ads_spec_param": "Paramètre",
   "ads_spec_value": "Valeur",
   "ads_spec_format": "Format d'image",
-  "ads_spec_navbar_size": "Taille au-dessus de la barre",
+  "ads_spec_navbar_size": "Taille bannière navbar",
   "ads_spec_product_size": "Taille page produit",
   "ads_spec_price": "Prix",
   "ads_spec_duration": "Durée",
@@ -492,5 +492,9 @@
   "ads_ph_title": "ex. Lunettes de soleil",
   "ads_ph_name": "Nom de l'entreprise ou personnel",
   "ads_date_format": "Format: jj/mm/aaaa",
-  "ads_ph_phone": "+33 6 12 34 56 78"
+  "ads_ph_phone": "+33 6 12 34 56 78",
+  "ads_label_image_navbar": "Image navbar * (1200×100 px)",
+  "ads_label_image_product": "Image page produit * (460×200 px)",
+  "ads_err_upload_navbar": "Veuillez télécharger une image navbar (1200×100 px)",
+  "ads_err_upload_product": "Veuillez télécharger une image page produit (460×200 px)"
 }

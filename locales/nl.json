@@ -460,8 +460,8 @@
   "ads_spec_param": "Parameter",
   "ads_spec_value": "Waarde",
   "ads_spec_format": "Afbeeldingsformaat",
-  "ads_spec_navbar_size": "Grootte boven navigatiebalk",
-  "ads_spec_product_size": "Grootte productpagina",
+  "ads_spec_navbar_size": "Navbar banner grootte",
+  "ads_spec_product_size": "Productpagina grootte",
   "ads_spec_price": "Prijs",
   "ads_spec_duration": "Duur",
   "ads_spec_duration_val": "1 maand (30 dagen)",
@@ -492,5 +492,9 @@
   "ads_ph_title": "bv. Zonnebril",
   "ads_ph_name": "Bedrijfs- of persoonlijke naam",
   "ads_date_format": "Formaat: dd-mm-jjjj",
-  "ads_ph_phone": "+31 6 12345678"
+  "ads_ph_phone": "+31 6 12345678",
+  "ads_label_image_navbar": "Navbar afbeelding * (1200×100 px)",
+  "ads_label_image_product": "Productpagina afbeelding * (460×200 px)",
+  "ads_err_upload_navbar": "Upload een navbar afbeelding (1200×100 px)",
+  "ads_err_upload_product": "Upload een productpagina afbeelding (460×200 px)"
 }

@@ -460,7 +460,7 @@
   "ads_spec_param": "المعامل",
   "ads_spec_value": "القيمة",
   "ads_spec_format": "تنسيق الصورة",
-  "ads_spec_navbar_size": "الحجم فوق الشريط",
+  "ads_spec_navbar_size": "حجم بانر شريط التنقل",
   "ads_spec_product_size": "حجم صفحة المنتج",
   "ads_spec_price": "السعر",
   "ads_spec_duration": "المدة",
@@ -492,5 +492,9 @@
   "ads_ph_title": "مثال: نظارات شمسية",
   "ads_ph_name": "اسم الشركة أو الشخصي",
   "ads_date_format": "Format: dd/mm/yyyy",
-  "ads_ph_phone": "+966 5X XXX XXXX"
+  "ads_ph_phone": "+966 5X XXX XXXX",
+  "ads_label_image_navbar": "صورة شريط التنقل * (1200×100 بكسل)",
+  "ads_label_image_product": "صورة صفحة المنتج * (460×200 بكسل)",
+  "ads_err_upload_navbar": "ارفع صورة شريط التنقل (1200×100 بكسل)",
+  "ads_err_upload_product": "ارفع صورة صفحة المنتج (460×200 بكسل)"
 }

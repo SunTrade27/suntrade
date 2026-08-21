@@ -460,7 +460,7 @@
   "ads_spec_param": "Parâmetro",
   "ads_spec_value": "Valor",
   "ads_spec_format": "Formato da imagem",
-  "ads_spec_navbar_size": "Tamanho acima da barra",
+  "ads_spec_navbar_size": "Tamanho banner navbar",
   "ads_spec_product_size": "Tamanho página do produto",
   "ads_spec_price": "Preço",
   "ads_spec_duration": "Duração",
@@ -492,5 +492,9 @@
   "ads_ph_title": "ex. Óculos de sol",
   "ads_ph_name": "Nome da empresa ou pessoal",
   "ads_date_format": "Formato: dd/mm/aaaa",
-  "ads_ph_phone": "+351 912 345 678"
+  "ads_ph_phone": "+351 912 345 678",
+  "ads_label_image_navbar": "Imagem navbar * (1200×100 px)",
+  "ads_label_image_product": "Imagem página do produto * (460×200 px)",
+  "ads_err_upload_navbar": "Carregue uma imagem navbar (1200×100 px)",
+  "ads_err_upload_product": "Carregue uma imagem de página do produto (460×200 px)"
 }

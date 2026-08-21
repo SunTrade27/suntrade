@@ -460,7 +460,7 @@
   "ads_spec_param": "Parametre",
   "ads_spec_value": "Değer",
   "ads_spec_format": "Görüntü formatı",
-  "ads_spec_navbar_size": "Menü üstü boyut",
+  "ads_spec_navbar_size": "Navbar banner boyutu",
   "ads_spec_product_size": "Ürün sayfası boyutu",
   "ads_spec_price": "Fiyat",
   "ads_spec_duration": "Süre",
@@ -492,5 +492,9 @@
   "ads_ph_title": "ör. Yaz Güneş Gözlüğü",
   "ads_ph_name": "Şirket veya kişisel ad",
   "ads_date_format": "Format: gg.aa.aaaa",
-  "ads_ph_phone": "+90 532 123 45 67"
+  "ads_ph_phone": "+90 532 123 45 67",
+  "ads_label_image_navbar": "Navbar görseli * (1200×100 px)",
+  "ads_label_image_product": "Ürün sayfası görseli * (460×200 px)",
+  "ads_err_upload_navbar": "Navbar görseli yükleyin (1200×100 px)",
+  "ads_err_upload_product": "Ürün sayfası görseli yükleyin (460×200 px)"
 }

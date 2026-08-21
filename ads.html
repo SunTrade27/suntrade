@@ -267,8 +267,8 @@
       <table class="spec-table">
         <tr><th data-i18n="ads_spec_param">Параметр</th><th data-i18n="ads_spec_value">Мәні</th></tr>
         <tr><td data-i18n="ads_spec_format">Сурет форматы</td><td>JPG, PNG, WebP (max 2 MB)</td></tr>
-        <tr><td data-i18n="ads_spec_navbar_size">Навбар үсті өлшемі</td><td>1200×120 px</td></tr>
-        <tr><td data-i18n="ads_spec_product_size">Тауар беті өлшемі</td><td>1200×200 px</td></tr>
+        <tr><td data-i18n="ads_spec_navbar_size">Навбар үсті өлшемі</td><td>1200×100 px</td></tr>
+        <tr><td data-i18n="ads_spec_product_size">Тауар беті өлшемі</td><td>460×200 px</td></tr>
         <tr><td data-i18n="ads_spec_price">Баға</td><td><strong style="color:var(--primary,#FF6B00);">18 €</strong></td></tr>
         <tr><td data-i18n="ads_spec_duration">Мерзімі</td><td data-i18n="ads_spec_duration_val">1 ай (30 күн)</td></tr>
         <tr><td data-i18n="ads_spec_limit">Лимит</td><td data-i18n="ads_spec_limit_val">Бір уақытта 5 жарнама (кезектік жүйе)</td></tr>
@@ -312,15 +312,25 @@
             <label data-i18n="ads_label_url">Сілтеме URL (міндетті емес)</label>
             <input type="url" id="ad-link" placeholder="https://example.com">
           </div>
-          <div class="form-group full">
-            <label data-i18n="ads_label_image">Жарнама суреті *</label>
-            <div class="image-upload-zone" id="image-upload-zone">
+          <div class="form-group full" id="upload-navbar-group">
+            <label data-i18n="ads_label_image_navbar">Навбар үшін сурет * <small style="color:#64748b;">(1200×100 px)</small></label>
+            <div class="image-upload-zone" id="image-upload-zone-navbar">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               <p data-i18n-html="ads_upload_hint"><strong>Суретті бұл жерге сүйреңіз</strong> немесе басыңыз</p>
-              <p style="font-size:0.75rem;color:#64748b;margin-top:0.25rem;" data-i18n="ads_upload_format">JPG, PNG, WebP — max 2 MB</p>
-              <input type="file" id="ad-image" accept="image/*">
+              <p style="font-size:0.75rem;color:#64748b;margin-top:0.25rem;">JPG, PNG, WebP — 1200×100 px — max 2 MB</p>
+              <input type="file" id="ad-image-navbar" accept="image/*">
             </div>
-            <img id="image-preview" class="image-preview" alt="Preview">
+            <img id="image-preview-navbar" class="image-preview" alt="Preview">
+          </div>
+          <div class="form-group full" id="upload-product-group">
+            <label data-i18n="ads_label_image_product">Тауар беті үшін сурет * <small style="color:#64748b;">(460×200 px)</small></label>
+            <div class="image-upload-zone" id="image-upload-zone-product">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <p data-i18n-html="ads_upload_hint"><strong>Суретті бұл жерге сүйреңіз</strong> немесе басыңыз</p>
+              <p style="font-size:0.75rem;color:#64748b;margin-top:0.25rem;">JPG, PNG, WebP — 460×200 px — max 2 MB</p>
+              <input type="file" id="ad-image-product" accept="image/*">
+            </div>
+            <img id="image-preview-product" class="image-preview" alt="Preview">
           </div>
           <div class="form-group full">
             <label data-i18n="ads_label_start">Басталу күні</label>
@@ -372,8 +382,6 @@
       updateHtmlLang();
       updateQueueUI();
     });
-    let uploadedFile = null;
-    let uploadedDataUrl = '';
 
     // ── Check queue status on load ──
     async function checkQueueStatus() {
@@ -409,21 +417,47 @@
       }
     }
 
-    // ── Image upload ──
-    const uploadZone = document.getElementById('image-upload-zone');
-    const fileInput = document.getElementById('ad-image');
-    const preview = document.getElementById('image-preview');
+    // ── Show/hide upload zones based on position ──
+    const navbarGroup = document.getElementById('upload-navbar-group');
+    const productGroup = document.getElementById('upload-product-group');
+    const positionSelect = document.getElementById('ad-position');
 
-    uploadZone.addEventListener('click', () => fileInput.click());
-    uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.style.borderColor = '#FF6B00'; });
-    uploadZone.addEventListener('dragleave', () => { uploadZone.style.borderColor = ''; });
-    uploadZone.addEventListener('drop', e => {
-      e.preventDefault(); uploadZone.style.borderColor = '';
-      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-    });
-    fileInput.addEventListener('change', e => { if (e.target.files.length) handleFile(e.target.files[0]); });
+    function updateUploadZones() {
+      const val = positionSelect.value;
+      if (val === 'navbar') {
+        navbarGroup.style.display = '';
+        productGroup.style.display = 'none';
+      } else if (val === 'product_bottom') {
+        navbarGroup.style.display = 'none';
+        productGroup.style.display = '';
+      } else {
+        navbarGroup.style.display = '';
+        productGroup.style.display = '';
+      }
+    }
+    positionSelect.addEventListener('change', updateUploadZones);
+    updateUploadZones();
 
-    function handleFile(file) {
+    // ── Image uploads (dual zones) ──
+    let uploadedNavbarFile = null, uploadedNavbarDataUrl = '';
+    let uploadedProductFile = null, uploadedProductDataUrl = '';
+
+    function setupUploadZone(zoneId, fileId, previewId, onFileReady) {
+      const zone = document.getElementById(zoneId);
+      const input = document.getElementById(fileId);
+      const preview = document.getElementById(previewId);
+      if (!zone || !input) return;
+      zone.addEventListener('click', () => input.click());
+      zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor = '#FF6B00'; });
+      zone.addEventListener('dragleave', () => { zone.style.borderColor = ''; });
+      zone.addEventListener('drop', e => {
+        e.preventDefault(); zone.style.borderColor = '';
+        if (e.dataTransfer.files.length) processFile(e.dataTransfer.files[0], zone, preview, onFileReady);
+      });
+      input.addEventListener('change', e => { if (e.target.files.length) processFile(e.target.files[0], zone, preview, onFileReady); });
+    }
+
+    function processFile(file, zone, preview, onReady) {
       if (file.size > 2 * 1024 * 1024) {
         show_error(typeof t==='function'?t('ads_err_too_large'):'Image must be under 2MB');
         return;
@@ -432,16 +466,19 @@
         show_error(typeof t==='function'?t('ads_err_image_only'):'Only image files are accepted');
         return;
       }
-      uploadedFile = file;
       const reader = new FileReader();
       reader.onload = e => {
-        uploadedDataUrl = e.target.result;
-        preview.src = uploadedDataUrl;
+        const dataUrl = e.target.result;
+        preview.src = dataUrl;
         preview.style.display = 'block';
-        uploadZone.querySelector('p').innerHTML = '<strong style="color:#10B981">Сурет таңдалды:</strong> ' + file.name;
+        zone.querySelector('p').innerHTML = '<strong style="color:#10B981">✓ ' + file.name + '</strong>';
+        onReady(file, dataUrl);
       };
       reader.readAsDataURL(file);
     }
+
+    setupUploadZone('image-upload-zone-navbar', 'ad-image-navbar', 'image-preview-navbar', (f, d) => { uploadedNavbarFile = f; uploadedNavbarDataUrl = d; });
+    setupUploadZone('image-upload-zone-product', 'ad-image-product', 'image-preview-product', (f, d) => { uploadedProductFile = f; uploadedProductDataUrl = d; });
 
     // ── Form submit → Stripe Checkout ──
     document.getElementById('ads-form').addEventListener('submit', async e => {
@@ -462,8 +499,12 @@
         show_error(typeof t==='function'?t('ads_err_fill_required'):'Please fill in all required fields');
         return;
       }
-      if (!uploadedDataUrl) {
-        show_error(typeof t==='function'?t('ads_err_upload_image'):'Please upload an ad image');
+      if ((position === 'both' || position === 'navbar') && !uploadedNavbarDataUrl) {
+        show_error(typeof t==='function'?t('ads_err_upload_navbar'):'Please upload a navbar image (1200×100 px)');
+        return;
+      }
+      if ((position === 'both' || position === 'product_bottom') && !uploadedProductDataUrl) {
+        show_error(typeof t==='function'?t('ads_err_upload_product'):'Please upload a product page image (460×200 px)');
         return;
       }
 
@@ -475,7 +516,8 @@
         // 1) Create ad record (inactive until payment confirmed)
         const adData = {
           title,
-          image_url: uploadedDataUrl,
+          image_url: position === 'product_bottom' ? (uploadedProductDataUrl || '') : (uploadedNavbarDataUrl || ''),
+          product_image_url: uploadedProductDataUrl || '',
           link_url: link,
           position,
           placement_priority: 0,

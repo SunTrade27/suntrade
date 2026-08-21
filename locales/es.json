@@ -460,7 +460,7 @@
   "ads_spec_param": "Parámetro",
   "ads_spec_value": "Valor",
   "ads_spec_format": "Formato de imagen",
-  "ads_spec_navbar_size": "Tamaño encima de barra",
+  "ads_spec_navbar_size": "Tamaño banner navbar",
   "ads_spec_product_size": "Tamaño página de producto",
   "ads_spec_price": "Precio",
   "ads_spec_duration": "Duración",
@@ -492,5 +492,9 @@
   "ads_ph_title": "ej. Gafas de sol",
   "ads_ph_name": "Nombre de empresa o personal",
   "ads_date_format": "Formato: dd/mm/aaaa",
-  "ads_ph_phone": "+34 612 345 678"
+  "ads_ph_phone": "+34 612 345 678",
+  "ads_label_image_navbar": "Imagen navbar * (1200×100 px)",
+  "ads_label_image_product": "Imagen página de producto * (460×200 px)",
+  "ads_err_upload_navbar": "Suba una imagen de navbar (1200×100 px)",
+  "ads_err_upload_product": "Suba una imagen de página de producto (460×200 px)"
 }

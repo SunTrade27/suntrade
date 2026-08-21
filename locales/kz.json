@@ -522,7 +522,7 @@
   "ads_spec_param": "Параметр",
   "ads_spec_value": "Мәні",
   "ads_spec_format": "Сурет форматы",
-  "ads_spec_navbar_size": "Навбар үсті өлшемі",
+  "ads_spec_navbar_size": "Навбар баннер өлшемі",
   "ads_spec_product_size": "Тауар беті өлшемі",
   "ads_spec_price": "Баға",
   "ads_spec_duration": "Мерзімі",
@@ -554,5 +554,9 @@
   "ads_ph_title": "Мысалы: Жаздық көзілдірік",
   "ads_ph_name": "Компания немесе жеке ат",
   "ads_date_format": "Формат: дд.мм.гггг",
-  "ads_ph_phone": "+7 (7XX) XXX-XX-XX"
+  "ads_ph_phone": "+7 (7XX) XXX-XX-XX",
+  "ads_label_image_navbar": "Навбар үшін сурет * (1200×100 px)",
+  "ads_label_image_product": "Тауар беті үшін сурет * (460×200 px)",
+  "ads_err_upload_navbar": "Навбар суретін жүктеңіз (1200×100 px)",
+  "ads_err_upload_product": "Тауар беті суретін жүктеңіз (460×200 px)"
 }
