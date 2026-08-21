@@ -1,4 +1,8 @@
-// User Menu - Navbar dropdown
+// User Menu - Navbar dropdown with instant cached display
+// Shows cached avatar immediately, then refreshes in background
+
+const USER_MENU_CACHE_KEY = 'suntrade_user_menu_cache';
+
 // Try immediate init first, fallback to DOMContentLoaded
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
@@ -8,30 +12,37 @@ if (document.readyState === 'loading') {
   requestAnimationFrame(initUserMenu);
 }
 
-async function initUserMenu() {
+function getCachedUserMenu() {
+  try {
+    const cached = localStorage.getItem(USER_MENU_CACHE_KEY);
+    return cached ? JSON.parse(cached) : null;
+  } catch { return null; }
+}
+
+function setCachedUserMenu(data) {
+  try {
+    localStorage.setItem(USER_MENU_CACHE_KEY, JSON.stringify(data));
+  } catch {}
+}
+
+function renderUserMenu(data) {
   const container = document.getElementById('user-menu-container');
-  if (!container || !sb) return;
+  if (!container) return;
 
-  const user = await getCurrentUser();
-
-  if (user) {
-    const profile = await getUserProfile();
-    const initial = (profile?.full_name || user.email || '?')[0].toUpperCase();
-    const displayName = profile?.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
-    const avatarUrl = profile?.avatar_url || user.user_metadata?.avatar_url || '';
-    const avatarHtml = avatarUrl
-      ? `<img src="${escMenuHtml(avatarUrl)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
-      : initial;
+  if (data.user) {
+    const avatarHtml = data.avatarUrl
+      ? `<img src="${escMenuHtml(data.avatarUrl)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+      : data.initial;
 
     container.innerHTML = `
       <button class="user-menu-btn" onclick="toggleUserMenu()">${avatarHtml}</button>
       <div class="user-dropdown" id="user-dropdown">
         <div class="user-dropdown-header">
-          <strong>${escMenuHtml(displayName)}</strong>
-          <small>${escMenuHtml(user.email)}</small>
+          <strong>${escMenuHtml(data.displayName)}</strong>
+          <small>${escMenuHtml(data.email)}</small>
         </div>
         <a href="/account.html"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:6px;"><use href="#icon-user"/></svg>${t('account_title') || 'My Account'}</a>
-        ${profile?.is_admin ? `<a href="/admin.html"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:6px;"><use href="#icon-settings"/></svg>${t('nav_admin') || 'Admin Panel'}</a>` : ''}
+        ${data.isAdmin ? `<a href="/admin.html"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:6px;"><use href="#icon-settings"/></svg>${t('nav_admin') || 'Admin Panel'}</a>` : ''}
         <a href="#" onclick="handleMenuLogout()"><svg class="icon icon-sm" style="vertical-align:middle;margin-right:6px;"><use href="#icon-logout"/></svg>${t('auth_logout') || 'Logout'}</a>
       </div>
     `;
@@ -54,6 +65,9 @@ async function initUserMenu() {
   }
 
   // Close dropdown when clicking outside
+  container.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
   document.addEventListener('click', (e) => {
     const dropdown = document.getElementById('user-dropdown');
     if (dropdown && !container.contains(e.target)) {
@@ -62,12 +76,55 @@ async function initUserMenu() {
   });
 }
 
+async function initUserMenu() {
+  const container = document.getElementById('user-menu-container');
+  if (!container || typeof sb === 'undefined' || !sb) return;
+
+  // Step 1: Show cached menu INSTANTLY (no flash)
+  const cached = getCachedUserMenu();
+  if (cached) {
+    renderUserMenu(cached);
+  }
+
+  // Step 2: Fetch fresh data in background
+  try {
+    const user = await getCurrentUser();
+    if (!user) {
+      // No user logged in
+      setCachedUserMenu({ user: null });
+      if (!cached) renderUserMenu({ user: null });
+      return;
+    }
+
+    const profile = await getUserProfile();
+    const initial = (profile?.full_name || user.email || '?')[0].toUpperCase();
+    const displayName = profile?.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+    const avatarUrl = profile?.avatar_url || user.user_metadata?.avatar_url || '';
+    const isAdmin = profile?.is_admin || false;
+
+    const freshData = { user: true, initial, displayName, email: user.email, avatarUrl, isAdmin };
+
+    // Cache for instant display next time
+    setCachedUserMenu(freshData);
+
+    // Only re-render if data changed (avoid flicker)
+    if (!cached || cached.displayName !== freshData.displayName || cached.avatarUrl !== freshData.avatarUrl || cached.isAdmin !== freshData.isAdmin) {
+      renderUserMenu(freshData);
+    }
+  } catch (err) {
+    console.warn('User menu refresh error:', err);
+    // Keep cached version visible
+    if (!cached) renderUserMenu({ user: null });
+  }
+}
+
 function toggleUserMenu() {
   const dropdown = document.getElementById('user-dropdown');
   if (dropdown) dropdown.classList.toggle('show');
 }
 
 async function handleMenuLogout() {
+  localStorage.removeItem(USER_MENU_CACHE_KEY);
   await userSignOut();
   window.location.href = '/';
 }
