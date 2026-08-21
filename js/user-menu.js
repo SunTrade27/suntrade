@@ -1,6 +1,6 @@
 // User Menu - Navbar dropdown
 document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(initUserMenu, 600);
+  setTimeout(initUserMenu, 150);
 });
 
 async function initUserMenu() {
