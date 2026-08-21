@@ -350,12 +350,14 @@
     </div>
   </div>
 
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="/js/supabase-client.js"></script>
   <script src="/js/i18n.js"></script>
   <script src="/js/cart.js"></script>
   <script src="/js/shared-ui.js"></script>
   <script>
 
+    initSupabase();
     const MAX_ACTIVE_ADS = 5;
 
     // Update <html lang> on language change for proper date formatting
