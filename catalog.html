@@ -8,7 +8,11 @@
   <link rel="canonical" href="https://www.suntrade.store/catalog.html">
   <script>
 var _sl=localStorage.getItem('suntrade_lang');
-if(_sl&&_sl!=='en'){document.write('<link rel="preload" href="/locales/'+_sl+'.json" as="fetch" crossorigin>')}
+if(_sl&&_sl!=='en'){
+document.write('<link rel="preload" href="/locales/'+_sl+'.json" as="fetch" crossorigin>');
+var _tc=localStorage.getItem('suntrade_translations_'+_sl);
+if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-ready) [data-i18n-html]{visibility:hidden!important}body.i18n-ready [data-i18n],body.i18n-ready [data-i18n-html]{visibility:visible!important}</style>')}
+}
 </script>
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <link rel="alternate" hreflang="en" href="https://www.suntrade.store/catalog.html" />

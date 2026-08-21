@@ -1,4 +1,4 @@
-// i18n - Multi-language system
+// i18n - Multi-language system with instant localStorage cache
 const SUPPORTED_LANGS = ['en', 'kz', 'ru', 'de', 'fr', 'es', 'it', 'tr', 'pt', 'nl', 'pl', 'ar'];
 const LANG_NAMES = {
   en: 'English', kz: 'Қазақша', ru: 'Русский', de: 'Deutsch',
@@ -10,35 +10,65 @@ const LANG_FLAGS = {
   it: '🇮🇹', tr: '🇹🇷', pt: '🇵🇹', nl: '🇳🇱', pl: '🇵🇱', ar: '🇸🇦'
 };
 
-
-
 let currentLang = localStorage.getItem('suntrade_lang') || 'en';
 let translations = {};
 let languageLoadVersion = 0;
 
+// ===== INSTANT TRANSLATION FROM CACHE =====
+// When user visits any page, translations are applied immediately from
+// localStorage before any network fetch happens. No more 1-second flash.
+
+function getCachedTranslations(lang) {
+  try {
+    const data = localStorage.getItem('suntrade_translations_' + lang);
+    return data ? JSON.parse(data) : null;
+  } catch { return null; }
+}
+
+function setCachedTranslations(lang, data) {
+  try {
+    localStorage.setItem('suntrade_translations_' + lang, JSON.stringify(data));
+  } catch {}
+}
+
 async function loadTranslations(lang) {
   const loadVersion = ++languageLoadVersion;
-  try {
-    const response = await fetch(`/locales/${lang}.json`, { cache: 'force-cache' });
-    const nextTranslations = await response.json();
-    // A slower response from an older selection must not roll the site back
-    // after the visitor has already selected another language.
-    if (loadVersion !== languageLoadVersion) return;
-    translations = nextTranslations;
+
+  // Step 1: Apply cached translations INSTANTLY (no flash)
+  const cached = getCachedTranslations(lang);
+  if (cached && Object.keys(cached).length > 0) {
+    translations = cached;
     currentLang = lang;
     localStorage.setItem('suntrade_lang', lang);
     document.documentElement.lang = lang;
-    if (lang === 'ar') {
-      document.documentElement.dir = 'rtl';
-    } else {
-      document.documentElement.dir = 'ltr';
-    }
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     applyTranslations();
     updateLangSwitcher();
-    // Dispatch custom event for language change
     window.dispatchEvent(new CustomEvent('langChanged', { detail: { lang } }));
+  }
+
+  // Step 2: Fetch fresh translations in background (for updates)
+  try {
+    const response = await fetch(`/locales/${lang}.json`, { cache: 'force-cache' });
+    const nextTranslations = await response.json();
+    if (loadVersion !== languageLoadVersion) return;
+
+    // Save to cache for instant load next time
+    setCachedTranslations(lang, nextTranslations);
+
+    // Update if different from cached
+    const cachedStr = JSON.stringify(cached || {});
+    const freshStr = JSON.stringify(nextTranslations);
+    if (cachedStr !== freshStr) {
+      translations = nextTranslations;
+      currentLang = lang;
+      applyTranslations();
+      updateLangSwitcher();
+      window.dispatchEvent(new CustomEvent('langChanged', { detail: { lang } }));
+    }
   } catch (e) {
-    console.error('Failed to load translations:', lang, e);
+    // Cached version already shown — no flash
+    console.warn('Translation fetch failed (cache used):', lang);
   }
 }
 
@@ -47,20 +77,12 @@ function t(key) {
 }
 
 function applyTranslations() {
-  // Re-render dynamic content that uses t() in JS FIRST. If we translated
-  // first, the re-render (e.g. renderFeaturedProducts rebuilding product
-  // cards) would clobber the translated text with fresh English defaults
-  // and the data-i18n pass below would never see the new elements.
-  // Wrapped in try/catch so a failing re-render can never block the
-  // data-i18n pass below.
+  // Re-render dynamic content that uses t() in JS FIRST
   try {
     if (typeof renderCheckoutItems === 'function') renderCheckoutItems();
     if (typeof renderCartPage === 'function') renderCartPage();
     if (typeof renderFeaturedProducts === 'function') renderFeaturedProducts();
     if (typeof loadProducts === 'function' && document.getElementById('products-grid')) loadProducts();
-    // Note: Individual pages handle re-rendering via their own
-    // langChanged event listeners (e.g. renderProduct in product.html,
-    // renderCategories + renderFeaturedProducts in index.html, etc.)
     if (typeof loadHomepageReviews === 'function') loadHomepageReviews();
     if (typeof doHeroSearch === 'function' && document.getElementById('hero-search-input')?.value) doHeroSearch();
   } catch (e) {
@@ -85,13 +107,13 @@ function applyTranslations() {
     const key = el.getAttribute('data-i18n-title');
     if (translations[key]) el.title = translations[key];
   });
-  // Update meta tags
   const titleEl = document.querySelector('title[data-i18n]');
   if (titleEl) titleEl.textContent = t(titleEl.getAttribute('data-i18n'));
   const metaDesc = document.querySelector('meta[name="description"][data-i18n]');
   if (metaDesc) metaDesc.content = t(metaDesc.getAttribute('data-i18n'));
 
-  // Show all translated text now that it is applied
+  // Signal that translations are applied — show all hidden elements
+  document.body.classList.add('i18n-ready');
 }
 
 function updateLangSwitcher() {
@@ -130,7 +152,6 @@ function initLangSwitcher() {
   document.addEventListener('click', () => dropdown.classList.remove('show'));
 }
 
-// Auto-detect browser language
 function detectLanguage() {
   const saved = localStorage.getItem('suntrade_lang');
   if (saved && SUPPORTED_LANGS.includes(saved)) return saved;
@@ -139,8 +160,32 @@ function detectLanguage() {
   return 'en';
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+// ===== INIT: Instant from cache, then refresh =====
+(function initI18n() {
   const lang = detectLanguage();
-  loadTranslations(lang);
-  initLangSwitcher();
-});
+  const cached = getCachedTranslations(lang);
+  if (cached && Object.keys(cached).length > 0) {
+    translations = cached;
+    currentLang = lang;
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  }
+
+  function onReady() {
+    if (cached && Object.keys(cached).length > 0) {
+      applyTranslations();
+      updateLangSwitcher();
+      window.dispatchEvent(new CustomEvent('langChanged', { detail: { lang } }));
+    }
+    initLangSwitcher();
+    loadTranslations(lang);
+  }
+
+  // DOMContentLoaded may have already fired if i18n.js loads late in <body>
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', onReady);
+  } else {
+    // DOM already interactive/complete — run immediately
+    requestAnimationFrame(onReady);
+  }
+})();
