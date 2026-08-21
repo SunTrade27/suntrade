@@ -52,7 +52,10 @@ const LT_INSTANCES = [
   'https://translate.terraprint.co',
   'https://translate.argosopentech.com',
   'https://libretranslate.de',
-  'https://lt.vern.cc'
+  'https://lt.vern.cc',
+  'https://translate.fortytwo-it.com',
+  'https://trans.zillyhuhn.com',
+  'https://lt.projectsegfau.lt'
 ];
 
 // Per-instance in-process cache. Vercel keeps a warm instance alive for
@@ -537,8 +540,10 @@ async function aiTranslateLabels(labels, langCode) {
     const out = {};
     Object.keys(labels).forEach(key => {
       let value = typeof parsed[key] === 'string' ? parsed[key].trim() : '';
-      // Strip trailing 'color'/'colour' that the model sometimes appends.
-      value = value.replace(/\s+colou?r\s*$/i, '').trim();
+      // Strip 'color'/'colour' that the model sometimes appends (with or without space)
+      value = value.replace(/\s*colou?r\s*$/i, '').trim();
+      // Also strip 'color'/'colour' if it appears mid-label (e.g. 'қызылcolor')
+      value = value.replace(/colou?r/gi, '').trim();
       // A malformed model response must never be shown as a label. In
       // particular, reject leaked HTML/code/font tokens seen in old output.
       if (value && !/[<>]/.test(value) && !/fontdatabase|uherhiy/i.test(value)) out[key] = value;
@@ -612,7 +617,7 @@ module.exports = async function handler(req, res) {
             // If a public provider cannot translate a short word, keep the
             // English label as a safe fallback instead of showing blank UI.
             translatedLabels[key] = isSafeLabelTranslation(translated, source)
-              ? translated.trim().replace(/\s+colou?r\s*$/i, '').trim() : source;
+              ? translated.trim().replace(/\s*colou?r\s*$/i, '').trim() : source;
           } catch (_) {
             translatedLabels[key] = source;
           }

@@ -778,7 +778,7 @@ if(_sl&&_sl!=='en'){document.write('<link rel="preload" href="/locales/'+_sl+'.j
   // Strip trailing 'color'/'colour' tokens that AI/free-translate sometimes
   // appends to translated variant labels (e.g. 'Қан қызыл color' → 'Қан қызыл').
   function cleanVariantLabel(value) {
-    return String(value || '').replace(/\s+colou?r\s*$/i, '').trim();
+    return String(value || '').replace(/colou?r/gi, '').replace(/\s{2,}/g, ' ').trim();
   }
 
   function collectVariantLabels(p) {
