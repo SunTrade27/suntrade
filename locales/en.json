@@ -558,5 +558,6 @@
   "ads_err_upload_navbar": "Please upload a navbar image (1200×100 px)",
   "ads_err_upload_product": "Please upload a product page image (460×200 px)",
   "trust_support": "24/7 Support",
-  "trust_support_sub": "Always here to help"
+  "trust_support_sub": "Always here to help",
+  "leads_subtitle": "Stats from the last 30 days"
 }

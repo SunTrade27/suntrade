@@ -498,5 +498,6 @@
   "ads_err_upload_navbar": "Bitte laden Sie ein Navbar-Bild hoch (1200×100 px)",
   "ads_err_upload_product": "Bitte laden Sie ein Produktseiten-Bild hoch (460×200 px)",
   "trust_support": "24/7 Support",
-  "trust_support_sub": "Immer für Sie da"
+  "trust_support_sub": "Immer für Sie da",
+  "leads_subtitle": "Statistik der letzten 30 Tage"
 }

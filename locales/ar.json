@@ -498,5 +498,6 @@
   "ads_err_upload_navbar": "ارفع صورة شريط التنقل (1200×100 بكسل)",
   "ads_err_upload_product": "ارفع صورة صفحة المنتج (460×200 بكسل)",
   "trust_support": "دعم على مدار الساعة",
-  "trust_support_sub": "دوما هنا للمساعدة"
+  "trust_support_sub": "دوما هنا للمساعدة",
+  "leads_subtitle": "إحصائيات آخر 30 يومًا"
 }

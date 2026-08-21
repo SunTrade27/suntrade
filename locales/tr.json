@@ -498,5 +498,6 @@
   "ads_err_upload_navbar": "Navbar görseli yükleyin (1200×100 px)",
   "ads_err_upload_product": "Ürün sayfası görseli yükleyin (460×200 px)",
   "trust_support": "7/24 Destek",
-  "trust_support_sub": "Size yardımcı olmak için her zaman buradayız"
+  "trust_support_sub": "Size yardımcı olmak için her zaman buradayız",
+  "leads_subtitle": "Son 30 günlük istatistikler"
 }

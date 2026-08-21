@@ -498,5 +498,6 @@
   "ads_err_upload_navbar": "Carregue uma imagem navbar (1200×100 px)",
   "ads_err_upload_product": "Carregue uma imagem de página do produto (460×200 px)",
   "trust_support": "Suporte 24/7",
-  "trust_support_sub": "Sempre aqui para ajudar"
+  "trust_support_sub": "Sempre aqui para ajudar",
+  "leads_subtitle": "Estatísticas dos últimos 30 dias"
 }
