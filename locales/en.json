@@ -422,8 +422,8 @@
   "trust_money_back_sub": "30-day return",
   "trust_verified": "Verified Store",
   "trust_verified_sub": "Trusted by 1000+",
-  "trust_shipping": "Fast Delivery",
-  "trust_shipping_sub": "Worldwide shipping",
+  "trust_shipping": "Free Fast Shipping",
+  "trust_shipping_sub": "Free worldwide delivery",
   "analytics_subtitle": "SunTrade Statistics — Real-time",
   "analytics_pending": "Pending",
   "analytics_order_status": "Order Statuses",
@@ -556,5 +556,7 @@
   "ads_label_image_navbar": "Navbar image * (1200×100 px)",
   "ads_label_image_product": "Product page image * (460×200 px)",
   "ads_err_upload_navbar": "Please upload a navbar image (1200×100 px)",
-  "ads_err_upload_product": "Please upload a product page image (460×200 px)"
+  "ads_err_upload_product": "Please upload a product page image (460×200 px)",
+  "trust_support": "24/7 Support",
+  "trust_support_sub": "Always here to help"
 }

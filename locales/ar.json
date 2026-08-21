@@ -362,8 +362,8 @@
   "trust_money_back_sub": "إرجاع خلال 30 يوم",
   "trust_verified": "متجر موثوق",
   "trust_verified_sub": "+1000 يثقون",
-  "trust_shipping": "شحن سريع",
-  "trust_shipping_sub": "عالمي",
+  "trust_shipping": "شحن سريع مجاني",
+  "trust_shipping_sub": "توصيل مجاني حول العالم",
   "product_volume_pricing": "أسعار الكمية",
   "product_piece": "قطعة",
   "product_pieces": "قطع",
@@ -496,5 +496,7 @@
   "ads_label_image_navbar": "صورة شريط التنقل * (1200×100 بكسل)",
   "ads_label_image_product": "صورة صفحة المنتج * (460×200 بكسل)",
   "ads_err_upload_navbar": "ارفع صورة شريط التنقل (1200×100 بكسل)",
-  "ads_err_upload_product": "ارفع صورة صفحة المنتج (460×200 بكسل)"
+  "ads_err_upload_product": "ارفع صورة صفحة المنتج (460×200 بكسل)",
+  "trust_support": "دعم على مدار الساعة",
+  "trust_support_sub": "دوما هنا للمساعدة"
 }

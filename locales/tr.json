@@ -362,8 +362,8 @@
   "trust_money_back_sub": "30 gün iade",
   "trust_verified": "Onaylı Mağaza",
   "trust_verified_sub": "1000+ güveniyor",
-  "trust_shipping": "Hızlı Kargo",
-  "trust_shipping_sub": "Dünya çapında",
+  "trust_shipping": "Ücretsiz hızlı kargo",
+  "trust_shipping_sub": "Dünya genelinde ücretsiz teslimat",
   "product_volume_pricing": "Toplu Fiyatlandırma",
   "product_piece": "adet",
   "product_pieces": "adet",
@@ -496,5 +496,7 @@
   "ads_label_image_navbar": "Navbar görseli * (1200×100 px)",
   "ads_label_image_product": "Ürün sayfası görseli * (460×200 px)",
   "ads_err_upload_navbar": "Navbar görseli yükleyin (1200×100 px)",
-  "ads_err_upload_product": "Ürün sayfası görseli yükleyin (460×200 px)"
+  "ads_err_upload_product": "Ürün sayfası görseli yükleyin (460×200 px)",
+  "trust_support": "7/24 Destek",
+  "trust_support_sub": "Size yardımcı olmak için her zaman buradayız"
 }

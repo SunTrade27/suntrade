@@ -362,8 +362,8 @@
   "trust_money_back_sub": "Devolução em 30 dias",
   "trust_verified": "Loja verificada",
   "trust_verified_sub": "1000+ confiam",
-  "trust_shipping": "Entrega rápida",
-  "trust_shipping_sub": "Mundial",
+  "trust_shipping": "Envio rápido grátis",
+  "trust_shipping_sub": "Entrega gratuita mundial",
   "product_volume_pricing": "Preços por volume",
   "product_piece": "peça",
   "product_pieces": "peças",
@@ -496,5 +496,7 @@
   "ads_label_image_navbar": "Imagem navbar * (1200×100 px)",
   "ads_label_image_product": "Imagem página do produto * (460×200 px)",
   "ads_err_upload_navbar": "Carregue uma imagem navbar (1200×100 px)",
-  "ads_err_upload_product": "Carregue uma imagem de página do produto (460×200 px)"
+  "ads_err_upload_product": "Carregue uma imagem de página do produto (460×200 px)",
+  "trust_support": "Suporte 24/7",
+  "trust_support_sub": "Sempre aqui para ajudar"
 }

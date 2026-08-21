@@ -424,8 +424,8 @@
   "trust_money_back_sub": "Возврат 30 дней",
   "trust_verified": "Проверенный магазин",
   "trust_verified_sub": "Нам доверяют 1000+",
-  "trust_shipping": "Быстрая доставка",
-  "trust_shipping_sub": "Доставка по миру",
+  "trust_shipping": "Бесплатная быстрая доставка",
+  "trust_shipping_sub": "Бесплатная доставка по всему миру",
   "analytics_subtitle": "Статистика SunTrade — в реальном времени",
   "analytics_pending": "Ожидание",
   "analytics_order_status": "Статусы заказов",
@@ -558,5 +558,7 @@
   "ads_label_image_navbar": "Изображение для навбара * (1200×100 px)",
   "ads_label_image_product": "Изображение для страницы товара * (460×200 px)",
   "ads_err_upload_navbar": "Загрузите изображение для навбара (1200×100 px)",
-  "ads_err_upload_product": "Загрузите изображение для страницы товара (460×200 px)"
+  "ads_err_upload_product": "Загрузите изображение для страницы товара (460×200 px)",
+  "trust_support": "Поддержка 24/7",
+  "trust_support_sub": "Всегда готовы помочь"
 }
