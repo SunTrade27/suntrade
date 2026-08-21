@@ -10,16 +10,7 @@ const LANG_FLAGS = {
   it: '🇮🇹', tr: '🇹🇷', pt: '🇵🇹', nl: '🇳🇱', pl: '🇵🇱', ar: '🇸🇦'
 };
 
-// Prevent flash of wrong language (FOWLP) — hide translatable text until translations load
-(function() {
-  var savedLang = localStorage.getItem('suntrade_lang');
-  if (savedLang && savedLang !== 'en') {
-    var s = document.createElement('style');
-    s.id = 'i18n-fowlp';
-    s.textContent = '[data-i18n]{visibility:hidden!important}body.i18n-ready [data-i18n]{visibility:visible!important}';
-    document.head.appendChild(s);
-  }
-})();
+
 
 let currentLang = localStorage.getItem('suntrade_lang') || 'en';
 let translations = {};
@@ -101,7 +92,6 @@ function applyTranslations() {
   if (metaDesc) metaDesc.content = t(metaDesc.getAttribute('data-i18n'));
 
   // Show all translated text now that it is applied
-  document.body.classList.add('i18n-ready');
 }
 
 function updateLangSwitcher() {

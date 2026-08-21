@@ -1,7 +1,12 @@
 // User Menu - Navbar dropdown
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(initUserMenu, 150);
-});
+// Try immediate init first, fallback to DOMContentLoaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    requestAnimationFrame(initUserMenu);
+  });
+} else {
+  requestAnimationFrame(initUserMenu);
+}
 
 async function initUserMenu() {
   const container = document.getElementById('user-menu-container');
