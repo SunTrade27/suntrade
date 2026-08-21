@@ -481,5 +481,14 @@
   "ads_label_image": "Anzeigenbild *",
   "ads_upload_hint": "Bild hierher ziehen oder zum Hochladen klicken",
   "ads_label_start": "Startdatum",
-  "ads_label_end": "Enddatum (optional — läuft bis zum Ablauf)"
+  "ads_label_end": "Enddatum (optional — läuft bis zum Ablauf)",
+  "ads_page_title": "Werbung - SunTrade",
+  "ads_err_too_large": "Bild muss kleiner als 2MB sein",
+  "ads_err_image_only": "Nur Bilddateien werden akzeptiert",
+  "ads_err_fill_required": "Bitte alle Pflichtfelder ausfüllen",
+  "ads_err_upload_image": "Bitte ein Anzeigenbild hochladen",
+  "ads_err_generic": "Fehler aufgetreten: ",
+  "ads_err_payment_cancelled": "Zahlung abgebrochen. Bitte versuchen Sie es erneut.",
+  "ads_ph_title": "z.B. Sommer-Sonnenbrille",
+  "ads_ph_name": "Firmen- oder Privatname"
 }

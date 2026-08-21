@@ -541,5 +541,14 @@
   "ads_label_image": "Ad image *",
   "ads_upload_hint": "Drag image here or click to upload",
   "ads_label_start": "Start date",
-  "ads_label_end": "End date (optional — runs until expiry)"
+  "ads_label_end": "End date (optional — runs until expiry)",
+  "ads_page_title": "Advertise - SunTrade",
+  "ads_err_too_large": "Image must be under 2MB",
+  "ads_err_image_only": "Only image files are accepted",
+  "ads_err_fill_required": "Please fill in all required fields",
+  "ads_err_upload_image": "Please upload an ad image",
+  "ads_err_generic": "Error occurred: ",
+  "ads_err_payment_cancelled": "Payment cancelled. You can try again.",
+  "ads_ph_title": "e.g. Summer Sunglasses",
+  "ads_ph_name": "Company or personal name"
 }

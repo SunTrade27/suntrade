@@ -481,5 +481,14 @@
   "ads_label_image": "Immagine annuncio *",
   "ads_upload_hint": "Trascina l'immagine qui o clicca per caricare",
   "ads_label_start": "Data di inizio",
-  "ads_label_end": "Data di fine (opzionale — funziona fino alla scadenza)"
+  "ads_label_end": "Data di fine (opzionale — funziona fino alla scadenza)",
+  "ads_page_title": "Pubblicità - SunTrade",
+  "ads_err_too_large": "L'immagine deve essere inferiore a 2MB",
+  "ads_err_image_only": "Sono accettati solo file immagine",
+  "ads_err_fill_required": "Compilare tutti i campi obbligatori",
+  "ads_err_upload_image": "Carica un'immagine pubblicitaria",
+  "ads_err_generic": "Si è verificato un errore: ",
+  "ads_err_payment_cancelled": "Pagamento annullato. Riprova.",
+  "ads_ph_title": "es. Occhiali da sole",
+  "ads_ph_name": "Nome aziendale o personale"
 }

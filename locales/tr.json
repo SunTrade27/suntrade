@@ -481,5 +481,14 @@
   "ads_label_image": "Reklam görseli *",
   "ads_upload_hint": "Görseli buraya sürükleyin veya yüklemek için tıklayın",
   "ads_label_start": "Başlangıç tarihi",
-  "ads_label_end": "Bitiş tarihi (isteğe bağlı — bitene kadar çalışır)"
+  "ads_label_end": "Bitiş tarihi (isteğe bağlı — bitene kadar çalışır)",
+  "ads_page_title": "Reklam Ver - SunTrade",
+  "ads_err_too_large": "Görsel 2MB'den küçük olmalı",
+  "ads_err_image_only": "Sadece görsel dosyaları kabul edilir",
+  "ads_err_fill_required": "Lütfen tüm zorunlu alanları doldurun",
+  "ads_err_upload_image": "Lütfen reklam görseli yükleyin",
+  "ads_err_generic": "Bir hata oluştu: ",
+  "ads_err_payment_cancelled": "Ödeme iptal edildi. Tekrar deneyebilirsiniz.",
+  "ads_ph_title": "ör. Yaz Güneş Gözlüğü",
+  "ads_ph_name": "Şirket veya kişisel ad"
 }

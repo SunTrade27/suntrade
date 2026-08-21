@@ -481,5 +481,14 @@
   "ads_label_image": "صورة الاعلان *",
   "ads_upload_hint": "اسحب الصورة هنا او انقر للتحميل",
   "ads_label_start": "تاريخ البدء",
-  "ads_label_end": "تاريخ الانتهاء (اختياري)"
+  "ads_label_end": "تاريخ الانتهاء (اختياري)",
+  "ads_page_title": "إعلانات - SunTrade",
+  "ads_err_too_large": "يجب أن تكون الصورة أقل من 2 ميجا",
+  "ads_err_image_only": "يتم قبول ملفات الصور فقط",
+  "ads_err_fill_required": "يرجى ملء جميع الحقول المطلوبة",
+  "ads_err_upload_image": "يرجى رفع صورة الإعلان",
+  "ads_err_generic": "حدث خطأ: ",
+  "ads_err_payment_cancelled": "تم إلغاء الدفع. يمكنك المحاولة مرة أخرى.",
+  "ads_ph_title": "مثال: نظارات شمسية",
+  "ads_ph_name": "اسم الشركة أو الشخصي"
 }

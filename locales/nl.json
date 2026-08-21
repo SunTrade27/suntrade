@@ -481,5 +481,14 @@
   "ads_label_image": "Advertentie afbeelding *",
   "ads_upload_hint": "Sleep afbeelding hierheen of klik om te uploaden",
   "ads_label_start": "Startdatum",
-  "ads_label_end": "Einddatum (optioneel)"
+  "ads_label_end": "Einddatum (optioneel)",
+  "ads_page_title": "Adverteren - SunTrade",
+  "ads_err_too_large": "Afbeelding moet kleiner zijn dan 2MB",
+  "ads_err_image_only": "Alleen afbeeldingsbestanden worden geaccepteerd",
+  "ads_err_fill_required": "Vul alle verplichte velden in",
+  "ads_err_upload_image": "Upload een advertentieafbeelding",
+  "ads_err_generic": "Er is een fout opgetreden: ",
+  "ads_err_payment_cancelled": "Betaling geannuleerd. U kunt het opnieuw proberen.",
+  "ads_ph_title": "bv. Zonnebril",
+  "ads_ph_name": "Bedrijfs- of persoonlijke naam"
 }

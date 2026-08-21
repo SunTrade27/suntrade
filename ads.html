@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Жарнама беру - SunTrade</title>
+  <title data-i18n="ads_page_title">Жарнама беру - SunTrade</title>
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -248,14 +248,14 @@
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
         </div>
         <h3 data-i18n="ads_pos_top">Навбар үсті</h3>
-        <p>Барлық беттерде навбардың төбесінде көрінетін жарнама баннері. Ең көп көрілетін орын.</p>
+        <p data-i18n="ads_pos_top_desc">Барлық беттерде навбардың төбесінде көрінетін жарнама баннері. Ең көп көрілетін орын.</p>
       </div>
       <div class="ads-position-card">
         <div class="icon-wrap">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.4l-9-5.19"/><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
         </div>
         <h3 data-i18n="ads_pos_bottom">Тауар беті төмені</h3>
-        <p>Тауар бетіндегі төлем белгілерінің астындағы бос орында көрінетін жарнама.</p>
+        <p data-i18n="ads_pos_bottom_desc">Тауар бетіндегі төлем белгілерінің астындағы бос орында көрінетін жарнама.</p>
       </div>
     </div>
 
@@ -287,7 +287,7 @@
         <div class="form-grid">
           <div class="form-group">
             <label data-i18n="ads_label_title">Жарнама атауы *</label>
-            <input type="text" id="ad-title" placeholder="Мысалы: Жаздық көзілдірік" required>
+            <input type="text" id="ad-title" data-i18n-placeholder="ads_ph_title" placeholder="Мысалы: Жаздық көзілдірік" required>
           </div>
           <div class="form-group">
             <label data-i18n="ads_label_position">Орналасу орны *</label>
@@ -299,7 +299,7 @@
           </div>
           <div class="form-group">
             <label data-i18n="ads_label_name">Жарнама беруші аты *</label>
-            <input type="text" id="ad-name" placeholder="Компания немесе жеке ат" required>
+            <input type="text" id="ad-name" data-i18n-placeholder="ads_ph_name" placeholder="Компания немесе жеке ат" required>
           </div>
           <div class="form-group">
             <label data-i18n="ads_label_email">Электрондық пошта *</label>
@@ -407,11 +407,11 @@
 
     function handleFile(file) {
       if (file.size > 2 * 1024 * 1024) {
-        show_error('Сурет 2 МБ-тан аспауы керек');
+        show_error(typeof t==='function'?t('ads_err_too_large'):'Image must be under 2MB');
         return;
       }
       if (!file.type.startsWith('image/')) {
-        show_error('Тек сурет файлдарын қабылдайды');
+        show_error(typeof t==='function'?t('ads_err_image_only'):'Only image files are accepted');
         return;
       }
       uploadedFile = file;
@@ -441,11 +441,11 @@
       const end = document.getElementById('ad-end').value;
 
       if (!title || !name || !email) {
-        show_error('Міндетті түрде толтырылуы тиіс өрістерді толтырыңыз');
+        show_error(typeof t==='function'?t('ads_err_fill_required'):'Please fill in all required fields');
         return;
       }
       if (!uploadedDataUrl) {
-        show_error('Жарнама суретін жүктеңіз');
+        show_error(typeof t==='function'?t('ads_err_upload_image'):'Please upload an ad image');
         return;
       }
 
@@ -495,7 +495,7 @@
           throw new Error('Stripe checkout URL not received');
         }
       } catch (err) {
-        show_error('Қате пайда болды: ' + (err.message || err));
+        show_error((typeof t==='function'?t('ads_err_generic'):'Error occurred: ') + (err.message || err));
         btn.disabled = false;
         btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> ' + (typeof t==='function'?t('ads_btn_pay'):'Pay & Submit Ad — 10,000₸');
       }
@@ -523,7 +523,7 @@
         window.history.replaceState({}, '', '/ads.html');
       }
       if (params.get('payment') === 'cancelled') {
-        show_error('Төлем тоқтатылды. Қайта төлеуге болады.');
+        show_error(typeof t==='function'?t('ads_err_payment_cancelled'):'Payment cancelled. You can try again.');
         window.history.replaceState({}, '', '/ads.html');
       }
     })();

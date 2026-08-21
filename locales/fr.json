@@ -481,5 +481,14 @@
   "ads_label_image": "Image de l'annonce *",
   "ads_upload_hint": "Glissez l'image ici ou cliquez pour télécharger",
   "ads_label_start": "Date de début",
-  "ads_label_end": "Date de fin (optionnel — fonctionne jusqu'à expiration)"
+  "ads_label_end": "Date de fin (optionnel — fonctionne jusqu'à expiration)",
+  "ads_page_title": "Publicité - SunTrade",
+  "ads_err_too_large": "L'image doit être inférieure à 2Mo",
+  "ads_err_image_only": "Seuls les fichiers image sont acceptés",
+  "ads_err_fill_required": "Veuillez remplir tous les champs obligatoires",
+  "ads_err_upload_image": "Veuillez télécharger une image publicitaire",
+  "ads_err_generic": "Erreur survenue: ",
+  "ads_err_payment_cancelled": "Paiement annulé. Vous pouvez réessayer.",
+  "ads_ph_title": "ex. Lunettes de soleil",
+  "ads_ph_name": "Nom de l'entreprise ou personnel"
 }
