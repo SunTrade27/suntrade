@@ -479,7 +479,7 @@
   "ads_label_phone": "Telefon",
   "ads_label_url": "Link URL (isteğe bağlı)",
   "ads_label_image": "Reklam görseli *",
-  "ads_upload_hint": "Görseli buraya sürükleyin veya yüklemek için tıklayın",
+  "ads_upload_hint": "<strong>Görseli buraya sürükleyin</strong> veya yüklemek için tıklayın",
   "ads_label_start": "Başlangıç tarihi",
   "ads_label_end": "Bitiş tarihi (isteğe bağlı — bitene kadar çalışır)",
   "ads_page_title": "Reklam Ver - SunTrade",

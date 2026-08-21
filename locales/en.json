@@ -539,7 +539,7 @@
   "ads_label_phone": "Phone",
   "ads_label_url": "Link URL (optional)",
   "ads_label_image": "Ad image *",
-  "ads_upload_hint": "Drag image here or click to upload",
+  "ads_upload_hint": "<strong>Drag image here</strong> or click to upload",
   "ads_label_start": "Start date",
   "ads_label_end": "End date (optional — runs until expiry)",
   "ads_page_title": "Advertise - SunTrade",

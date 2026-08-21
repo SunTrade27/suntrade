@@ -541,7 +541,7 @@
   "ads_label_phone": "Телефон",
   "ads_label_url": "Сілтеме URL (міндетті емес)",
   "ads_label_image": "Жарнама суреті *",
-  "ads_upload_hint": "Суретті бұл жерге сүйреңіз немесе басыңыз",
+  "ads_upload_hint": "<strong>Суретті бұл жерге сүйреңіз</strong> немесе басыңыз",
   "ads_label_start": "Басталу күні",
   "ads_label_end": "Аяқталу күні (міндетті емес — тұрғанша жұмыс істейді)",
   "ads_page_title": "Жарнама беру - SunTrade",

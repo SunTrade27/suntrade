@@ -479,7 +479,7 @@
   "ads_label_phone": "Telefoon",
   "ads_label_url": "Link URL (optioneel)",
   "ads_label_image": "Advertentie afbeelding *",
-  "ads_upload_hint": "Sleep afbeelding hierheen of klik om te uploaden",
+  "ads_upload_hint": "<strong>Sleep afbeelding hierheen</strong> of klik om te uploaden",
   "ads_label_start": "Startdatum",
   "ads_label_end": "Einddatum (optioneel)",
   "ads_page_title": "Adverteren - SunTrade",

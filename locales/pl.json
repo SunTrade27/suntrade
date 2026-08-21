@@ -479,7 +479,7 @@
   "ads_label_phone": "Telefon",
   "ads_label_url": "URL linku (opcjonalnie)",
   "ads_label_image": "Obraz reklamy *",
-  "ads_upload_hint": "Preciagnij obraz tutaj lub kliknij, aby przeslac",
+  "ads_upload_hint": "<strong>Przeciągnij obraz tutaj</strong> lub kliknij, aby przesłać",
   "ads_label_start": "Data rozpoczecia",
   "ads_label_end": "Data zakonczenia (opcjonalnie)",
   "ads_page_title": "Reklama - SunTrade",
