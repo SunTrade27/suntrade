@@ -3841,15 +3841,32 @@
     let completed = 0;
     let successful = 0;
     const failed = [];
-    setStatus('<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Saved in English. Translating to all 12 languages… 0/' + total, 'working');
+    let skipped = 0;
+
+    // Pre-check: skip languages that already have valid translations
+    const langsToTranslate = langs.filter(lang => {
+      const existingName = savedProduct['name_' + lang] || '';
+      const existingDesc = savedProduct['desc_' + lang] || '';
+      const nameOk = usable(existingName, nameEn);
+      const descOk = !descEn || usable(existingDesc, descEn);
+      if (nameOk && descOk) { skipped++; return false; }
+      return true;
+    });
+
+    if (langsToTranslate.length === 0) {
+      setStatus('<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#22C55E;"><use href="#icon-check-circle"/></svg> All ' + total + ' languages already translated.', 'success');
+      return;
+    }
+
+    setStatus('<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> Translating ' + langsToTranslate.length + ' languages… 0/' + langsToTranslate.length + ' (skipped ' + skipped + ' already done)', 'working');
 
     // Two requests at a time keeps the free providers stable while making the
     // operation much faster than the old fully sequential fallback loop.
     let nextIndex = 0;
     const worker = async () => {
-      while (nextIndex < total) {
+      while (nextIndex < langsToTranslate.length) {
         const index = nextIndex++;
-        const lang = langs[index];
+        const lang = langsToTranslate[index];
         let ok = false;
         let lastError = 'translation_unavailable';
 
@@ -3903,8 +3920,8 @@
     }
 
     const message = failed.length === 0
-      ? '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#16A34A;"><use href="#icon-check-circle"/></svg> English content was translated into all 12 site languages.'
-      : '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#D97706;"><use href="#icon-alert"/></svg> Translated ' + successful + '/' + total + ' languages. Save again or use Batch Translate All to retry the rest.';
+      ? '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#16A34A;"><use href="#icon-check-circle"/></svg> Translated ' + successful + '/' + langsToTranslate.length + ' languages' + (skipped > 0 ? ' (' + skipped + ' already done)' : '') + '.'
+      : '<svg class="icon icon-sm" style="vertical-align:middle;margin-right:4px;color:#D97706;"><use href="#icon-alert"/></svg> Translated ' + successful + '/' + langsToTranslate.length + ' languages. ' + failed.length + ' failed. Use Batch Translate All to retry.';
     setStatus(message, failed.length === 0 ? 'success' : 'error');
     loadProducts();
     setTimeout(() => { if (status) status.style.display = 'none'; }, 15000);

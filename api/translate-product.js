@@ -104,25 +104,20 @@ function containsUntranslatedSourceChunk(value, source) {
   const original = stripText(source);
   if (!translated || !original) return false;
   if (translated === original) return true;
-  // A provider may translate only the tail and leave the opening English
-  // paragraph intact. Catch that mixed response before it reaches the DB.
-  if (original.length >= 160 && translated.length <= original.length * 1.35 &&
-      translated.startsWith(original.slice(0, 160))) return true;
-  // Long descriptions are intentionally bounded for Gemini. If it returns
-  // that bounded English prefix, comparing it to 450-character chunks alone
-  // misses the echo because the returned value is much longer than one chunk.
-  if (translated.length >= 80 && original.startsWith(translated)) return true;
-  const sourceLooksLikeHtml = /<\s*\/?\s*[a-z][^>]*>/i.test(String(source || ''));
-  const chunks = sourceLooksLikeHtml ? htmlChunks(String(source), 450) : sentenceChunks(String(source), 450);
-  return chunks.some(chunk => {
-    const visibleChunk = stripText(chunk);
-    // Require a long exact echo and a translated result that is not much
-    // longer than the echoed source. This avoids rejecting normal unchanged
-    // product names/brands while catching a mostly-English fallback response.
-    return visibleChunk.length >= 80 &&
-      translated.length <= visibleChunk.length * 1.35 &&
-      translated.includes(visibleChunk);
-  });
+  // For short texts (< 80 chars), an exact match means untranslated
+  if (original.length < 80 && translated === original) return true;
+  // For longer texts, only flag if the translation is mostly unchanged
+  // (less than 15% different) — this catches actual echo/fallback responses
+  if (original.length >= 160) {
+    // Calculate Levenshtein-like difference: count common words
+    const origWords = original.split(/\s+/);
+    const transWords = translated.split(/\s+/);
+    const commonWords = origWords.filter(w => transWords.includes(w)).length;
+    const similarity = commonWords / Math.max(origWords.length, 1);
+    // If > 85% of words are the same, it's likely untranslated
+    if (similarity > 0.85 && translated.length <= original.length * 1.3) return true;
+  }
+  return false;
 }
 
 function freePreCleanHtml(html) {
@@ -521,15 +516,26 @@ const KAZAKH_LABEL_OVERRIDES = {
   'blue': 'Көк',
   'green': 'Жасыл',
   'yellow': 'Сары',
+  'purple': 'Күлгін',
+  'pink': 'Қызғылт',
+  'orange': 'Қызғылт сары',
+  'brown': 'Қоңыр',
   'gold': 'Алтын',
   'silver': 'Күміс',
   'gray': 'Сұр',
   'grey': 'Сұр',
   'rose gold': 'Алтын раушан',
+  'dark blue': 'Көк',
+  'light blue': 'Ашық көк',
+  'navy': 'Көк',
+  'beige': 'Бежевый',
+  'cream': 'Кремді',
+  'transparent': 'Мөлдір',
   'color': 'Түс',
   'colour': 'Түс',
   'size': 'Өлшем',
-  'type': 'Түрі'
+  'type': 'Түрі',
+  'material': 'Материал'
 };
 
 async function aiTranslateLabels(labels, langCode) {
@@ -539,7 +545,7 @@ async function aiTranslateLabels(labels, langCode) {
   };
   const langName = langNames[langCode] || langCode;
   const kazakhRules = langCode === 'kz'
-    ? `\n5. For Kazakh, write natural modern Kazakh in Cyrillic, not Russian transliteration. Use Қара for Black, Ақ for White, Түс for Color, Өлшем for Size, and Алтын раушан for Rose Gold.\n6. Never return markup, code, font names, or technical tokens.`
+    ? `\n5. For Kazakh, write natural modern Kazakh in Cyrillic, not Russian transliteration. Use these EXACT translations: Black=Қара, White=Ақ, Red=Қызыл, Blue=Көк, Green=Жасыл, Yellow=Сары, Purple=Күлгін, Pink=Қызғылт, Orange=Қызғылт сары, Brown=Қоңыр, Gray/Grey=Сұр, Gold=Алтын, Silver=Күміс, Color=Түс, Size=Өлшем.\n6. Never return markup, code, font names, or technical tokens.`
     : '';
   const prompt = `Translate these e-commerce variant labels from English to ${langName}.\n\n` +
     JSON.stringify(labels) +
@@ -569,6 +575,19 @@ async function aiTranslateLabels(labels, langCode) {
     if (langCode === 'kz') {
       Object.keys(labels).forEach(key => {
         const override = KAZAKH_LABEL_OVERRIDES[String(labels[key] || '').trim().toLowerCase()];
+        if (override) out[key] = override;
+      });
+    }
+    if (langCode === 'ru') {
+      const RUSSIAN_OVERRIDES = {
+        'black': 'Чёрный', 'white': 'Белый', 'red': 'Красный', 'blue': 'Синий',
+        'green': 'Зелёный', 'yellow': 'Жёлтый', 'purple': 'Фиолетовый',
+        'pink': 'Розовый', 'orange': 'Оранжевый', 'brown': 'Коричневый',
+        'gray': 'Серый', 'grey': 'Серый', 'gold': 'Золотой', 'silver': 'Серебряный',
+        'color': 'Цвет', 'size': 'Размер', 'type': 'Тип', 'material': 'Материал'
+      };
+      Object.keys(labels).forEach(key => {
+        const override = RUSSIAN_OVERRIDES[String(labels[key] || '').trim().toLowerCase()];
         if (override) out[key] = override;
       });
     }
