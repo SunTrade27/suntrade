@@ -109,7 +109,39 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { items, customer, turnstileToken, turnstile_token } = req.body;
+    const { items, customer, turnstileToken, turnstile_token, action } = req.body;
+
+    // ===== Ad Checkout (merged from create-ad-checkout.js) =====
+    if (action === 'ad_checkout') {
+      const { ad_id, ad_title, email, name } = req.body;
+      if (!ad_id || !email) {
+        return res.status(400).json({ error: 'Missing required fields: ad_id and email' });
+      }
+      const { data: ad, error: adError } = await supabase
+        .from('ads').select('id, title, active').eq('id', ad_id).single();
+      if (adError || !ad) return res.status(404).json({ error: 'Ad not found' });
+      if (ad.active) return res.status(400).json({ error: 'Ad is already active' });
+      const origin = req.headers.origin || 'https://www.suntrade.store';
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{
+          price_data: {
+            currency: 'eur',
+            product_data: { name: 'Ad: ' + (ad_title || ad.title || 'SunTrade Ad'), description: '1 month ad placement — SunTrade', images: [] },
+            unit_amount: 1800
+          },
+          quantity: 1
+        }],
+        mode: 'payment',
+        customer_email: email,
+        metadata: { ad_id, ad_title: (ad_title || '').substring(0, 200), advertiser_name: (name || '').substring(0, 200), advertiser_email: email.substring(0, 200), payment_type: 'advertisement' },
+        success_url: origin + '/ads.html?payment=success&ad_id=' + ad_id + '&session_id={CHECKOUT_SESSION_ID}',
+        cancel_url: origin + '/ads.html?payment=cancelled'
+      });
+      return res.status(200).json({ url: session.url, session_id: session.id });
+    }
+
+    // ===== Product Checkout =====
 
     // ===== Cloudflare Turnstile verification (bot protection) =====
     const tokenToVerify = turnstileToken || turnstile_token;

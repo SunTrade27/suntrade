@@ -449,10 +449,11 @@
         if (insertError) throw insertError;
 
         // 2) Create Stripe Checkout session for ad payment
-        const resp = await fetch('/api/create-ad-checkout', {
+        const resp = await fetch('/api/create-checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            action: 'ad_checkout',
             ad_id: adRecord.id,
             ad_title: title,
             email: email,
