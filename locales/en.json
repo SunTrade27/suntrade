@@ -551,5 +551,6 @@
   "ads_err_payment_cancelled": "Payment cancelled. You can try again.",
   "ads_ph_title": "e.g. Summer Sunglasses",
   "ads_ph_name": "Company or personal name",
-  "ads_date_format": "Format: mm/dd/yyyy"
+  "ads_date_format": "Format: mm/dd/yyyy",
+  "ads_ph_phone": "+1 (555) 123-4567"
 }

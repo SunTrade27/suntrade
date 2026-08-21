@@ -491,5 +491,6 @@
   "ads_err_payment_cancelled": "Płatność anulowana. Spróbuj ponownie.",
   "ads_ph_title": "np. Okulary przeciwsłoneczne",
   "ads_ph_name": "Nazwa firmy lub osobista",
-  "ads_date_format": "Format: dd.mm.rrrr"
+  "ads_date_format": "Format: dd.mm.rrrr",
+  "ads_ph_phone": "+48 512 345 678"
 }

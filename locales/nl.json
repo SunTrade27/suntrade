@@ -491,5 +491,6 @@
   "ads_err_payment_cancelled": "Betaling geannuleerd. U kunt het opnieuw proberen.",
   "ads_ph_title": "bv. Zonnebril",
   "ads_ph_name": "Bedrijfs- of persoonlijke naam",
-  "ads_date_format": "Formaat: dd-mm-jjjj"
+  "ads_date_format": "Formaat: dd-mm-jjjj",
+  "ads_ph_phone": "+31 6 12345678"
 }

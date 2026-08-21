@@ -491,5 +491,6 @@
   "ads_err_payment_cancelled": "Pago cancelado. Puede intentar de nuevo.",
   "ads_ph_title": "ej. Gafas de sol",
   "ads_ph_name": "Nombre de empresa o personal",
-  "ads_date_format": "Formato: dd/mm/aaaa"
+  "ads_date_format": "Formato: dd/mm/aaaa",
+  "ads_ph_phone": "+34 612 345 678"
 }
