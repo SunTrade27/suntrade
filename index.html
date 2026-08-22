@@ -1078,7 +1078,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
 </section>
 
 <!-- FEATURED PRODUCTS -->
-<section id="featured-section" class="section" style="max-width: 100%; padding-left: 0; padding-right: 0;">
+<section id="featured-section" class="section" style="max-width: 100%; padding-left: 0; padding-right: 0; display:none;">
   <div style="max-width: 1280px; margin: 0 auto; padding: 0 1rem;">
     <h2 class="section-title" data-i18n="featured_title">Featured Products</h2>
     <div class="products-grid" id="featured-products">
@@ -1091,7 +1091,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
 </section>
 
 <!-- TESTIMONIALS -->
-<section id="testimonials-section" class="section">
+<section id="testimonials-section" class="section" style="display:none;">
   <div class="testimonials-header">
     <h2 class="section-title" style="margin-bottom:0;" data-i18n="testimonials_title">What Our Customers Say</h2>
     <div class="testimonials-actions">
@@ -1532,6 +1532,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
       const prodGrid = document.getElementById('featured-products');
       const featuredSection = document.getElementById('featured-section');
       if (prodGrid && products.length) {
+        if (featuredSection) featuredSection.style.display = '';
         prodGrid.innerHTML = products.map(p => renderProductCard(p)).join('');
         applyTranslations();
         // On-demand free translation for any featured product missing
@@ -1567,10 +1568,10 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
       const reviews = await getApprovedReviews(20);
       cachedReviews = reviews;
       renderHomepageReviews();
-      // Hide testimonials section if no reviews
-      if (!reviews.length) {
-        const testimonialsSection = document.getElementById('testimonials-section');
-        if (testimonialsSection) testimonialsSection.style.display = 'none';
+      // Show/hide testimonials section based on reviews
+      const testimonialsSection = document.getElementById('testimonials-section');
+      if (reviews.length && testimonialsSection) {
+        testimonialsSection.style.display = '';
       }
       initMobileWheel();
 
