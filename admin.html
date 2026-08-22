@@ -1063,7 +1063,7 @@
             </button>
             <span class="translate-progress" id="format-status"></span>
           </div>
-          <div id="pdesc-en" class="desc-editor" contenteditable="true" data-placeholder="Enter product description..." data-lang="en"></div>
+          <div id="pdesc-en" class="desc-editor" contenteditable="true" data-placeholder="Paste a description, drag images here, or Ctrl+V to paste images from files..." data-lang="en"></div>
           <textarea id="pdesc-en-raw" style="display:none;"></textarea>
         </div>
       </div>
@@ -1260,12 +1260,16 @@
       fileInput.addEventListener('change', (e) => handleImageFiles(e.target.files));
     }
 
-    // Add paste handler for the initial English description editor
+    // Add paste + drag-drop handler for the initial English description editor
     const initialEditor = document.getElementById('pdesc-en');
     if (initialEditor) {
       initialEditor.addEventListener('paste', handleRichPaste);
       initialEditor.addEventListener('input', syncDescRaw);
       attachToolbarHandlers(initialEditor);
+      // Drag & drop image support
+      initialEditor.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); initialEditor.style.borderColor = 'var(--primary)'; initialEditor.style.boxShadow = '0 0 0 3px rgba(255,107,0,0.15)'; });
+      initialEditor.addEventListener('dragleave', () => { initialEditor.style.borderColor = ''; initialEditor.style.boxShadow = ''; });
+      initialEditor.addEventListener('drop', async (e) => { e.preventDefault(); e.stopPropagation(); initialEditor.style.borderColor = ''; initialEditor.style.boxShadow = ''; const dropFiles = e.dataTransfer.files; if (dropFiles && dropFiles.length > 0) { const dropImageFiles = Array.from(dropFiles).filter(f => f.type && f.type.startsWith('image/')); if (dropImageFiles.length > 0) { const dropId = 'drop-loading-' + Date.now(); document.execCommand('insertHTML', false, '<p id="' + dropId + '" style="color:var(--primary);font-size:0.85rem;font-style:italic;">⏳ Сурет жүктелуде...</p>'); const dropEl = document.getElementById(dropId); try { const dropImgTags = []; for (const dFile of dropImageFiles) { const dropUrl = await uploadImage(dFile); dropImgTags.push('<img src="' + dropUrl + '" alt="" loading="lazy" style="max-width:100%;height:auto;border-radius:8px;margin:10px 0;display:block;box-shadow:0 1px 3px rgba(0,0,0,0.08);">'); } if (dropEl) dropEl.remove(); document.execCommand('insertHTML', false, dropImgTags.join('')); } catch (err) { console.error('Drop image upload error:', err); if (dropEl) dropEl.remove(); document.execCommand('insertHTML', false, '<p style="color:var(--danger);font-size:0.85rem;">❌ Суретті жүктеу қатесі: ' + err.message + '</p>'); } syncDescRaw({ target: initialEditor }); } } });
     }
   });
 
@@ -2012,7 +2016,7 @@
       <div class="form-group">
         <label>Description (${lang.toUpperCase()})</label>
         ${buildDescToolbar(lang)}
-        <div id="pdesc-${lang}" class="desc-editor with-toolbar" contenteditable="true" data-placeholder="${lang === 'en' ? 'Paste a description from any website — images, text and formatting will be preserved and beautified.' : 'Product description...'}" data-lang="${lang}">${descHtml}</div>
+        <div id="pdesc-${lang}" class="desc-editor with-toolbar" contenteditable="true" data-placeholder="${lang === 'en' ? 'Paste a description, drag images here, or Ctrl+V to paste images from files...' : 'Сипаттаманы кірістіріңіз, суреттерді осы жерге сүйреп әкеліңіз немесе Ctrl+V басыңыз...'}" data-lang="${lang}">${descHtml}</div>
         <textarea id="pdesc-${lang}-raw" style="display:none;">${descHtml.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
       </div>
     `;
@@ -2022,6 +2026,10 @@
       editor.addEventListener('paste', handleRichPaste);
       editor.addEventListener('input', syncDescRaw);
       attachToolbarHandlers(editor);
+      // Drag & drop image support for this editor
+      editor.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); editor.style.borderColor = 'var(--primary)'; editor.style.boxShadow = '0 0 0 3px rgba(255,107,0,0.15)'; });
+      editor.addEventListener('dragleave', () => { editor.style.borderColor = ''; editor.style.boxShadow = ''; });
+      editor.addEventListener('drop', async (e) => { e.preventDefault(); e.stopPropagation(); editor.style.borderColor = ''; editor.style.boxShadow = ''; const dropFiles = e.dataTransfer.files; if (dropFiles && dropFiles.length > 0) { const dropImageFiles = Array.from(dropFiles).filter(f => f.type && f.type.startsWith('image/')); if (dropImageFiles.length > 0) { const dropId = 'drop-loading-' + Date.now(); document.execCommand('insertHTML', false, '<p id="' + dropId + '" style="color:var(--primary);font-size:0.85rem;font-style:italic;">⏳ Сурет жүктелуде...</p>'); const dropEl = document.getElementById(dropId); try { const dropImgTags = []; for (const dFile of dropImageFiles) { const dropUrl = await uploadImage(dFile); dropImgTags.push('<img src="' + dropUrl + '" alt="" loading="lazy" style="max-width:100%;height:auto;border-radius:8px;margin:10px 0;display:block;box-shadow:0 1px 3px rgba(0,0,0,0.08);">'); } if (dropEl) dropEl.remove(); document.execCommand('insertHTML', false, dropImgTags.join('')); } catch (err) { console.error('Drop image upload error:', err); if (dropEl) dropEl.remove(); document.execCommand('insertHTML', false, '<p style="color:var(--danger);font-size:0.85rem;">❌ Суретті жүктеу қатесі: ' + err.message + '</p>'); } syncDescRaw({ target: editor }); } } });
     }
   }
 
@@ -3213,7 +3221,36 @@
     const editor = e.target;
     const html = e.clipboardData.getData('text/html');
     const text = e.clipboardData.getData('text/plain');
+    const files = e.clipboardData.files;
 
+    // 1) If user pasted an image file (e.g. copied from file explorer, screenshots)
+    if (files && files.length > 0) {
+      const imageFiles = Array.from(files).filter(f => f.type && f.type.startsWith('image/'));
+      if (imageFiles.length > 0) {
+        // Show a loading indicator inside the editor
+        const loadingId = 'paste-loading-' + Date.now();
+        document.execCommand('insertHTML', false, '<p id="' + loadingId + '" style="color:var(--primary);font-size:0.85rem;font-style:italic;">⏳ Сурет жүктелуде...</p>');
+        const loadingEl = document.getElementById(loadingId);
+        try {
+          const imgTags = [];
+          for (const file of imageFiles) {
+            const url = await uploadImage(file);
+            imgTags.push('<img src="' + url + '" alt="" loading="lazy" style="max-width:100%;height:auto;border-radius:8px;margin:10px 0;display:block;box-shadow:0 1px 3px rgba(0,0,0,0.08);">');
+          }
+          // Replace loading indicator with the actual images
+          if (loadingEl) loadingEl.remove();
+          document.execCommand('insertHTML', false, imgTags.join(''));
+        } catch (err) {
+          console.error('Paste image upload error:', err);
+          if (loadingEl) loadingEl.remove();
+          document.execCommand('insertHTML', false, '<p style="color:var(--danger);font-size:0.85rem;">❌ Суретті жүктеу қатесі: ' + err.message + '</p>');
+        }
+        syncDescRaw({ target: editor });
+        return;
+      }
+    }
+
+    // 2) HTML from clipboard (e.g. copying from a website — images, formatting)
     if (html) {
       const cleaned = await cleanPastedHtmlAsync(html);
       document.execCommand('insertHTML', false, cleaned);
