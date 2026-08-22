@@ -131,13 +131,7 @@ input, textarea, select { font-family: inherit; }
 .theme-toggle-icon { width: 18px; height: 18px; display: block; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }  .theme-toggle-label { display: none; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
 .theme-toggle-desktop { display: inline-flex; }
 @media (max-width: 768px) {
-  .theme-toggle { width: 100%; justify-content: flex-start; padding: 0.85rem 0; min-height: 0; border: 0; border-radius: 0; background: transparent; color: var(--text); }
-  .theme-toggle:hover { background: transparent; color: var(--primary); }
-  .theme-toggle-desktop { display: none; }
-  .theme-toggle-label { display: inline; }
-  .nav-links .theme-menu-item { display: none; }
-  .nav-links.show .theme-menu-item { display: block; width: 100%; }
-  .nav-links.show .theme-menu-item .theme-toggle { border-bottom: 1px solid var(--border); }
+  .theme-toggle-desktop { display: inline-flex !important; }
 }
 
 /* ===== Site-wide dark mode ===== */

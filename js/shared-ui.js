@@ -244,3 +244,18 @@ var FavoritesManager = {
     setTimeout(tryLoad, 600);
   }
 })();
+
+// ===== Mobile Menu: close when clicking outside =====
+(function() {
+  'use strict';
+  document.addEventListener('click', function(e) {
+    var navLinks = document.getElementById('nav-links');
+    var menuBtn = document.querySelector('.mobile-menu-btn');
+    if (!navLinks || !navLinks.classList.contains('show')) return;
+    // If click is outside nav-links AND outside the hamburger button, close
+    if (!navLinks.contains(e.target) && menuBtn && !menuBtn.contains(e.target)) {
+      navLinks.classList.remove('show');
+      if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
