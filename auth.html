@@ -8,7 +8,7 @@ var _sl=localStorage.getItem('suntrade_lang');
 if(_sl&&_sl!='en'){
 document.write('<link rel="preload" href="/locales/'+_sl+'.json" as="fetch" crossorigin>');
 var _tc=localStorage.getItem('suntrade_translations_'+_sl);
-if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-ready) [data-i18n-html]{visibility:hidden!important}body.i18n-ready [data-i18n],body.i18n-ready [data-i18n-html]{visibility:visible!important}</style>')}
+if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-ready) [data-i18n-html]{visibility:hidden!important}.navbar [data-i18n],.navbar [data-i18n-html]{visibility:visible!important}body.i18n-ready [data-i18n],body.i18n-ready [data-i18n-html]{visibility:visible!important}</style>')}
 }
 </script>
   <title data-i18n="auth_title">Sign In - SunTrade</title>
