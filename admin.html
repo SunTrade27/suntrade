@@ -4066,9 +4066,22 @@
       product.desc_en !== (productForm?.dataset.originalDescEn || '')
     );
     if (sourceChanged) {
+      // Only clear translations that look auto-generated (copies of English
+      // or empty). Keep manually entered translations that differ from English.
+      const isAutoCopy = (val, en) => {
+        const v = String(val || '').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim().toLowerCase();
+        const e = String(en || '').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim().toLowerCase();
+        return !v || v === e || v.includes(e) || e.includes(v);
+      };
       translateLangs.forEach(lang => {
-        product['name_' + lang] = '';
-        product['desc_' + lang] = '';
+        const existingName = product['name_' + lang] || '';
+        const existingDesc = product['desc_' + lang] || '';
+        if (isAutoCopy(existingName, product.name_en)) {
+          product['name_' + lang] = '';
+        }
+        if (isAutoCopy(existingDesc, product.desc_en)) {
+          product['desc_' + lang] = '';
+        }
       });
     }
 
