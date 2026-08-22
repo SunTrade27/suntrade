@@ -716,6 +716,7 @@ html[data-theme="dark"] .admin-main [style*="background:#F3F4F6"] { background: 
 }
 
 /* ===== CATEGORIES ===== */
+.categories-scroll-hint { display: none; }
 .categories-grid {
   display: flex;
   flex-wrap: nowrap;
