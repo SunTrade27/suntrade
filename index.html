@@ -1078,7 +1078,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
 </section>
 
 <!-- FEATURED PRODUCTS -->
-<section class="section reveal" style="max-width: 100%; padding-left: 0; padding-right: 0;">
+<section id="featured-section" class="section reveal" style="max-width: 100%; padding-left: 0; padding-right: 0;">
   <div style="max-width: 1280px; margin: 0 auto; padding: 0 1rem;">
     <h2 class="section-title" data-i18n="featured_title">Featured Products</h2>
     <div class="products-grid" id="featured-products">
@@ -1530,6 +1530,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
       const products = await getProducts({ limit: 8 });
       cachedFeatured = products;
       const prodGrid = document.getElementById('featured-products');
+      const featuredSection = document.getElementById('featured-section');
       if (prodGrid && products.length) {
         prodGrid.innerHTML = products.map(p => renderProductCard(p)).join('');
         applyTranslations();
@@ -1557,12 +1558,20 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
             }
           });
         }
+      } else if (featuredSection) {
+        // No products — hide the entire section to avoid empty space
+        featuredSection.style.display = 'none';
       }
 
       // Homepage reviews
       const reviews = await getApprovedReviews(20);
       cachedReviews = reviews;
       renderHomepageReviews();
+      // Hide testimonials section if no reviews
+      if (!reviews.length) {
+        const testimonialsSection = document.getElementById('testimonials-section');
+        if (testimonialsSection) testimonialsSection.style.display = 'none';
+      }
       initMobileWheel();
 
       // Check admin access for review button
