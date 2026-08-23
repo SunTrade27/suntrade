@@ -176,9 +176,9 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     .hero-discount-badge {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
+      gap: 0.55rem;
       margin-bottom: 1.1rem;
-      padding: 0.55rem 1.2rem;
+      padding: 0.45rem 1.1rem 0.45rem 0.5rem;
       background: linear-gradient(135deg, rgba(255,107,0,0.95), rgba(255,69,0,0.95));
       border: 1px solid rgba(255,255,255,0.35);
       border-radius: 50px;
@@ -215,15 +215,24 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
       padding: 0.3rem 0.65rem;
       border-radius: 50px;
       letter-spacing: 0.5px;
-      text-shadow: none;
+    }
+    .hero-discount-text {
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.25);
     }
     @media (max-width: 768px) {
-      .hero-discount-badge { padding: 0.4rem 1rem; margin-bottom: 0.7rem; }
+      .hero-discount-badge { padding: 0.35rem 0.9rem 0.35rem 0.4rem; margin-bottom: 0.7rem; }
       .hero-discount-num { font-size: 0.9rem; padding: 0.25rem 0.55rem; }
+      .hero-discount-text { font-size: 0.78rem; }
     }
     @media (max-width: 480px) {
-      .hero-discount-badge { padding: 0.35rem 0.9rem; margin-bottom: 0.6rem; }
+      .hero-discount-badge { padding: 0.3rem 0.8rem 0.3rem 0.35rem; margin-bottom: 0.6rem; }
       .hero-discount-num { font-size: 0.85rem; padding: 0.2rem 0.5rem; }
+      .hero-discount-text { font-size: 0.72rem; }
     }
     /* Animated clouds */
     .sky-cloud {
@@ -1044,6 +1053,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
   <div class="hero-content">
     <div class="hero-discount-badge" role="note">
       <span class="hero-discount-num">-10%</span>
+      <span class="hero-discount-text" data-i18n="discount_label">ЖЕҢІЛДІК</span>
     </div>
     <h1 data-i18n="hero_title">Discover Amazing Products</h1>
     <p data-i18n="hero_subtitle">Quality products from China at the best prices. Worldwide shipping!</p>
