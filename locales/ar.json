@@ -502,7 +502,7 @@
   "leads_subtitle": "إحصائيات آخر 30 يومًا",
   "product_most_popular": "الأكثر شعبية",
   "product_best_value": "أفضل قيمة",
-  "footer_founder": "الموأسس",
+  "footer_founder": "المؤسس",
   "footer_address": "العنوان",
   "footer_delivery_from_china": "التوصيل من الصين",
   "discount_label": "خصم",
@@ -510,5 +510,7 @@
   "footer_delivery_desc": "نعمل مباشرة مع موردين موثوقين في الصين، ونضمن أفضل الأسعار والتوصيل السريع لعملائنا.",
   "footer_trust1": "ضمان استرداد المال على كل طلب",
   "footer_trust2": "تتبع طلبك في كل خطوة",
-  "footer_trust3": "سياسة الإرجاع — 14 يومًا"
+  "footer_trust3": "سياسة الإرجاع — 14 يومًا",
+  "footer_address_value": "كازاخستان، منطقة تركستان، مدينة شيمكنت، شارع أبيلخاير، الحي 189، مبنى 25أ",
+  "footer_founder_value": "إليمسوف سيرجان باقيتجانولي"
 }
