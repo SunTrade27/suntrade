@@ -60,7 +60,7 @@
   "sort_price_low": "Цена: от низкой к высокой",
   "sort_price_high": "Цена: от высокой к низкой",
   "sort_popular": "Популярные",
-  "footer_about": "О нас",
+  "footer_about": "О сайте",
   "footer_about_text": "SunTrade - ваш надежный глобальный рынок качественных товаров из Китая.",
   "footer_contact": "Контакты",
   "footer_whatsapp": "WhatsApp",
@@ -567,8 +567,10 @@
   "footer_founder": "Основатель",
   "footer_address": "Адрес",
   "footer_delivery_from_china": "Доставка из Китая",
-  "footer_delivery_feature1": "Прямая доставка — без посредников",
-  "footer_delivery_feature2": "Безопасность оплаты — SSL шифрование",
-  "footer_delivery_feature3": "Бесплатная мировая доставка",
-  "discount_label": "СКИДКА"
+  "discount_label": "СКИДКА",
+  "footer_about_desc": "SunTrade — глобальная площадка доставки качественных товаров из Китая в любую точку мира.",
+  "footer_delivery_desc": "Мы работаем напрямую с проверенными поставщиками в Китае, гарантируя лучшие цены и быструю доставку.",
+  "footer_trust1": "Гарантия возврата денег на каждый заказ",
+  "footer_trust2": "Отслеживайте заказ на каждом этапе",
+  "footer_trust3": "Поддержка 24/7 через WhatsApp"
 }

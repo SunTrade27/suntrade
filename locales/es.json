@@ -505,8 +505,10 @@
   "footer_founder": "Fundador",
   "footer_address": "Dirección",
   "footer_delivery_from_china": "Envío desde China",
-  "footer_delivery_feature1": "Envío directo — sin intermediarios",
-  "footer_delivery_feature2": "Seguridad de pago — cifrado SSL",
-  "footer_delivery_feature3": "Envío mundial gratuito",
-  "discount_label": "DESCUENTO"
+  "discount_label": "DESCUENTO",
+  "footer_about_desc": "SunTrade — un mercado global que entrega productos de calidad de China a cualquier punto del mundo.",
+  "footer_delivery_desc": "Trabajamos directamente con proveedores confiables en China, garantizando los mejores precios y envío rápido.",
+  "footer_trust1": "Garantía de devolución en cada pedido",
+  "footer_trust2": "Rastree su pedido en cada paso",
+  "footer_trust3": "Soporte al cliente 24/7 por WhatsApp"
 }

@@ -505,8 +505,10 @@
   "footer_founder": "Kurucu",
   "footer_address": "Adres",
   "footer_delivery_from_china": "Çin'den Teslimat",
-  "footer_delivery_feature1": "Doğrudan teslimat — aracısız",
-  "footer_delivery_feature2": "Ödeme güvenliği — SSL şifreleme",
-  "footer_delivery_feature3": "Ücretsiz dünya çapında teslimat",
-  "discount_label": "İNDİRİM"
+  "discount_label": "İNDİRİM",
+  "footer_about_desc": "SunTrade — Çin'den dünyanın her noktasına kaliteli ürünler sunan küresel bir pazardır.",
+  "footer_delivery_desc": "Çin'deki güvenilir tedarikçilerle doğrudan çalışarak en iyi fiyatları ve hızlı teslimatı garanti ediyoruz.",
+  "footer_trust1": "Her sipariş için para iade garantisi",
+  "footer_trust2": "Siparişinizi her adımda takip edin",
+  "footer_trust3": "WhatsApp üzerinden 7/24 müşteri desteği"
 }

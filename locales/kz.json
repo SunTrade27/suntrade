@@ -60,7 +60,7 @@
   "sort_price_low": "Баға: Арзаннан қымбатқа",
   "sort_price_high": "Баға: Қымбаттан арзанға",
   "sort_popular": "Танымал",
-  "footer_about": "Біз туралы",
+  "footer_about": "Сайт туралы",
   "footer_about_text": "SunTrade - Қытайдан сапалы тауарлардың сенімді глобалды нарығы.",
   "footer_contact": "Байланыс",
   "footer_whatsapp": "WhatsApp",
@@ -565,10 +565,12 @@
   "product_most_popular": "Ең танымал",
   "product_best_value": "Үздік ұсыныс",
   "footer_founder": "Негізін қалаушы",
-  "footer_address": "Тұрғылықты орны",
+  "footer_address": "Тҩргылыкты орны",
   "footer_delivery_from_china": "Қытайдан жеткізу",
-  "footer_delivery_feature1": "Тікелей жеткізу — делдалсыз",
-  "footer_delivery_feature2": "Төлем қауіпсіздігі — SSL шифрлау",
-  "footer_delivery_feature3": "Тегін әлемдік жеткізу",
-  "discount_label": "ЖЕҢІЛДІК"
+  "discount_label": "ЖЕҢІЛДІК",
+  "footer_about_desc": "SunTrade — Қытайдан алемнінг кез келген нүктесіне сапалы тауарлар жеткізетін глобалды нарық.",
+  "footer_delivery_desc": "Біз Қытайдагы сенімді жеткізушылермен тікелей жумыс істейміз. Тҩынушыларымыз үшін ен тиімді бага мен жылдам жеткізуді қамтамасыз етеміз.",
+  "footer_trust1": "Әр тапсырыс бойынша акшаны қайтару кепілдігі",
+  "footer_trust2": "Тапсырысынызды Әр қадамда бакылаңыз",
+  "footer_trust3": "WhatsApp арқылы 24/7 қолдау қызметі"
 }

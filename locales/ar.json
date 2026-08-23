@@ -54,7 +54,7 @@
   "sort_price_low": "السعر: من الأقل إلى الأعلى",
   "sort_price_high": "السعر: من الأعلى إلى الأقل",
   "sort_popular": "الأكثر شعبية",
-  "footer_about": "من نحن",
+  "footer_about": "عن المتجر",
   "footer_about_text": "SunTrade هو سوقك العالمي الموثوق للمنتجات عالية الجودة من الصين.",
   "footer_contact": "اتصل بنا",
   "footer_whatsapp": "واتساب",
@@ -502,11 +502,13 @@
   "leads_subtitle": "إحصائيات آخر 30 يومًا",
   "product_most_popular": "الأكثر شعبية",
   "product_best_value": "أفضل قيمة",
-  "footer_founder": "المؤسس",
+  "footer_founder": "الموأسس",
   "footer_address": "العنوان",
   "footer_delivery_from_china": "التوصيل من الصين",
-  "footer_delivery_feature1": "توصيل مباشر — بدون وسيط",
-  "footer_delivery_feature2": "أمان الدفع — تشفير SSL",
-  "footer_delivery_feature3": "شحن مجاني عالمي",
-  "discount_label": "خصم"
+  "discount_label": "خصم",
+  "footer_about_desc": "SunTrade — سوق عالمي يقدم منتجات عالية الجودة من الصين إلى أي مكان في العالم.",
+  "footer_delivery_desc": "نعمل مباشرة مع موردين موثوقين في الصين، ونضمن أفضل الأسعار والتوصيل السريع لعملائنا.",
+  "footer_trust1": "ضمان استرداد المال على كل طلب",
+  "footer_trust2": "تتبع طلبك في كل خطوة",
+  "footer_trust3": "دعم العملاء على مدار الساعة عبر واتساب"
 }
