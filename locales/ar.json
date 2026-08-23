@@ -501,5 +501,11 @@
   "trust_support_sub": "دوما هنا للمساعدة",
   "leads_subtitle": "إحصائيات آخر 30 يومًا",
   "product_most_popular": "الأكثر شعبية",
-  "product_best_value": "أفضل قيمة"
+  "product_best_value": "أفضل قيمة",
+  "footer_founder": "المؤسس",
+  "footer_address": "العنوان",
+  "footer_delivery_from_china": "التوصيل من الصين",
+  "footer_delivery_feature1": "توصيل مباشر — بدون وسيط",
+  "footer_delivery_feature2": "أمان الدفع — تشفير SSL",
+  "footer_delivery_feature3": "شحن مجاني عالمي"
 }

@@ -501,5 +501,11 @@
   "trust_support_sub": "Size yardımcı olmak için her zaman buradayız",
   "leads_subtitle": "Son 30 günlük istatistikler",
   "product_most_popular": "En popüler",
-  "product_best_value": "En iyi değer"
+  "product_best_value": "En iyi değer",
+  "footer_founder": "Kurucu",
+  "footer_address": "Adres",
+  "footer_delivery_from_china": "Çin'den Teslimat",
+  "footer_delivery_feature1": "Doğrudan teslimat — aracısız",
+  "footer_delivery_feature2": "Ödeme güvenliği — SSL şifreleme",
+  "footer_delivery_feature3": "Ücretsiz dünya çapında teslimat"
 }

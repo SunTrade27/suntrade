@@ -501,5 +501,11 @@
   "trust_support_sub": "Sempre aqui para ajudar",
   "leads_subtitle": "Estatísticas dos últimos 30 dias",
   "product_most_popular": "Mais popular",
-  "product_best_value": "Melhor valor"
+  "product_best_value": "Melhor valor",
+  "footer_founder": "Fundador",
+  "footer_address": "Endereço",
+  "footer_delivery_from_china": "Entrega da China",
+  "footer_delivery_feature1": "Entrega direta — sem intermediários",
+  "footer_delivery_feature2": "Segurança de pagamento — criptografia SSL",
+  "footer_delivery_feature3": "Frete mundial gratuito"
 }

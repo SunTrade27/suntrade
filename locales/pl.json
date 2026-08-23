@@ -501,5 +501,11 @@
   "trust_support_sub": "Zawsze tutaj aby pomóc",
   "leads_subtitle": "Statystyki z ostatnich 30 dni",
   "product_most_popular": "Najpopularniejszy",
-  "product_best_value": "Najlepsza wartość"
+  "product_best_value": "Najlepsza wartość",
+  "footer_founder": "Założyciel",
+  "footer_address": "Adres",
+  "footer_delivery_from_china": "Dostawa z Chin",
+  "footer_delivery_feature1": "Bezpośrednia dostawa — bez pośredników",
+  "footer_delivery_feature2": "Bezpieczeństwo płatności — szyfrowanie SSL",
+  "footer_delivery_feature3": "Bezpłatna wysyłka na cały świat"
 }

@@ -563,5 +563,11 @@
   "trust_support_sub": "Всегда готовы помочь",
   "leads_subtitle": "Статистика за последние 30 дней",
   "product_most_popular": "Самый популярный",
-  "product_best_value": "Лучшая цена"
+  "product_best_value": "Лучшая цена",
+  "footer_founder": "Основатель",
+  "footer_address": "Адрес",
+  "footer_delivery_from_china": "Доставка из Китая",
+  "footer_delivery_feature1": "Прямая доставка — без посредников",
+  "footer_delivery_feature2": "Безопасность оплаты — SSL шифрование",
+  "footer_delivery_feature3": "Бесплатная мировая доставка"
 }
