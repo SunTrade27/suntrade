@@ -512,5 +512,7 @@
   "footer_trust2": "Śledź swoje zamówienie na każdym etapie",
   "footer_trust3": "Polityka zwrotów — 14 dni",
   "footer_address_value": "Kazachstan, obwód turkiestański, miasto Shymkent, ulica Abilkhair, 189. kwartał, budynek 25A",
-  "footer_founder_value": "Elemesow Sierżan Bakytdżanuły"
+  "footer_founder_value": "Elemesow Sierżan Bakytdżanuły",
+  "return_stripe_title": "Płatności są przetwarzane przez Stripe",
+  "return_stripe_text": "Wszystkie płatności w SunTrade są bezpiecznie przetwarzane za pośrednictwem <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> — zaufanej platformy płatniczej używanej przez miliony firm na całym świecie."
 }

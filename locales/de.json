@@ -512,5 +512,7 @@
   "footer_trust2": "Verfolgen Sie Ihre Bestellung bei jedem Schritt",
   "footer_trust3": "Rückgaberichtlinie — 14 Tage",
   "footer_address_value": "Kasachstan, Turkestan-Region, Schymkent, Abilkhair-Straße, 189. Quartal, Gebäude 25A",
-  "footer_founder_value": "Elemesov Serhan Baqtydschanuly"
+  "footer_founder_value": "Elemesov Serhan Baqtydschanuly",
+  "return_stripe_title": "Zahlungen werden über Stripe abgewickelt",
+  "return_stripe_text": "Alle Zahlungen auf SunTrade werden sicher über <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> abgewickelt — eine vertrauenswürdige Zahlungsplattform, die von Millionen von Unternehmen weltweit genutzt wird."
 }

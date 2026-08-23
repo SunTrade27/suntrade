@@ -572,5 +572,7 @@
   "footer_trust2": "Track your order at every step",
   "footer_trust3": "Return policy — 14 days",
   "footer_address_value": "Kazakhstan, Turkestan region, Shymkent city, Abilkhair street, 189th quarter, building 25A",
-  "footer_founder_value": "Elemesov Serzhan Baqytzhanuly"
+  "footer_founder_value": "Elemesov Serzhan Baqytzhanuly",
+  "return_stripe_title": "Payments processed by Stripe",
+  "return_stripe_text": "All payments on SunTrade are securely processed through <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> — a trusted payment platform used by millions of businesses worldwide. Your financial data is encrypted and never stored on our servers. If you experience any issues with your order, Stripe's buyer protection policy ensures your money is safe."
 }

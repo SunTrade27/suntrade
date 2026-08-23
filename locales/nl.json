@@ -512,5 +512,7 @@
   "footer_trust2": "Volg uw bestelling bij elke stap",
   "footer_trust3": "Retourbeleid — 14 dagen",
   "footer_address_value": "Kazachstan, Turkestan regio, Shymkent stad, Abilkhair straat, 189e kwartier, gebouw 25A",
-  "footer_founder_value": "Elemesov Serzhan Baqytzjanuly"
+  "footer_founder_value": "Elemesov Serzhan Baqytzjanuly",
+  "return_stripe_title": "Betalingen worden verwerkt via Stripe",
+  "return_stripe_text": "Alle betalingen op SunTrade worden veilig verwerkt via <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> — een betrouwbaar betaalplatform dat door miljoenen bedrijven wereldwijd wordt gebruikt."
 }

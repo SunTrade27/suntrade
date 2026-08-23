@@ -512,5 +512,7 @@
   "footer_trust2": "Siparişinizi her adımda takip edin",
   "footer_trust3": "İade politikası — 14 gün",
   "footer_address_value": "Kazakistan, Türkistan bölgesi, Şımkent şehri, Abilkhayır sokağı, 189. blok, bina 25A",
-  "footer_founder_value": "Elemesov Serjan Bakıtcjanulı"
+  "footer_founder_value": "Elemesov Serjan Bakıtcjanulı",
+  "return_stripe_title": "Ödemeler Stripe tarafından işlenir",
+  "return_stripe_text": "SunTrade'deki tüm ödemeler, dünya genelinde milyonlarca işletme tarafından kullanılan güvenilir bir ödeme platformu olan <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> aracılığıyla güvenli bir şekilde işlenir. Finansal verileriniz şifrelenir ve sunucularımızda asla saklanmaz."
 }

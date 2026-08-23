@@ -512,5 +512,7 @@
   "footer_trust2": "Rastree su pedido en cada paso",
   "footer_trust3": "Política de devolución — 14 días",
   "footer_address_value": "Kazajistán, región de Turkestán, ciudad de Shymkent, calle Abilkhair, cuadra 189, edificio 25A",
-  "footer_founder_value": "Elemesov Serzhan Baqytzhanuly"
+  "footer_founder_value": "Elemesov Serzhan Baqytzhanuly",
+  "return_stripe_title": "Los pagos se procesan a través de Stripe",
+  "return_stripe_text": "Todos los pagos en SunTrade se procesan de forma segura a través de <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> — una plataforma de pago confiable utilizada por millones de empresas en todo el mundo."
 }

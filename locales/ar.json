@@ -512,5 +512,7 @@
   "footer_trust2": "تتبع طلبك في كل خطوة",
   "footer_trust3": "سياسة الإرجاع — 14 يومًا",
   "footer_address_value": "كازاخستان، منطقة تركستان، مدينة شيمكنت، شارع أبيلخاير، الحي 189، مبنى 25أ",
-  "footer_founder_value": "إليمسوف سيرجان باقيتجانولي"
+  "footer_founder_value": "إليمسوف سيرجان باقيتجانولي",
+  "return_stripe_title": "تتم معالجة المدفوعات عبر Stripe",
+  "return_stripe_text": "تتم معالجة جميع المدفوعات على SunTrade بشكل آمن من خلال <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> — منصة دفع موثوقة يستخدمها ملايين الشركات حول العالم."
 }
