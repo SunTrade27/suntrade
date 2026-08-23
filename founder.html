@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="founder_title">Founder - SunTrade</title>
+  <meta name="description" content="Елемесов Сержан Бақытжанұлы — SunTrade негізін қалаушы">
+  <link rel="canonical" href="https://www.suntrade.store/founder.html">
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/theme.js"></script>
+  <script src="/js/icons.js"></script>
+  <script>
+    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <style>
+    .founder-hero {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      padding: 4rem 1.5rem;
+      text-align: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .founder-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(255,107,0,0.15) 0%, transparent 50%);
+      animation: heroGlow 8s ease-in-out infinite;
+    }
+    @keyframes heroGlow {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(5%, 3%); }
+    }
+    .founder-avatar {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: 4px solid var(--primary, #FF6B00);
+      box-shadow: 0 8px 32px rgba(255,107,0,0.4);
+      margin: 0 auto 1.5rem;
+      position: relative;
+      z-index: 1;
+      object-fit: cover;
+      background: linear-gradient(135deg, #FF6B00, #FF8C00);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      font-weight: 900;
+      color: white;
+    }
+    .founder-name {
+      font-size: 2rem;
+      font-weight: 800;
+      margin: 0 0 0.5rem;
+      position: relative;
+      z-index: 1;
+    }
+    .founder-role {
+      font-size: 1rem;
+      color: var(--primary, #FF6B00);
+      font-weight: 600;
+      margin: 0 0 1rem;
+      position: relative;
+      z-index: 1;
+    }
+    .founder-location {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      position: relative;
+      z-index: 1;
+    }
+    .founder-content {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+    .founder-section {
+      margin-bottom: 2.5rem;
+    }
+    .founder-section h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .founder-section h2 .icon-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255,107,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .founder-section h2 .icon-circle svg {
+      width: 18px;
+      height: 18px;
+      color: var(--primary, #FF6B00);
+    }
+    .founder-section p {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: var(--text-secondary, #4b5563);
+      margin: 0;
+    }
+    .timeline {
+      position: relative;
+      padding-left: 2rem;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--primary, #FF6B00), rgba(255,107,0,0.2));
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 1.5rem;
+      padding-left: 1.5rem;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -1.55rem;
+      top: 6px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--primary, #FF6B00);
+      border: 2px solid white;
+      box-shadow: 0 0 0 3px rgba(255,107,0,0.2);
+    }
+    .timeline-year {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary, #FF6B00);
+      margin-bottom: 0.25rem;
+    }
+    .timeline-text {
+      font-size: 0.95rem;
+      color: var(--text-secondary, #4b5563);
+      line-height: 1.6;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .stat-card {
+      background: var(--bg-subtle, #f9fafb);
+      border: 1px solid var(--border, #e5e7eb);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--primary, #FF6B00);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted, #6b7280);
+      margin-top: 0.4rem;
+    }
+    @media (max-width: 640px) {
+      .founder-hero { padding: 3rem 1rem; }
+      .founder-name { font-size: 1.5rem; }
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="logo">Sun<span>Trade</span></a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/" data-i18n="nav_home">Home</a></li>
+      <li><a href="/catalog.html" data-i18n="nav_catalog">Catalog</a></li>
+      <li><a href="/analytics.html" data-i18n="nav_analytics">Analytics</a></li>
+      <li><a href="/cart.html" data-i18n="nav_cart">Cart</a></li>
+      <li><a href="/ads.html" data-i18n="nav_ads">Advertise</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-wrapper">
+        <button id="lang-toggle"><svg class="icon icon-md" style="vertical-align:middle"><use href="#icon-globe"/></svg> EN</button>
+        <div id="lang-dropdown"></div>
+      </div>
+      <a href="/cart.html" class="cart-link top-nav-cart">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+        <span id="cart-badge">0</span>
+      </a>
+      <a href="/catalog.html?favorites=true" class="nav-fav-desktop" aria-label="Favorites" title="Favorites">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </a>
+      <div id="user-menu-container"></div>
+      <button type="button" class="theme-toggle theme-toggle-desktop" aria-pressed="false" aria-label="Switch to dark mode" title="Switch to dark mode"><svg class="theme-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="theme-toggle-label">Dark mode</span></button>
+      <button class="mobile-menu-btn" aria-expanded="false" onclick="var n=document.getElementById('nav-links'); var open=n.classList.toggle('show'); this.setAttribute('aria-expanded', String(open));">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="founder-hero">
+  <div class="founder-avatar">ЕС</div>
+  <h1 class="founder-name" data-i18n="founder_full_name">Елемесов Сержан Бақытжанұлы</h1>
+  <p class="founder-role" data-i18n="founder_role">Web Developer & Entrepreneur</p>
+  <p class="founder-location">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    <span data-i18n="founder_location">Kazakhstan, Turkestan region</span>
+  </p>
+</div>
+
+<!-- CONTENT -->
+<div class="founder-content">
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-number">6+</div>
+      <div class="stat-label" data-i18n="founder_stat_years">Years in Tech</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">5+</div>
+      <div class="stat-label" data-i18n="founder_stat_sales">Years in Sales</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">12</div>
+      <div class="stat-label" data-i18n="founder_stat_languages">Languages Supported</div>
+    </div>
+  </div>
+
+  <!-- About -->
+  <div class="founder-section">
+    <h2>
+      <span class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+      <span data-i18n="founder_about_title">About Me</span>
+    </h2>
+    <p data-i18n="founder_about_text">I'm a web developer and individual entrepreneur from Kazakhstan. Since childhood, I've been passionate about computers and technology. Over the years, I've mastered web development and continue to learn new things every day. I believe technology can connect people and make quality products accessible to everyone.</p>
+  </div>
+
+  <!-- Journey -->
+  <div class="founder-section">
+    <h2>
+      <span class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+      <span data-i18n="founder_journey_title">My Journey</span>
+    </h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-year" data-i18n="founder_timeline_1999">February 1, 1999</div>
+        <div class="timeline-text" data-i18n="founder_timeline_1999_text">Born in Sholakkorgan village, Sozak district, Turkestan region, Kazakhstan. From a young age, I was fascinated by computers and technology.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year" data-i18n="founder_timeline_2017">2017 — 2019</div>
+        <div class="timeline-text" data-i18n="founder_timeline_2017_text">Studied at a madrasa, gaining knowledge in Islamic education and discipline that shaped my values and work ethic.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year" data-i18n="founder_timeline_2019">2019 — 2025</div>
+        <div class="timeline-text" data-i18n="founder_timeline_2019_text">Started selling Muslim products and built a successful business. Learned the ins and outs of e-commerce, customer service, and global supply chains.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year" data-i18n="founder_timeline_2025">2025 — Present</div>
+        <div class="timeline-text" data-i18n="founder_timeline_2025_text">Founded SunTrade — a global marketplace bringing quality products from China to customers worldwide. Combining my passion for technology with e-commerce experience.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skills -->
+  <div class="founder-section">
+    <h2>
+      <span class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+      <span data-i18n="founder_skills_title">What I Do</span>
+    </h2>
+    <p data-i18n="founder_skills_text">Web development, e-commerce, and building digital products. I'm always learning and improving — there's always something new to discover in the world of technology.</p>
+  </div>
+
+  <!-- Philosophy -->
+  <div class="founder-section">
+    <h2>
+      <span class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+      <span data-i18n="founder_philosophy_title">My Philosophy</span>
+    </h2>
+    <p data-i18n="founder_philosophy_text">I believe in honest business, quality products, and putting customers first. SunTrade was built on these values — to provide people worldwide with access to quality products at fair prices, backed by secure payments and reliable customer support.</p>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo">Sun<span style="color: var(--primary);">Trade</span></div>
+      <p data-i18n="footer_about_text">SunTrade is your trusted global marketplace for quality products from China.</p>
+      <div style="margin-top:0.8rem;padding:0.7rem 0.9rem;background:rgba(255,107,0,0.08);border:1px solid rgba(255,107,0,0.18);border-radius:10px;">
+        <div style="font-size:0.78rem;font-weight:700;color:var(--primary);margin-bottom:0.3rem;display:flex;align-items:center;gap:5px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span data-i18n="footer_founder">Founder</span>
+        </div>
+        <a href="/founder.html" style="font-size:0.82rem;font-weight:600;color:rgba(255,255,255,0.9);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='rgba(255,255,255,0.9)'" data-i18n="footer_founder_value">Elemesov Serzhan Baqytzhanuly</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer_about">About Us</h4>
+      <p style="font-size:0.82rem;line-height:1.6;color:rgba(255,255,255,0.75);margin:0;" data-i18n="footer_about_desc">SunTrade — a global marketplace delivering quality products from China to any point in the world.</p>
+      <div style="margin-top:0.9rem;">
+        <div style="font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.35rem;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span data-i18n="footer_address">Address</span>
+        </div>
+        <p style="font-size:0.8rem;color:rgba(255,255,255,0.7);margin:0;line-height:1.5;" data-i18n="footer_address_value">Kazakhstan, Turkestan region, Shymkent city, Abilkhair street, 189th quarter, building 25A</p>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer_delivery_from_china">Delivery from China</h4>
+      <p style="font-size:0.82rem;line-height:1.6;color:rgba(255,255,255,0.75);margin:0;" data-i18n="footer_delivery_desc">We work directly with trusted suppliers in China, ensuring the best prices and fast delivery for our customers.</p>
+      <div style="margin-top:0.8rem;display:flex;flex-direction:column;gap:0.5rem;">
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:rgba(255,255,255,0.75);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <a href="https://support.stripe.com/questions/disputes-and-fraud-protection-for-buyers" target="_blank" rel="noopener" style="font-size:0.8rem;color:rgba(255,255,255,0.75);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='rgba(255,255,255,0.75)'" data-i18n="footer_trust1">Money-back guarantee on every order</a>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:rgba(255,255,255,0.75);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <a href="/account.html#orders" style="font-size:0.8rem;color:rgba(255,255,255,0.75);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='rgba(255,255,255,0.75)'" data-i18n="footer_trust2">Track your order at every step</a>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:rgba(255,255,255,0.75);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <a href="/return-policy.html" style="font-size:0.8rem;color:rgba(255,255,255,0.75);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='rgba(255,255,255,0.75)'" data-i18n="footer_trust3">Return policy — 14 days</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer_contact">Contact</h4>
+      <a href="https://wa.me/77021379248" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;">WhatsApp</a>
+      <a href="tel:+77021379248" style="display:flex;align-items:center;gap:6px;">+7 702 137 9248</a>
+      <a href="mailto:support@suntrade.store" style="display:flex;align-items:center;gap:6px;">support@suntrade.store</a>
+      <h4 style="margin-top:1.2rem;" data-i18n="footer_follow">Follow Us</h4>
+      <a href="https://www.instagram.com/suntrade.store/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.threads.com/@suntrade.store?xmt=AQG0HqVI9qERwOHL9wR5-KrYhAPH5adKgD4JHMp26W9Y6Yw" target="_blank" rel="noopener">Threads</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 SunTrade. <span data-i18n="footer_rights">All rights reserved.</span></p>
+    <div style="display: flex; gap: 1rem;">
+      <a href="/privacy-policy.html" style="color:rgba(255,255,255,0.65);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='rgba(255,255,255,0.65)'" data-i18n="footer_privacy">Privacy Policy</a>
+      <a href="/terms.html" style="color:rgba(255,255,255,0.65);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='rgba(255,255,255,0.65)'" data-i18n="footer_terms">Terms of Service</a>
+      <a href="/return-policy.html" style="color:rgba(255,255,255,0.65);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='rgba(255,255,255,0.65)'" data-i18n="footer_return">Return Policy</a>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/cart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/supabase-client.js"></script>
+<script src="/js/user-menu.js"></script>
+<script src="/js/shared-ui.js"></script>
+</body>
+</html>
