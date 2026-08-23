@@ -576,7 +576,7 @@
   "footer_address_value": "Қазақстан, Түркістан облысы, Шымкент қ., Әбілхайыр көшесі, 189-й квартал, дом 25А",
   "footer_founder_value": "Елемесов Сержан Бақытжанұлы",
   "return_stripe_title": "Төлемдер Stripe арқылы өңделеді",
-  "return_stripe_text": "SunTrade-тегі барлық төлемдер <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> арқылы қауіпсіз өңделеді — әлем бойынша миллиондаған бизнес қолданатын сенімді төлем жүйесі. Қаржылық деректеріңіз шифрланған және біздің серверлерде сақталмайды. Тапсырысыңыз бойынша мәселе туындаса, Stripe'тың тұтынушыларды қорғау саясаты ақшаңыздың қауіпсіз екеніне кепілдік береді.",
+  "return_stripe_text": "SunTrade-тегі барлық төлемдер <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> арқылы қауіпсіз өңделеді — әлем бойынша миллиондаған бизнес қолданатын сенімді төлем жүйесі. Қаржылық деректеріңіз шифрланған және біздің серверлерде сақталмайды.",
   "founder_title": "Негізін қалаушы - SunTrade",
   "founder_full_name": "Елемесов Сержан Бақытжанұлы",
   "founder_role": "Веб-дамушы және кәсіпкер",
