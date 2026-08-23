@@ -367,6 +367,15 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     if (name === 'orders') loadUserOrders();
   }
 
+  // Hash-based navigation: /account.html#orders opens the Orders tab
+  function handleAccountHash() {
+    const hash = window.location.hash.replace('#', '');
+    if (['profile', 'orders', 'settings'].includes(hash)) {
+      showAccountSection(hash);
+    }
+  }
+  window.addEventListener('hashchange', handleAccountHash);
+
   function getOrderStatusLabel(status) {
     const key = 'order_status_' + status;
     if (typeof t === 'function' && translations && translations[key]) {
