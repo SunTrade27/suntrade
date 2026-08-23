@@ -1041,9 +1041,10 @@
       // Visible bars in the chart. "Paid" is intentionally merged into
       // "accepted" so visitors see one combined "Сатушы қабылдады" column.
       const statuses = ['accepted', 'shipped', 'delivered', 'packing'];
-      // Demo baseline mirrors Recent Orders: 1 paid (rolled into accepted),
-      // 1 packing, the other 26 delivered. The paid-only column is gone.
-      const demoCounts = { accepted: 1, shipped: 0, delivered: 26, packing: 1 };
+      // Demo baseline mirrors Recent Orders: all 28 demo orders are delivered,
+      // so the chart only shows delivered until real customer orders arrive
+      // with other statuses (accepted, packing, shipped).
+      const demoCounts = { accepted: 0, shipped: 0, delivered: 28, packing: 0 };
       // Site admin accounts (SERZHAN YELEMESSOV et al.) place real test
       // orders while developing the storefront. Those test purchases are
       // excluded from visitor-visible analytics so the page only reflects
