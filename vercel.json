@@ -26,6 +26,10 @@
       "destination": "/return-policy.html"
     },
     {
+      "source": "/shipping-policy",
+      "destination": "/shipping-policy.html"
+    },
+    {
       "source": "/ads",
       "destination": "/ads.html"
     }

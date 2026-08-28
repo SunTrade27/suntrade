@@ -2167,7 +2167,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
         '@type': 'Offer',
         'url': 'https://www.suntrade.store/product.html?id=' + p.id,
         'priceCurrency': 'EUR',
-        'price': (parseFloat(p.price) * 0.9).toFixed(2),
+        'price': parseFloat(p.price).toFixed(2),
         'priceValidUntil': new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         'availability': p.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
         'itemCondition': 'https://schema.org/NewCondition'

@@ -42,6 +42,7 @@ module.exports = async (req, res) => {
       { loc: `${baseUrl}/privacy-policy.html`, priority: '0.3', changefreq: 'monthly' },
       { loc: `${baseUrl}/terms.html`, priority: '0.3', changefreq: 'monthly' },
       { loc: `${baseUrl}/return-policy.html`, priority: '0.3', changefreq: 'monthly' },
+      { loc: `${baseUrl}/shipping-policy.html`, priority: '0.3', changefreq: 'monthly' },
     ];
 
     const productUrls = (products || []).map(p => ({
@@ -84,5 +85,6 @@ function generateStaticSitemap(baseUrl) {
   <url><loc>${baseUrl}/privacy-policy.html</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
   <url><loc>${baseUrl}/terms.html</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
   <url><loc>${baseUrl}/return-policy.html</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>${baseUrl}/shipping-policy.html</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
 </urlset>`;
 }
