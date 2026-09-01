@@ -211,6 +211,20 @@ module.exports = async (req, res) => {
 
       console.log('Order saved:', session.id, 'user_id:', userId, 'lang:', language);
 
+      // Save phone to visitor_events for matching products (enables WhatsApp button in admin)
+      if (customerPhone && session.metadata && session.metadata.product_ids) {
+        try {
+          var productIds = session.metadata.product_ids.split(',').map(function(s) { return s.split(':')[0]; }).filter(Boolean);
+          for (var pi = 0; pi < productIds.length; pi++) {
+            await supabase.from('visitor_events')
+              .update({ phone: customerPhone })
+              .eq('product_id', productIds[pi])
+              .is('phone', '')
+              .limit(1);
+          }
+        } catch (phoneErr) { console.error('[webhook] Failed to save phone to visitor_events:', phoneErr.message); }
+      }
+
       // Save order_items
       var savedOrderItems = [];
 

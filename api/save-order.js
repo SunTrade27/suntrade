@@ -138,6 +138,20 @@ module.exports = async (req, res) => {
 
     console.log('[save-order] ✅ Order saved:', order.id);
 
+    // Save phone to visitor_events for matching products (enables WhatsApp button in admin)
+    if (customerPhone && session.metadata?.product_ids) {
+      try {
+        const productIds = session.metadata.product_ids.split(',').map(s => s.split(':')[0]).filter(Boolean);
+        for (const pid of productIds) {
+          await supabase.from('visitor_events')
+            .update({ phone: customerPhone })
+            .eq('product_id', pid)
+            .is('phone', '')
+            .limit(1);
+        }
+      } catch (phoneErr) { console.error('[save-order] Failed to save phone to visitor_events:', phoneErr.message); }
+    }
+
     // Save order_items
     if (order && lineItems.data && lineItems.data.length > 0) {
       const metaIds = (session.metadata?.product_ids || '').split(',').filter(Boolean);
