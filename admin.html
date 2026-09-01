@@ -2063,6 +2063,21 @@
         return;
       }
 
+      // --- Load orders for phone fallback ---
+      const { data: orders } = await sb.from('orders').select('customer_phone, product_id').gte('created_at', thirtyDaysAgo);
+      // Build phone lookup map from orders (product_id → phone)
+      const phoneByProduct = {};
+      (orders || []).forEach(o => {
+        const phone = (o.customer_phone || '').trim();
+        if (phone && o.product_id && !phoneByProduct[o.product_id]) phoneByProduct[o.product_id] = phone;
+      });
+      // Fill missing phones from orders
+      events.forEach(e => {
+        const existingPhone = (e.phone || '').trim();
+        if (existingPhone.length >= 10) return;
+        e.phone = (e.product_id && phoneByProduct[e.product_id]) || '';
+      });
+
       // --- Funnel Stats ---
       const views = events.filter(e => e.event_type === 'page_view');
       const carts = events.filter(e => e.event_type === 'add_to_cart');

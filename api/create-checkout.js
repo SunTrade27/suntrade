@@ -193,7 +193,7 @@ module.exports = async (req, res) => {
     const visitorId = (customer?.visitor_id || req.body?.visitor_id || '').trim();
     if (visitorPhone && visitorId) {
       try {
-        await supabase.from('visitor_events').update({ phone: visitorPhone }).eq('visitor_id', visitorId).is('phone', '');
+        await supabase.from('visitor_events').update({ phone: visitorPhone }).eq('visitor_id', visitorId).or('phone.is.null,phone.eq.');
       } catch (_) { /* non-fatal */ }
     }
 
@@ -332,6 +332,7 @@ module.exports = async (req, res) => {
       metadata: {
         customer_name: (customer?.name || '').substring(0, 500),
         customer_phone: (customer?.phone || '').substring(0, 500),
+        visitor_id: (customer?.visitor_id || '').substring(0, 500),
         product_ids: productIds,
         user_id: (customer?.user_id || '').substring(0, 500),
         // Түпнұсқа тіл (kz, ar, т.б.) — email үшін сақталады

@@ -138,16 +138,29 @@ module.exports = async (req, res) => {
 
     console.log('[save-order] ✅ Order saved:', order.id);
 
-    // Save phone to visitor_events for matching products (enables WhatsApp button in admin)
-    if (customerPhone && session.metadata?.product_ids) {
+    // Save phone to visitor_events (enables WhatsApp button in admin)
+    // Match by visitor_id from Stripe metadata, or by customer_phone
+    if (customerPhone) {
       try {
-        const productIds = session.metadata.product_ids.split(',').map(s => s.split(':')[0]).filter(Boolean);
-        for (const pid of productIds) {
+        const visitorIdMeta = (session.metadata?.visitor_id || '').trim();
+        if (visitorIdMeta) {
+          // Best: update all events for this visitor
           await supabase.from('visitor_events')
             .update({ phone: customerPhone })
-            .eq('product_id', pid)
-            .is('phone', '')
-            .limit(1);
+            .eq('visitor_id', visitorIdMeta)
+            .or('phone.is.null,phone.eq.');
+          console.log('[save-order] Phone saved via visitor_id:', visitorIdMeta);
+        } else {
+          // Fallback: update by product_id (less precise)
+          const productIds = (session.metadata?.product_ids || '').split(',').map(s => s.split(':')[0]).filter(Boolean);
+          for (const pid of productIds) {
+            await supabase.from('visitor_events')
+              .update({ phone: customerPhone })
+              .eq('product_id', pid)
+              .or('phone.is.null,phone.eq.')
+              .limit(1);
+          }
+          console.log('[save-order] Phone saved via product_ids (no visitor_id in metadata)');
         }
       } catch (phoneErr) { console.error('[save-order] Failed to save phone to visitor_events:', phoneErr.message); }
     }
