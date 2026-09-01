@@ -255,7 +255,10 @@ module.exports = async (req, res) => {
         if (!option) return res.status(400).json({ error: 'Invalid product option' });
         const modifier = Number(option.price_mod || 0);
         if (!Number.isFinite(modifier)) return res.status(400).json({ error: 'Invalid product option price' });
-        variantPrice += modifier;
+        // price_mod > 0 is an absolute price (matching product.html getEffectiveBasePrice)
+        // price_mod < 0 is a discount (additive)
+        if (modifier > 0) variantPrice = modifier;
+        else variantPrice += modifier;
       }
 
       // Permanent volume discounts, matching the product page tiers:
