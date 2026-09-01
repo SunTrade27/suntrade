@@ -4,8 +4,8 @@
 // get progressively bigger discounts: 2-4 pieces 20%, 5+ pieces 30%.
 const DISCOUNT_TIERS = [
   { minQty: 1, maxQty: 1, discount: 0.10, label: '1' },
-  { minQty: 2, maxQty: 4, discount: 0.20, label: '2-4' },
-  { minQty: 5, maxQty: Infinity, discount: 0.30, label: '5+' }
+  { minQty: 2, maxQty: 4, discount: 0.30, label: '2-4' },
+  { minQty: 5, maxQty: Infinity, discount: 0.60, label: '5+' }
 ];
 
 /** Get the effective (discounted) unit price for a given base price and quantity */

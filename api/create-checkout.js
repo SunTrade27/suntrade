@@ -263,7 +263,7 @@ module.exports = async (req, res) => {
 
       // Permanent volume discounts, matching the product page tiers:
       // 10% on a single item, 20% for 2-4 pieces, 30% for 5+ pieces.
-      const discount = qty >= 5 ? 0.7 : qty >= 2 ? 0.8 : 0.9;
+      const discount = qty >= 5 ? 0.4 : qty >= 2 ? 0.7 : 0.9;
       const unitPrice = Math.round(variantPrice * discount * 100);
       const localizedName = product['name_' + language] || product.name_en || product.name_ru || 'Product';
       const image = Array.isArray(product.images) && /^https?:\/\//i.test(String(product.images[0] || ''))
