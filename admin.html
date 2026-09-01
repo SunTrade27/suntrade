@@ -2046,7 +2046,7 @@
       // Fetch all events from last 30 days
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const { data: events, error } = await sb.from('visitor_events')
-        .select('*')
+        .select('*, phone')
         .gte('created_at', thirtyDaysAgo)
         .order('created_at', { ascending: false });
 
