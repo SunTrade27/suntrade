@@ -68,9 +68,10 @@ function isLikelyEuVisitor() {
     fbq('consent', 'revoke');
   }
 
-  // Fire PageView only if consent is granted or undecided (first visit)
-  // We fire PageView on consent too since FB needs it for attribution.
-  if (storedConsent !== false) {
+  // Fire PageView ONLY when consent is explicitly granted.
+  // For first-time visitors (storedConsent === null) PageView is fired
+  // by showFbConsentBanner() after they click "Accept All".
+  if (storedConsent === true) {
     fbq('track', 'PageView');
   }
 })();
@@ -135,9 +136,34 @@ if (document.readyState === 'loading') {
 // ---------- E-commerce Event Helpers ----------
 // Each helper checks consent before firing. Call these from product.html,
 // cart.js, checkout.html, etc.
+// CAPI: every event gets a unique event_id for browser↔server deduplication.
 
 function _fbCanTrack() {
   return getFbConsent() === true;
+}
+
+/** Generate a unique event ID for deduplication between browser pixel and CAPI */
+function _generateEventId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+}
+
+/**
+ * Send event to CAPI server endpoint (fire-and-forget, non-blocking).
+ * The event_id must match the one sent via fbq() for deduplication.
+ */
+function _sendToCapi(eventName, event_id, customData) {
+  try {
+    fetch('/api/facebook-capi', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event_name: eventName,
+        event_id: event_id,
+        event_time: Math.floor(Date.now() / 1000),
+        custom_data: customData || {}
+      })
+    }).catch(() => {}); // fire-and-forget
+  } catch (_) { /* non-fatal */ }
 }
 
 /**
@@ -146,13 +172,16 @@ function _fbCanTrack() {
  */
 function fbTrackViewContent(product) {
   if (!_fbCanTrack()) return;
-  fbq('track', 'ViewContent', {
+  const eventId = _generateEventId();
+  const eventData = {
     content_ids: [String(product.id)],
     content_type: 'product',
     value: parseFloat(product.price) || 0,
     currency: 'EUR',
     content_name: product.name || ''
-  });
+  };
+  fbq('track', 'ViewContent', eventData, { eventID: eventId });
+  _sendToCapi('ViewContent', eventId, eventData);
 }
 
 /**
@@ -161,19 +190,22 @@ function fbTrackViewContent(product) {
  */
 function fbTrackAddToCart(items) {
   if (!_fbCanTrack()) return;
+  const eventId = _generateEventId();
   const contents = items.map(i => ({
     id: String(i.id),
     quantity: i.qty || 1,
     item_price: parseFloat(i.price) || 0
   }));
   const value = contents.reduce((s, i) => s + i.item_price * i.quantity, 0);
-  fbq('track', 'AddToCart', {
+  const eventData = {
     content_ids: items.map(i => String(i.id)),
     content_type: 'product',
     contents,
     value,
     currency: 'EUR'
-  });
+  };
+  fbq('track', 'AddToCart', eventData, { eventID: eventId });
+  _sendToCapi('AddToCart', eventId, eventData);
 }
 
 /**
@@ -182,20 +214,23 @@ function fbTrackAddToCart(items) {
  */
 function fbTrackInitiateCheckout(items) {
   if (!_fbCanTrack()) return;
+  const eventId = _generateEventId();
   const contents = items.map(i => ({
     id: String(i.id),
     quantity: i.qty || 1,
     item_price: parseFloat(i.price) || 0
   }));
   const value = contents.reduce((s, i) => s + i.item_price * i.quantity, 0);
-  fbq('track', 'InitiateCheckout', {
+  const eventData = {
     content_ids: items.map(i => String(i.id)),
     content_type: 'product',
     contents,
     value,
     currency: 'EUR',
     num_items: contents.reduce((s, i) => s + i.quantity, 0)
-  });
+  };
+  fbq('track', 'InitiateCheckout', eventData, { eventID: eventId });
+  _sendToCapi('InitiateCheckout', eventId, eventData);
 }
 
 /**
@@ -204,7 +239,9 @@ function fbTrackInitiateCheckout(items) {
  */
 function fbTrackPurchase(order) {
   if (!_fbCanTrack()) return;
-  fbq('track', 'Purchase', order);
+  const eventId = _generateEventId();
+  fbq('track', 'Purchase', order, { eventID: eventId });
+  _sendToCapi('Purchase', eventId, order);
 }
 
 /**
@@ -212,7 +249,9 @@ function fbTrackPurchase(order) {
  */
 function fbTrackCompleteRegistration() {
   if (!_fbCanTrack()) return;
-  fbq('track', 'CompleteRegistration');
+  const eventId = _generateEventId();
+  fbq('track', 'CompleteRegistration', {}, { eventID: eventId });
+  _sendToCapi('CompleteRegistration', eventId, {});
 }
 
 /**
@@ -221,7 +260,10 @@ function fbTrackCompleteRegistration() {
  */
 function fbTrackSearch(searchString) {
   if (!_fbCanTrack()) return;
-  fbq('track', 'Search', { search_string: searchString || '' });
+  const eventId = _generateEventId();
+  const eventData = { search_string: searchString || '' };
+  fbq('track', 'Search', eventData, { eventID: eventId });
+  _sendToCapi('Search', eventId, eventData);
 }
 
 /**
@@ -229,5 +271,7 @@ function fbTrackSearch(searchString) {
  */
 function fbTrackLead() {
   if (!_fbCanTrack()) return;
-  fbq('track', 'Lead');
+  const eventId = _generateEventId();
+  fbq('track', 'Lead', {}, { eventID: eventId });
+  _sendToCapi('Lead', eventId, {});
 }

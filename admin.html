@@ -2141,7 +2141,8 @@
               e.event_type === 'add_to_cart' ? '#F59E0B' :
               e.event_type === 'checkout' ? '#8B5CF6' : '#22C55E';
             const shortId = e.visitor_id ? e.visitor_id.substring(0, 12) + '...' : '—';
-            const waUrl = 'https://wa.me/77021379248?text=' + encodeURIComponent('Сәлеметсіз бе! Сіз SunTrade-да "' + (e.product_name || '') + '" тауарын қараған болатынсыз. Тауар әлі бар! Арнайы жеңілдікпен алғыңыз келе ме?');
+            const _wp = ((e.phone||'').replace(/[^0-9]/g,'')).length >= 10 ? e.phone.replace(/[^0-9]/g,'') : '77021379248';
+            const waUrl = 'https://wa.me/' + _wp + '?text=' + encodeURIComponent('Сәлеметсіз бе! Сіз SunTrade-да "' + (e.product_name || '') + '" тауарын қараған болатынсыз. Тауар әлі бар! Арнайы жеңілдікпен алғыңыз келе ме?');
             return `<tr>
               <td style="font-family:monospace;font-size:0.8rem;" title="${escapeHtml(e.visitor_id || '')}">${escapeHtml(shortId)}</td>
               <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(productLabel)}</td>
@@ -2163,7 +2164,8 @@
         const eventColor = e.event_type === 'page_view' ? '#3B82F6' :
           e.event_type === 'add_to_cart' ? '#F59E0B' :
           e.event_type === 'checkout' ? '#8B5CF6' : '#22C55E';
-        const waUrl = 'https://wa.me/77021379248?text=' + encodeURIComponent('Сәлеметсіз бе! Сіз SunTrade-да "' + (e.product_name || '') + '" тауарын қараған болатынсыз. Тауар әлі бар! Арнайы жеңілдікпен алғыңыз келе ме?');
+        const _wp2 = ((e.phone||'').replace(/[^0-9]/g,'')).length >= 10 ? e.phone.replace(/[^0-9]/g,'') : '77021379248';
+        const waUrl = 'https://wa.me/' + _wp2 + '?text=' + encodeURIComponent('Сәлеметсіз бе! Сіз SunTrade-да "' + (e.product_name || '') + '" тауарын қараған болатынсыз. Тауар әлі бар! Арнайы жеңілдікпен алғыңыз келе ме?');
         return `
           <div class="order-row-card">
             <div class="order-row-card-head">
