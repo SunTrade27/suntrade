@@ -229,13 +229,10 @@ module.exports = async (req, res) => {
         const types = Array.isArray(product.types) ? product.types : [];
         const matchedType = types.find(type => String(type?.label || '').trim() === typePart.value);
         if (matchedType) {
-          const typePrice = Number(matchedType.price);
           const typeStock = Number(matchedType.stock);
-          if (!Number.isFinite(typePrice) || typePrice <= 0) {
-            return res.status(400).json({ error: 'Product variant price is invalid' });
-          }
+          // Use product.basePrice for all variants — types[].price is display-only
+          // This keeps cart, product page, and Stripe checkout consistent
           if (Number.isFinite(typeStock) && typeStock >= 0) availableStock = typeStock;
-          variantPrice = typePrice;
         } else {
           const legacyTypes = [product.type, product.type2, product.type3, product.type4, product.type5]
             .map(value => String(value || '').trim());

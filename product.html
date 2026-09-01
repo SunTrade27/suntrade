@@ -1920,12 +1920,6 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
       // If selected options have a price_mod, use it as the absolute price
       if (mod > 0) return mod;
     }
-    // Check if selected type variant has its own price (must match create-checkout.js logic)
-    const types = getProductTypes(p);
-    const selectedType = types[selectedTypeIndex];
-    if (selectedType && selectedType.price != null && Number(selectedType.price) > 0) {
-      return Number(selectedType.price);
-    }
     return parseFloat(p.price) || 0;
   }
 
