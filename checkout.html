@@ -356,7 +356,8 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
       name: document.getElementById('checkout-name').value,
       phone: document.getElementById('checkout-phone').value,
       language: (typeof currentLang !== 'undefined' ? currentLang : (localStorage.getItem('suntrade_lang') || 'en')),
-      user_id: null
+      user_id: null,
+      visitor_id: localStorage.getItem('suntrade_visitor_id') || ''
       // Shipping address is collected by Stripe on the next step
     };
 
@@ -367,20 +368,6 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
         if (u) customerData.user_id = u.id;
       }
     } catch (e) { /* guest checkout — user_id жоқ */ }
-
-    // Save phone to visitor_events (so admin panel WhatsApp button works)
-    if (customerData.phone) {
-      try {
-        const vid = localStorage.getItem('suntrade_visitor_id');
-        if (vid) {
-          await fetch('/api/save-phone', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ visitor_id: vid, phone: customerData.phone })
-          });
-        }
-      } catch (_) { /* non-fatal */ }
-    }
 
     // Turnstile verification (bot protection) — токен жоқ болса, тоқтатамыз
     if (!requireTurnstile()) {

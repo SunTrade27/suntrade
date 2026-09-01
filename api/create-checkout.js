@@ -188,6 +188,15 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'Invalid cart items' });
     }
 
+    // Save customer phone to visitor_events (enables WhatsApp button in admin)
+    const visitorPhone = (customer?.phone || '').trim();
+    const visitorId = (customer?.visitor_id || req.body?.visitor_id || '').trim();
+    if (visitorPhone && visitorId) {
+      try {
+        await supabase.from('visitor_events').update({ phone: visitorPhone }).eq('visitor_id', visitorId).is('phone', '');
+      } catch (_) { /* non-fatal */ }
+    }
+
     const ids = [...new Set(requestedItems.map(item => item.id))];
     const { data: products, error: productError } = await supabase
       .from('products')
