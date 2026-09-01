@@ -369,11 +369,15 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     } catch (e) { /* guest checkout — user_id жоқ */ }
 
     // Save phone to visitor_events (so admin panel WhatsApp button works)
-    if (customerData.phone && typeof sb !== 'undefined' && sb) {
+    if (customerData.phone) {
       try {
         const vid = localStorage.getItem('suntrade_visitor_id');
         if (vid) {
-          await sb.from('visitor_events').update({ phone: customerData.phone }).eq('visitor_id', vid).is('phone', '');
+          await fetch('/api/save-phone', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ visitor_id: vid, phone: customerData.phone })
+          });
         }
       } catch (_) { /* non-fatal */ }
     }
