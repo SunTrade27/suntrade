@@ -312,6 +312,15 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
       const name = p['name_' + currentLang] || p.name_en || 'Product';
       const safeName = name.replace(/'/g, "&#39;");
       const img = (p.images && p.images[0]) || '/images/placeholder.jpg';
+      const op = parseFloat(p.price) || 0;
+      const sp = parseFloat(p.sale_price);
+      let priceHtml;
+      if (sp && sp > 0 && op > sp) {
+        const pct = Math.round(((op - sp) / op) * 100);
+        priceHtml = '<span class="card-price-off">\u20ac' + sp.toFixed(2) + '</span> <s class="card-price-base">\u20ac' + op.toFixed(2) + '</s> <span class="card-discount-badge">-' + pct + '%</span>';
+      } else {
+        priceHtml = '<span class="card-price-off">\u20ac' + op.toFixed(2) + '</span>';
+      }
       return `
         <div class="product-card">
           <a href="/product.html?id=${p.id}" class="product-card-link" aria-label="${safeName}"></a>
@@ -323,7 +332,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
           </div>
           <div class="product-card-body">
             <h3 class="product-card-name">${name}</h3>
-            <p class="product-card-price">${(() => { const sp = parseFloat(p.sale_price); const op = parseFloat(p.price); if (sp && sp > 0 && op > sp) { const pct = Math.round(((op - sp) / op) * 100); return '<span class="card-price-off">&euro;' + sp.toFixed(2) + '</span> <s class="card-price-base">&euro;' + op.toFixed(2) + '</s> <span class="card-discount-badge">-' + pct + '%</span>'; } return '<span class="card-price-off">&euro;' + op.toFixed(2) + '</span>'; })()}</p>
+            <p class="product-card-price">${priceHtml}</p>
             <button class="product-card-btn" onclick="event.preventDefault(); event.stopPropagation(); addToCart('${p.id}', '${safeName}', ${p.price}, '${img}');">
               <span data-i18n="product_add_cart">${(typeof t === 'function' && translations && translations.product_add_cart) ? t('product_add_cart') : 'Add to Cart'}</span>
             </button>
