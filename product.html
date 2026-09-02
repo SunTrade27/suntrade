@@ -2138,9 +2138,11 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
       qtyInput.addEventListener('input', function() {
         let val = parseInt(this.value) || 1;
         if (val < 1) val = 1;
-        if (val > currentProduct.stock) val = currentProduct.stock;
+        // Allow up to 99 for Neon Blink (no stock limit for demo)
+        var maxQty = (currentProduct.stock > 0) ? currentProduct.stock : 99;
+        if (val > maxQty) val = maxQty;
         this.value = val;
-        updatePriceDisplay(val);
+        onQtyChange();
       });
     }
 
@@ -2595,9 +2597,12 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
   function changeQty(delta) {
     const input = document.getElementById('qty-input');
     if (!input) return;
-    const newVal = Math.max(1, Math.min(parseInt(input.value) + delta, getEffectiveStock()));
+    var maxStock = getEffectiveStock();
+    // Allow up to 99 if stock is 0 (for demo/testing)
+    if (maxStock <= 0) maxStock = 99;
+    const newVal = Math.max(1, Math.min(parseInt(input.value) + delta, maxStock));
     input.value = newVal;
-    updatePriceDisplay(newVal);
+    onQtyChange();
   }
 
   function updatePriceDisplay(qty) {
@@ -3363,8 +3368,19 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     var qtyInput = document.getElementById('qty-input');
     if (qtyInput) {
       qtyInput.value = tier;
-      qtyInput.dispatchEvent(new Event('input'));
+      updatePriceDisplay(tier);
     }
+  }
+
+  // When quantity changes via +/- buttons, update the active tier
+  function onQtyChange() {
+    var qty = parseInt(document.getElementById('qty-input')?.value) || 1;
+    // Highlight the matching tier
+    document.querySelectorAll('.nb-bm-tier').forEach(function(t) { t.classList.remove('active'); });
+    var tier = qty >= 5 ? '3' : (qty >= 2 ? '2' : '1');
+    var active = document.querySelector('.nb-bm-tier[data-tier="' + tier + '"]');
+    if (active) active.classList.add('active');
+    updatePriceDisplay(qty);
   }
 
   // ===== Neon Blink Before & After Slider =====
