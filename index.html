@@ -1662,7 +1662,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
         </div>
         <div class="product-card-body">
           <h3 class="product-card-name">${name}</h3>
-          <p class="product-card-price"><span class="card-price-off">&euro;${(parseFloat(p.price) * 0.6).toFixed(2)}</span> <s class="card-price-base">&euro;${parseFloat(p.price).toFixed(2)}</s> <span class="card-discount-badge">-40%</span></p>
+          <p class="product-card-price">${(() => { const sp = parseFloat(p.sale_price); const op = parseFloat(p.price); if (sp && sp > 0 && op > sp) { const pct = Math.round(((op - sp) / op) * 100); return '<span class="card-price-off">&euro;' + sp.toFixed(2) + '</span> <s class="card-price-base">&euro;' + op.toFixed(2) + '</s> <span class="card-discount-badge">-' + pct + '%</span>'; } return '<span class="card-price-off">&euro;' + op.toFixed(2) + '</span>'; })()}</p>
           <button class="product-card-btn" onclick="event.preventDefault(); event.stopPropagation(); addToCart('${p.id}', '${safeName}', ${p.price}, '${img}');">
             <span data-i18n="product_add_cart">${(typeof t === 'function' && translations && translations.product_add_cart) ? t('product_add_cart') : 'Add to Cart'}</span>
           </button>
