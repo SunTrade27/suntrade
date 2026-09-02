@@ -650,8 +650,8 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
   /* ===== Neon Blink Buy More and Save ===== */
   .nb-buy-more {
     margin: 0.8rem 0;
-    border: 1px solid var(--border, #E5E7EB);
-    border-radius: 12px;
+    border: 2px solid var(--primary, #FF6B00);
+    border-radius: 14px;
     overflow: hidden;
   }
   .nb-buy-more-header {
@@ -855,6 +855,13 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     justify-content: center;
     flex-shrink: 0;
     font-size: 1rem;
+    background: rgba(255, 107, 0, 0.1);
+    color: var(--primary, #FF6B00);
+  }
+  .nb-feature-icon svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--primary, #FF6B00);
   }
   @media (max-width: 480px) {
     .nb-feature-item { font-size: 0.88rem; }
@@ -1886,23 +1893,22 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
         if (desc) detail.insertBefore(nbBanner, desc);
       }
 
-      // 2. Add feature highlights inside product-info, after volume pricing
+      // 2. Add feature highlights BEFORE Buy More and Save section
       const productInfo = detail.querySelector('.product-info');
       if (productInfo) {
-        const volumePricing = productInfo.querySelector('#volume-pricing');
-        const stockEl = productInfo.querySelector('.product-stock');
+        const volumePricing = productInfo.querySelector('#volume-pricing') || productInfo.querySelector('.nb-buy-more');
         const nbFeatures = document.createElement('div');
         nbFeatures.className = 'nb-features';
         nbFeatures.innerHTML = `
-          <div class="nb-feature-item"><span class="nb-feature-icon">💡</span> 33 Colors, Animations & Effects</div>
-          <div class="nb-feature-item"><span class="nb-feature-icon">🔌</span> Easy Plug & Play Installation</div>
-          <div class="nb-feature-item"><span class="nb-feature-icon">✨</span> Customize Your Headlights in Seconds</div>`;
-        if (volumePricing && volumePricing.nextSibling) {
-          productInfo.insertBefore(nbFeatures, stockEl);
-        } else if (stockEl) {
-          productInfo.insertBefore(nbFeatures, stockEl);
+          <div class="nb-feature-item"><span class="nb-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span> 33 Colors, Animations & Effects</div>
+          <div class="nb-feature-item"><span class="nb-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 8v6M4.93 4.93l4.24 4.24m5.66 5.66l4.24 4.24M2 12h6m8 0h6M4.93 19.07l4.24-4.24m5.66-5.66l4.24-4.24"/></svg></span> Easy Plug & Play Installation</div>
+          <div class="nb-feature-item"><span class="nb-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></span> Customize Your Headlights in Seconds</div>`;
+        if (volumePricing) {
+          productInfo.insertBefore(nbFeatures, volumePricing);
         } else {
-          productInfo.appendChild(nbFeatures);
+          const stockEl = productInfo.querySelector('.product-stock');
+          if (stockEl) productInfo.insertBefore(nbFeatures, stockEl);
+          else productInfo.appendChild(nbFeatures);
         }
       }
 
@@ -1947,6 +1953,27 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
             <span class="nb-price-original">€${bp.toFixed(2)}</span>
             <span class="nb-save-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> SAVE ${discountPct}%</span>
           </div>`;
+      }
+
+      // Force-show Add to Cart / Buy Now for Neon Blink (even if stock=0)
+      const addToCartBtn = detail.querySelector('.btn-add-cart');
+      const buyNowBtn = detail.querySelector('.btn-buy-now');
+      const productActions = detail.querySelector('.product-actions');
+      const stockEl = detail.querySelector('.product-stock');
+      if (!addToCartBtn && productInfo) {
+        // Buttons are hidden because stock=0, create them
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'product-actions';
+        actionsDiv.innerHTML = '<button class="btn-add-cart" onclick="addProductToCart()" data-i18n="product_add_cart">Add to Cart</button><button class="btn-buy-now" onclick="buyNow()" data-i18n="product_buy_now">Buy Now</button>';
+        // Insert before trust badges
+        const trustBadges = detail.querySelector('.trust-badges');
+        if (trustBadges) productInfo.insertBefore(actionsDiv, trustBadges);
+        else productInfo.appendChild(actionsDiv);
+      }
+      // Also update stock display to show "In Stock" for Neon Blink
+      if (stockEl && stockEl.classList.contains('out-of-stock')) {
+        stockEl.className = 'product-stock in-stock';
+        stockEl.textContent = 'In Stock';
       }
 
       // 5. Neon Blink: Replace generic volume pricing with "Buy More and Save"
