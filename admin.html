@@ -1089,6 +1089,14 @@
       <!-- Product types section hidden — variants are managed via option groups now.
            The legacy hidden fields below still mirror the first variant for
            backward compat with catalog / product / cart / checkout code. -->
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:0.4rem;">
+          <svg class="icon icon-sm" style="color:var(--primary);"><use href="#icon-tag"/></svg>
+          <span data-i18n="admin_product_price">Price (EUR)</span>
+        </label>
+        <input type="number" id="pprice-visible" step="0.01" min="0" placeholder="e.g. 22.50" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);">
+        <p style="font-size:0.72rem;color:var(--text-light);margin:0.3rem 0 0 0;">Base price. Option groups can add ± adjustments per variant.</p>
+      </div>
       <div class="form-group" style="display:none;" id="product-types-wrap">
         <label style="display:flex;align-items:center;gap:0.4rem;">
           <svg class="icon icon-sm" style="color:var(--primary);"><use href="#icon-package"/></svg>
@@ -4059,6 +4067,9 @@
     // base price/stock, while keeping the saved type fields empty/null.
     const first = variants[0] || getProductBaseValues();
     document.getElementById('pprice').value = first.price;
+    // Also populate visible price field
+    var ppriceVisible = document.getElementById('pprice-visible');
+    if (ppriceVisible) ppriceVisible.value = first.price || '';
     // Collect option groups EARLY so we can derive price/stock from them
     const optionGroups = collectOptionGroups();
 
@@ -4095,8 +4106,10 @@
       .filter(url => url && !optionImageSet.has(url));
     const orderedGalleryImages = [...optionImageUrls, ...extraImages];
 
-    // Calculate effective price from option groups if variant price is 0
-    let effectivePrice = parseFloat(first.price) || 0;
+    // Calculate effective price: use visible field if set, else variant, else option groups
+    var ppriceVisEl = document.getElementById('pprice-visible');
+    var visiblePrice = ppriceVisEl ? parseFloat(ppriceVisEl.value) : NaN;
+    let effectivePrice = (Number.isFinite(visiblePrice) && visiblePrice > 0) ? visiblePrice : (parseFloat(first.price) || 0);
     if (effectivePrice <= 0 && optionGroups.length > 0) {
       let minMod = Infinity;
       for (const g of optionGroups) {
