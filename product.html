@@ -596,9 +596,10 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
   flex-wrap: wrap;
 }
 .sale-price-current {
-  font-size: 2rem;
-  font-weight: 800;
+  font-size: 2.5rem;
+  font-weight: 900;
   color: #FF6B00;
+  letter-spacing: -0.5px;
 }
 .sale-price-original {
   font-size: 1.1rem;
@@ -765,9 +766,10 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     margin-bottom: 0.3rem;
   }
   .nb-price-current {
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--text-primary, #111827);
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: #FF6B00;
+    letter-spacing: -0.5px;
   }
   .nb-price-original {
     font-size: 1.1rem;
@@ -1927,8 +1929,8 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
       if (priceBlock && !priceBlock.querySelector('.nb-price-row')) {
         const bp = parseFloat(currentProduct.price) || 99.99;
         const sp = currentProduct.sale_price ? parseFloat(currentProduct.sale_price) : null;
-        const salePrice = sp && sp < bp ? sp.toFixed(2) : (bp * 0.6).toFixed(2);
-        const discountPct = sp && sp < bp ? Math.round(((bp - sp) / bp) * 100) : 40;
+        const salePrice = (Math.round(bp * 60) / 100).toFixed(2);
+        const discountPct = 40;
         priceBlock.innerHTML = `
           <div class="nb-price-row">
             <span class="nb-price-current">€${salePrice}</span>
