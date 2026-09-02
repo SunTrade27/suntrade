@@ -880,33 +880,20 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     margin: 0;
     padding: 2rem 0;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 1.5rem;
-  }
-  .nb-ba-title {
-    font-size: 2rem;
-    font-weight: 800;
-    text-align: center;
-    color: var(--text-primary, #111827);
-  }
-  .nb-ba-subtitle {
-    text-align: center;
-    color: var(--text-secondary, #4B5563);
-    font-size: 1rem;
-    max-width: 520px;
-    line-height: 1.6;
-  }
-  .nb-ba-subtitle strong {
-    color: var(--text-primary, #111827);
+    gap: 3rem;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
   }
   .nb-ba-slider-container {
+    flex: 1;
+    min-width: 0;
     position: relative;
-    width: 100%;
-    max-width: 700px;
     overflow: hidden;
     border-radius: 16px;
-    box-shadow: var(--shadow-lg, 0 10px 25px -3px rgba(0,0,0,0.12));
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
     user-select: none;
     -webkit-user-select: none;
     cursor: ew-resize;
@@ -927,8 +914,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
   .nb-ba-overlay img {
     display: block;
     height: 100%;
-    width: auto;
-    min-width: 100%;
+    width: 100%;
     object-fit: cover;
     object-position: left;
   }
@@ -937,7 +923,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     top: 0;
     bottom: 0;
     left: 50%;
-    width: 4px;
+    width: 3px;
     background: white;
     transform: translateX(-50%);
     z-index: 10;
@@ -948,8 +934,8 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: white;
     box-shadow: 0 2px 12px rgba(0,0,0,0.3);
@@ -960,10 +946,10 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
   }
   .nb-ba-label {
     position: absolute;
-    top: 16px;
-    padding: 6px 16px;
-    border-radius: 6px;
-    font-size: 0.8rem;
+    top: 12px;
+    padding: 4px 14px;
+    border-radius: 4px;
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -971,18 +957,43 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     pointer-events: none;
   }
   .nb-ba-label-before {
-    left: 16px;
+    left: 12px;
     background: #3B82F6;
     color: white;
   }
   .nb-ba-label-after {
-    right: 16px;
+    right: 12px;
     background: #10B981;
     color: white;
   }
+  .nb-ba-text {
+    flex: 0 0 320px;
+  }
+  .nb-ba-text .nb-ba-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    text-align: left;
+    color: var(--text-primary, #111827);
+    margin-bottom: 0.8rem;
+  }
+  .nb-ba-text .nb-ba-subtitle {
+    text-align: left;
+    color: var(--text-secondary, #4B5563);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+  .nb-ba-text .nb-ba-subtitle strong {
+    color: var(--text-primary, #111827);
+  }
+  @media (max-width: 768px) {
+    .nb-beforeafter { flex-direction: column; gap: 1.5rem; padding: 1.5rem 1rem; }
+    .nb-ba-text { flex: none; width: 100%; }
+    .nb-ba-text .nb-ba-title { font-size: 1.6rem; text-align: center; }
+    .nb-ba-text .nb-ba-subtitle { text-align: center; }
+  }
   @media (max-width: 640px) {
-    .nb-ba-title { font-size: 1.5rem; }
-    .nb-ba-subtitle { font-size: 0.9rem; padding: 0 1rem; }
+    .nb-ba-slider-container { border-radius: 12px; }
     .nb-ba-slider-container { border-radius: 12px; max-width: 100%; }
     .nb-ba-handle-knob { width: 40px; height: 40px; }
     .nb-ba-label { font-size: 0.7rem; padding: 4px 10px; }
@@ -1903,12 +1914,10 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
         const nbBA = document.createElement('div');
         nbBA.className = 'nb-beforeafter';
         nbBA.innerHTML = `
-          <h2 class="nb-ba-title">Before & After</h2>
-          <p class="nb-ba-subtitle">See the difference — drag the slider to compare</p>
           <div class="nb-ba-slider-container" id="nb-ba-slider">
-            <img src="${escHtml((currentProduct.after_image || currentProduct.before_image || (currentProduct.images && currentProduct.images[0]) || '/images/placeholder.jpg'))}" alt="After — Neon Blink RGB Headlights" draggable="false">
+            <img src="${escHtml((currentProduct.after_image || currentProduct.before_image || (currentProduct.images && currentProduct.images[0]) || '/images/placeholder.jpg'))}" alt="After" draggable="false">
             <div class="nb-ba-overlay" id="nb-ba-overlay">
-              <img src="${escHtml((currentProduct.before_image || currentProduct.after_image || (currentProduct.images && currentProduct.images[0]) || '/images/placeholder.jpg'))}" alt="Before — Standard Headlights" draggable="false">
+              <img src="${escHtml((currentProduct.before_image || currentProduct.after_image || (currentProduct.images && currentProduct.images[0]) || '/images/placeholder.jpg'))}" alt="Before" draggable="false">
             </div>
             <div class="nb-ba-handle" id="nb-ba-handle">
               <div class="nb-ba-handle-knob">
@@ -1918,6 +1927,10 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
             </div>
             <span class="nb-ba-label nb-ba-label-before">Before</span>
             <span class="nb-ba-label nb-ba-label-after">After</span>
+          </div>
+          <div class="nb-ba-text">
+            <h2 class="nb-ba-title">Before & After</h2>
+            <p class="nb-ba-subtitle">Discover how <strong>SUNTRADE\u2122</strong> gives your headlights a unique custom appearance in just one installation.</p>
           </div>`;
         detail.insertBefore(nbBA, productDesc);
       }
@@ -3386,16 +3399,31 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
 
   // ===== Neon Blink Before & After Slider =====
   function initNeonBlinkBeforeAfter() {
-    const slider = document.getElementById('nb-ba-slider');
+    var slider = document.getElementById('nb-ba-slider');
     if (!slider) return;
-    const overlay = document.getElementById('nb-ba-overlay');
-    const handle = document.getElementById('nb-ba-handle');
+    var overlay = document.getElementById('nb-ba-overlay');
+    var handle = document.getElementById('nb-ba-handle');
     if (!overlay || !handle) return;
-    let isDragging = false;
+    var isDragging = false;
+
+    // Fix overlay image width: must match container width, not overlay width
+    var overlayImg = overlay.querySelector('img');
+    if (overlayImg) {
+      function syncOverlayImg() {
+        overlayImg.style.width = slider.offsetWidth + 'px';
+        overlayImg.style.height = slider.offsetHeight + 'px';
+        overlayImg.style.objectFit = 'cover';
+        overlayImg.style.objectPosition = 'left';
+      }
+      syncOverlayImg();
+      window.addEventListener('resize', syncOverlayImg);
+      // Also re-sync after images load
+      overlayImg.onload = syncOverlayImg;
+    }
 
     function getPercentage(clientX) {
-      const rect = slider.getBoundingClientRect();
-      let pct = ((clientX - rect.left) / rect.width) * 100;
+      var rect = slider.getBoundingClientRect();
+      var pct = ((clientX - rect.left) / rect.width) * 100;
       return Math.max(2, Math.min(98, pct));
     }
 
