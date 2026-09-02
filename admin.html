@@ -2536,6 +2536,12 @@
         ? storedTypes.map((v, i) => ({ ...v, image: v.image || v.image_url || legacyTypeImages[i] || '' }))
         : [{ label: legacyTypeWasImplicit || storedTypesWereImplicit ? '' : legacyTypeLabel, price: product.price, stock: product.stock, image: product.type_image || '' }];
       loadProductTypes(variants);
+      // Populate visible price field from product data
+      var ppriceVisEl = document.getElementById('pprice-visible');
+      if (ppriceVisEl) {
+        var priceVal = product.price || (variants[0] && variants[0].price) || '';
+        ppriceVisEl.value = priceVal;
+      }
       // Populate visible stock field
       const visibleStockEl = document.getElementById('pstock-visible');
       if (visibleStockEl && product.stock != null) visibleStockEl.value = product.stock;

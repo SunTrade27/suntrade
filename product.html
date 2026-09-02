@@ -1666,7 +1666,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
                 <span class="sale-discount-badge">⚡ -${discount}%</span>
               </div>`;
             } else {
-              return `<span class="product-price-detail" id="product-price-display">€${(parseFloat(p.price) * 0.9).toFixed(2)}</span>
+              return `<span class="product-price-detail" id="product-price-display">€${(parseFloat(p.price) * 0.6).toFixed(2)}</span>
                 <span class="product-price-per-unit" data-i18n="product_price">Price</span>`;
             }
           })()}
@@ -1807,26 +1807,6 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
             <div class="pm-badge"><svg viewBox="0 0 46 30"><rect width="46" height="30" rx="3" fill="#fff"/><circle cx="17" cy="15" r="7" fill="#EB001B" opacity="0.9"/><circle cx="29" cy="15" r="7" fill="#0066B2" opacity="0.9"/></svg></div>
             <!-- iDEAL -->
             <div class="pm-badge"><svg viewBox="0 0 46 30"><rect width="46" height="30" rx="3" fill="#CC0066"/><text x="23" y="19" text-anchor="middle" fill="#fff" font-size="9" font-weight="800" font-family="Arial,sans-serif">iDEAL</text></svg></div>
-          </div>
-        </div>
-      </div>
-      <!-- Flowing 10% discount banner, placed between the info column
-           (with the trust badges) and the description. -->
-      <div class="discount-marquee" aria-hidden="true">
-        <div class="discount-marquee-track">
-          <div class="discount-marquee-group">
-            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
-            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
-            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
-            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
-            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
-          </div>
-          <div class="discount-marquee-group">
-            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
-            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
-            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
-            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
-            <span class="discount-marquee-item"><span data-i18n="discount_10">10% Discount</span> ★</span>
           </div>
         </div>
       </div>
@@ -2638,10 +2618,10 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
       activeTier = '2';
       discountPercent = 30;
     } else {
-      // Permanent 10% discount — applies even to a single item.
-      effectiveUnitPrice = basePrice * 0.9;
+      // 40% discount for single item
+      effectiveUnitPrice = basePrice * 0.6;
       activeTier = '1';
-      discountPercent = 10;
+      discountPercent = 40;
     }
 
     const totalPrice = effectiveUnitPrice * qty;
