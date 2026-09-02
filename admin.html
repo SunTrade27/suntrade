@@ -1116,6 +1116,14 @@
         <input type="number" id="pstock-visible" min="0" value="100" placeholder="100" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);">
       </div>
       <div class="form-group">
+        <label style="display:flex;align-items:center;gap:0.4rem;">
+          <svg class="icon icon-sm" style="color:#EF4444;"><use href="#icon-tag"/></svg>
+          Sale Price (optional — shows discount badge on product page)
+        </label>
+        <input type="number" id="psale-price" min="0" step="0.01" placeholder="e.g. 19.80" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);">
+        <p style="font-size:0.72rem;color:var(--text-light);margin:0.3rem 0 0 0;">If set, product page shows: <strong>this price</strong> + original price strikethrough + discount % badge. Leave empty for no discount.</p>
+      </div>
+      <div class="form-group">
         <label data-i18n="admin_product_images">Images</label>
         <div id="image-upload-zone" style="border:2px dashed var(--border);border-radius:var(--radius);padding:2rem;text-align:center;cursor:pointer;transition:var(--transition);margin-bottom:1rem;position:relative;">
           <div id="upload-icon" style="margin-bottom:0.5rem;"><svg class="icon icon-xxl" style="color:var(--text-muted)"><use href="#icon-camera"/></svg></div>
@@ -2483,6 +2491,9 @@
       var paPrev = document.getElementById('pafter-image-preview');
       if (product.before_image && pbPrev) { pbPrev.style.display = 'block'; pbPrev.querySelector('img').src = product.before_image; }
       if (product.after_image && paPrev) { paPrev.style.display = 'block'; paPrev.querySelector('img').src = product.after_image; }
+      // Sale price
+      var salePriceEl = document.getElementById('psale-price');
+      if (salePriceEl) salePriceEl.value = product.sale_price || '';
       // Fill all lang fields - both visible inputs and raw textareas
       ['en','kz','ru','de','fr','es','it','tr','pt','nl','pl','ar'].forEach(lang => {
         const nameEl = document.getElementById('pname-' + lang);
@@ -4129,7 +4140,8 @@
       // Optional product video (YouTube / Vimeo / MP4 link).
       video_url: document.getElementById('pvideo')?.value.trim() || null,
       before_image: document.getElementById('pbefore-image')?.value.trim() || null,
-      after_image: document.getElementById('pafter-image')?.value.trim() || null
+      after_image: document.getElementById('pafter-image')?.value.trim() || null,
+      sale_price: parseFloat(document.getElementById('psale-price')?.value) || null
     };
 
     // Collect all lang fields from inputs (name) and raw textareas (description)

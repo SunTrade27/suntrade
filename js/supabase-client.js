@@ -152,7 +152,9 @@ async function adminSaveProduct(product) {
     // has not yet been applied.
     'video_url',
     // Before & After comparison slider images
-    'before_image', 'after_image'];
+    'before_image', 'after_image',
+    // Sale price for discount display
+    'sale_price'];
   const row = {};
   fields.forEach(f => { if (product[f] !== undefined) row[f] = product[f]; });
 

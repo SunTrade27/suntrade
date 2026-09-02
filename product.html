@@ -571,7 +571,39 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     }
   }
 
-  /* ===== Neon Blink Custom Product Sections ===== */
+  /* ===== Sale Price / Discount Badge ===== */
+.sale-price-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.sale-price-current {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary, #FF6B00);
+}
+.sale-price-original {
+  font-size: 1.1rem;
+  color: var(--text-muted, #9ca3af);
+  text-decoration: line-through;
+}
+.sale-discount-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 50px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  animation: badgePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* ===== Neon Blink Custom Product Sections ===== */
   .nb-save-badge {
     display: inline-flex;
     align-items: center;
@@ -1593,8 +1625,22 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
         <!-- Price display: big, bold, immediately below title -->
         <div class="product-price-block" id="product-price-block">
           <div class="product-price-unit-wrap">
-            <span class="product-price-detail" id="product-price-display">&euro;${(parseFloat(p.price) * 0.9).toFixed(2)}</span>
-            <span class="product-price-per-unit" data-i18n="product_price">Price</span>
+            ${(() => {
+            const hasSale = p.sale_price && parseFloat(p.sale_price) > 0 && parseFloat(p.sale_price) < parseFloat(p.price);
+            if (hasSale) {
+              const saleP = parseFloat(p.sale_price);
+              const origP = parseFloat(p.price);
+              const discount = Math.round(((origP - saleP) / origP) * 100);
+              return `<div class="sale-price-wrap">
+                <span class="sale-price-current" id="product-price-display">€${saleP.toFixed(2)}</span>
+                <span class="sale-price-original">€${origP.toFixed(2)}</span>
+                <span class="sale-discount-badge">⚡ -${discount}%</span>
+              </div>`;
+            } else {
+              return `<span class="product-price-detail" id="product-price-display">€${(parseFloat(p.price) * 0.9).toFixed(2)}</span>
+                <span class="product-price-per-unit" data-i18n="product_price">Price</span>`;
+            }
+          })()}
           </div>
         </div>
         ${/* Legacy types selector hidden — option groups below replaces it */''}
@@ -1869,16 +1915,18 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
       } // end hasBeforeAfter
 
       // 4. Neon Blink: Override price display with reference-site format
-      //    $59.99  $99.99 (strikethrough)  ⚡ SAVE 40%
+      //    Uses sale_price if set in admin, otherwise defaults to 40% off
       const priceBlock = detail.querySelector('.product-price-unit-wrap');
       if (priceBlock && !priceBlock.querySelector('.nb-price-row')) {
         const bp = parseFloat(currentProduct.price) || 99.99;
-        const salePrice = (bp * 0.6).toFixed(2);  // 40% off
+        const sp = currentProduct.sale_price ? parseFloat(currentProduct.sale_price) : null;
+        const salePrice = sp && sp < bp ? sp.toFixed(2) : (bp * 0.6).toFixed(2);
+        const discountPct = sp && sp < bp ? Math.round(((bp - sp) / bp) * 100) : 40;
         priceBlock.innerHTML = `
           <div class="nb-price-row">
             <span class="nb-price-current">€${salePrice}</span>
             <span class="nb-price-original">€${bp.toFixed(2)}</span>
-            <span class="nb-save-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> SAVE 40%</span>
+            <span class="nb-save-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> SAVE ${discountPct}%</span>
           </div>`;
       }
 
