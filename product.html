@@ -597,7 +597,134 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     60% { transform: scale(1.1); }
     100% { transform: scale(1); opacity: 1; }
   }
-  .nb-40off-banner {
+
+  /* ===== Neon Blink Buy More and Save ===== */
+  .nb-buy-more {
+    margin: 0.8rem 0;
+    border: 1px solid var(--border, #E5E7EB);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .nb-buy-more-header {
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted, #6b7280);
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border, #E5E7EB);
+  }
+  .nb-bm-tier {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border, #E5E7EB);
+    position: relative;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .nb-bm-tier:last-child { border-bottom: none; }
+  .nb-bm-tier:hover { background: var(--bg-hover, #F3F4F6); }
+  .nb-bm-tier.active {
+    background: var(--bg-card, #fff);
+    box-shadow: inset 0 0 0 2px var(--primary, #FF6B00);
+  }
+  .nb-bm-tier-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .nb-bm-tier-qty {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary, #111827);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nb-bm-tier-sub {
+    font-size: 0.8rem;
+    color: var(--text-muted, #9ca3af);
+  }
+  .nb-bm-tier-save {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #10B981;
+    background: rgba(16,185,129,0.1);
+    padding: 2px 8px;
+    border-radius: 50px;
+    border: 1px solid rgba(16,185,129,0.2);
+  }
+  .nb-bm-tier-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+  }
+  .nb-bm-tier-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary, #111827);
+  }
+  .nb-bm-tier.active .nb-bm-tier-price { color: var(--primary, #FF6B00); }
+  .nb-bm-tier-was {
+    font-size: 0.8rem;
+    color: var(--text-muted, #9ca3af);
+    text-decoration: line-through;
+  }
+  .nb-bm-tier-badge {
+    position: absolute;
+    top: -1px;
+    right: 12px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 10px;
+    border-radius: 0 0 6px 6px;
+    color: #fff;
+  }
+  .nb-bm-tier-badge.popular { background: #111; }
+  .nb-bm-tier-badge.best-value { background: var(--primary, #FF6B00); }
+  .nb-bm-discount-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    color: var(--text-muted, #6B7280);
+    background: rgba(16,185,129,0.05);
+    border-top: 1px solid rgba(16,185,129,0.15);
+  }
+  .nb-bm-discount-row strong { color: #059669; font-weight: 700; }
+  @media (max-width: 480px) {
+    .nb-bm-tier { padding: 12px 14px; }
+    .nb-bm-tier-qty { font-size: 0.85rem; }
+    .nb-bm-tier-price { font-size: 1rem; }
+  }
+  /* Neon Blink specific: show strikethrough + SAVE badge inline */
+  .nb-price-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.3rem;
+  }
+  .nb-price-current {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-primary, #111827);
+  }
+  .nb-price-original {
+    font-size: 1.1rem;
+    color: var(--text-muted, #9ca3af);
+    text-decoration: line-through;
+  }
+
+  
+    .nb-40off-banner {
     grid-column: 1 / -1;
     width: 100%;
     overflow: hidden;
@@ -1719,13 +1846,62 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
         detail.insertBefore(nbBA, productDesc);
       }
 
-      // 4. Add SAVE 40% badge next to the price display
+      // 4. Neon Blink: Override price display with reference-site format
+      //    $59.99  $99.99 (strikethrough)  ⚡ SAVE 40%
       const priceBlock = detail.querySelector('.product-price-unit-wrap');
-      if (priceBlock && !priceBlock.querySelector('.nb-save-badge')) {
-        const saveBadge = document.createElement('span');
-        saveBadge.className = 'nb-save-badge';
-        saveBadge.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> SAVE 40%';
-        priceBlock.appendChild(saveBadge);
+      if (priceBlock && !priceBlock.querySelector('.nb-price-row')) {
+        const bp = parseFloat(currentProduct.price) || 99.99;
+        const salePrice = (bp * 0.6).toFixed(2);  // 40% off
+        priceBlock.innerHTML = `
+          <div class="nb-price-row">
+            <span class="nb-price-current">€${salePrice}</span>
+            <span class="nb-price-original">€${bp.toFixed(2)}</span>
+            <span class="nb-save-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> SAVE 40%</span>
+          </div>`;
+      }
+
+      // 5. Neon Blink: Replace generic volume pricing with "Buy More and Save"
+      const volPricing = detail.querySelector('#volume-pricing');
+      if (volPricing && !detail.querySelector('.nb-buy-more')) {
+        const bp = parseFloat(currentProduct.price) || 99.99;
+        const salePrice = bp * 0.6;  // 40% off
+        const buyMoreHTML = `
+          <div class="nb-buy-more" id="volume-pricing">
+            <div class="nb-buy-more-header">Buy More and Save</div>
+            <div class="nb-bm-tier active" data-tier="1" onclick="selectNbTier(1)">
+              <div class="nb-bm-tier-left">
+                <span class="nb-bm-tier-qty">Buy 1 <span class="nb-bm-tier-save">You Save €${(bp - salePrice).toFixed(0)}</span></span>
+                <span class="nb-bm-tier-sub">Standard price</span>
+              </div>
+              <div class="nb-bm-tier-right">
+                <span class="nb-bm-tier-price">€${salePrice.toFixed(2)}</span>
+                <span class="nb-bm-tier-was">€${bp.toFixed(2)}</span>
+              </div>
+            </div>
+            <div class="nb-bm-tier" data-tier="2" onclick="selectNbTier(2)">
+              <span class="nb-bm-tier-badge popular">Most Popular</span>
+              <div class="nb-bm-tier-left">
+                <span class="nb-bm-tier-qty">Buy 2 <span class="nb-bm-tier-save">You Save €${((bp * 2) - (salePrice * 2 * 0.9)).toFixed(0)}</span></span>
+                <span class="nb-bm-tier-sub">10% Discount</span>
+              </div>
+              <div class="nb-bm-tier-right">
+                <span class="nb-bm-tier-price">€${(salePrice * 2 * 0.9).toFixed(2)}</span>
+                <span class="nb-bm-tier-was">€${(bp * 2).toFixed(2)}</span>
+              </div>
+            </div>
+            <div class="nb-bm-tier" data-tier="3" onclick="selectNbTier(3)">
+              <span class="nb-bm-tier-badge best-value">Best Value</span>
+              <div class="nb-bm-tier-left">
+                <span class="nb-bm-tier-qty">Buy 3 <span class="nb-bm-tier-save">You Save €${((bp * 3) - (salePrice * 3 * 0.85)).toFixed(0)}</span></span>
+                <span class="nb-bm-tier-sub">15% Discount</span>
+              </div>
+              <div class="nb-bm-tier-right">
+                <span class="nb-bm-tier-price">€${(salePrice * 3 * 0.85).toFixed(2)}</span>
+                <span class="nb-bm-tier-was">€${(bp * 3).toFixed(2)}</span>
+              </div>
+            </div>
+          </div>`;
+        volPricing.outerHTML = buyMoreHTML;
       }
     })();
 n    // Initialize Before & After slider after DOM is ready
@@ -3062,6 +3238,18 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeVideoModal();
   });
+
+  // ===== Neon Blink Buy More Tier Selection =====
+  function selectNbTier(tier) {
+    document.querySelectorAll('.nb-bm-tier').forEach(function(t) { t.classList.remove('active'); });
+    var active = document.querySelector('.nb-bm-tier[data-tier="' + tier + '"]');
+    if (active) active.classList.add('active');
+    var qtyInput = document.getElementById('qty-input');
+    if (qtyInput) {
+      qtyInput.value = tier;
+      qtyInput.dispatchEvent(new Event('input'));
+    }
+  }
 
   // ===== Neon Blink Before & After Slider =====
   function initNeonBlinkBeforeAfter() {
