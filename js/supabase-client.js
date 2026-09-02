@@ -153,6 +153,8 @@ async function adminSaveProduct(product) {
     'video_url',
     // Before & After comparison slider images
     'before_image', 'after_image',
+    // Before & After custom title and description
+    'before_title', 'before_desc',
     // Sale price for discount display
     'sale_price'];
   const row = {};

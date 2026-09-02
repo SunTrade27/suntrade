@@ -1233,6 +1233,14 @@
         <p style="font-size:0.72rem;color:var(--text-light);margin:0.4rem 0 0 0;line-height:1.4;">
           Upload Before & After comparison images for the product page slider. Clients can drag to compare.
         </p>
+        <div style="margin-top:0.75rem;">
+          <label style="font-size:0.78rem;font-weight:600;color:var(--text-light);display:block;margin-bottom:4px;">Section Title</label>
+          <input type="text" id="pbefore-title" placeholder="Before & After" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.85rem;">
+        </div>
+        <div style="margin-top:0.75rem;">
+          <label style="font-size:0.78rem;font-weight:600;color:var(--text-light);display:block;margin-bottom:4px;">Section Description (HTML allowed)</label>
+          <textarea id="pbefore-desc" rows="3" placeholder="Discover how this product gives your item a unique look." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.85rem;resize:vertical;"></textarea>
+        </div>
       </div>
       <div class="form-group">
         <label><input type="checkbox" id="pactive" checked> Active</label>
@@ -2509,6 +2517,11 @@
       var paPrev = document.getElementById('pafter-image-preview');
       if (product.before_image && pbPrev) { pbPrev.style.display = 'block'; pbPrev.querySelector('img').src = product.before_image; }
       if (product.after_image && paPrev) { paPrev.style.display = 'block'; paPrev.querySelector('img').src = product.after_image; }
+      // Before & After title and description
+      var pbTitle = document.getElementById('pbefore-title');
+      var pbDesc = document.getElementById('pbefore-desc');
+      if (pbTitle) pbTitle.value = product.before_title || '';
+      if (pbDesc) pbDesc.value = product.before_desc || '';
       // Sale price
       var salePriceEl = document.getElementById('psale-price');
       if (salePriceEl) salePriceEl.value = product.sale_price || '';
@@ -4182,6 +4195,8 @@
       video_url: document.getElementById('pvideo')?.value.trim() || null,
       before_image: document.getElementById('pbefore-image')?.value.trim() || null,
       after_image: document.getElementById('pafter-image')?.value.trim() || null,
+      before_title: document.getElementById('pbefore-title')?.value.trim() || null,
+      before_desc: document.getElementById('pbefore-desc')?.value.trim() || null,
       sale_price: parseFloat(document.getElementById('psale-price')?.value) || null
     };
 

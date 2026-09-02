@@ -1933,8 +1933,8 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
             <span class="nb-ba-label nb-ba-label-after">After</span>
           </div>
           <div class="nb-ba-text">
-            <h2 class="nb-ba-title" data-i18n="nb_before_after_title">Before &amp; After</h2>
-            <p class="nb-ba-subtitle" data-i18n-html="nb_before_after_desc">Discover how <strong>SUNTRADE\u2122</strong> gives your headlights a unique custom appearance in just one installation.</p>
+            <h2 class="nb-ba-title">${escHtml(currentProduct.before_title || 'Before & After')}</h2>
+            <p class="nb-ba-subtitle">${currentProduct.before_desc || 'See the difference \u2014 drag the slider to compare'}</p>
           </div>`;
         detail.insertBefore(nbBA, productDesc);
       }
