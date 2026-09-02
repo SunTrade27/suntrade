@@ -1210,13 +1210,23 @@
         </label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
           <div>
-            <label style="font-size:0.78rem;font-weight:600;color:var(--text-light);display:block;margin-bottom:4px;">Before Image URL</label>
-            <input type="url" id="pbefore-image" placeholder="https://example.com/before.jpg" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.85rem;">
+            <label style="font-size:0.78rem;font-weight:600;color:var(--text-light);display:block;margin-bottom:4px;">Before Image</label>
+            <input type="url" id="pbefore-image" placeholder="Paste URL or upload below" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.85rem;">
+            <label for="pbefore-image-upload" style="display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:6px 12px;background:#FF6B00;color:#fff;border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#E05500'" onmouseout="this.style.background='#FF6B00'">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Upload Image
+            </label>
+            <input type="file" id="pbefore-image-upload" accept="image/*" style="display:none" onchange="uploadBeforeImage(this)">
             <div id="pbefore-image-preview" style="margin-top:6px;display:none;"><img src="" alt="Before preview" style="width:100%;max-height:120px;object-fit:cover;border-radius:8px;border:1px solid var(--border);"></div>
           </div>
           <div>
-            <label style="font-size:0.78rem;font-weight:600;color:var(--text-light);display:block;margin-bottom:4px;">After Image URL</label>
-            <input type="url" id="pafter-image" placeholder="https://example.com/after.jpg" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.85rem;">
+            <label style="font-size:0.78rem;font-weight:600;color:var(--text-light);display:block;margin-bottom:4px;">After Image</label>
+            <input type="url" id="pafter-image" placeholder="Paste URL or upload below" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.85rem;">
+            <label for="pafter-image-upload" style="display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:6px 12px;background:#FF6B00;color:#fff;border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#E05500'" onmouseout="this.style.background='#FF6B00'">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Upload Image
+            </label>
+            <input type="file" id="pafter-image-upload" accept="image/*" style="display:none" onchange="uploadAfterImage(this)">
             <div id="pafter-image-preview" style="margin-top:6px;display:none;"><img src="" alt="After preview" style="width:100%;max-height:120px;object-fit:cover;border-radius:8px;border:1px solid var(--border);"></div>
           </div>
         </div>
@@ -4233,6 +4243,53 @@
       alert(t('error') + ': ' + err.message);
     }
   }
+
+  // ===== Before & After Image Upload =====
+  async function uploadBeforeImage(input) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { alert('Please select an image file'); return; }
+    try {
+      if (typeof uploadImage !== 'function') throw new Error('uploadImage helper missing');
+      const url = await uploadImage(file);
+      document.getElementById('pbefore-image').value = url;
+      var prev = document.getElementById('pbefore-image-preview');
+      if (prev) { prev.style.display = 'block'; prev.querySelector('img').src = url; }
+      input.value = '';
+    } catch (err) {
+      alert('Image upload failed: ' + err.message);
+    }
+  }
+  async function uploadAfterImage(input) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { alert('Please select an image file'); return; }
+    try {
+      if (typeof uploadImage !== 'function') throw new Error('uploadImage helper missing');
+      const url = await uploadImage(file);
+      document.getElementById('pafter-image').value = url;
+      var prev = document.getElementById('pafter-image-preview');
+      if (prev) { prev.style.display = 'block'; prev.querySelector('img').src = url; }
+      input.value = '';
+    } catch (err) {
+      alert('Image upload failed: ' + err.message);
+    }
+  }
+  // Live preview when URL is pasted into Before/After fields
+  document.addEventListener('DOMContentLoaded', function() {
+    var pbInput = document.getElementById('pbefore-image');
+    var paInput = document.getElementById('pafter-image');
+    if (pbInput) pbInput.addEventListener('input', function() {
+      var prev = document.getElementById('pbefore-image-preview');
+      if (this.value && prev) { prev.style.display = 'block'; prev.querySelector('img').src = this.value; }
+      else if (prev) { prev.style.display = 'none'; }
+    });
+    if (paInput) paInput.addEventListener('input', function() {
+      var prev = document.getElementById('pafter-image-preview');
+      if (this.value && prev) { prev.style.display = 'block'; prev.querySelector('img').src = this.value; }
+      else if (prev) { prev.style.display = 'none'; }
+    });
+  });
 </script>
 </body>
 </html>
