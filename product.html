@@ -1767,7 +1767,8 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
       const isNeonBlink = /neon.?blink|rgb.?headlight|headlight.?eyes|demon.?eyes|led.?demon/i.test(
         nameEN + ' ' + nameKZ + ' ' + nameRU + ' ' + String(currentProduct.desc_en || '')
       );
-      if (!isNeonBlink) return;
+      const hasBeforeAfter = currentProduct.before_image && currentProduct.after_image;
+      if (!isNeonBlink && !hasBeforeAfter) return;
 
       const detail = document.getElementById('product-detail');
       if (!detail) return;
@@ -1821,8 +1822,9 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
         }
       }
 
-      // 3. Inject Before & After section before product-desc
+      // 3. Inject Before & After section before product-desc (only if images exist)
       const productDesc = detail.querySelector('.product-desc');
+      if (hasBeforeAfter) {
       if (productDesc) {
         const nbBA = document.createElement('div');
         nbBA.className = 'nb-beforeafter';
@@ -1830,9 +1832,9 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
           <h2 class="nb-ba-title">Before & After</h2>
           <p class="nb-ba-subtitle">Discover how <strong>Neon Blink™</strong> gives your headlights a unique custom appearance in just one installation</p>
           <div class="nb-ba-slider-container" id="nb-ba-slider">
-            <img src="https://i.imgur.com/K0dT9Zh.jpg" alt="After — Neon Blink RGB Headlights" draggable="false">
+            <img src="${escHtml((currentProduct.after_image || currentProduct.before_image || (currentProduct.images && currentProduct.images[0]) || '/images/placeholder.jpg'))}" alt="After — Neon Blink RGB Headlights" draggable="false">
             <div class="nb-ba-overlay" id="nb-ba-overlay">
-              <img src="https://i.imgur.com/K0dT9Zh.jpg" alt="Before — Standard Headlights" draggable="false">
+              <img src="${escHtml((currentProduct.before_image || currentProduct.after_image || (currentProduct.images && currentProduct.images[0]) || '/images/placeholder.jpg'))}" alt="Before — Standard Headlights" draggable="false">
             </div>
             <div class="nb-ba-handle" id="nb-ba-handle">
               <div class="nb-ba-handle-knob">
@@ -1845,6 +1847,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
           </div>`;
         detail.insertBefore(nbBA, productDesc);
       }
+      } // end hasBeforeAfter
 
       // 4. Neon Blink: Override price display with reference-site format
       //    $59.99  $99.99 (strikethrough)  ⚡ SAVE 40%

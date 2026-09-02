@@ -150,7 +150,9 @@ async function adminSaveProduct(product) {
     // Optional product video (YouTube / Vimeo / MP4). Added by
     // fix-add-video-url.sql; the admin save helper self-heals if the migration
     // has not yet been applied.
-    'video_url'];
+    'video_url',
+    // Before & After comparison slider images
+    'before_image', 'after_image'];
   const row = {};
   fields.forEach(f => { if (product[f] !== undefined) row[f] = product[f]; });
 
