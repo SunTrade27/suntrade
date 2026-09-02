@@ -2539,12 +2539,12 @@
       // Populate visible price field from product data
       var ppriceVisEl = document.getElementById('pprice-visible');
       if (ppriceVisEl) {
-        var priceVal = product.price || (variants[0] && variants[0].price) || '';
+        var priceVal = (product.price != null && product.price !== '') ? product.price : ((variants[0] && variants[0].price != null) ? variants[0].price : '');
         ppriceVisEl.value = priceVal;
       }
       // Populate visible stock field
       const visibleStockEl = document.getElementById('pstock-visible');
-      if (visibleStockEl && product.stock != null) visibleStockEl.value = product.stock;
+      if (visibleStockEl) visibleStockEl.value = (product.stock != null) ? product.stock : '';
       // Option groups (Alibaba-style) — load from product.option_groups if present.
       loadOptionGroups(product.option_groups);
     } else {
@@ -4116,7 +4116,7 @@
     var ppriceVisEl = document.getElementById('pprice-visible');
     var visiblePrice = ppriceVisEl ? parseFloat(ppriceVisEl.value) : NaN;
     // If visible field is empty, also check the variant row as fallback
-    let effectivePrice = (Number.isFinite(visiblePrice) && visiblePrice > 0) ? visiblePrice : (parseFloat(first.price) || 0);
+    let effectivePrice = (Number.isFinite(visiblePrice) && visiblePrice >= 0) ? visiblePrice : ((first.price != null && first.price !== '') ? parseFloat(first.price) : 0);
     // Final fallback: if still 0, try the hidden pprice field
     if (effectivePrice <= 0) {
       var hiddenPrice = parseFloat(document.getElementById('pprice')?.value);
@@ -4134,7 +4134,7 @@
     }
 
     // Calculate effective stock from option groups
-    let effectiveStock = parseInt(first.stock, 10) || 0;
+    let effectiveStock = (first.stock != null && first.stock !== '') ? (parseInt(first.stock, 10) || 0) : 0;
     if (effectiveStock <= 0 && optionGroups.length > 0) {
       let totalOptStock = 0;
       for (const g of optionGroups) {
