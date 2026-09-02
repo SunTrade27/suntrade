@@ -514,5 +514,17 @@
   "footer_address_value": "كازاخستان، منطقة تركستان، مدينة شيمكنت، شارع أبيلخاير، الحي 189، مبنى 25أ",
   "footer_founder_value": "إليمسوف سيرجان باقيتجانولي",
   "return_stripe_title": "تتم معالجة المدفوعات عبر Stripe",
-  "return_stripe_text": "تتم معالجة جميع المدفوعات على SunTrade بشكل آمن من خلال <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> — منصة دفع موثوقة يستخدمها ملايين الشركات حول العالم."
+  "return_stripe_text": "تتم معالجة جميع المدفوعات على SunTrade بشكل آمن من خلال <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> — منصة دفع موثوقة يستخدمها ملايين الشركات حول العالم.",
+  "nb_feature_colors": "33 لوناً ورسوماً متحركة وتأثيرات",
+  "nb_feature_plug": "تثبيت سهل بتقنية Plug & Play",
+  "nb_feature_customize": "خصص مصابيحك في ثوانٍ",
+  "nb_buy_more_save": "اشترِ أكثر ووفّر أكثر",
+  "nb_standard_price": "السعر العادي",
+  "nb_discount_10": "خصم 10%",
+  "nb_discount_15": "خصم 15%",
+  "nb_before_after_title": "قبل وبعد",
+  "nb_before_after_desc": "اكتشف كيف تمنح <strong>SUNTRADE™</strong> مصابيحك مظهراً فريداً بتثبيت واحد.",
+  "nb_save_40": "وفّر 40%",
+  "nb_you_save": "وفّر €",
+  "refund_learn": "تعرف على الاستردادات والإرجاعات ←"
 }

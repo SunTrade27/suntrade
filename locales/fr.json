@@ -514,5 +514,17 @@
   "footer_address_value": "Kazakhstan, région du Turkestan, ville de Shymkent, rue Abilkhaïr, 189e quartier, bâtiment 25A",
   "footer_founder_value": "Elemesov Serjan Bakytjanouly",
   "return_stripe_title": "Les paiements sont traités par Stripe",
-  "return_stripe_text": "Tous les paiements sur SunTrade sont sécurisés via <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> — une plateforme de paiement de confiance utilisée par des millions d'entreprises dans le monde."
+  "return_stripe_text": "Tous les paiements sur SunTrade sont sécurisés via <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> — une plateforme de paiement de confiance utilisée par des millions d'entreprises dans le monde.",
+  "nb_feature_colors": "33 couleurs, animations et effets",
+  "nb_feature_plug": "Installation Plug & Play facile",
+  "nb_feature_customize": "Personnalisez vos phares en quelques secondes",
+  "nb_buy_more_save": "ACHETEZ PLUS, ÉCONOMISEZ",
+  "nb_standard_price": "Prix standard",
+  "nb_discount_10": "Réduction de 10%",
+  "nb_discount_15": "Réduction de 15%",
+  "nb_before_after_title": "Avant & Après",
+  "nb_before_after_desc": "Découvrez comment <strong>SUNTRADE™</strong> donne à vos phares un aspect unique en une seule installation.",
+  "nb_save_40": "ÉCONOMISEZ 40%",
+  "nb_you_save": "Économisez €",
+  "refund_learn": "En savoir plus sur les remboursements et retours →"
 }

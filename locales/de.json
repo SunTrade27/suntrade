@@ -514,5 +514,17 @@
   "footer_address_value": "Kasachstan, Turkestan-Region, Schymkent, Abilkhair-Straße, 189. Quartal, Gebäude 25A",
   "footer_founder_value": "Elemesov Serhan Baqtydschanuly",
   "return_stripe_title": "Zahlungen werden über Stripe abgewickelt",
-  "return_stripe_text": "Alle Zahlungen auf SunTrade werden sicher über <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> abgewickelt — eine vertrauenswürdige Zahlungsplattform, die von Millionen von Unternehmen weltweit genutzt wird."
+  "return_stripe_text": "Alle Zahlungen auf SunTrade werden sicher über <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> abgewickelt — eine vertrauenswürdige Zahlungsplattform, die von Millionen von Unternehmen weltweit genutzt wird.",
+  "nb_feature_colors": "33 Farben, Animationen & Effekte",
+  "nb_feature_plug": "Einfache Plug & Play Installation",
+  "nb_feature_customize": "Passen Sie Ihre Scheinwerfer in Sekunden an",
+  "nb_buy_more_save": "MEHR KAUFEN, MEHR SPAREN",
+  "nb_standard_price": "Standardpreis",
+  "nb_discount_10": "10% Rabatt",
+  "nb_discount_15": "15% Rabatt",
+  "nb_before_after_title": "Vorher & Nachher",
+  "nb_before_after_desc": "Entdecken Sie, wie <strong>SUNTRADE™</strong> Ihren Scheinwerfern mit einer einzigen Installation ein einzigartiges Aussehen verleiht.",
+  "nb_save_40": "40% ERSparnis",
+  "nb_you_save": "Sparen €",
+  "refund_learn": "Erfahren Sie mehr über Rückerstattungen und Rückgaben →"
 }

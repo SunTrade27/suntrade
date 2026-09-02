@@ -514,5 +514,17 @@
   "footer_address_value": "Kazachstan, obwód turkiestański, miasto Shymkent, ulica Abilkhair, 189. kwartał, budynek 25A",
   "footer_founder_value": "Elemesow Sierżan Bakytdżanuły",
   "return_stripe_title": "Płatności są przetwarzane przez Stripe",
-  "return_stripe_text": "Wszystkie płatności w SunTrade są bezpiecznie przetwarzane za pośrednictwem <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> — zaufanej platformy płatniczej używanej przez miliony firm na całym świecie."
+  "return_stripe_text": "Wszystkie płatności w SunTrade są bezpiecznie przetwarzane za pośrednictwem <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> — zaufanej platformy płatniczej używanej przez miliony firm na całym świecie.",
+  "nb_feature_colors": "33 kolory, animacje i efekty",
+  "nb_feature_plug": "Łatwa instalacja Plug & Play",
+  "nb_feature_customize": "Dostosuj reflektory w kilka sekund",
+  "nb_buy_more_save": "KUP WIĘCEJ, OSZCZĘDZAJ WIĘCEJ",
+  "nb_standard_price": "Cena standardowa",
+  "nb_discount_10": "10% rabatu",
+  "nb_discount_15": "15% rabatu",
+  "nb_before_after_title": "Przed i Po",
+  "nb_before_after_desc": "Odkryj, jak <strong>SUNTRADE™</strong> nadaje Twoim reflektorom wyjątkowy wygląd dzięki jednej instalacji.",
+  "nb_save_40": "OSZCZĘDŹ 40%",
+  "nb_you_save": "Oszczędź €",
+  "refund_learn": "Dowiedz się więcej o zwrotach i refundacjach →"
 }

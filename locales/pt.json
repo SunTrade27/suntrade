@@ -514,5 +514,17 @@
   "footer_address_value": "Cazaquistão, região de Turquestão, cidade de Shymkent, rua Abilkhair, quarteirão 189, prédio 25A",
   "footer_founder_value": "Elemesov Serzhan Baqytzhanuly",
   "return_stripe_title": "Os pagamentos são processados pela Stripe",
-  "return_stripe_text": "Todos os pagamentos no SunTrade são processados com segurança através da <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> — uma plataforma de pagamento confiável usada por milhões de empresas em todo o mundo."
+  "return_stripe_text": "Todos os pagamentos no SunTrade são processados com segurança através da <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> — uma plataforma de pagamento confiável usada por milhões de empresas em todo o mundo.",
+  "nb_feature_colors": "33 cores, animações e efeitos",
+  "nb_feature_plug": "Instalação Plug & Play fácil",
+  "nb_feature_customize": "Personalize seus faróis em segundos",
+  "nb_buy_more_save": "COMPRE MAIS, ECONOMIZE MAIS",
+  "nb_standard_price": "Preço padrão",
+  "nb_discount_10": "10% de desconto",
+  "nb_discount_15": "15% de desconto",
+  "nb_before_after_title": "Antes e Depois",
+  "nb_before_after_desc": "Descubra como a <strong>SUNTRADE™</strong> dá aos seus faróis uma aparência única com uma única instalação.",
+  "nb_save_40": "ECONOMIZE 40%",
+  "nb_you_save": "Economize €",
+  "refund_learn": "Saiba mais sobre reembolsos e devoluções →"
 }

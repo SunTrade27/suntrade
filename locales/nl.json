@@ -514,5 +514,17 @@
   "footer_address_value": "Kazachstan, Turkestan regio, Shymkent stad, Abilkhair straat, 189e kwartier, gebouw 25A",
   "footer_founder_value": "Elemesov Serzhan Baqytzjanuly",
   "return_stripe_title": "Betalingen worden verwerkt via Stripe",
-  "return_stripe_text": "Alle betalingen op SunTrade worden veilig verwerkt via <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> — een betrouwbaar betaalplatform dat door miljoenen bedrijven wereldwijd wordt gebruikt."
+  "return_stripe_text": "Alle betalingen op SunTrade worden veilig verwerkt via <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> — een betrouwbaar betaalplatform dat door miljoenen bedrijven wereldwijd wordt gebruikt.",
+  "nb_feature_colors": "33 kleuren, animaties & effecten",
+  "nb_feature_plug": "Eenvoudige Plug & Play installatie",
+  "nb_feature_customize": "Personaliseer uw koplampen in seconden",
+  "nb_buy_more_save": "KOOP MEER, BESPAAR MEER",
+  "nb_standard_price": "Standaardprijs",
+  "nb_discount_10": "10% korting",
+  "nb_discount_15": "15% korting",
+  "nb_before_after_title": "Voor & Na",
+  "nb_before_after_desc": "Ontdek hoe <strong>SUNTRADE™</strong> uw koplampen een unieke uitstraling geeft met slechts één installatie.",
+  "nb_save_40": "BESPAAR 40%",
+  "nb_you_save": "Bespaar €",
+  "refund_learn": "Meer over terugbetalingen en retourneringen →"
 }

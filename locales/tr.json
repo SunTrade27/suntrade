@@ -514,5 +514,17 @@
   "footer_address_value": "Kazakistan, Türkistan bölgesi, Şımkent şehri, Abilkhayır sokağı, 189. blok, bina 25A",
   "footer_founder_value": "Elemesov Serjan Bakıtcjanulı",
   "return_stripe_title": "Ödemeler Stripe tarafından işlenir",
-  "return_stripe_text": "SunTrade'deki tüm ödemeler, dünya genelinde milyonlarca işletme tarafından kullanılan güvenilir bir ödeme platformu olan <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> aracılığıyla güvenli bir şekilde işlenir. Finansal verileriniz şifrelenir ve sunucularımızda asla saklanmaz."
+  "return_stripe_text": "SunTrade'deki tüm ödemeler, dünya genelinde milyonlarca işletme tarafından kullanılan güvenilir bir ödeme platformu olan <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> aracılığıyla güvenli bir şekilde işlenir. Finansal verileriniz şifrelenir ve sunucularımızda asla saklanmaz.",
+  "nb_feature_colors": "33 Renk, Animasyon ve Efekt",
+  "nb_feature_plug": "Kolay Plug & Play Kurulum",
+  "nb_feature_customize": "Farlarınızı Saniyeler İçinde Özelleştirin",
+  "nb_buy_more_save": "DAHA FAZLA ALIN, TASARRUF EDİN",
+  "nb_standard_price": "Standart fiyat",
+  "nb_discount_10": "%10 İndirim",
+  "nb_discount_15": "%15 İndirim",
+  "nb_before_after_title": "Önce ve Sonra",
+  "nb_before_after_desc": "<strong>SUNTRADE™</strong> farlarınıza tek kurulumda nasıl benzersiz bir görünüm kazandırdığını keşfedin.",
+  "nb_save_40": "%40 TASARRUF",
+  "nb_you_save": "Tasarruf €",
+  "refund_learn": "İade ve geri ödemeler hakkında bilgi alın →"
 }

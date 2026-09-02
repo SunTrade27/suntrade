@@ -1899,9 +1899,9 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
         const nbFeatures = document.createElement('div');
         nbFeatures.className = 'nb-features';
         nbFeatures.innerHTML = `
-          <div class="nb-feature-item"><span class="nb-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span> 33 Colors, Animations & Effects</div>
-          <div class="nb-feature-item"><span class="nb-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 8v6M4.93 4.93l4.24 4.24m5.66 5.66l4.24 4.24M2 12h6m8 0h6M4.93 19.07l4.24-4.24m5.66-5.66l4.24-4.24"/></svg></span> Easy Plug & Play Installation</div>
-          <div class="nb-feature-item"><span class="nb-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></span> Customize Your Headlights in Seconds</div>`;
+          <div class="nb-feature-item"><span class="nb-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span><span data-i18n="nb_feature_colors">33 Colors, Animations & Effects</span></div>
+          <div class="nb-feature-item"><span class="nb-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 8v6M4.93 4.93l4.24 4.24m5.66 5.66l4.24 4.24M2 12h6m8 0h6M4.93 19.07l4.24-4.24m5.66-5.66l4.24-4.24"/></svg></span><span data-i18n="nb_feature_plug">Easy Plug & Play Installation</span></div>
+          <div class="nb-feature-item"><span class="nb-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></span><span data-i18n="nb_feature_customize">Customize Your Headlights in Seconds</span></div>`;
         if (volumePricing) {
           productInfo.insertBefore(nbFeatures, volumePricing);
         } else {
@@ -1933,8 +1933,8 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
             <span class="nb-ba-label nb-ba-label-after">After</span>
           </div>
           <div class="nb-ba-text">
-            <h2 class="nb-ba-title">Before & After</h2>
-            <p class="nb-ba-subtitle">Discover how <strong>SUNTRADE\u2122</strong> gives your headlights a unique custom appearance in just one installation.</p>
+            <h2 class="nb-ba-title" data-i18n="nb_before_after_title">Before &amp; After</h2>
+            <p class="nb-ba-subtitle" data-i18n-html="nb_before_after_desc">Discover how <strong>SUNTRADE\u2122</strong> gives your headlights a unique custom appearance in just one installation.</p>
           </div>`;
         detail.insertBefore(nbBA, productDesc);
       }
@@ -1952,7 +1952,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
           <div class="nb-price-row">
             <span class="nb-price-current">€${salePrice}</span>
             <span class="nb-price-original">€${bp.toFixed(2)}</span>
-            <span class="nb-save-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> SAVE ${discountPct}%</span>
+            <span class="nb-save-badge" data-i18n="nb_save_40"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> SAVE ${discountPct}%</span>
           </div>`;
       }
 
@@ -1988,7 +1988,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
             <div class="nb-bm-tier active" data-tier="1" onclick="selectNbTier(1)">
               <div class="nb-bm-tier-left">
                 <span class="nb-bm-tier-qty">Buy 1 <span class="nb-bm-tier-save">You Save €${(bp - salePrice).toFixed(0)}</span></span>
-                <span class="nb-bm-tier-sub">Standard price</span>
+                <span class="nb-bm-tier-sub"><span data-i18n="nb_standard_price">Standard price</span></span>
               </div>
               <div class="nb-bm-tier-right">
                 <span class="nb-bm-tier-price">€${salePrice.toFixed(2)}</span>
@@ -1999,7 +1999,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
               <span class="nb-bm-tier-badge popular">Most Popular</span>
               <div class="nb-bm-tier-left">
                 <span class="nb-bm-tier-qty">Buy 2 <span class="nb-bm-tier-save">You Save €${((bp * 2) - (salePrice * 2 * 0.9)).toFixed(0)}</span></span>
-                <span class="nb-bm-tier-sub">10% Discount</span>
+                <span class="nb-bm-tier-sub"><span data-i18n="nb_discount_10">10% Discount</span></span>
               </div>
               <div class="nb-bm-tier-right">
                 <span class="nb-bm-tier-price">€${(salePrice * 2 * 0.9).toFixed(2)}</span>
@@ -2010,7 +2010,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
               <span class="nb-bm-tier-badge best-value">Best Value</span>
               <div class="nb-bm-tier-left">
                 <span class="nb-bm-tier-qty">Buy 3 <span class="nb-bm-tier-save">You Save €${((bp * 3) - (salePrice * 3 * 0.85)).toFixed(0)}</span></span>
-                <span class="nb-bm-tier-sub">15% Discount</span>
+                <span class="nb-bm-tier-sub"><span data-i18n="nb_discount_15">15% Discount</span></span>
               </div>
               <div class="nb-bm-tier-right">
                 <span class="nb-bm-tier-price">€${(salePrice * 3 * 0.85).toFixed(2)}</span>

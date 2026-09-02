@@ -514,5 +514,17 @@
   "footer_address_value": "Kazakistan, regione di Turkestan, città di Shymkent, via Abilkhair, quartiere 189, edificio 25A",
   "footer_founder_value": "Elemesov Serzhan Baqytzhanuly",
   "return_stripe_title": "I pagamenti sono elaborati da Stripe",
-  "return_stripe_text": "Tutti i pagamenti su SunTrade sono elaborati in modo sicuro tramite <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> — una piattaforma di pagamento affidabile utilizzata da milioni di aziende in tutto il mondo."
+  "return_stripe_text": "Tutti i pagamenti su SunTrade sono elaborati in modo sicuro tramite <a href=\"https://stripe.com\" target=\"_blank\" rel=\"noopener\" style=\"color:#166534;font-weight:700;text-decoration:underline;\">Stripe</a> — una piattaforma di pagamento affidabile utilizzata da milioni di aziende in tutto il mondo.",
+  "nb_feature_colors": "33 colori, animazioni ed effetti",
+  "nb_feature_plug": "Installazione Plug & Play semplice",
+  "nb_feature_customize": "Personalizza i fari in pochi secondi",
+  "nb_buy_more_save": "COMPRA DI PIÙ, RISPARMIA DI PIÙ",
+  "nb_standard_price": "Prezzo standard",
+  "nb_discount_10": "10% di sconto",
+  "nb_discount_15": "15% di sconto",
+  "nb_before_after_title": "Prima e Dopo",
+  "nb_before_after_desc": "Scopri come <strong>SUNTRADE™</strong> dà ai tuoi fari un aspetto unico con un solo installazione.",
+  "nb_save_40": "RISPARMIA 40%",
+  "nb_you_save": "Risparmia €",
+  "refund_learn": "Scopri di più su rimborsi e resi →"
 }
