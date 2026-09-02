@@ -4073,9 +4073,8 @@
     // base price/stock, while keeping the saved type fields empty/null.
     const first = variants[0] || getProductBaseValues();
     document.getElementById('pprice').value = first.price;
-    // Also populate visible price field
-    var ppriceVisible = document.getElementById('pprice-visible');
-    if (ppriceVisible) ppriceVisible.value = first.price || '';
+    // Do NOT overwrite the visible price field here — the user may have
+    // typed a value that differs from the variant row's price.
     // Collect option groups EARLY so we can derive price/stock from them
     const optionGroups = collectOptionGroups();
 
@@ -4134,7 +4133,12 @@
     }
 
     // Calculate effective stock from option groups
-    let effectiveStock = (first.stock != null && first.stock !== '') ? (parseInt(first.stock, 10) || 0) : 0;
+    let effectiveStock = (function() {
+    const v = document.getElementById('pstock-visible');
+    const vis = v ? parseInt(v.value, 10) : NaN;
+    if (Number.isFinite(vis) && vis >= 0) return vis;
+    return (first.stock != null && first.stock !== '') ? (parseInt(first.stock, 10) || 0) : 0;
+  })();
     if (effectiveStock <= 0 && optionGroups.length > 0) {
       let totalOptStock = 0;
       for (const g of optionGroups) {
