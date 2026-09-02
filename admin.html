@@ -848,7 +848,21 @@
       <div class="lang-wrapper">
         <button id="lang-toggle"><svg class="icon icon-md" style="vertical-align:middle"><use href="#icon-globe"/></svg> EN</button>
         <div id="lang-dropdown"></div>
+      </div>    </div>
+
+    <!-- Migration Banner -->
+    <div id="migration-banner" style="display:none;background:linear-gradient(135deg,#ff6b00,#ff9500);color:white;padding:12px 20px;border-radius:12px;margin:0 16px 16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <div>
+          <strong>⚠️ Database Migration Required</strong><br>
+          <small>Missing columns: <span id="migration-missing-cols"></span>. Run this SQL in Supabase:</small>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="copyMigrationSql()" style="background:white;color:#ff6b00;border:none;padding:6px 14px;border-radius:6px;font-weight:600;cursor:pointer;font-size:0.8rem;">📋 Copy SQL</button>
+          <a id="migration-sql-link" href="" target="_blank" style="background:white;color:#ff6b00;border:none;padding:6px 14px;border-radius:6px;font-weight:600;text-decoration:none;font-size:0.8rem;">Open Supabase</a>
+        </div>
       </div>
+      <pre id="migration-sql-code" style="background:rgba(0,0,0,0.2);padding:8px 12px;border-radius:6px;margin-top:8px;font-size:0.75rem;overflow-x:auto;white-space:pre-wrap;"></pre>
     </div>
 
     <!-- Dashboard -->
@@ -1304,6 +1318,21 @@
       }
     }
     tryInit();
+
+    // Auto-migrate: check and add missing DB columns
+    (async function() {
+      try {
+        const resp = await fetch('/api/migrate-db');
+        const result = await resp.json();
+        if (!result.success && result.sql) {
+          console.warn('[Migration] Missing columns:', result.missing);
+          console.warn('[Migration] Run this SQL in Supabase Dashboard SQL Editor:');
+          console.warn(result.sql);
+        } else if (result.success) {
+          console.log('[Migration] All columns present:', result.existing);
+        }
+      } catch (e) { console.warn('[Migration] check failed:', e.message); }
+    })();
 
     // Image upload drag & drop
     const zone = document.getElementById('image-upload-zone');
@@ -4305,6 +4334,42 @@
       else if (prev) { prev.style.display = 'none'; }
     });
   });
+
+  // Migration helpers
+  var _migrationSql = '';
+  async function checkMigration() {
+    try {
+      var resp = await fetch('/api/migrate-db');
+      var result = await resp.json();
+      if (!result.success && result.missing && result.missing.length > 0) {
+        document.getElementById('migration-banner').style.display = 'block';
+        document.getElementById('migration-missing-cols').textContent = result.missing.join(', ');
+        document.getElementById('migration-sql-code').textContent = result.sql || '';
+        _migrationSql = result.sql || '';
+        var dashUrl = result.dashboardUrl || 'https://supabase.com/dashboard';
+        document.getElementById('migration-sql-link').href = dashUrl;
+      } else if (result.success) {
+        document.getElementById('migration-banner').style.display = 'none';
+      }
+    } catch(e) { console.warn('Migration check failed:', e); }
+  }
+  function copyMigrationSql() {
+    if (_migrationSql) {
+      navigator.clipboard.writeText(_migrationSql).then(function() {
+        alert('SQL copied! Paste it into Supabase SQL Editor and click Run.');
+      }).catch(function() {
+        prompt('Copy this SQL and run it in Supabase SQL Editor:', _migrationSql);
+      });
+    }
+  }
+  // Check migration on admin panel show
+  var _origShowAdmin = window.showAdminPanel;
+  if (typeof _origShowAdmin === 'function') {
+    window.showAdminPanel = function() {
+      _origShowAdmin.apply(this, arguments);
+      checkMigration();
+    };
+  }
 </script>
 </body>
 </html>
