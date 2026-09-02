@@ -4112,10 +4112,16 @@
       .filter(url => url && !optionImageSet.has(url));
     const orderedGalleryImages = [...optionImageUrls, ...extraImages];
 
-    // Calculate effective price: use visible field if set, else variant, else option groups
+    // Calculate effective price: ALWAYS use the visible price field first
     var ppriceVisEl = document.getElementById('pprice-visible');
     var visiblePrice = ppriceVisEl ? parseFloat(ppriceVisEl.value) : NaN;
+    // If visible field is empty, also check the variant row as fallback
     let effectivePrice = (Number.isFinite(visiblePrice) && visiblePrice > 0) ? visiblePrice : (parseFloat(first.price) || 0);
+    // Final fallback: if still 0, try the hidden pprice field
+    if (effectivePrice <= 0) {
+      var hiddenPrice = parseFloat(document.getElementById('pprice')?.value);
+      if (Number.isFinite(hiddenPrice) && hiddenPrice > 0) effectivePrice = hiddenPrice;
+    }
     if (effectivePrice <= 0 && optionGroups.length > 0) {
       let minMod = Infinity;
       for (const g of optionGroups) {
