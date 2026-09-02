@@ -1319,19 +1319,34 @@
     }
     tryInit();
 
-    // Auto-migrate: check and add missing DB columns
+    // Auto-migrate: check for missing DB columns
     (async function() {
       try {
-        const resp = await fetch('/api/migrate-db');
-        const result = await resp.json();
-        if (!result.success && result.sql) {
-          console.warn('[Migration] Missing columns:', result.missing);
-          console.warn('[Migration] Run this SQL in Supabase Dashboard SQL Editor:');
-          console.warn(result.sql);
-        } else if (result.success) {
-          console.log('[Migration] All columns present:', result.existing);
+        if (!sb) return;
+        const missingCols = [];
+        const checkCols = ['sale_price', 'before_image', 'after_image', 'before_title', 'before_desc'];
+        for (const col of checkCols) {
+          try {
+            const { error } = await sb.from('products').select(col).limit(1);
+            if (error && (error.code === '42703' || (error.message && error.message.includes('column')))) {
+              missingCols.push(col);
+            }
+          } catch(e) { missingCols.push(col); }
         }
-      } catch (e) { console.warn('[Migration] check failed:', e.message); }
+        if (missingCols.length > 0) {
+          const sql = missingCols.map(c => `ALTER TABLE products ADD COLUMN IF NOT EXISTS ${c} ${c === 'sale_price' ? 'NUMERIC' : 'TEXT'};`).join('\n');
+          document.getElementById('migration-banner').style.display = 'block';
+          document.getElementById('migration-missing-cols').textContent = missingCols.join(', ');
+          document.getElementById('migration-sql-code').textContent = sql;
+          _migrationSql = sql;
+          var projRef = 'wmznfdngucpsmjbxiwzn';
+          document.getElementById('migration-sql-link').href = 'https://supabase.com/dashboard/project/' + projRef + '/sql/new';
+          console.warn('[Migration] Missing columns:', missingCols);
+          console.warn('[Migration] SQL:', sql);
+        } else {
+          console.log('[Migration] All columns OK');
+        }
+      } catch(e) { console.warn('[Migration] check failed:', e.message); }
     })();
 
     // Image upload drag & drop
