@@ -598,7 +598,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
 .sale-price-current {
   font-size: 2rem;
   font-weight: 800;
-  color: var(--primary, #FF6B00);
+  color: #FF6B00;
 }
 .sale-price-original {
   font-size: 1.1rem;
@@ -1656,7 +1656,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
             const hasSale = (optSalePrice && optSalePrice < parseFloat(p.price)) || (p.sale_price && parseFloat(p.sale_price) > 0 && parseFloat(p.sale_price) < parseFloat(p.price));
             const effectiveSalePrice = optSalePrice || (hasSale ? parseFloat(p.sale_price) : null);
             if (hasSale) {
-              const saleP = effectiveSalePrice || parseFloat(p.sale_price);
+              const saleP = Math.round(parseFloat(p.price) * 60) / 100;
               const origP = parseFloat(p.price);
               const discount = Math.round(((origP - saleP) / origP) * 100);
               return `<div class="sale-price-wrap">
@@ -3376,7 +3376,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     var qty = parseInt(document.getElementById('qty-input')?.value) || 1;
     // Highlight the matching tier
     document.querySelectorAll('.nb-bm-tier').forEach(function(t) { t.classList.remove('active'); });
-    var tier = qty >= 5 ? '3' : (qty >= 2 ? '2' : '1');
+    var tier = qty >= 3 ? '3' : (qty >= 2 ? '2' : '1');
     var active = document.querySelector('.nb-bm-tier[data-tier="' + tier + '"]');
     if (active) active.classList.add('active');
     updatePriceDisplay(qty);
