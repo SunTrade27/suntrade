@@ -317,9 +317,9 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
       let priceHtml;
       if (sp && sp > 0 && op > sp) {
         const pct = Math.round(((op - sp) / op) * 100);
-        priceHtml = '<span class="card-price-off">\u20ac' + sp.toFixed(2) + '</span> <s class="card-price-base">\u20ac' + op.toFixed(2) + '</s> <span class="card-discount-badge">-' + pct + '%</span>';
+        priceHtml = '<span class="card-price-off">€' + sp.toFixed(2) + '</span> <s class="card-price-base">€' + op.toFixed(2) + '</s> <span class="card-discount-badge">-' + pct + '%</span>';
       } else {
-        priceHtml = '<span class="card-price-off">\u20ac' + op.toFixed(2) + '</span>';
+        priceHtml = '<span class="card-price-off">€' + op.toFixed(2) + '</span>';
       }
       return `
         <div class="product-card">

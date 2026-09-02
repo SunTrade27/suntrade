@@ -1572,67 +1572,61 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
       }
       return !!window.sb;
     }
+    try {
     const sbReady = await waitForSupabase();
     if (!sbReady) { console.warn('[home] supabase not ready after retries'); return; }
 
-      // Categories
-      cachedCategories = await getCategories();
-      renderCategories();
+      // Categories (non-critical)
+      try {
+        cachedCategories = await getCategories();
+        renderCategories();
+      } catch (e) { console.error('[home] categories error:', e); }
 
-      // Featured products
-      const products = await getProducts({ limit: 8 });
+      // Featured products (critical)
+      var products = [];
+      try {
+        products = await getProducts({ limit: 8 });
+      } catch (e) { console.error('[home] getProducts error:', e); }
       cachedFeatured = products;
-      const prodGrid = document.getElementById('featured-products');
-      const featuredSection = document.getElementById('featured-section');
+      var prodGrid = document.getElementById('featured-products');
+      var featuredSection = document.getElementById('featured-section');
       if (prodGrid && products.length) {
         if (featuredSection) featuredSection.style.display = '';
         prodGrid.innerHTML = products.map(p => renderProductCard(p)).join('');
-        applyTranslations();
-        // On-demand free translation for any featured product missing
-        // a name_XX column. Patches DOM in place as translations arrive.
-        // (See renderFeaturedProducts() for the same logic used on
-        // language swaps.) The server endpoint writes results back to
-        // Supabase so subsequent visitors hit the row cache directly.
+        try { applyTranslations(); } catch(e) {}
         if (typeof ensureProductsTranslated === 'function' && currentLang !== 'en') {
           ensureProductsTranslated(products, currentLang, {
             staggerMs: 800,
-            onUpdate: (p, t) => {
+            onUpdate: function(p, t) {
               if (!t || !t.name) return;
-              const card = prodGrid.querySelector(
+              var card = prodGrid.querySelector(
                 '.wishlist-btn[data-product-id="' + p.id + '"]'
-              )?.closest('.product-card');
+              );
+              if (card) card = card.closest('.product-card');
               if (!card) return;
-              const newName = t.name;
-              const nameEl = card.querySelector('.product-card-name');
-              if (nameEl) nameEl.textContent = newName;
-              const imgEl = card.querySelector('img.product-card-img');
-              if (imgEl) imgEl.alt = newName;
-              const linkEl = card.querySelector('.product-card-link');
-              if (linkEl) linkEl.setAttribute('aria-label', newName);
+              var nameEl = card.querySelector('.product-card-name');
+              if (nameEl) nameEl.textContent = t.name;
             }
           });
         }
       } else if (featuredSection) {
-        // No products — hide the entire section to avoid empty space
         featuredSection.style.display = 'none';
       }
 
-      // Homepage reviews
-      const reviews = await getApprovedReviews(20);
-      cachedReviews = reviews;
-      renderHomepageReviews();
-      // Show/hide testimonials section based on reviews
-      const testimonialsSection = document.getElementById('testimonials-section');
-      if (reviews.length && testimonialsSection) {
-        testimonialsSection.style.display = '';
-      }
-      initMobileWheel();
-
-      // Check admin access for review button
-      checkAdminAccess();
-
-      // Init all animations (3D ring, navbar scroll, scroll reveal, tilt effects, hero parallax, mobile carousel)
-      initAllAnimations();
+      // Homepage reviews (non-critical)
+      try {
+        var reviews = await getApprovedReviews(20);
+        cachedReviews = reviews;
+        renderHomepageReviews();
+        var testimonialsSection = document.getElementById('testimonials-section');
+        if (reviews.length && testimonialsSection) {
+          testimonialsSection.style.display = '';
+        }
+      } catch (e) { console.error('[home] reviews error:', e); }
+      try { initMobileWheel(); } catch(e) { console.error('[home] mobileWheel error:', e); }
+      try { checkAdminAccess(); } catch(e) {}
+      try { initAllAnimations(); } catch(e) { console.error('[home] animations error:', e); }
+    } catch (e) { console.error('[home] loadHomepage fatal:', e); }
   }
   // Start immediately if DOM already loaded, otherwise wait
   if (document.readyState === 'loading') {
@@ -1657,9 +1651,9 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     let priceHtml;
     if (sp && sp > 0 && op > sp) {
       const pct = Math.round(((op - sp) / op) * 100);
-      priceHtml = '<span class="card-price-off">\u20ac' + sp.toFixed(2) + '</span> <s class="card-price-base">\u20ac' + op.toFixed(2) + '</s> <span class="card-discount-badge">-' + pct + '%</span>';
+      priceHtml = '<span class="card-price-off">€' + sp.toFixed(2) + '</span> <s class="card-price-base">€' + op.toFixed(2) + '</s> <span class="card-discount-badge">-' + pct + '%</span>';
     } else {
-      priceHtml = '<span class="card-price-off">\u20ac' + op.toFixed(2) + '</span>';
+      priceHtml = '<span class="card-price-off">€' + op.toFixed(2) + '</span>';
     }
     return `
       <div class="product-card">
