@@ -312,11 +312,11 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
       const name = p['name_' + currentLang] || p.name_en || 'Product';
       const safeName = name.replace(/'/g, "&#39;");
       const img = (p.images && p.images[0]) || '/images/placeholder.jpg';
-      const op = parseFloat(p.price) || 0;
-      const sp = parseFloat(p.sale_price);
-      let priceHtml;
-      if (sp && sp > 0 && op > sp) {
-        const pct = Math.round(((op - sp) / op) * 100);
+      var op = parseFloat(p.price) || 0;
+      var sp = Math.round(op * 60) / 100;
+      var priceHtml;
+      if (op > 0 && sp > 0 && sp < op) {
+        var pct = Math.round(((op - sp) / op) * 100);
         priceHtml = '<span class="card-price-off">€' + sp.toFixed(2) + '</span> <s class="card-price-base">€' + op.toFixed(2) + '</s> <span class="card-discount-badge">-' + pct + '%</span>';
       } else {
         priceHtml = '<span class="card-price-off">€' + op.toFixed(2) + '</span>';
