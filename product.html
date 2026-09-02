@@ -1644,7 +1644,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
               <img src="${escHtml(img)}" alt="${escHtml(name)}">
             </div>
           `).join('')}
-        </div>
+        </div>` : ''}
       </div>
       <div class="product-info">
         <h1 id="product-name">${name}</h1>
@@ -1715,7 +1715,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
         <span class="product-stock ${inStock ? 'in-stock' : 'out-of-stock'}">
           ${inStock ? t('product_in_stock') : t('product_out_of_stock')}
         </span>
-        ${`
+        ${inStock ? `
         <div class="product-qty">
           <label data-i18n="product_quantity">Quantity:</label>
           <div class="qty-control">
