@@ -910,6 +910,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     height: 100%;
     overflow: hidden;
     width: 50%;
+    pointer-events: none;
   }
   .nb-ba-overlay img {
     display: block;
@@ -3432,29 +3433,21 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
       handle.style.left = pct + '%';
     }
 
-    // Mouse events
-    slider.addEventListener('mousedown', function(e) {
+    // Start drag from slider, handle, or anywhere inside
+    function startDrag(clientX) {
       isDragging = true;
-      setPosition(getPercentage(e.clientX));
-      e.preventDefault();
-    });
-    document.addEventListener('mousemove', function(e) {
-      if (!isDragging) return;
-      setPosition(getPercentage(e.clientX));
-    });
+      setPosition(getPercentage(clientX));
+    }
+    // Mouse events on slider + handle
+    slider.addEventListener('mousedown', function(e) { startDrag(e.clientX); e.preventDefault(); });
+    handle.addEventListener('mousedown', function(e) { startDrag(e.clientX); e.preventDefault(); e.stopPropagation(); });
+    document.addEventListener('mousemove', function(e) { if (!isDragging) return; setPosition(getPercentage(e.clientX)); });
     document.addEventListener('mouseup', function() { isDragging = false; });
-
-    // Touch events
-    slider.addEventListener('touchstart', function(e) {
-      isDragging = true;
-      setPosition(getPercentage(e.touches[0].clientX));
-    }, { passive: true });
-    slider.addEventListener('touchmove', function(e) {
-      if (!isDragging) return;
-      setPosition(getPercentage(e.touches[0].clientX));
-      e.preventDefault();
-    }, { passive: false });
-    slider.addEventListener('touchend', function() { isDragging = false; });
+    // Touch events on slider + handle
+    slider.addEventListener('touchstart', function(e) { startDrag(e.touches[0].clientX); }, { passive: true });
+    handle.addEventListener('touchstart', function(e) { startDrag(e.touches[0].clientX); e.stopPropagation(); }, { passive: true });
+    document.addEventListener('touchmove', function(e) { if (!isDragging) return; setPosition(getPercentage(e.touches[0].clientX)); e.preventDefault(); }, { passive: false });
+    document.addEventListener('touchend', function() { isDragging = false; });
   }
 
 </script>
