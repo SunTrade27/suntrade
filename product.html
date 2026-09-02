@@ -571,7 +571,24 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     }
   }
 
-  /* ===== Sale Price / Discount Badge ===== */
+  /* ===== Option Sale Price Badge ===== */
+.option-sale-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 700;
+  border-radius: 50px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+/* ===== Sale Price / Discount Badge ===== */
 .sale-price-wrap {
   display: flex;
   align-items: center;
@@ -1626,9 +1643,11 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
         <div class="product-price-block" id="product-price-block">
           <div class="product-price-unit-wrap">
             ${(() => {
-            const hasSale = p.sale_price && parseFloat(p.sale_price) > 0 && parseFloat(p.sale_price) < parseFloat(p.price);
+            const optSalePrice = getOptionSalePrice();
+            const hasSale = (optSalePrice && optSalePrice < parseFloat(p.price)) || (p.sale_price && parseFloat(p.sale_price) > 0 && parseFloat(p.sale_price) < parseFloat(p.price));
+            const effectiveSalePrice = optSalePrice || (hasSale ? parseFloat(p.sale_price) : null);
             if (hasSale) {
-              const saleP = parseFloat(p.sale_price);
+              const saleP = effectiveSalePrice || parseFloat(p.sale_price);
               const origP = parseFloat(p.price);
               const discount = Math.round(((origP - saleP) / origP) * 100);
               return `<div class="sale-price-wrap">
@@ -1649,7 +1668,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
           ${p.option_groups.map((group, groupIndex) => {
             const options = Array.isArray(group.options) ? group.options.filter(o => o && o.label) : [];
             if (!options.length) return '';
-            return `<div class="product-option-group"><div class="product-option-group-title" data-variant-label-key="${escHtml(group.name || 'Option')}">${escHtml(group.name || 'Option')}</div><div class="product-option-values">${options.map((option, optionIndex) => `<button type="button" class="product-option-value${optionIndex === 0 ? ' active' : ''}" onclick="selectOption(${groupIndex}, ${optionIndex})">${group.type === 'color' && safeColorHex(option.color_hex) ? `<span class="product-option-swatch" style="background:${safeColorHex(option.color_hex)}"></span>` : ''}${safeImageUrl(option.image) ? `<img src="${escHtml(safeImageUrl(option.image))}" alt="">` : ''}<span data-variant-label-key="${escHtml(option.label)}">${escHtml(option.label)}</span></button>`).join('')}</div></div>`;
+            return `<div class="product-option-group"><div class="product-option-group-title" data-variant-label-key="${escHtml(group.name || 'Option')}">${escHtml(group.name || 'Option')}</div><div class="product-option-values">${options.map((option, optionIndex) => `<button type="button" class="product-option-value${optionIndex === 0 ? ' active' : ''}" onclick="selectOption(${groupIndex}, ${optionIndex})">${group.type === 'color' && safeColorHex(option.color_hex) ? `<span class="product-option-swatch" style="background:${safeColorHex(option.color_hex)}"></span>` : ''}${safeImageUrl(option.image) ? `<img src="${escHtml(safeImageUrl(option.image))}" alt="">` : ''}<span data-variant-label-key="${escHtml(option.label)}">${escHtml(option.label)}${option.sale_price && parseFloat(option.sale_price) > 0 ? '<span class="option-sale-badge">SALE</span>' : ''}</span></button>`).join('')}</div></div>`;
           }).join('')}
         </div>
         ` : ''}
@@ -2500,6 +2519,23 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
       if (mod > 0) return mod;
     }
     return parseFloat(p.price) || 0;
+  }
+
+  // Get sale price from selected option (if set)
+  function getOptionSalePrice() {
+    const p = currentProduct;
+    if (!p) return null;
+    const groups = Array.isArray(p.option_groups) ? p.option_groups : [];
+    for (const group of groups) {
+      const selected = selectedOptionValues[group.name];
+      if (!selected) continue;
+      const options = Array.isArray(group.options) ? group.options : [];
+      const matched = options.find(o => o.label === selected);
+      if (matched && matched.sale_price && parseFloat(matched.sale_price) > 0) {
+        return parseFloat(matched.sale_price);
+      }
+    }
+    return null;
   }
 
   // Get stock from selected options (each option can have its own stock)

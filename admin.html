@@ -2767,6 +2767,7 @@
       '<input type="text" class="opt-label" placeholder="' + escapeAttr(typeof t === 'function' ? (t('admin_product_option_label') || 'e.g. Black') : 'e.g. Black') + '" value="' + escapeAttr(prefill.label || '') + '">' +
       '<input type="number" step="0.01" class="opt-pricemod" placeholder="±0.00" value="' + escapeAttr(prefill.price_mod == null || prefill.price_mod === '' ? 0 : prefill.price_mod) + '">' +
       '<input type="number" min="0" class="opt-stock" placeholder="Stock" value="' + escapeAttr(prefill.stock == null || prefill.stock === '' ? '' : prefill.stock) + '" style="width:100%;padding:5px 8px;font-size:0.78rem;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.10);border-radius:6px;color:rgba(255,255,255,0.9);text-align:center;">' +
+      '<input type="number" step="0.01" min="0" class="opt-saleprice" placeholder="Sale" value="' + escapeAttr(prefill.sale_price == null || prefill.sale_price === '' ? '' : prefill.sale_price) + '" style="width:100%;padding:5px 8px;font-size:0.78rem;background:rgba(0,0,0,0.25);border:1px solid rgba(16,185,129,0.30);border-radius:6px;color:rgba(255,255,255,0.9);text-align:center;" title="Sale price (shows discount)">' +
       '<div class="opt-hex-wrap" style="display:flex;align-items:center;gap:0.4rem;min-width:0;">' +
         '<input type="color" class="opt-hex" value="' + escapeAttr(prefill.color_hex || '#888888') + '" title="Color swatch (optional)">' +
         '<input type="text" class="opt-hexhex" placeholder="#hex" value="' + escapeAttr(prefill.color_hex || '') + '" style="flex:1;min-width:0;font-size:0.72rem;padding:5px 8px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.10);border-radius:6px;color:rgba(255,255,255,0.85);">' +
@@ -2916,7 +2917,8 @@
           price_mod: isFinite(priceMod) ? priceMod : 0,
           stock: isFinite(stockVal) && stockVal >= 0 ? stockVal : null,
           color_hex: colorHex || null,
-          image: row.dataset.image || null
+          image: row.dataset.image || null,
+          sale_price: parseFloat(row.querySelector('.opt-saleprice')?.value) || null
         });
       });
       // Skip fully blank groups
