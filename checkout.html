@@ -280,6 +280,28 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
     return false;
   }
 
+  // Pre-fill the phone field with the visitor's country dialing code
+  // (e.g. +7 for Kazakhstan, +48 for Poland, +1 for the USA). The country is
+  // resolved server-side from the visitor's IP via /api/geo. The code is only
+  // inserted when the field is still empty, so it never overwrites a number
+  // the user has already typed or a saved profile phone.
+  async function prefillPhoneCountryCode() {
+    try {
+      const res = await fetch('/api/geo', { headers: { Accept: 'application/json' } });
+      if (!res.ok) return;
+      const data = await res.json();
+      const input = document.getElementById('checkout-phone');
+      if (!input || !data.callingCode) return;
+      if (!String(input.value || '').trim()) {
+        input.value = data.callingCode + ' ';
+        const len = input.value.length;
+        if (input.setSelectionRange) input.setSelectionRange(len, len);
+      }
+    } catch (e) {
+      // Silent — auto-fill is a convenience, never block checkout
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', async () => {
     renderCheckoutItems();
     // Pre-fill user data if logged in
@@ -294,6 +316,9 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
         }
       } catch (e) {}
     }, 600);
+
+    // Auto-fill the country dialing code once profile pre-fill has finished
+    setTimeout(prefillPhoneCountryCode, 1400);
   });
 
   function checkoutEscapeHtml(value) {
