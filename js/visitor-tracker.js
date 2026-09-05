@@ -12,6 +12,21 @@
   const TRACKER_ENDPOINT = 'https://wmznfdngucpsmjbxiwzn.supabase.co/rest/v1/visitor_events';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtem5mZG5ndWNwc21qYnhpd3puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1Nzk1NDAsImV4cCI6MjA5NTE1NTU0MH0.DaYcIF7uaU0FSWbB9Mlq4YVVYm2EleOSz6ACtwyHjsI';
 
+  // ---- Supported site languages (used to record the visitor's language) ----
+  const SITE_LANGS = ['en', 'kz', 'ru', 'de', 'fr', 'es', 'it', 'tr', 'pt', 'nl', 'pl', 'ar'];
+  function detectSiteLang() {
+    try {
+      const cur = (typeof currentLang !== 'undefined' && currentLang) || '';
+      if (SITE_LANGS.indexOf(cur) !== -1) return cur;
+      const nav = (navigator.language || 'en').toLowerCase();
+      for (let i = 0; i < SITE_LANGS.length; i++) {
+        const l = SITE_LANGS[i];
+        if (nav === l || nav.indexOf(l + '-') === 0) return l;
+      }
+    } catch (e) {}
+    return 'en';
+  }
+
   // ---- Visitor ID ----
   function getVisitorId() {
     try {
@@ -79,7 +94,7 @@
       user_agent: navigator.userAgent || null,
       ip_hash: ipHash,
       session_id: sessionId,
-      metadata: data.metadata || {}
+      metadata: Object.assign({ lang: detectSiteLang() }, data.metadata || {})
     };
 
     try {

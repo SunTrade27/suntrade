@@ -190,7 +190,161 @@
     border-radius: 8px;
     margin: 8px 0;
     display: block;
+    cursor: pointer;
   }
+  /* Admin-cropped images inside the editor: the .crop-area box shows exactly
+     the visible region the admin selected (aspect-ratio + overflow hidden,
+     with the <img> panned/zoomed inside). GIFs keep animating. */
+  .desc-editor .crop-area {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 10px 0;
+    background: #F3F4F6;
+    display: block;
+  }
+  .desc-editor .crop-area img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    display: block;
+    max-width: none !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    cursor: pointer;
+  }
+  .desc-crop-hint {
+    font-size: 0.72rem;
+    color: var(--text-light);
+    margin: 0.35rem 0 0;
+    line-height: 1.4;
+  }
+  /* ===== Image crop tool (description images) ===== */
+  .crop-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,12,20,0.72);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    backdrop-filter: blur(2px);
+  }
+  .crop-modal {
+    background: var(--bg-white);
+    border-radius: 16px;
+    width: min(94vw, 800px);
+    max-height: 94vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+  }
+  .crop-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  .crop-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--text-light);
+    padding: 2px 8px;
+    border-radius: 6px;
+  }
+  .crop-modal-close:hover { background: rgba(127,127,127,0.12); }
+  .crop-modal-presets {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+  .crop-preset-btn {
+    padding: 5px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: var(--bg-white);
+    border-radius: 20px;
+    cursor: pointer;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+  .crop-preset-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .crop-preset-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .crop-stage-wrap {
+    flex: 1;
+    overflow: auto;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #111827;
+    min-height: 260px;
+  }
+  .crop-stage { display: flex; align-items: center; justify-content: center; margin: auto; }
+  .crop-img-wrap {
+    position: relative;
+    display: inline-block;
+    line-height: 0;
+    max-width: 100%;
+  }
+  .crop-img-wrap img {
+    max-width: min(88vw, 700px);
+    max-height: 56vh;
+    width: auto;
+    height: auto;
+    display: block;
+  }
+  .crop-select {
+    position: absolute;
+    border: 1.5px solid #fff;
+    outline: 1px dashed rgba(0,0,0,0.5);
+    background: rgba(255,255,255,0.10);
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+    cursor: move;
+    touch-action: none;
+    box-sizing: border-box;
+  }
+  .crop-select.hidden { display: none; }
+  .crop-handle {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border: 2px solid var(--primary);
+    border-radius: 3px;
+    box-sizing: border-box;
+  }
+  .crop-handle-nw { left: -7px; top: -7px; cursor: nwse-resize; }
+  .crop-handle-ne { right: -7px; top: -7px; cursor: nesw-resize; }
+  .crop-handle-sw { left: -7px; bottom: -7px; cursor: nesw-resize; }
+  .crop-handle-se { right: -7px; bottom: -7px; cursor: nwse-resize; }
+  .crop-modal-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border-top: 1px solid var(--border);
+  }
+  .crop-remove-btn { color: #EF4444; border-color: rgba(239,68,68,0.35); }
+  .crop-remove-btn:hover { background: rgba(239,68,68,0.08); }
   .desc-editor ul, .desc-editor ol {
     padding-left: 1.5rem;
     margin: 8px 0;
@@ -1078,6 +1232,7 @@
             <span class="translate-progress" id="format-status"></span>
           </div>
           <div id="pdesc-en" class="desc-editor" contenteditable="true" data-placeholder="Paste a description, drag images here, or Ctrl+V to paste images from files..." data-lang="en"></div>
+          <p class="desc-crop-hint">💡 Сипаттамадағы суретті басып, өлшемін өзіңіз қиып алыңыз (GIF те жұмыс істейді) — Click an image in the description to crop its size (GIFs work too)</p>
           <textarea id="pdesc-en-raw" style="display:none;"></textarea>
         </div>
       </div>
@@ -1256,6 +1411,37 @@
           <textarea id="pbefore-desc" rows="3" placeholder="Discover how this product gives your item a unique look." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.85rem;resize:vertical;"></textarea>
         </div>
       </div>
+      <!-- Product feature highlights — short bullets with an icon that render
+           on the product page above the “Buy More and Save” section -->
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:0.4rem;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="color:var(--primary);flex-shrink:0;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Product features / Артықшылықтар — short bullets on the product page (under the price)
+        </label>
+        <div id="feature-list-editor"></div>
+        <button type="button" class="btn-sm btn-outline" onclick="addFeatureRow()" style="margin-top:0.6rem;border:1px dashed rgba(255,107,0,0.55);color:#FF6B00;background:rgba(255,107,0,0.06);font-weight:700;justify-content:center;width:100%;display:flex;align-items:center;gap:0.4rem;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="14" height="14"><path d="M12 5v14M5 12h14"/></svg>
+          + Add feature (text + icon)
+        </button>
+        <p style="font-size:0.72rem;color:var(--text-light);margin:0.4rem 0 0 0;line-height:1.4;">
+          Each row becomes a bullet with the icon you pick (e.g. “33 Colors, Animations &amp; Effects”). Write the text once in English — it is auto-translated for visitors, same as the FAQs.
+        </p>
+      </div>
+      <!-- FAQ (Questions & Answers) — rendered below the reviews on the product page -->
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:0.4rem;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="color:var(--primary);flex-shrink:0;"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          FAQs (Сұрақ-жауап) — shown under the reviews on the product page
+        </label>
+        <div id="faq-list-editor"></div>
+        <button type="button" class="btn-sm btn-outline" onclick="addFaqRow()" style="margin-top:0.6rem;border:1px dashed rgba(255,107,0,0.55);color:#FF6B00;background:rgba(255,107,0,0.06);font-weight:700;justify-content:center;width:100%;display:flex;align-items:center;gap:0.4rem;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="14" height="14"><path d="M12 5v14M5 12h14"/></svg>
+          + Add question (Q &amp; A)
+        </button>
+        <p style="font-size:0.72rem;color:var(--text-light);margin:0.4rem 0 0 0;line-height:1.4;">
+          Write the questions and answers you want to show for this product. Each row becomes a collapsible FAQ item under the reviews (e.g. “Will this fit my car?”).
+        </p>
+      </div>
       <div class="form-group">
         <label><input type="checkbox" id="pactive" checked> Active</label>
       </div>
@@ -1264,6 +1450,47 @@
         <button type="submit" class="btn-sm btn-primary" data-i18n="admin_product_save">Save</button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- IMAGE CROP MODAL (description images) — opened by clicking an image in
+     the description editor. Lets the admin draw a crop region; the result is
+     saved as a .crop-area box so it renders on the product page too and GIFs
+     keep animating. -->
+<div id="crop-modal" class="crop-modal-overlay" style="display:none;">
+  <div class="crop-modal" role="dialog" aria-modal="true" aria-label="Crop image">
+    <div class="crop-modal-header">
+      <span>✂️ Обрезать изображение / Crop image</span>
+      <button type="button" class="crop-modal-close" onclick="closeCropModal()" aria-label="Close">×</button>
+    </div>
+    <div class="crop-modal-presets">
+      <button type="button" class="crop-preset-btn active" data-ar="free" onclick="setCropPreset('free')">Свободно</button>
+      <button type="button" class="crop-preset-btn" data-ar="1:1" onclick="setCropPreset('1:1')">1:1</button>
+      <button type="button" class="crop-preset-btn" data-ar="4:3" onclick="setCropPreset('4:3')">4:3</button>
+      <button type="button" class="crop-preset-btn" data-ar="3:4" onclick="setCropPreset('3:4')">3:4</button>
+      <button type="button" class="crop-preset-btn" data-ar="16:9" onclick="setCropPreset('16:9')">16:9</button>
+      <button type="button" class="crop-preset-btn" data-ar="2:1" onclick="setCropPreset('2:1')">2:1</button>
+      <button type="button" class="crop-preset-btn" data-ar="1:2" onclick="setCropPreset('1:2')">1:2</button>
+    </div>
+    <div class="crop-stage-wrap">
+      <div class="crop-stage">
+        <div class="crop-img-wrap" id="crop-img-wrap">
+          <img id="crop-image" alt="">
+          <div class="crop-select hidden" id="crop-select">
+            <span class="crop-handle crop-handle-nw" data-dir="nw"></span>
+            <span class="crop-handle crop-handle-ne" data-dir="ne"></span>
+            <span class="crop-handle crop-handle-sw" data-dir="sw"></span>
+            <span class="crop-handle crop-handle-se" data-dir="se"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="crop-modal-footer">
+      <button type="button" class="btn-sm btn-outline crop-remove-btn" onclick="removeCropImage()">🗑 Удалить фото</button>
+      <span style="flex:1"></span>
+      <button type="button" class="btn-sm btn-outline" onclick="closeCropModal()">Отмена</button>
+      <button type="button" class="btn-sm" style="background:var(--primary);color:#fff;font-weight:600;" onclick="applyImageCrop()">✔ Применить</button>
+    </div>
   </div>
 </div>
 
@@ -1324,7 +1551,14 @@
       try {
         if (!sb) return;
         const missingCols = [];
-        const checkCols = ['sale_price', 'before_image', 'after_image', 'before_title', 'before_desc'];
+        const checkCols = ['sale_price', 'before_image', 'after_image', 'before_title', 'before_desc', 'faqs', 'features', 'features_i18n'];
+        const colType = (col) => {
+          if (col === 'sale_price') return 'NUMERIC';
+          if (col === 'faqs') return "JSONB NOT NULL DEFAULT '[]'::jsonb";
+          if (col === 'features') return "JSONB NOT NULL DEFAULT '[]'::jsonb";
+          if (col === 'features_i18n') return "JSONB NOT NULL DEFAULT '{}'::jsonb";
+          return 'TEXT';
+        };
         for (const col of checkCols) {
           try {
             const { error } = await sb.from('products').select(col).limit(1);
@@ -1334,7 +1568,7 @@
           } catch(e) { missingCols.push(col); }
         }
         if (missingCols.length > 0) {
-          const sql = missingCols.map(c => `ALTER TABLE products ADD COLUMN IF NOT EXISTS ${c} ${c === 'sale_price' ? 'NUMERIC' : 'TEXT'};`).join('\n');
+          const sql = missingCols.map(c => `ALTER TABLE products ADD COLUMN IF NOT EXISTS ${c} ${colType(c)};`).join('\n');
           document.getElementById('migration-banner').style.display = 'block';
           document.getElementById('migration-missing-cols').textContent = missingCols.join(', ');
           document.getElementById('migration-sql-code').textContent = sql;
@@ -1366,11 +1600,14 @@
       initialEditor.addEventListener('paste', handleRichPaste);
       initialEditor.addEventListener('input', syncDescRaw);
       attachToolbarHandlers(initialEditor);
+      attachCropClickHandler(initialEditor);
       // Drag & drop image support
       initialEditor.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); initialEditor.style.borderColor = 'var(--primary)'; initialEditor.style.boxShadow = '0 0 0 3px rgba(255,107,0,0.15)'; });
       initialEditor.addEventListener('dragleave', () => { initialEditor.style.borderColor = ''; initialEditor.style.boxShadow = ''; });
       initialEditor.addEventListener('drop', async (e) => { e.preventDefault(); e.stopPropagation(); initialEditor.style.borderColor = ''; initialEditor.style.boxShadow = ''; const dropFiles = e.dataTransfer.files; if (dropFiles && dropFiles.length > 0) { const dropImageFiles = Array.from(dropFiles).filter(f => f.type && f.type.startsWith('image/')); if (dropImageFiles.length > 0) { const dropId = 'drop-loading-' + Date.now(); document.execCommand('insertHTML', false, '<p id="' + dropId + '" style="color:var(--primary);font-size:0.85rem;font-style:italic;">⏳ Сурет жүктелуде...</p>'); const dropEl = document.getElementById(dropId); try { const dropImgTags = []; for (const dFile of dropImageFiles) { const dropUrl = await uploadImage(dFile); dropImgTags.push('<img src="' + dropUrl + '" alt="" loading="lazy" style="max-width:100%;height:auto;border-radius:8px;margin:10px 0;display:block;box-shadow:0 1px 3px rgba(0,0,0,0.08);">'); } if (dropEl) dropEl.remove(); document.execCommand('insertHTML', false, dropImgTags.join('')); } catch (err) { console.error('Drop image upload error:', err); if (dropEl) dropEl.remove(); document.execCommand('insertHTML', false, '<p style="color:var(--danger);font-size:0.85rem;">❌ Суретті жүктеу қатесі: ' + err.message + '</p>'); } syncDescRaw({ target: initialEditor }); } } });
     }
+    // Image crop tool: stage pointer events + Escape/backdrop close (once)
+    initCropStageEvents();
   });
 
   function isSupportedImageFile(file) {
@@ -2117,6 +2354,7 @@
         <label>Description (${lang.toUpperCase()})</label>
         ${buildDescToolbar(lang)}
         <div id="pdesc-${lang}" class="desc-editor with-toolbar" contenteditable="true" data-placeholder="${lang === 'en' ? 'Paste a description, drag images here, or Ctrl+V to paste images from files...' : 'Сипаттаманы кірістіріңіз, суреттерді осы жерге сүйреп әкеліңіз немесе Ctrl+V басыңыз...'}" data-lang="${lang}">${descHtml}</div>
+        <p class="desc-crop-hint">💡 Сипаттамадағы суретті басып, өлшемін өзіңіз қиып алыңыз (GIF те жұмыс істейді) — Click an image in the description to crop its size (GIFs work too)</p>
         <textarea id="pdesc-${lang}-raw" style="display:none;">${descHtml.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
       </div>
     `;
@@ -2126,6 +2364,7 @@
       editor.addEventListener('paste', handleRichPaste);
       editor.addEventListener('input', syncDescRaw);
       attachToolbarHandlers(editor);
+      attachCropClickHandler(editor);
       // Drag & drop image support for this editor
       editor.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); editor.style.borderColor = 'var(--primary)'; editor.style.boxShadow = '0 0 0 3px rgba(255,107,0,0.15)'; });
       editor.addEventListener('dragleave', () => { editor.style.borderColor = ''; editor.style.boxShadow = ''; });
@@ -2137,6 +2376,55 @@
   let currentReviewFilter = 'all';
 
   // ===== Leads (Abandoned Cart / Visitor Tracking) =====
+  // ===== WhatsApp lead messages (abandoned cart) =====
+  // The ready-to-send message is written in one of the 12 site languages,
+  // picked from the lead's phone country code (e.g. +48 -> Polish).
+  const LEAD_LANGS = ['en', 'kz', 'ru', 'de', 'fr', 'es', 'it', 'tr', 'pt', 'nl', 'pl', 'ar'];
+  const WA_LEAD_MSGS = {
+    en: 'Hello! You recently viewed "{p}" on SunTrade. It\u2019s still available! Would you like to get it with a special discount?',
+    kz: 'Сәлеметсіз бе! Сіз SunTrade-да "{p}" тауарын қараған болатынсыз. Тауар әлі бар! Арнайы жеңілдікпен алғыңыз келе ме?',
+    ru: 'Здравствуйте! Вы недавно смотрели товар "{p}" на SunTrade. Он всё ещё в наличии! Хотите купить его со специальной скидкой?',
+    de: 'Hallo! Sie haben sich kürzlich "{p}" auf SunTrade angesehen. Das Produkt ist weiterhin verfügbar! Möchten Sie es mit einem Sonderrabatt kaufen?',
+    fr: 'Bonjour ! Vous avez récemment consulté "{p}" sur SunTrade. Il est toujours disponible ! Souhaitez-vous l\u2019acheter avec une remise spéciale ?',
+    es: '¡Hola! Recientemente viste "{p}" en SunTrade. ¡Todavía está disponible! ¿Te gustaría comprarlo con un descuento especial?',
+    it: 'Ciao! Hai recentemente visto "{p}" su SunTrade. È ancora disponibile! Ti piacerebbe acquistarlo con uno sconto speciale?',
+    tr: 'Merhaba! SunTrade\u2019da "{p}" ürününü yakın zamanda incelediniz. Ürün hâlâ mevcut! Özel indirimle almak ister misiniz?',
+    pt: 'Olá! Recentemente você viu "{p}" na SunTrade. Ainda está disponível! Gostaria de comprá-lo com um desconto especial?',
+    nl: 'Hallo! Je hebt onlangs "{p}" op SunTrade bekeken. Het product is nog steeds beschikbaar! Wil je het kopen met een speciale korting?',
+    pl: 'Dzień dobry! Niedawno oglądałeś "{p}" na SunTrade. Produkt jest nadal dostępny! Chcesz go kupić ze specjalnym rabatem?',
+    ar: 'مرحبًا! لقد شاهدت مؤخرًا "{p}" على SunTrade. المنتج لا يزال متوفرًا! هل ترغب في شرائه بخصم خاص؟'
+  };
+  // Dialing prefixes, longest first so e.g. +351 matches before +3x.
+  const WA_DIAL_TO_LANG = [
+    ['212', 'fr'], ['213', 'fr'], ['216', 'fr'], ['351', 'pt'], ['375', 'ru'], ['380', 'ru'],
+    ['966', 'ar'], ['971', 'ar'], ['20', 'ar'],
+    ['31', 'nl'], ['33', 'fr'], ['34', 'es'], ['39', 'it'], ['41', 'de'], ['43', 'de'],
+    ['44', 'en'], ['48', 'pl'], ['49', 'de'], ['90', 'tr'], ['1', 'en']
+  ];
+  function waLeadLang(phone, event) {
+    let digits = String(phone || '').replace(/[^0-9]/g, '');
+    if (digits.indexOf('00') === 0) digits = digits.slice(2);
+    for (let i = 0; i < WA_DIAL_TO_LANG.length; i++) {
+      const prefix = WA_DIAL_TO_LANG[i][0];
+      if (digits.indexOf(prefix) === 0) return WA_DIAL_TO_LANG[i][1];
+    }
+    // Russia and Kazakhstan share the +7 prefix. Kazakh numbers (mobile 7xx/70x
+    // and landline 71x/72x) start with 77/70/71/72, Russian mobile starts 79x.
+    if (digits.indexOf('7') === 0) {
+      const d1 = digits.charAt(1);
+      return (d1 === '7' || d1 === '0' || d1 === '1' || d1 === '2' || d1 === '4') ? 'kz' : 'ru';
+    }
+    // Fallback: the language the visitor actually used on the site (recorded
+    // in metadata by visitor-tracker.js for new events).
+    if (event && event.metadata && LEAD_LANGS.indexOf(event.metadata.lang) !== -1) return event.metadata.lang;
+    return 'en';
+  }
+  function waLeadText(phone, productName, event) {
+    const lang = waLeadLang(phone, event);
+    const tpl = WA_LEAD_MSGS[lang] || WA_LEAD_MSGS.en;
+    return tpl.split('{p}').join(productName || '');
+  }
+
   async function loadLeads() {
     const container = document.getElementById('leads-container');
     const cardsContainer = document.getElementById('leads-cards');
@@ -2257,7 +2545,7 @@
               e.event_type === 'checkout' ? '#8B5CF6' : '#22C55E';
             const shortId = e.visitor_id ? e.visitor_id.substring(0, 12) + '...' : '—';
             const _wp = ((e.phone||'').replace(/[^0-9]/g,''));
-            const _waMsg = 'Сəлеметсіз бе! Сіз SunTrade-да \"' + (e.product_name || '') + '\" тауарын қараған болатынсыз. Тауар əлі бар! Арнайы жеңілдікпен алғыңыз келе ме?';
+            const _waMsg = waLeadText(_wp, e.product_name || '', e);
             return `<tr>
               <td style="font-family:monospace;font-size:0.8rem;" title="${escapeHtml(e.visitor_id || '')}">${escapeHtml(shortId)}</td>
               <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(productLabel)}</td>
@@ -2280,7 +2568,7 @@
           e.event_type === 'add_to_cart' ? '#F59E0B' :
           e.event_type === 'checkout' ? '#8B5CF6' : '#22C55E';
         const _wp2 = ((e.phone||'').replace(/[^0-9]/g,''));
-        const _waMsg2 = 'Сəлеметсіз бе! Сіз SunTrade-да \"' + (e.product_name || '') + '\" тауарын қараған болатынсыз. Тауар əлі бар! Арнайы жеңілдікпен алғыңыз келе ме?';
+        const _waMsg2 = waLeadText(_wp2, e.product_name || '', e);
         return `
           <div class="order-row-card">
             <div class="order-row-card-head">
@@ -2614,6 +2902,10 @@
       if (visibleStockEl) visibleStockEl.value = (product.stock != null) ? product.stock : '';
       // Option groups (Alibaba-style) — load from product.option_groups if present.
       loadOptionGroups(product.option_groups);
+      // Product FAQs — load existing rows from products.faqs (JSONB).
+      loadFaqRows(product.faqs);
+      // Product features — load existing rows from products.features (JSONB).
+      loadFeatureRows(product.features);
     } else {
       document.getElementById('modal-title').textContent = t('admin_add_product');
       const newProductForm = document.getElementById('product-form');
@@ -2645,6 +2937,10 @@
       loadProductTypes([{ label: '', price: '', stock: '' }]);
       // And one blank option group row.
       loadOptionGroups([{ name: '', type: 'text', options: [{ label: '', price_mod: 0, color_hex: '' }] }]);
+      // FAQ list starts with one blank row for the new product.
+      loadFaqRows(null);
+      // Feature list starts with one blank row for the new product.
+      loadFeatureRows(null);
     }
     switchLangTab('en');
     // switchLangTab renders the visible editor from the cached per-language
@@ -3005,6 +3301,150 @@
       // Skip fully blank groups
       if (!name && !options.length) return;
       out.push({ name: name || 'Group', type: type, options: options });
+    });
+    return out;
+  }
+
+  // ===== Product FAQ rows editor =====
+  // products.faqs JSONB column: [{ q: string, a: string }, ...]. Saved as a
+  // plain array; the product page renders each row below the reviews as a
+  // collapsible FAQ item.
+  function loadFaqRows(faqs) {
+    const list = document.getElementById('faq-list-editor');
+    if (!list) return;
+    list.innerHTML = '';
+    const items = Array.isArray(faqs)
+      ? faqs.filter(f => f && (String(f.q || '').trim() || String(f.a || '').trim()))
+      : [];
+    (items.length ? items : [{}]).forEach(f => addFaqRow({ q: f.q || '', a: f.a || '' }));
+  }
+
+  function addFaqRow(prefill) {
+    prefill = prefill || {};
+    const list = document.getElementById('faq-list-editor');
+    if (!list) return;
+    const escContent = (s) => String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const row = document.createElement('div');
+    row.className = 'faq-row';
+    row.style.cssText = 'display:flex;flex-direction:column;gap:0.45rem;padding:0.7rem 0.75rem;border:1px solid var(--border);border-radius:10px;background:rgba(0,0,0,0.18);margin-bottom:0.6rem;';
+    row.innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.4rem;">' +
+        '<span style="font-size:0.7rem;font-weight:800;color:var(--primary);letter-spacing:0.5px;">FAQ</span>' +
+        '<button type="button" onclick="removeFaqRow(this)" title="Remove question" aria-label="Remove question" style="background:none;border:none;color:#EF4444;cursor:pointer;padding:2px;line-height:1;">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="16" height="16"><path d="M6 6l12 12M18 6L6 18"/></svg>' +
+        '</button>' +
+      '</div>' +
+      '<input type="text" class="faq-q-input" placeholder="Question (e.g. Will this fit my car?)" value="' + escapeAttr(prefill.q || '') + '" style="width:100%;padding:8px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.25);color:rgba(255,255,255,0.92);font-size:0.82rem;">' +
+      '<textarea class="faq-a-input" rows="2" placeholder="Answer (e.g. Yes — it is compatible with most vehicles.)" style="width:100%;padding:8px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.25);color:rgba(255,255,255,0.92);font-size:0.82rem;resize:vertical;">' + escContent(prefill.a) + '</textarea>';
+    list.appendChild(row);
+    refreshApplyI18n();
+  }
+
+  function removeFaqRow(btn) {
+    const row = btn && btn.closest('.faq-row');
+    if (!row) return;
+    const list = document.getElementById('faq-list-editor');
+    // Always keep one usable blank row.
+    if (list && list.children.length <= 1) {
+      row.querySelectorAll('input, textarea').forEach(el => { el.value = ''; });
+      return;
+    }
+    row.remove();
+  }
+
+  function collectFaqs() {
+    const out = [];
+    document.querySelectorAll('#faq-list-editor .faq-row').forEach(row => {
+      const q = String(row.querySelector('.faq-q-input')?.value || '').trim();
+      const a = String(row.querySelector('.faq-a-input')?.value || '').trim();
+      if (q || a) out.push({ q, a });
+    });
+    return out;
+  }
+
+  // ===== Product feature bullets editor =====
+  // products.features JSONB column: [{ icon: string, text: string }, ...]. The
+  // admin types each bullet's text once (English) and picks the icon shown on
+  // the product page (products.features_i18n auto-translates the text for each
+  // site language — same flow as the FAQ rows).
+  function featureIconOptionsHtml(selectedIcon) {
+    const icons = (window.FEATURE_ICONS || []).map(ic => ic.key);
+    const pick = icons.includes(selectedIcon) ? selectedIcon : (icons[0] || 'sun');
+    const escAttrLocal = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return icons.map(function(key) {
+      const active = key === pick ? ' selected' : '';
+      const svg = (typeof window.featureIconSvg === 'function') ? window.featureIconSvg(key) : key;
+      return '<button type="button" data-icon="' + escAttrLocal(key) + '" class="feature-icon-opt' + active + '" onclick="selectFeatureIcon(this)" title="' + escAttrLocal(key) + '">' + svg + '</button>';
+    }).join('');
+  }
+
+  function loadFeatureRows(features) {
+    const list = document.getElementById('feature-list-editor');
+    if (!list) return;
+    list.innerHTML = '';
+    const items = Array.isArray(features)
+      ? features.filter(f => f && String(f.text || '').trim())
+      : [];
+    (items.length ? items : [{}]).forEach(f => addFeatureRow({ icon: f.icon || '', text: f.text || '' }));
+  }
+
+  function addFeatureRow(prefill) {
+    prefill = prefill || {};
+    const list = document.getElementById('feature-list-editor');
+    if (!list) return;
+    const escContent = (s) => String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const escAttr2 = (s) => escContent(s).replace(/"/g, '&quot;');
+    const row = document.createElement('div');
+    row.className = 'feature-row';
+    row.style.cssText = 'display:flex;flex-direction:column;gap:0.5rem;padding:0.7rem 0.75rem;border:1px solid var(--border);border-radius:10px;background:rgba(0,0,0,0.18);margin-bottom:0.6rem;';
+    row.innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.4rem;">' +
+        '<span style="font-size:0.7rem;font-weight:800;color:var(--primary);letter-spacing:0.5px;">FEATURE</span>' +
+        '<button type="button" onclick="removeFeatureRow(this)" title="Remove feature" aria-label="Remove feature" style="background:none;border:none;color:#EF4444;cursor:pointer;padding:2px;line-height:1;">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="16" height="16"><path d="M6 6l12 12M18 6L6 18"/></svg>' +
+        '</button>' +
+      '</div>' +
+      '<div class="feature-icon-picker" style="display:flex;flex-wrap:wrap;gap:0.3rem;">' + featureIconOptionsHtml(prefill.icon) + '</div>' +
+      '<input type="text" class="feature-text-input" placeholder="Feature text (e.g. 33 Colors, Animations &amp; Effects)" value="' + escAttr2(prefill.text || '') + '" style="width:100%;padding:8px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.25);color:rgba(255,255,255,0.92);font-size:0.82rem;">';
+    list.appendChild(row);
+    refreshApplyI18n();
+  }
+
+  function removeFeatureRow(btn) {
+    const row = btn && btn.closest('.feature-row');
+    if (!row) return;
+    const list = document.getElementById('feature-list-editor');
+    // Always keep one usable blank row.
+    if (list && list.children.length <= 1) {
+      const input = row.querySelector('.feature-text-input');
+      if (input) input.value = '';
+      return;
+    }
+    row.remove();
+  }
+
+  function selectFeatureIcon(btn) {
+    const picker = btn && btn.closest('.feature-icon-picker');
+    if (!picker) return;
+    picker.querySelectorAll('.feature-icon-opt').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  function collectFeatures() {
+    const out = [];
+    document.querySelectorAll('#feature-list-editor .feature-row').forEach(row => {
+      const text = String(row.querySelector('.feature-text-input')?.value || '').trim();
+      if (!text) return;
+      let icon = 'sun';
+      const active = row.querySelector('.feature-icon-opt.selected');
+      if (active && active.dataset.icon) icon = active.dataset.icon;
+      else {
+        const any = row.querySelector('.feature-icon-opt');
+        if (any && any.dataset.icon) icon = any.dataset.icon;
+      }
+      out.push({ icon, text });
     });
     return out;
   }
@@ -3571,6 +4011,261 @@
 
   function syncAllDescriptionEditors() {
     document.querySelectorAll('.desc-editor[contenteditable]').forEach(editor => syncDescRaw(editor));
+  }
+
+  // ===== Image crop tool for description images =====
+  // Clicking an image inside a description editor opens a crop dialog. The
+  // admin draws a rectangle over the preview; on Apply the <img> is replaced
+  // with a .crop-area wrapper (fixed aspect-ratio + overflow hidden, with the
+  // image panned/zoomed inside) so the visible region matches the selection
+  // exactly. GIFs keep animating — the file itself is never re-encoded.
+  const CROP_PRESETS = { 'free': null, '1:1': 1, '4:3': 4 / 3, '3:4': 3 / 4, '16:9': 16 / 9, '2:1': 2, '1:2': 1 / 2 };
+
+  let cropState = {
+    img: null,      // <img> being cropped (inside the editor)
+    host: null,     // element to replace: nearest .crop-area wrapper or the img itself
+    editor: null,   // the desc-editor containing the image
+    naturalW: 0,
+    naturalH: 0,
+    ratio: null,    // preset aspect ratio (number) or null for free
+    sel: null       // {x, y, w, h} in preview-image display pixels
+  };
+  let cropDrag = null; // { mode: 'draw'|'move'|'resize', dir, startX, startY, origSel }
+
+  function attachCropClickHandler(editor) {
+    if (!editor) return;
+    editor.addEventListener('click', (e) => {
+      let img = e.target && e.target.tagName === 'IMG' ? e.target : (e.target && e.target.closest ? e.target.closest('img') : null);
+      if (!img && e.target && e.target.classList && e.target.classList.contains('crop-area')) {
+        img = e.target.querySelector('img');
+      }
+      if (!img || !editor.contains(img)) return;
+      e.preventDefault();
+      openImageCropModal(img, editor);
+    });
+  }
+
+  function openImageCropModal(img, editor) {
+    const src = img.currentSrc || img.getAttribute('src') || '';
+    if (!src) return;
+    cropState = {
+      img: img,
+      host: img.closest('.crop-area') || img,
+      editor: editor,
+      naturalW: 0,
+      naturalH: 0,
+      ratio: null,
+      sel: null
+    };
+    cropDrag = null;
+    const modal = document.getElementById('crop-modal');
+    const cropImg = document.getElementById('crop-image');
+    const select = document.getElementById('crop-select');
+    if (!modal || !cropImg || !select) return;
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.querySelectorAll('.crop-preset-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.ar === 'free');
+    });
+    select.classList.add('hidden');
+    const onLoaded = () => {
+      cropState.naturalW = cropImg.naturalWidth || 1;
+      cropState.naturalH = cropImg.naturalHeight || 1;
+      const rect = cropImg.getBoundingClientRect();
+      cropState.sel = { x: 0, y: 0, w: rect.width, h: rect.height };
+      renderCropSelect();
+    };
+    cropImg.onload = onLoaded;
+    cropImg.onerror = () => {
+      closeCropModal();
+      alert('Не удалось загрузить изображение. / Failed to load the image.');
+    };
+    if (cropImg.src === src && cropImg.complete && cropImg.naturalWidth) {
+      onLoaded();
+    } else {
+      cropImg.src = src;
+    }
+  }
+
+  function closeCropModal() {
+    const modal = document.getElementById('crop-modal');
+    if (modal) modal.style.display = 'none';
+    document.body.style.overflow = '';
+    cropState = { img: null, host: null, editor: null, naturalW: 0, naturalH: 0, ratio: null, sel: null };
+    cropDrag = null;
+  }
+
+  function setCropPreset(key) {
+    if (!cropState || !cropState.sel) return;
+    cropState.ratio = CROP_PRESETS[key] || null;
+    document.querySelectorAll('.crop-preset-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.ar === key);
+    });
+    const img = document.getElementById('crop-image');
+    const rect = img ? img.getBoundingClientRect() : { width: 1, height: 1 };
+    const s = cropState.sel;
+    if (cropState.ratio) {
+      // Snap the selection to the preset ratio, keeping its centre.
+      let w = s.w, h = s.h;
+      if (w / h > cropState.ratio) h = w / cropState.ratio; else w = h * cropState.ratio;
+      const cx = s.x + s.w / 2, cy = s.y + s.h / 2;
+      cropState.sel = clampCropRect(cx - w / 2, cy - h / 2, w, h, rect.width, rect.height, true);
+    }
+    renderCropSelect();
+  }
+
+  function renderCropSelect() {
+    const select = document.getElementById('crop-select');
+    if (!select || !cropState.sel) return;
+    const s = cropState.sel;
+    select.style.left = s.x + 'px';
+    select.style.top = s.y + 'px';
+    select.style.width = s.w + 'px';
+    select.style.height = s.h + 'px';
+    select.classList.remove('hidden');
+  }
+
+  function clampCropRect(l, t, w, h, maxW, maxH, keepRatio) {
+    if (keepRatio) {
+      if (w > maxW) { h = h * (maxW / w); w = maxW; }
+      if (h > maxH) { w = w * (maxH / h); h = maxH; }
+    } else {
+      if (w > maxW) w = maxW;
+      if (h > maxH) h = maxH;
+    }
+    if (w < 4) w = 4;
+    if (h < 4) h = 4;
+    l = Math.max(0, Math.min(l, maxW - w));
+    t = Math.max(0, Math.min(t, maxH - h));
+    return { x: l, y: t, w: w, h: h };
+  }
+
+  function onCropPointerDown(e) {
+    if (!cropState.sel) return;
+    const img = document.getElementById('crop-image');
+    if (!img) return;
+    const rect = img.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const handle = e.target && e.target.classList && e.target.classList.contains('crop-handle') ? e.target.dataset.dir : null;
+    const sel = cropState.sel;
+    if (handle) {
+      cropDrag = { mode: 'resize', dir: handle, startX: x, startY: y, origSel: { x: sel.x, y: sel.y, w: sel.w, h: sel.h } };
+    } else if (x >= sel.x && x <= sel.x + sel.w && y >= sel.y && y <= sel.y + sel.h) {
+      cropDrag = { mode: 'move', dir: null, startX: x, startY: y, origSel: { x: sel.x, y: sel.y, w: sel.w, h: sel.h } };
+    } else {
+      cropDrag = { mode: 'draw', dir: null, startX: x, startY: y, origSel: null };
+    }
+    e.preventDefault();
+  }
+
+  function onCropPointerMove(e) {
+    if (!cropDrag) return;
+    const img = document.getElementById('crop-image');
+    if (!img) return;
+    const rect = img.getBoundingClientRect();
+    if (rect.width < 1 || rect.height < 1) return;
+    const maxW = rect.width, maxH = rect.height;
+    const minPx = 24;
+    const x = Math.min(Math.max(e.clientX - rect.left, 0), maxW);
+    const y = Math.min(Math.max(e.clientY - rect.top, 0), maxH);
+    let s;
+    if (cropDrag.mode === 'draw') {
+      let w = Math.abs(x - cropDrag.startX), h = Math.abs(y - cropDrag.startY);
+      w = Math.max(w, minPx); h = Math.max(h, minPx);
+      let l = x >= cropDrag.startX ? cropDrag.startX : cropDrag.startX - w;
+      let t = y >= cropDrag.startY ? cropDrag.startY : cropDrag.startY - h;
+      if (cropState.ratio) {
+        if (cropState.ratio >= 1) h = w / cropState.ratio; else w = h * cropState.ratio;
+      }
+      s = clampCropRect(l, t, w, h, maxW, maxH, !!cropState.ratio);
+    } else if (cropDrag.mode === 'move') {
+      const o = cropDrag.origSel;
+      s = clampCropRect(o.x + (x - cropDrag.startX), o.y + (y - cropDrag.startY), o.w, o.h, maxW, maxH, false);
+    } else {
+      // Resize: the corner opposite the dragged handle stays fixed.
+      const o = cropDrag.origSel;
+      const ax = cropDrag.dir.indexOf('w') !== -1 ? o.x + o.w : o.x;
+      const ay = cropDrag.dir.indexOf('n') !== -1 ? o.y + o.h : o.y;
+      let w = Math.max(Math.abs(x - ax), minPx);
+      let h = Math.max(Math.abs(y - ay), minPx);
+      if (cropState.ratio) {
+        if (cropState.ratio >= 1) h = w / cropState.ratio; else w = h * cropState.ratio;
+      }
+      const l = cropDrag.dir.indexOf('w') !== -1 ? ax - w : ax;
+      const t = cropDrag.dir.indexOf('n') !== -1 ? ay - h : ay;
+      s = clampCropRect(l, t, w, h, maxW, maxH, !!cropState.ratio);
+    }
+    if (s.w >= minPx && s.h >= minPx) {
+      cropState.sel = s;
+      renderCropSelect();
+    }
+  }
+
+  function onCropPointerUp() { cropDrag = null; }
+
+  function initCropStageEvents() {
+    const wrap = document.getElementById('crop-img-wrap');
+    const modal = document.getElementById('crop-modal');
+    if (!wrap || !modal) return;
+    wrap.addEventListener('pointerdown', onCropPointerDown);
+    window.addEventListener('pointermove', onCropPointerMove);
+    window.addEventListener('pointerup', onCropPointerUp);
+    window.addEventListener('pointercancel', onCropPointerUp);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeCropModal(); });
+    document.addEventListener('keydown', (e) => {
+      const m = document.getElementById('crop-modal');
+      if (e.key === 'Escape' && m && m.style.display !== 'none') closeCropModal();
+    });
+  }
+
+  function applyImageCrop() {
+    const st = cropState;
+    if (!st || !st.sel) return;
+    const img = document.getElementById('crop-image');
+    if (!img) return;
+    const rect = img.getBoundingClientRect();
+    if (rect.width < 1 || rect.height < 1) return;
+    const scaleX = st.naturalW / rect.width;
+    const scaleY = st.naturalH / rect.height;
+    const s = st.sel;
+    const nw = s.w * scaleX, nh = s.h * scaleY;
+    if (nw < 8 || nh < 8) { alert('Слишком маленькая область. / Selection is too small.'); return; }
+    const nx = s.x * scaleX, ny = s.y * scaleY;
+    const ratio = nw / nh;
+    // Pan/zoom percentages: the image is scaled so the selected region fills
+    // the .crop-area box exactly (box aspect-ratio = selection ratio).
+    const leftPct = -(nx / nw) * 100;
+    const topPct = -(ny / nh) * 100;
+    const widthPct = (st.naturalW / nw) * 100;
+    const src = (st.img.currentSrc || st.img.getAttribute('src') || '').replace(/"/g, '&quot;');
+    const newHtml =
+      '<div class="crop-area" style="aspect-ratio:' + ratio.toFixed(4) + ';width:100%;position:relative;overflow:hidden;border-radius:8px;display:block;">' +
+        '<img class="crop-area-img" src="' + src + '" alt="" loading="lazy" style="position:absolute;left:' + leftPct.toFixed(2) + '%;top:' + topPct.toFixed(2) + '%;width:' + widthPct.toFixed(2) + '%;height:auto;max-width:none;display:block;margin:0;">' +
+      '</div>';
+    const host = st.host;
+    const editor = st.editor;
+    const tmp = document.createElement('div');
+    tmp.innerHTML = newHtml;
+    if (host && host.parentNode) host.replaceWith(tmp.firstChild);
+    if (editor) syncDescRaw({ target: editor });
+    closeCropModal();
+  }
+
+  function removeCropImage() {
+    const st = cropState;
+    if (!st) return;
+    const host = st.host;
+    const editor = st.editor;
+    const parent = host && host.parentNode ? host.parentNode : null;
+    if (host && host.parentNode) host.remove();
+    if (parent && /^(P|DIV|SPAN|A|FIGURE)$/i.test(parent.tagName || '') &&
+        !(parent.textContent || '').trim() && !parent.querySelector('img') &&
+        parent.childNodes.length === 0 && parent.parentNode) {
+      parent.remove();
+    }
+    if (editor) syncDescRaw({ target: editor });
+    closeCropModal();
   }
 
   // ===== Auto-Translate: English -> all 11 target languages =====
@@ -4227,6 +4922,8 @@
       stock: effectiveStock,
       types: variants,
       option_groups: optionGroups,
+      faqs: collectFaqs(),
+      features: collectFeatures(),
       type_image: variants[0]?.image || null,
       type_image2: variants[1]?.image || null,
       type_image3: variants[2]?.image || null,
