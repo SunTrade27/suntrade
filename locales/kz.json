@@ -17,6 +17,7 @@
   "view_product": "Тауарды көру",
   "product_add_cart": "Себетке қосу",
   "product_buy_now": "Қазір сатып алу",
+  "product_faqs": "Сұрақ-жауап",
   "product_share": "Бөлісу",
   "product_description": "Сипаттама",
   "product_specifications": "Сипаттамалары",
@@ -44,7 +45,7 @@
   "checkout_processing": "Өңделуде...",
   "checkout_success": "Төлем сәтті өтті!",
   "checkout_order_id": "Тапсырыс нөмірі",
-  "checkout_shipping_note": "📦 Жеткізу мекенжайы келесі қадамда Stripe-тен сұралады",
+  "checkout_shipping_note": "Жеткізу мекенжайы келесі қадамда Stripe-тен сұралады",
   "checkout_error_prefix": "Төлем қателігі",
   "order_summary": "Тапсырыс қорытындысы",
   "cart_invalid": "Себетіңіз бос немесе жарамсыз тауарлар бар. Себетті тазалап, қайтадан көріңіз.",
@@ -639,6 +640,11 @@
   "nb_before_after_desc": "<strong>SUNTRADE™</strong> фараларыңызға бір орнату арқылы ерекше көрініс беретінін көріңіз.",
   "nb_save_40": "40% ҮНЕМДЕУ",
   "nb_you_save": "Үнемдеу €",
+  "nb_buy_1": "1 дана сатып алыңыз",
+  "nb_buy_2": "2 дана сатып алыңыз",
+  "nb_buy_3": "3 дана сатып алыңыз",
+  "nb_label_before": "Бұрын",
+  "nb_label_after": "Кейін",
   "refund_learn": "Қайтару мен өзгерістер туралы біліңіз →",
   "promo_shipping": "ӘЛЕМ БОЙЫНША ТЕГІН ЖЕТКІЗУ"
 }

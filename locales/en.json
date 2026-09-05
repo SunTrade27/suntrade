@@ -17,6 +17,7 @@
   "view_product": "View product",
   "product_add_cart": "Add to Cart",
   "product_buy_now": "Buy Now",
+  "product_faqs": "FAQs",
   "product_share": "Share",
   "product_description": "Description",
   "product_specifications": "Specifications",
@@ -44,7 +45,7 @@
   "checkout_processing": "Processing...",
   "checkout_success": "Payment Successful!",
   "checkout_order_id": "Order ID",
-  "checkout_shipping_note": "📦 Shipping address will be collected by Stripe on the next step",
+  "checkout_shipping_note": "Shipping address will be collected by Stripe on the next step",
   "checkout_error_prefix": "Payment error",
   "order_summary": "Order Summary",
   "cart_invalid": "Your cart is empty or contains invalid items. Please clear your cart and try again.",
@@ -637,6 +638,11 @@
   "nb_before_after_desc": "Discover how <strong>SUNTRADE™</strong> gives your headlights a unique custom appearance in just one installation.",
   "nb_save_40": "SAVE 40%",
   "nb_you_save": "You Save €",
+  "nb_buy_1": "Buy 1",
+  "nb_buy_2": "Buy 2",
+  "nb_buy_3": "Buy 3",
+  "nb_label_before": "Before",
+  "nb_label_after": "After",
   "refund_learn": "Learn about refunds and returns →",
   "promo_shipping": "FREE WORLDWIDE SHIPPING"
 }

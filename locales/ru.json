@@ -17,6 +17,7 @@
   "view_product": "Смотреть товар",
   "product_add_cart": "В корзину",
   "product_buy_now": "Купить сейчас",
+  "product_faqs": "Вопросы и ответы",
   "product_share": "Поделиться",
   "product_description": "Описание",
   "product_specifications": "Характеристики",
@@ -44,7 +45,7 @@
   "checkout_processing": "Обработка...",
   "checkout_success": "Оплата прошла успешно!",
   "checkout_order_id": "Номер заказа",
-  "checkout_shipping_note": "📦 Адрес доставки будет запрошен Stripe на следующем шаге",
+  "checkout_shipping_note": "Адрес доставки будет запрошен Stripe на следующем шаге",
   "checkout_error_prefix": "Ошибка оплаты",
   "order_summary": "Итого по заказу",
   "cart_invalid": "Ваша корзина пуста или содержит недопустимые товары. Очистите корзину и попробуйте снова.",
@@ -639,6 +640,11 @@
   "nb_before_after_desc": "Узнайте, как <strong>SUNTRADE™</strong> придаёт вашим фарам уникальный вид за одну установку.",
   "nb_save_40": "ЭКОНОМИЯ 40%",
   "nb_you_save": "Экономия €",
+  "nb_buy_1": "Купить 1",
+  "nb_buy_2": "Купить 2",
+  "nb_buy_3": "Купить 3",
+  "nb_label_before": "До",
+  "nb_label_after": "После",
   "refund_learn": "Узнайте о возврате и обмене →",
   "promo_shipping": "БЕСПЛАТНАЯ ДОСТАВКА ПО ВСЕМУ МИРУ"
 }
