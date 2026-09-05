@@ -270,10 +270,11 @@ module.exports = async (req, res) => {
         else variantPrice += modifier;
       }
 
-      // Permanent volume discounts, matching the product page tiers:
-      // 10% on a single item, 20% for 2-4 pieces, 30% for 5+ pieces.
-      const discount = qty >= 5 ? 0.4 : qty >= 2 ? 0.7 : 0.9;
-      const unitPrice = Math.round(variantPrice * discount * 100);
+      // Permanent volume discounts — must match js/cart.js DISCOUNT_TIERS and
+      // the product page tiers: 1 pc 40% off, 2 pcs 46% off, 3+ pcs 49% off
+      // (i.e. multipliers 0.6 / 0.54 / 0.51 of the list price).
+      const multiplier = qty >= 3 ? 0.51 : qty === 2 ? 0.54 : 0.6;
+      const unitPrice = Math.round(variantPrice * multiplier * 100);
       const localizedName = product['name_' + language] || product.name_en || product.name_ru || 'Product';
       const image = Array.isArray(product.images) && /^https?:\/\//i.test(String(product.images[0] || ''))
         ? String(product.images[0]).substring(0, 2000)

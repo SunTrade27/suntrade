@@ -1,11 +1,11 @@
 // ===== Volume Discount Tiers =====
-// Quantity-based discount rules (applied automatically in cart). A permanent
-// 10% discount is always active — even for a single item. Larger quantities
-// get progressively bigger discounts: 2-4 pieces 20%, 5+ pieces 30%.
+// Quantity-based discount rules (applied automatically in cart). The permanent
+// 40% discount (site-wide 40% OFF promo) is always active — even for a single
+// item. Bigger orders get extra savings on top: 2 pieces 46%, 3+ pieces 49%.
 const DISCOUNT_TIERS = [
-  { minQty: 1, maxQty: 1, discount: 0.10, label: '1' },
-  { minQty: 2, maxQty: 4, discount: 0.30, label: '2-4' },
-  { minQty: 5, maxQty: Infinity, discount: 0.60, label: '5+' }
+  { minQty: 1, maxQty: 1, discount: 0.40, label: '1' },
+  { minQty: 2, maxQty: 2, discount: 0.46, label: '2' },
+  { minQty: 3, maxQty: Infinity, discount: 0.49, label: '3+' }
 ];
 
 /** Get the effective (discounted) unit price for a given base price and quantity */
