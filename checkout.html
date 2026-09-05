@@ -287,7 +287,7 @@ if(_tc){document.write('<style>body:not(.i18n-ready) [data-i18n],body:not(.i18n-
   // the user has already typed or a saved profile phone.
   async function prefillPhoneCountryCode() {
     try {
-      const res = await fetch('/api/geo', { headers: { Accept: 'application/json' } });
+      const res = await fetch('/api/visitor-count?geo=1', { headers: { Accept: 'application/json' } });
       if (!res.ok) return;
       const data = await res.json();
       const input = document.getElementById('checkout-phone');
